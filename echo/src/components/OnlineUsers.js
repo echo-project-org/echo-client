@@ -1,6 +1,4 @@
 import React from 'react'
-import {AvatarGroup} from '@mui/material'
-import Badge from '@mui/material'
 import OnlineUserIcon from './OnlineUserIcon'
 
 function OnlineUsers({users}) {

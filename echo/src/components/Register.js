@@ -1,8 +1,8 @@
 import '../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Alert, Button, createTheme, Snackbar, TextField, withStyles } from '@mui/material'
-import { useNavigate, BrowserRouter } from "react-router-dom";
+import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
     palette: {
@@ -18,7 +18,7 @@ const theme = createTheme({
 const Register = () => {
     let navigate = useNavigate(); 
     var [registerError, setRegisterError] = useState(false);
-    var [vertical, setVertival] = useState('bottom');
+    var [vertical, setVertical] = useState('bottom');
     var [horizontal, sethHorizontal] = useState('left');
     var [open, setOpen] = useState(false);
     var [message, setMessage] = useState("Error message");
@@ -49,7 +49,7 @@ const Register = () => {
         var psw2 = document.getElementById('passwordBox2').value
         var usrImg = "";
 
-        if(usrName == "" || psw == "" || psw2==""){
+        if(usrName === "" || psw === "" || psw2 === ""){
             //If user has not filled the entire form
             showError("All fields must be populated!")
         } else {
@@ -146,7 +146,7 @@ const Register = () => {
                 type="password"
                 label="Repeat password"
                 onKeyPress={(e) => {
-                    if(e.key == 'Enter') {
+                    if(e.key === 'Enter') {
                         //If key pressed is Enter
                         checkCredentials();
                     }

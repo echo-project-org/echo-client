@@ -1,2 +1,4 @@
 electron/node_modules/
 react/node_modules/
+echo/package-lock.json
+electron/package-lock.json

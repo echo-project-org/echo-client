@@ -1,5 +1,4 @@
 import { Badge, Avatar } from '@mui/material'
-import { green } from '@mui/material/colors'
 import React from 'react'
 
 function OnlineUserIcon({imgUrl, nick, talking}) {

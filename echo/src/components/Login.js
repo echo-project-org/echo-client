@@ -1,8 +1,8 @@
 import '../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Alert, Button, createTheme, Snackbar, TextField, withStyles } from '@mui/material'
-import { useNavigate, BrowserRouter } from "react-router-dom";
+import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
+import { useNavigate } from "react-router-dom";
 
 const theme = createTheme({
     palette: {
@@ -19,7 +19,7 @@ const Login = () => {
     let navigate = useNavigate(); 
 
     var [loginError, setLoginError] = useState(false);
-    var [vertical, setVertival] = useState('bottom');
+    var [vertical, setVertical] = useState('bottom');
     var [horizontal, sethHorizontal] = useState('left');
     var [open, setOpen] = useState(false);
     var [message, setMessage] = useState("Error message");
@@ -47,7 +47,7 @@ const Login = () => {
         var usrName = document.getElementById('usernameBox').value
         var psw = document.getElementById('passwordBox').value
 
-        if(usrName == "" || psw == ""){
+        if(usrName === "" || psw === ""){
             showError("All fields must be populated!");
         } else {
             var hashed = await hash(usrName + "@" + psw);
@@ -106,7 +106,7 @@ const Login = () => {
                 type="password"
                 label="Password"
                 onKeyPress={(e) => {
-                    if(e.key == 'Enter') {
+                    if(e.key === 'Enter') {
                         //If key pressed is Enter
                         checkCredentials();
                     }
