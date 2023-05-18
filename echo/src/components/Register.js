@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
 import { useNavigate } from "react-router-dom";
+var api = require('../api')
 
 const theme = createTheme({
     palette: {
@@ -59,7 +60,7 @@ const Register = () => {
                 var hashed = await hash(usrName + "@" + psw);
                 //TODO replace this so it verifies that the nickname is available fist
                 //(nick must be unique in db)
-                const res = await fetch('https://timspik.ddns.net/authenticateUser/' + hashed);
+                const res = await api.call('authenticateUser/' + hashed);
                 const data = await res.json();
                 if(res.ok){
                     //if api returns 200 OK
@@ -67,7 +68,7 @@ const Register = () => {
                         //Can create account
                         hideError();
                         //TODO API NEEDS TO BE EDITED TO ACCEPT THIS REQUEST
-                        const res = await fetch('https://timspik.ddns.net/addUser/' + usrName + "/" + usrImg + "/" + hashed);
+                        const res = await api.call('addUser/' + usrName + "/" + usrImg + "/" + hashed);
                         const data = await res.json();
                         if(res.ok){
                             //TODO account made successfully, save stuff to cookies

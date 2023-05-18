@@ -9,7 +9,7 @@ const Header = ({title}) => {
 }
 
 Header.defaultProps = {
-    title : 'TimSpik'
+    title : 'Echo'
 }
 
 export default Header

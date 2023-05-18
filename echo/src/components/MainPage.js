@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import OnlineUsers from './OnlineUsers';
 import Sidebar from './Sidebar';
+var api = require('../api')
 
 const MainPage = () => {
 
@@ -18,7 +19,7 @@ const MainPage = () => {
     );
     
     const fetchOnlineUsers = async () => {
-        const res = await fetch('https://timspik.ddns.net/getOnlineUsers');
+        const res = await api.call('getOnlineUsers');
         const data = await res.json();
         setUsers(data);
     }

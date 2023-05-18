@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingAnimation from './LoadingAnimation';
 import ConnectButton from './ConnectButton';
 import LoginButtons from './LoginButtons';
+var api = require('../api')
 
 const MainLogo = () => {
     let navigate = useNavigate(); 
@@ -29,7 +30,7 @@ const MainLogo = () => {
     useEffect(() => {
         const fetchServerSettings = async () => {
             //Getting server audio settings, this also is used to check if the API are responding
-            const res = await fetch('https://timspik.ddns.net/getAudioServerAddress');
+            const res = await api.call('getAudioServerAddress');
             const data = await res.json();
 
             //TODO check if api errors out

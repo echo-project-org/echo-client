@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
 import { useNavigate } from "react-router-dom";
+var api = require('../api')
 
 const theme = createTheme({
     palette: {
@@ -51,8 +52,8 @@ const Login = () => {
             showError("All fields must be populated!");
         } else {
             var hashed = await hash(usrName + "@" + psw);
-    
-            const res = await fetch('https://timspik.ddns.net/authenticateUser/' + hashed);
+            
+            const res = await api.call('authenticateUser/' + hashed);
             const data = await res.json();
             if(res.ok){
                 hideError();

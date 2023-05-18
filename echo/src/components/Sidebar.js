@@ -2,6 +2,7 @@ import React from 'react'
 import RoomControl from './RoomControl'
 import { Button, createTheme, Divider } from '@mui/material'
 import { useNavigate } from 'react-router-dom';
+var api = require('../api')
 
 const theme = createTheme({
   palette: {
@@ -16,7 +17,7 @@ function Sidebar() {
   const logout = async () => {
     //Notify api
     var nickname = localStorage.getItem("userNick");
-    const res = await fetch('https://timspik.ddns.net/setOnline/'+ nickname +'/F');
+    const res = await api.call('setOnline/' + nickname +'/F');
     if(!res.ok){
       console.error("Could not set user as offline");
     }

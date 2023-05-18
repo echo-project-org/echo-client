@@ -1,10 +1,11 @@
 import React from 'react'
+var api = require('../api')
 
 const ConnectButton = ({nickname, address, port, visibility, navigate}) => {
   if(!visibility) return null
 
   const setUserOnline = async () => {
-    const res = await fetch('https://timspik.ddns.net/setOnline/'+ nickname +'/T');
+    const res = await api.call('setOnline/' + nickname + '/T');
     if(res.ok){
       navigate("/main");
     } else {
