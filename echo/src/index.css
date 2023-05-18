@@ -162,28 +162,17 @@ body{
 
 .loginButtons {
   position:absolute;
-  top: 0;
+  padding-bottom: 2rem;
   left: 0;
   right: 0;
   bottom: 0;
   margin: auto;
-  margin-top: 32rem;
   width: 15rem;
   height: 60px;
   cursor: pointer;
 }
 
 .connectButton {
-  position:absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  margin-top: 32rem;
-  width: 15rem;
-  cursor: pointer;
-
   align-items: center;
   background-color: var(--color3);
   border: 2px solid #111;
@@ -206,6 +195,14 @@ body{
   -webkit-user-select: none;
   touch-action: manipulation;
   animation: 500ms ease 0s 1 fadeIn;
+
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: 2rem;
+  margin: auto;
+  width: 15rem;
+  cursor: pointer;
 }
 
 .connectButton:after

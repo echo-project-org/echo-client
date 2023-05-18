@@ -5,7 +5,9 @@ const createMainWindow = () => {
       width: 1000,
       height: 600
     })
-    
+
+    win.setMinimumSize(800, 500);
+
     win.loadURL('http://localhost:3000');
 }
 
