@@ -301,12 +301,17 @@ body{
   color: Orange;
 }
 
-.closeButton {
-    position: absolute;
-    right: 0;
-    top: 0;
-    display: block;
+.topBar{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 1.5rem;
+  background-color: var(--main-bg-color);
+  -webkit-app-region: drag;
+  display: flex;
+  flex-direction: row-reverse;
 }
+
 
 .noselect {
   -webkit-touch-callout: none;
@@ -319,4 +324,8 @@ body{
 
 .pointer:hover{
   cursor: pointer;
+}
+
+.windowControls {
+  -webkit-app-region: none;
 }

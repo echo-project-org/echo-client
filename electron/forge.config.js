@@ -2,7 +2,9 @@ const path = require('path');
 const fs = require('fs');
 
 module.exports = {
-  packagerConfig: {},
+  packagerConfig: {
+    icon: 'images/echoIcon'
+  },
   rebuildConfig: {},
   makers: [
     {

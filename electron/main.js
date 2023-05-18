@@ -1,24 +1,33 @@
-const { app, BrowserWindow } = require('electron')
+const { app, application, BrowserWindow, ipcMain } = require('electron')
+var mainWindow;
 
 const createMainWindow = () => {
-    const win = new BrowserWindow({
+    var win = new BrowserWindow({
       width: 1000,
       height: 600,
-      title:"Echo",
-      frame:true,
+      title: "Echo",
+      frame: false,
+      icon: 'images/echoIcon',
       webPreferences: {
         nodeIntegration: true,
+        contextIsolation: false
       }
     })
 
     win.setMinimumSize(800, 500);
 
-    win.loadFile('index.html'); // prod
-    //win.loadURL('http://localhost:3000'); // dev
+    if(app.isPackaged) {
+      win.loadFile('index.html'); // prod
+    }else{
+      win.loadURL('http://localhost:3000'); // dev
+    }
+
+    return win;
 }
 
+
 app.whenReady().then(() => {
-    createMainWindow()
+  mainWindow = createMainWindow()
 })
 
 app.on('window-all-closed', () => {
@@ -30,5 +39,21 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createMainWindow()
+  }
+})
+
+ipcMain.on("exitApplication", (event, arg) => {
+  app.quit();
+})
+
+ipcMain.on("minimize", (event, arg) => {
+  mainWindow.minimize();
+})
+
+ipcMain.on("toggleFullscreen", (event, arg) => {
+  if(mainWindow.isMaximized()){
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
   }
 })
