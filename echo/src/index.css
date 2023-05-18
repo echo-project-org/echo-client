@@ -277,9 +277,9 @@ body{
   animation-delay: 0.6s;
 }
 .wave:nth-child(8) {
-  animation-delay: 0.7s;
 }
 .wave:nth-child(9) {
+  animation-delay: 0.7s;
   animation-delay: 0.8s;
 }
 .wave:nth-child(10) {
@@ -299,6 +299,13 @@ body{
   font-family: 'Rubik Iso';
   font-size: 4rem;
   color: Orange;
+}
+
+.closeButton {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: block;
 }
 
 .noselect {

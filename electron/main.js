@@ -5,12 +5,16 @@ const createMainWindow = () => {
       width: 1000,
       height: 600,
       title:"Echo",
-      frame:true
+      frame:true,
+      webPreferences: {
+        nodeIntegration: true,
+      }
     })
 
     win.setMinimumSize(800, 500);
 
-    win.loadURL('http://localhost:3000');
+    win.loadFile('index.html'); // prod
+    //win.loadURL('http://localhost:3000'); // dev
 }
 
 app.whenReady().then(() => {
@@ -25,6 +29,6 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createMainWindow()
   }
 })

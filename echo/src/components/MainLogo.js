@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingAnimation from './LoadingAnimation';
 import ConnectButton from './ConnectButton';
 import LoginButtons from './LoginButtons';
+
 var api = require('../api')
 
 const MainLogo = () => {
@@ -58,11 +59,11 @@ const MainLogo = () => {
 
     return (
         <motion.div 
-            className='splashScreen'
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
-        >
+        className='splashScreen'
+        initial={{opacity: 0}}
+        animate={{opacity: 1}}
+        exit={{opacity: 0}}
+        >   
             <div className="logoContainer">
                 <img className='mainLogoImg' src={imgLogo} alt='echoLogo'/>
             </div>

@@ -1,7 +1,8 @@
 import './App.css';
 import { useState, useEffect } from 'react'
-import { BrowserRouter} from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 import AnimatedRoutes from './components/AnimatedRoutes';
+import CloseButton from './components/CloseButton';
 
 function App() {
   useEffect(() => {
@@ -10,9 +11,10 @@ function App() {
   
   return (
     <div className="App">
-      <BrowserRouter>
+      <CloseButton className="closeButton"></CloseButton> 
+      <HashRouter>
         <AnimatedRoutes/>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }

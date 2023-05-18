@@ -1,6 +1,4 @@
-module.exports = {
-     call: async function(endpoint) {
-        const res = await fetch('https://timspik.ddns.net/' + endpoint)
-        return res;
-    }
+export async function call(endpoint) {
+    const res = await fetch('https://timspik.ddns.net/' + endpoint);
+    return res;
 }

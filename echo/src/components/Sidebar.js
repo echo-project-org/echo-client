@@ -20,7 +20,7 @@ function Sidebar() {
     const res = await api.call('setOnline/' + nickname +'/F');
     if(!res.ok){
       console.error("Could not set user as offline");
-    }
+    } 
 
     localStorage.removeItem("userId");
     localStorage.removeItem("userNick");
