@@ -158,6 +158,7 @@ body{
   margin-top: -10rem;
   margin-left: -10rem;
   padding: 1rem;
+  font-family: Open Sans;
   color: var(--main-bg-color);
 }
 
@@ -327,5 +328,12 @@ body{
 }
 
 .windowControls {
+  -webkit-app-region: none;
+}
+
+.backButton{
+  position: absolute;
+  top: 0;
+  left: 0;
   -webkit-app-region: none;
 }

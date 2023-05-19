@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
 import { useNavigate } from "react-router-dom";
+import BackButton from './BackButton';
 var api = require('../api')
 
 const theme = createTheme({
@@ -120,7 +121,8 @@ const Register = () => {
             animate={{opacity: 1}}
             exit={{opacity: 0}}
         >
-
+        
+        <BackButton/>
         <div className="loginForm">
             <h1>Register</h1>
             <TextField
