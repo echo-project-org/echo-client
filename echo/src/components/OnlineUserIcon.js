@@ -1,11 +1,18 @@
 import { Badge, Avatar } from '@mui/material'
 import React from 'react'
 
+const decodeUrl = (url) => {
+  if(url.includes("/")){
+    return url;
+  } else {
+    return decodeURIComponent(url);
+  }
+}
 function OnlineUserIcon({imgUrl, nick, talking}) {
   return (
     <div className="onlineUserIcon">
       <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
-        <Avatar alt={nick} src={imgUrl} sx={{height: '3.5rem', width:'3.5rem'}}/>
+        <Avatar alt={nick} src={decodeUrl(imgUrl)} sx={{height: '3.5rem', width:'3.5rem'}}/>
       </Badge>
       <p className='onlineUserNick'>{nick}</p>
     </div>
