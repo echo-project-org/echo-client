@@ -1,4 +1,5 @@
-const { app, application, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain } = require('electron')
+
 var mainWindow;
 
 const createMainWindow = () => {

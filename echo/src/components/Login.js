@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
 import { useNavigate } from "react-router-dom";
+import BackButton from './BackButton';
 var api = require('../api')
 
 const theme = createTheme({
@@ -18,7 +19,7 @@ const theme = createTheme({
 
 const Login = () => {
     let navigate = useNavigate(); 
-
+    
     var [loginError, setLoginError] = useState(false);
     var [vertical, setVertical] = useState('bottom');
     var [horizontal, sethHorizontal] = useState('left');
@@ -88,7 +89,8 @@ const Login = () => {
             animate={{opacity: 1}}
             exit={{opacity: 0}}
         >
-
+        
+        <BackButton/>
         <div className="loginForm">
             <h1>Login</h1>
             <TextField

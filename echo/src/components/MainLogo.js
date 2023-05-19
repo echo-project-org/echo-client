@@ -4,7 +4,7 @@ import imgLogo from "../img/headphones.svg"
 import { motion } from 'framer-motion'
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from './LoadingAnimation';
-import ConnectButton from './ConnectButton';
+import AuthenticatedUserButtons from './AuthenticatedUserButtons';
 import LoginButtons from './LoginButtons';
 
 var api = require('../api')
@@ -68,8 +68,8 @@ const MainLogo = () => {
                 <img className='mainLogoImg' src={imgLogo} alt='echoLogo'/>
             </div>
             <LoadingAnimation visibility={loadingVisibility}/>
-            <ConnectButton nickname={userNickname} address={serverAddress} port={serverPort} visibility={accessBtnVisibility} navigate={goToPage}/>
             <LoginButtons visibility={loginBtnVisibility} navigate={goToPage}/>
+            <AuthenticatedUserButtons visibility={accessBtnVisibility} nickname={userNickname}/>
         </motion.div>
     )
 }
