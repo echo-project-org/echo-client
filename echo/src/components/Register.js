@@ -49,8 +49,8 @@ const Register = () => {
         var usrName = document.getElementById('usernameBox').value
         var psw = document.getElementById('passwordBox').value
         var psw2 = document.getElementById('passwordBox2').value
-        var usrImg = "";
-
+        var usrImg = encodeURIComponent(document.getElementById('imgUrl').value);
+        
         if(usrName === "" || psw === "" || psw2 === ""){
             //If user has not filled the entire form
             showError("All fields must be populated!")
@@ -63,19 +63,27 @@ const Register = () => {
                 //(nick must be unique in db)
                 const res = await api.call('authenticateUser/' + hashed);
                 const data = await res.json();
-                if(res.ok){
+                if(!res.ok){
                     //if api returns 200 OK
                     if(data.id == null){
                         //Can create account
                         hideError();
                         //TODO API NEEDS TO BE EDITED TO ACCEPT THIS REQUEST
-                        const res = await api.call('addUser/' + usrName + "/" + usrImg + "/" + hashed);
+                        const request = 'addUser/' + usrName + "/" + usrImg + "/" + hashed;
+                        console.log(request);
+                        const res = await api.call(request);
                         const data = await res.json();
                         if(res.ok){
-                            //TODO account made successfully, save stuff to cookies
-
-                            //redirect to loading page
-                            navigate("/");
+                            const res = await api.call('authenticateUser/' + hashed);
+                            const data = await res.json();
+                            if(res.ok){
+                                hideError();
+                                localStorage.setItem("userId", data.id);
+                                localStorage.setItem("userNick", data.nick);
+                                navigate("/");
+                            } else {
+                                showError("Something went wrong!");
+                            }
                         } else {
                             //Api errored out!
                             showError("Unable to create account! Api error.");
@@ -131,6 +139,7 @@ const Register = () => {
                 id="usernameBox"
                 variant="standard"
                 label="Username"
+                error={registerError}
             />
             <TextField
                 required
@@ -148,6 +157,14 @@ const Register = () => {
                 variant="standard"
                 type="password"
                 label="Repeat password"
+                error={registerError}
+            />
+            <TextField
+                sx={{input: {color: '#2b192e'}}}
+                required
+                id="imgUrl"
+                variant="standard"
+                label="URL immagine"
                 onKeyPress={(e) => {
                     if(e.key === 'Enter') {
                         //If key pressed is Enter
