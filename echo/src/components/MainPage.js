@@ -26,7 +26,6 @@ const MainPage = () => {
 
     const startInputAudioStream = async () => {
         var nick = localStorage.getItem('userNick');
-        //call backend
     }
 
     useEffect(() => {   

@@ -39,7 +39,6 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
                 orientation='vertical'
                 disableElevation
                 variant="text"
-                visibility={!visibility}
                 className="loginButtons"
             >
                 <Button onClick={enterRoom}>Enter</Button>

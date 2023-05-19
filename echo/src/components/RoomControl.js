@@ -9,7 +9,10 @@ import { createTheme } from '@mui/material/styles';
 import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
 import { ThemeProvider } from '@emotion/react';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useNavigate } from 'react-router-dom';
+import ScreenShare from '@mui/icons-material/ScreenShare';
+import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 var api = require('../api')
 
 const theme = createTheme({
@@ -19,9 +22,9 @@ const theme = createTheme({
     },
 });
 
-function RoomControl({ muted, audioMuted }) {
+function RoomControl({ muted, audioMuted, screenSharing }) {
     let navigate = useNavigate();
-    
+
     const exitRoom = async () => {
         //Notify api
         var nickname = localStorage.getItem("userNick");
@@ -42,6 +45,9 @@ function RoomControl({ muted, audioMuted }) {
                     </Button>
                     <Button>
                         {!audioMuted ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
+                    </Button>
+                    <Button>
+                        {!screenSharing ? <ScreenShare /> : <StopScreenShareIcon />}
                     </Button>
                     <Button onClick={exitRoom}>
                         <LogoutIcon />
