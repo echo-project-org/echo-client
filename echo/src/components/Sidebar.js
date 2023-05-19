@@ -14,7 +14,7 @@ const theme = createTheme({
 function Sidebar() {
   let navigate = useNavigate();
 
-  const logout = async () => {
+  const exitRoom = async () => {
     //Notify api
     var nickname = localStorage.getItem("userNick");
     const res = await api.call('setOnline/' + nickname + '/F');
@@ -22,19 +22,13 @@ function Sidebar() {
       console.error("Could not set user as offline");
     }
 
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userNick");
-
-
     navigate("/");
-
   }
 
   return (
     <div className='sidebar'>
       <RoomControl />
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
-      <Button theme={theme} variant="outlined" onClick={logout}>Logout</Button>
     </div>
   )
 }

@@ -8,31 +8,50 @@ import HeadsetMicRoundedIcon from '@mui/icons-material/HeadsetMicRounded';
 import { createTheme } from '@mui/material/styles';
 import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
 import { ThemeProvider } from '@emotion/react';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate } from 'react-router-dom';
+var api = require('../api')
 
 const theme = createTheme({
     palette: {
-      primary: {main: '#f5e8da',},
-      secondary: {main: '#ce8ca5',},
+        primary: { main: '#f5e8da', },
+        secondary: { main: '#ce8ca5', },
     },
 });
 
-function RoomControl({muted, audioMuted}) {
-  return (
-    <div className='roomControl'>
-        <ThemeProvider theme={theme}>
-            <ButtonGroup variant='text'>
-                <Button>
-                    {!muted ? <KeyboardVoiceRoundedIcon/> : <MicOffRoundedIcon/>}
-                </Button>
-                <Button>
-                    {!audioMuted ? <HeadsetMicRoundedIcon/> : <HeadsetOffRoundedIcon/>}
-                </Button>
-            </ButtonGroup>
-        </ThemeProvider>
-    </div>
+function RoomControl({ muted, audioMuted }) {
+    let navigate = useNavigate();
     
-    
-  )
+    const exitRoom = async () => {
+        //Notify api
+        var nickname = localStorage.getItem("userNick");
+        const res = await api.call('setOnline/' + nickname + '/F');
+        if (!res.ok) {
+            console.error("Could not set user as offline");
+        }
+
+        navigate("/");
+    }
+
+    return (
+        <div className='roomControl'>
+            <ThemeProvider theme={theme}>
+                <ButtonGroup variant='text'>
+                    <Button>
+                        {!muted ? <KeyboardVoiceRoundedIcon /> : <MicOffRoundedIcon />}
+                    </Button>
+                    <Button>
+                        {!audioMuted ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
+                    </Button>
+                    <Button onClick={exitRoom}>
+                        <LogoutIcon />
+                    </Button>
+                </ButtonGroup>
+            </ThemeProvider>
+        </div>
+
+
+    )
 }
 
 RoomControl.defaultProps = {
