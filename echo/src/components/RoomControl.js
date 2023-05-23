@@ -22,13 +22,14 @@ const theme = createTheme({
     },
 });
 
-function RoomControl({ muted, audioMuted, screenSharing }) {
+function RoomControl({ muted, audioMuted, screenSharing, stopAudioStream }) {
     let navigate = useNavigate();
 
     const exitRoom = async () => {
         //Notify api
         var nickname = localStorage.getItem("userNick");
         const res = await api.call('setOnline/' + nickname + '/F');
+        stopAudioStream();
         if (!res.ok) {
             console.error("Could not set user as offline");
         }

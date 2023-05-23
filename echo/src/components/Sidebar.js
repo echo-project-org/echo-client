@@ -11,7 +11,7 @@ const theme = createTheme({
   },
 });
 
-function Sidebar() {
+function Sidebar({stopAudioStream}) {
   let navigate = useNavigate();
 
   const exitRoom = async () => {
@@ -27,7 +27,7 @@ function Sidebar() {
 
   return (
     <div className='sidebar'>
-      <RoomControl />
+      <RoomControl stopAudioStream={stopAudioStream}/>
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
     </div>
   )

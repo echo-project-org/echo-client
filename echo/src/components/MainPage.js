@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import OnlineUsers from './OnlineUsers';
 import Sidebar from './Sidebar';
 var api = require('../api')
+var audioTransmitter = require('../audioTransmitter')
 
 const MainPage = () => {
 
@@ -25,12 +26,18 @@ const MainPage = () => {
     }
 
     const startInputAudioStream = async () => {
-        var nick = localStorage.getItem('userNick');
+        audioTransmitter.startInputAudioStream();
     }
+
+    const stopAudioStream = async () => {
+        audioTransmitter.stopAudioStream();
+    }
+
+    
 
     useEffect(() => {   
           fetchOnlineUsers();
-          startInputAudioStream()
+          startInputAudioStream();
     }, [])
 
     return (
@@ -41,7 +48,7 @@ const MainPage = () => {
             exit={{opacity: 0}}
         >
             <OnlineUsers users={users}/>
-            <Sidebar />
+            <Sidebar stopAudioStream={stopAudioStream}/>
         </motion.div>
     )
 }
