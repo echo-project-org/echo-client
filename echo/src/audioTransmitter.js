@@ -1,15 +1,15 @@
-var ep = require('./echoProtocol')
+const ep = require('./echoProtocol')
 
 let mediaStream = null;
 let isTransmitting = false;
 let node;
 let context = null;
+var id = localStorage.getItem('userId');
 
 export async function startInputAudioStream() {
     if(!isTransmitting){
-        var nick = localStorage.getItem('userNick');
 
-        ep.openConnection();
+        ep.openConnection(id);
         
         navigator.getUserMedia({ audio: true },
             function (stream) {
@@ -32,11 +32,12 @@ export async function startInputAudioStream() {
 
                 // listen to the audio data, and record into the buffer
                 node.onaudioprocess = function (e) {
-                    recBuffersL.push(e.inputBuffer.getChannelData(0));
-                    recBuffersR.push(e.inputBuffer.getChannelData(1));
-                    recLength += e.inputBuffer.getChannelData(0).length;
                     //Here i have the raw data
-                    console.log(e.inputBuffer.getChannelData(0));
+                    var left = e.inputBuffer.getChannelData(0);
+                    var right = e.inputBuffer.getChannelData(1);
+                    console.log(left)
+                    console.log(right);
+                    ep.sendAudioPacket(left, right);
                 }
 
                 // connect the ScriptProcessorNode with the input audio
@@ -45,7 +46,8 @@ export async function startInputAudioStream() {
                 node.connect(context.destination);
             },
             function (e) {
-                // do something about errors
+                alert("Audio stuff error")
+                stopAudioStream();
             });
     }
 }
@@ -53,6 +55,7 @@ export async function startInputAudioStream() {
 export function stopAudioStream() {
     if(isTransmitting){
         console.log("STOPPING STREAM");
+        ep.closeConnection(id)
         if (mediaStream) {
             mediaStream.getAudioTracks().forEach((track) => {
                 track.stop(); // Stop each track in the media stream

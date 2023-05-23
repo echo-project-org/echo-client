@@ -1,31 +1,45 @@
 var socket;
+const at = require('./audioTransmitter')
 
-export async function openConnection() {
-    socket = new WebSocket("wss://javascript.info/article/websocket/demo/hello");
+
+function parseMessage(msg){
+    if(msg.includes("ECHO")){
+        alert(msg)
+    }
+}
+
+export async function openConnection(id) {
+    socket = new WebSocket("ws://localhost:6982");
 
     socket.onopen = function (e) {
-        alert("[open] Connection established");
-        alert("Sending to server");
-        socket.send("My name is John");
+        socket.send("ECHO JOIN " + id);
     };
 
     socket.onmessage = function (event) {
-        alert(`[message] Data received from server: ${event.data}`);
+        parseMessage(event.data)
     };
 
     socket.onclose = function (event) {
         if (event.wasClean) {
-            alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            //If closing was clean
         } else {
-            // e.g. server process killed or network down
-            // event.code is usually 1006 in this case
-            alert('[close] Connection died');
+            alert('Connection with the server died');
         }
+        
+        at.stopAudioStream();
     };
 
     socket.onerror = function (error) {
-        alert(`[error]`);
+        alert("The audio server connection has errored out")
+        at.stopAudioStream();
     };
+}
+
+export async function closeConnection(id) {
+    if(socket){
+        socket.send("ECHO QUIT " + id);
+        socket.close();
+    }
 }
 
 export async function sendMessage(msg) {
@@ -34,9 +48,9 @@ export async function sendMessage(msg) {
     }
 }
 
-export async function sendAudioPacket(audio) {
+export async function sendAudioPacket(left, right) {
     if(socket){
-        socket.send("ECHO AUD" + audio);
+        socket.send("ECHO AUD" + JSON.stringify(left) + JSON.stringify(right));
     }
 }
 
