@@ -37,7 +37,7 @@ export async function startInputAudioStream() {
                     var right = e.inputBuffer.getChannelData(1);
                     console.log(left)
                     console.log(right);
-                    ep.sendAudioPacket(left, right);
+                    ep.sendAudioPacket(id, left, right);
                 }
 
                 // connect the ScriptProcessorNode with the input audio

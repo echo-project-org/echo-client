@@ -48,9 +48,9 @@ export async function sendMessage(msg) {
     }
 }
 
-export async function sendAudioPacket(left, right) {
+export async function sendAudioPacket(id, left, right) {
     if(socket){
-        socket.send("ECHO AUD" + JSON.stringify(left) + JSON.stringify(right));
+        socket.send("ECHO AUD " + id.padStart(8, ' ') + JSON.stringify(left) + JSON.stringify(right));
     }
 }
 
