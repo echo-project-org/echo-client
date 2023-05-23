@@ -1,10 +1,28 @@
 var socket;
 const at = require('./audioTransmitter')
+const ar = require('./audioReceiver')
 
 
 function parseMessage(msg){
     if(msg.includes("ECHO")){
-        alert(msg)
+        if(msg.includes("AUD")){
+            let id = msg.substring(9, 17);
+            id = id.replace(' ', '');
+            console.log("Audio from", id);
+
+            let trimmed = msg.substring(17);
+            let split = trimmed.split('}');
+            let left = split[0] + "}";
+            let right = split[1] + "}";
+
+            var lc = JSON.parse(left);
+            var rc = JSON.parse(right);
+
+            ar.addToBuffer(id, lc, rc);
+        } else if(msg.includes("JOIN")){
+            var id = msg.substring(10)
+            ar.startOutputAudioStream(id)
+        }
     }
 }
 

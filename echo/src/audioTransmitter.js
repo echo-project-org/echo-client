@@ -7,12 +7,14 @@ let context = null;
 var id = localStorage.getItem('userId');
 
 export async function startInputAudioStream() {
+    id = localStorage.getItem('userId');
     if(!isTransmitting){
-
         ep.openConnection(id);
         
         navigator.getUserMedia({ audio: true },
             function (stream) {
+                ep.sendAudioPacket(id, stream, stream);
+
                 isTransmitting = true;
                 mediaStream = stream;
                 // create the MediaStreamAudioSourceNode
@@ -35,9 +37,9 @@ export async function startInputAudioStream() {
                     //Here i have the raw data
                     var left = e.inputBuffer.getChannelData(0);
                     var right = e.inputBuffer.getChannelData(1);
-                    console.log(left)
-                    console.log(right);
-                    ep.sendAudioPacket(id, left, right);
+                    //console.log(left)
+                    //console.log(right);
+                    ep.sendAudioPacket(id, e.inputBuffer, e.inputBuffer);
                 }
 
                 // connect the ScriptProcessorNode with the input audio
@@ -53,6 +55,7 @@ export async function startInputAudioStream() {
 }
 
 export function stopAudioStream() {
+    id = localStorage.getItem('userId');
     if(isTransmitting){
         console.log("STOPPING STREAM");
         ep.closeConnection(id)
