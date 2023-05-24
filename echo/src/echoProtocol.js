@@ -12,7 +12,7 @@ function parseMessage(msg){
 
             var lc = new Float32Array(data.left);
             var rc = new Float32Array(data.right);
-
+            
             ar.addToBuffer(data.id, lc, rc);
         } else if(msg.includes("JOIN")){
             var id = msg.substring(10)
@@ -68,6 +68,7 @@ export async function sendAudioPacket(id, left, right) {
             left: Array.from(left),
             right: Array.from(right)
         }
+
         socket.send("ECHO AUD " + JSON.stringify(data));
     }
 }

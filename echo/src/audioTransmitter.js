@@ -1,4 +1,5 @@
 const ep = require('./echoProtocol')
+const ar = require('./audioReceiver')
 
 let mediaStream = null;
 let isTransmitting = false;
@@ -11,10 +12,18 @@ export async function startInputAudioStream() {
     if(!isTransmitting){
         ep.openConnection(id);
         
-        navigator.getUserMedia({ audio: true },
+        navigator.getUserMedia({ audio: {
+                channelCount: 2,
+                sampleRate: 48000,
+                sampleSize: 16,
+                volume: 1,
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false,
+            }, },
             function (stream) {
-                ep.sendAudioPacket(id, stream, stream);
-
+                let track = stream.getAudioTracks()[0];
+                console.log(track.getCapabilities());
                 isTransmitting = true;
                 mediaStream = stream;
                 // create the MediaStreamAudioSourceNode
@@ -28,13 +37,15 @@ export async function startInputAudioStream() {
                     node = context.createScriptProcessor(4096, 2, 2);
                 }
 
+                ar.startOutputAudioStream(id);
+
                 // listen to the audio data, and record into the buffer
-                node.onaudioprocess = function (e) {
+                node.onaudioprocess = async function (e) {
                     //Here i have the raw data
                     var left = e.inputBuffer.getChannelData(0);
                     var right = e.inputBuffer.getChannelData(1);
-                    //console.log(right);
                     ep.sendAudioPacket(id, left, right);
+                    //ar.addToBuffer(id, left, right)
                 }
 
                 // connect the ScriptProcessorNode with the input audio
