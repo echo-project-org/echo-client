@@ -19,7 +19,6 @@ export async function startInputAudioStream() {
                 mediaStream = stream;
                 // create the MediaStreamAudioSourceNode
                 context = new AudioContext();
-
                 var source = context.createMediaStreamSource(stream);
 
                 // create a ScriptProcessorNode
