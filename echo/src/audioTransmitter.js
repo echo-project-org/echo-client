@@ -33,7 +33,6 @@ export async function startInputAudioStream() {
                     //Here i have the raw data
                     var left = e.inputBuffer.getChannelData(0);
                     var right = e.inputBuffer.getChannelData(1);
-                    //console.log(left)
                     //console.log(right);
                     ep.sendAudioPacket(id, left, right);
                 }

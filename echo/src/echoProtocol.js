@@ -10,8 +10,8 @@ function parseMessage(msg){
             var data = JSON.parse(msg)
             console.log("Audio from", data.id);
 
-            var lc = data.left;
-            var rc = data.right;
+            var lc = new Float32Array(data.left);
+            var rc = new Float32Array(data.right);
 
             ar.addToBuffer(data.id, lc, rc);
         } else if(msg.includes("JOIN")){
@@ -65,8 +65,8 @@ export async function sendAudioPacket(id, left, right) {
     if(socket){
         var data = {
             id: id,
-            left: left,
-            right: right
+            left: Array.from(left),
+            right: Array.from(right)
         }
         socket.send("ECHO AUD " + JSON.stringify(data));
     }
