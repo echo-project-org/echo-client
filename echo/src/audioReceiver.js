@@ -4,14 +4,15 @@ let clientIds = []
 
 export async function startOutputAudioStream(clientId) {
     if(!clientIds.includes(clientId)){
-        var index = clientIds.index(clientId);
+        var index = clientIds.indexOf(clientId);
         var context = new AudioContext();
-        const scriptNode = audioContexts[index].createScriptProcessor(4096, 2, 2);
-        scriptNode.connect(audioContexts[index].destination);
+
+        const scriptNode = context.createScriptProcessor(4096, 2, 2);
+        scriptNode.connect(context.destination);
 
         scriptNode.onaudioprocess = function (e) {
             var outputBuffer = e.outputBuffer;
-            var index = clientIds.index(clientId);
+            var index = clientIds.indexOf(clientId);
 
             if(clientBuffers[index]){
                 var leftOutput = outputBuffer.getChannelData(0);

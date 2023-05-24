@@ -10,8 +10,8 @@ function parseMessage(msg){
             var data = JSON.parse(msg)
             console.log("Audio from", data.id);
 
-            var lc = JSON.parse(data.left);
-            var rc = JSON.parse(data.right);
+            var lc = data.left;
+            var rc = data.right;
 
             ar.addToBuffer(data.id, lc, rc);
         } else if(msg.includes("JOIN")){
