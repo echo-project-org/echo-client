@@ -21,7 +21,7 @@ const Register = () => {
     let navigate = useNavigate(); 
     var [registerError, setRegisterError] = useState(false);
     var [vertical, setVertical] = useState('bottom');
-    var [horizontal, sethHorizontal] = useState('left');
+    var [horizontal, setHorizontal] = useState('left');
     var [open, setOpen] = useState(false);
     var [message, setMessage] = useState("Error message");
 
@@ -68,11 +68,9 @@ const Register = () => {
                     if(data.id == null){
                         //Can create account
                         hideError();
-                        //TODO API NEEDS TO BE EDITED TO ACCEPT THIS REQUEST
                         const request = 'addUser/' + usrName + "/" + usrImg + "/" + hashed;
                         console.log(request);
                         const res = await api.call(request);
-                        const data = await res.json();
                         if(res.ok){
                             const res = await api.call('authenticateUser/' + hashed);
                             const data = await res.json();

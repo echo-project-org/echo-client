@@ -11,7 +11,6 @@ import { ThemeProvider } from '@emotion/react';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useNavigate } from 'react-router-dom';
-import ScreenShare from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 var api = require('../api')
 
@@ -48,7 +47,7 @@ function RoomControl({ muted, audioMuted, screenSharing, stopAudioStream }) {
                         {!audioMuted ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
                     </Button>
                     <Button>
-                        {!screenSharing ? <ScreenShare /> : <StopScreenShareIcon />}
+                        {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
                     </Button>
                     <Button onClick={exitRoom}>
                         <LogoutIcon />

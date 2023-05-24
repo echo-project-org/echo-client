@@ -1,29 +1,8 @@
 import React from 'react'
 import RoomControl from './RoomControl'
-import { Button, createTheme, Divider } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
-var api = require('../api')
-
-const theme = createTheme({
-  palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
-  },
-});
+import { Divider } from '@mui/material'
 
 function Sidebar({stopAudioStream}) {
-  let navigate = useNavigate();
-
-  const exitRoom = async () => {
-    //Notify api
-    var nickname = localStorage.getItem("userNick");
-    const res = await api.call('setOnline/' + nickname + '/F');
-    if (!res.ok) {
-      console.error("Could not set user as offline");
-    }
-
-    navigate("/");
-  }
 
   return (
     <div className='sidebar'>

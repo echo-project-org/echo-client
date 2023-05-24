@@ -21,9 +21,6 @@ export async function startInputAudioStream() {
                 context = new AudioContext();
 
                 var source = context.createMediaStreamSource(stream);
-                var recLength = 0,
-                    recBuffersL = [],
-                    recBuffersR = [];
 
                 // create a ScriptProcessorNode
                 if (!context.createScriptProcessor) {

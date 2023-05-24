@@ -1,14 +1,13 @@
-let audioSources = [];
 let audioContexts = [];
 let clientBuffers = [];
 let clientIds = []
 
 export async function startOutputAudioStream(clientId) {
     if(!clientIds.includes(clientId)){
-        console.log("Negri")
+        var index = clientIds.index(clientId);
         var context = new AudioContext();
-        const scriptNode = audioContext.createScriptProcessor(4096, 2, 2);
-        scriptNode.connect(audioContext.destination);
+        const scriptNode = audioContexts[index].createScriptProcessor(4096, 2, 2);
+        scriptNode.connect(audioContexts[index].destination);
 
         scriptNode.onaudioprocess = function (e) {
             var outputBuffer = e.outputBuffer;
@@ -36,12 +35,8 @@ export async function startOutputAudioStream(clientId) {
             }
         };
 
-        audioSources.push(sourceNode);
         clientIds.push(clientId);
         audioContexts.push(context);
-
-        sourceNode.connect(context.destination);
-        sourceNode.start(0);
     }
 }
 

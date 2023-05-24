@@ -1,6 +1,6 @@
 import './App.css';
 import { useState, useEffect } from 'react'
-import { BrowserRouter, HashRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import AnimatedRoutes from './components/AnimatedRoutes';
 import CloseButton from './components/WindowControls';
 import WindowControls from './components/WindowControls';
