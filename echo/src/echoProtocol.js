@@ -6,19 +6,14 @@ const ar = require('./audioReceiver')
 function parseMessage(msg){
     if(msg.includes("ECHO")){
         if(msg.includes("AUD")){
-            let id = msg.substring(9, 17);
-            id = id.replace(' ', '');
-            console.log("Audio from", id);
+            msg = msg.replace("ECHO AUD ", '');
+            var data = JSON.parse(msg)
+            console.log("Audio from", data.id);
 
-            let trimmed = msg.substring(17);
-            let split = trimmed.split('}');
-            let left = split[0] + "}";
-            let right = split[1] + "}";
+            var lc = JSON.parse(data.left);
+            var rc = JSON.parse(data.right);
 
-            var lc = JSON.parse(left);
-            var rc = JSON.parse(right);
-
-            ar.addToBuffer(id, lc, rc);
+            ar.addToBuffer(data.id, lc, rc);
         } else if(msg.includes("JOIN")){
             var id = msg.substring(10)
             ar.startOutputAudioStream(id)
@@ -68,7 +63,12 @@ export async function sendMessage(msg) {
 
 export async function sendAudioPacket(id, left, right) {
     if(socket){
-        socket.send("ECHO AUD " + id.padStart(8, ' ') + JSON.stringify(left) + JSON.stringify(right));
+        var data = {
+            id: id,
+            left: left,
+            right: right
+        }
+        socket.send("ECHO AUD " + JSON.stringify(data));
     }
 }
 
