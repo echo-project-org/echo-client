@@ -12,7 +12,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useNavigate } from 'react-router-dom';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
-var api = require('../api')
+const api = require('../api')
+const at = require('../audioTransmitter')
+const ar = require('../audioReceiver')
+const ep = require('../echoProtocol')
 
 const theme = createTheme({
     palette: {
@@ -21,14 +24,17 @@ const theme = createTheme({
     },
 });
 
-function RoomControl({ muted, audioMuted, screenSharing, stopAudioStream }) {
+function RoomControl({ muted, audioMuted, screenSharing }) {
     let navigate = useNavigate();
 
     const exitRoom = async () => {
         //Notify api
         var nickname = localStorage.getItem("userNick");
         const res = await api.call('setOnline/' + nickname + '/F');
-        stopAudioStream();
+        at.startInputAudioStream();
+        ar.stopOutputAudioStream();
+        ep.closeConnection();
+
         if (!res.ok) {
             console.error("Could not set user as offline");
         }

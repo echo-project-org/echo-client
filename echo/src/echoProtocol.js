@@ -12,7 +12,7 @@ function parseMessage(msg){
 
             var lc = new Float32Array(data.left);
             var rc = new Float32Array(data.right);
-            
+
             ar.addToBuffer(data.id, lc, rc);
         } else if(msg.includes("JOIN")){
             var id = msg.substring(10)

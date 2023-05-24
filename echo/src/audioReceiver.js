@@ -13,10 +13,20 @@ export async function startOutputAudioStream(clientId) {
         clientIds.push(clientId);
         audioContexts.push(context);
         clientSources.push(source);
-        startTimes.push(0)
+        startTimes.push(context.currentTime);
     }
 }
 
+export async function stopOutputAudioStream() {
+    audioContexts.forEach(e => {
+        e.close();
+    });
+
+    audioContexts = [];
+    clientSources = [];
+    clientIds = [];
+    startTimes = [];
+}
 export async function addToBuffer(clientId, left, right) {
     if(clientIds.includes(clientId)){
         let index = clientIds.indexOf(clientId);

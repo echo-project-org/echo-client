@@ -6,7 +6,7 @@ function Sidebar({stopAudioStream}) {
 
   return (
     <div className='sidebar'>
-      <RoomControl stopAudioStream={stopAudioStream}/>
+      <RoomControl />
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
     </div>
   )

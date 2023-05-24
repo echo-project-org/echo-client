@@ -22,8 +22,6 @@ export async function startInputAudioStream() {
                 autoGainControl: false,
             }, },
             function (stream) {
-                let track = stream.getAudioTracks()[0];
-                console.log(track.getCapabilities());
                 isTransmitting = true;
                 mediaStream = stream;
                 // create the MediaStreamAudioSourceNode
