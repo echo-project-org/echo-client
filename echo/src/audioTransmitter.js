@@ -10,8 +10,6 @@ var id = localStorage.getItem('userId');
 export async function startInputAudioStream() {
     id = localStorage.getItem('userId');
     if(!isTransmitting){
-        ep.openConnection(id);
-        
         navigator.getUserMedia({ audio: {
                 channelCount: 2,
                 sampleRate: 48000,

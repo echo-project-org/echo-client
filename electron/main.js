@@ -11,7 +11,8 @@ const createMainWindow = () => {
       icon: 'images/echoIcon',
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false
+        contextIsolation: false,
+        devTools: true
       }
     })
 

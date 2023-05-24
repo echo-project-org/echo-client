@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React from 'react'
 import { useNavigate } from "react-router-dom";
 
+const ep = require('../echoProtocol');
 var api = require('../api')
 
 const theme = createTheme({
@@ -26,6 +27,7 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
     const enterRoom = async () => {
         const res = await api.call('setOnline/' + nickname + '/T');
         if (res.ok) {
+            ep.openConnection(localStorage.getItem('userId'));
             navigate("/main");
         } else {
             console.error("Could not set user as online");
