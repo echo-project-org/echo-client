@@ -25,30 +25,14 @@ var socket;
 //     alert("reconnecting. attempt " + attempt)
 // });
 
-// socket.io.on("ping", () => { console.log("pong") });
-
 // socket.io.on("reconnect", (attempt) => {});
 // socket.io.on("reconnect_error", (error) => {});
 // socket.io.on("reconnect_failed", () => {});
 
 // // errors
 
-
-function parseMessage(msg){
-    if(msg.includes("ECHO")){
-        if(msg.includes("AUD")){
-            msg = msg.replace("ECHO AUD ", '');
-            var data = JSON.parse(msg)
-            console.log("Audio from", data.id);
-        } else if(msg.includes("JOIN")){
-            var id = msg.substring(10)
-            ar.startOutputAudioStream(id)
-        }
-    }
-}
-
 export async function openConnection(id) {
-    socket = io("ws://localhost:6982");
+    socket = io("ws://kury.ddns.net:6982");
     
     socket.on("open", (event) => {
         console.log("opened");
@@ -61,6 +45,11 @@ export async function openConnection(id) {
         var rc = new Float32Array(data.right);
 
         ar.addToBuffer(data.id, lc, rc);
+    });
+
+    socket.io.on("close", () => {
+        console.log("connection closed");
+        at.stopAudioStream();
     })
     
     socket.io.on("error", (error) => {
@@ -68,6 +57,8 @@ export async function openConnection(id) {
         alert("The audio server connection has errored out")
         at.stopAudioStream();
     });
+
+    socket.io.on("ping", () => { console.log("pong") });
 }
 
 export async function closeConnection(id) {
@@ -78,7 +69,7 @@ export async function closeConnection(id) {
 }
 
 export async function sendMessage(msg) {
-    if(socket){
+    if (socket) {
         // socket.send("ECHO MSG" + msg);
     }
 }
