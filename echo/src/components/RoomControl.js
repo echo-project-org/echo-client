@@ -31,9 +31,9 @@ function RoomControl({ muted, audioMuted, screenSharing }) {
         //Notify api
         var nickname = localStorage.getItem("userNick");
         const res = await api.call('setOnline/' + nickname + '/F');
-        at.startInputAudioStream();
+        // at.startInputAudioStream();
         ar.stopOutputAudioStream();
-        ep.closeConnection();
+        at.stopAudioStream();
 
         if (!res.ok) {
             console.error("Could not set user as offline");
