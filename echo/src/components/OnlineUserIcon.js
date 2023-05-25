@@ -14,10 +14,12 @@ const decodeUrl = (url) => {
     return decodeURIComponent(url);
   }
 }
+
 function OnlineUserIcon({imgUrl, nick, talking, audioVolume}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userVolume, setUserVolulme] = React.useState(0.5);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -52,6 +54,7 @@ function OnlineUserIcon({imgUrl, nick, talking, audioVolume}) {
           onClose={handleClose}
           MenuListProps={{
             'aria-labelledby': 'userIcon',
+            'className': 'userMenuModal'
           }}
         > 
           <MenuItem>
