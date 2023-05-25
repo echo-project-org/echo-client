@@ -55,6 +55,7 @@ function ChatControls() {
                         label="Send a message."
                         InputProps={{
                             endAdornment: <MessageBoxButtons />,
+                            style: {color: "#f5e8da"}
                         }}
                     />
 
