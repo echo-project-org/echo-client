@@ -354,6 +354,7 @@ body{
 
 .chat {
   display: flex;
+  height: 100%;
   flex-direction: column-reverse;
   flex: 1 1 auto;
   background-color: #3e2542;
@@ -362,10 +363,10 @@ body{
 }
 
 .chatControls {
-  width: 100%;
-  height: 5rem;
+  width: 99%;
+  height: 3rem;
   margin: 0.5rem;
-  flex: 0 0 auto;
+  flex: 1 0 auto;
 }
 
 .chatForm {
@@ -378,4 +379,20 @@ body{
 
 .userMenuModal{
   background-color: var(--color3);
+}
+
+.roomsContainer {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.room {
+  background-color: red;
+}
+
+.roomName {
+  margin-top: 0.2rem;
+  font-family: Open Sans;
+  color: var(--color3)
 }

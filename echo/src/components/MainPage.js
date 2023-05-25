@@ -42,7 +42,7 @@ const MainPage = () => {
         >
             <OnlineUsers users={users}/>
             <div className='sideWithChat'>
-                <Sidebar />
+                <Sidebar users={users}/>
                 <RoomContent />
             </div>
             

@@ -1,4 +1,4 @@
-class Users {
+class Users 
     constructor(socket) {
         this.socket = socket;
         this.socketId = socket.id;

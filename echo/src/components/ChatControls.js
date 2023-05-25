@@ -44,14 +44,10 @@ function ChatControls() {
             <ThemeProvider theme={theme}>
                 <form className='chatForm' noValidate autoComplete="off">
                     <StyledTextField
-                        sx={{
-                            width: 750,
-                            input: {color: '#f5e8da'}
-                        }}
                         id="messageBox"
                         fullWidth
                         multiline
-                        rows={2}
+                        maxRows={2}
                         label="Send a message."
                         InputProps={{
                             endAdornment: <MessageBoxButtons />,
