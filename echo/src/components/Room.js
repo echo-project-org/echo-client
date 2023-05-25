@@ -5,7 +5,7 @@ import AvatarGroup from '@mui/material/AvatarGroup';
 function Room({roomName, users}) {
   return (
     <div className='room'>
-        <p className='roomName'>Room 1</p>
+        <p className='roomName'>Depression Room</p>
         <div className="roomUsers">
             <AvatarGroup max={5}>
             {
