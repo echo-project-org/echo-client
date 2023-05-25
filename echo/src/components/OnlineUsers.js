@@ -1,16 +1,14 @@
 import React from 'react'
 import OnlineUserIcon from './OnlineUserIcon'
 
-function OnlineUsers({users}) {
+function Utilities({users}) {
   return (
-    <div className='onlineUsersBar'>
+    <div className='utilitiesBar'>
       {
-          users.map((user) => (
-            <OnlineUserIcon key={user.nick} imgUrl={user.img} nick={user.nick}/>
-          ))
+          
       }
     </div>
   )
 }
 
-export default OnlineUsers
+export default Utilities

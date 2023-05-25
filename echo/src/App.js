@@ -12,7 +12,7 @@ function App() {
   
   return (
     <div className="App">
-      <div className="topBar">
+      <div className="topBar noDrag">
         <WindowControls/>
       </div>
       <HashRouter>
