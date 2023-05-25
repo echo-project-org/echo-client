@@ -406,6 +406,9 @@ body{
   border-radius: 1rem 1rem 0 1rem;
   width: fit-content;
   margin: 1rem 1rem 1rem auto;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
 }
 
 .rightMessageText {
@@ -425,6 +428,9 @@ body{
   border-radius: 1rem 1rem 1rem 0;
   width: fit-content;
   margin: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
 }
 
 .leftMessageText {

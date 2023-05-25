@@ -55,6 +55,7 @@ const theme = createTheme({
             font-style: normal;
             font-display: swap;
             font-weight: 400;
+            color: #f5e8da;
             src: local('RobotoCondensed'), local('RobotoCondensed'), url(${RobotoCondensed}) format('ttf');
         }
         `,
