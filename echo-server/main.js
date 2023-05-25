@@ -8,22 +8,17 @@ const io = new Server(config.port, {
     }
 });
 
-var socket;
-
 const users = new Map();
 
 const Colors = require("./classes/colors");
 const colors = new Colors();
 
-const User = require("./classes/user");
+const User = require("./classes/users");
 
 console.log(colors.changeColor("red", "Listening for shit :)"))
 io.on('connection', (IOSocket) => {
-    console.log(colors.changeColor("green", "Socket connected"));
-    socket = IOSocket;
-    io.emit('open');
+    console.log(colors.changeColor("green", "New socket connection"));
     
-    socket.on("join", (data) => {
-        users.set(data.id, new User(data.id, socket, io));
-    });
+    const user = new User(IOSocket);
+    users.set(user.socketId, user);
 });

@@ -375,3 +375,7 @@ body{
   flex: row;
   margin-right: 2rem;
 }
+
+.userMenuModal{
+  background-color: var(--color3);
+}
