@@ -2,7 +2,7 @@ import React from 'react'
 import RoomControl from './RoomControl'
 import { Divider } from '@mui/material'
 
-function Sidebar({stopAudioStream}) {
+function Sidebar({}) {
 
   return (
     <div className='sidebar'>
