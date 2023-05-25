@@ -40,7 +40,7 @@ function WindowControls({ muted, audioMuted }) {
     }
 
     return (
-        <div className='roomControl'>
+        <div className='windowControl'>
             <ThemeProvider theme={theme}>
                 <ButtonGroup variant='text' size="small" className='windowControls'>
                     <Button onClick={minimize}>
