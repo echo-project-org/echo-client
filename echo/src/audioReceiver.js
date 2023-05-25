@@ -5,7 +5,7 @@ let startTimes = [];
 
 export async function startOutputAudioStream(clientId) {
     console.log("Creating audio out")
-    if(!clientIds.includes(clientId)){
+    if (!clientIds.includes(clientId)) {
         var context = new AudioContext();
         let source = context.createBufferSource()
         source.connect(context.destination)
