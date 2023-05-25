@@ -36,6 +36,7 @@
   --color1: rgb(77, 1, 77);
   --color2: #ce8ca5;
   --color3: #f5e8da;
+  --color4: #E4DAF5;
   --main-text-color: #fff;
 }
 
@@ -395,4 +396,40 @@ body{
   margin-top: 0.2rem;
   font-family: Open Sans;
   color: var(--color3)
+}
+
+.rightMessage {
+  max-width: 66%;
+  min-height: 1.7rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color4);
+  border-radius: 1rem 1rem 0 1rem;
+  width: fit-content;
+  margin: 1rem 1rem 1rem auto;
+}
+
+.rightMessageText {
+  margin: auto;
+  color: black;
+  text-align: left;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.leftMessage {
+  max-width: 66%;
+  min-height: 1.7rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color3);
+  border-radius: 1rem 1rem 1rem 0;
+  width: fit-content;
+  margin: 1rem;
+}
+
+.leftMessageText {
+  margin: auto;
+  color: black;
+  text-align: left;
+  vertical-align: middle;
+  display: inline-block;
 }
