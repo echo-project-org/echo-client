@@ -12,6 +12,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useNavigate } from 'react-router-dom';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
+
+import muteSound from "../audio/mute.mp3";
+import unmuteSound from "../audio/unmute.mp3";
+import deafSound from "../audio/deaf.mp3";
+import undeafSound from "../audio/undeaf.mp3";
+
 const api = require('../api')
 const at = require('../audioTransmitter')
 const ar = require('../audioReceiver')
@@ -43,14 +49,48 @@ function RoomControl({ screenSharing }) {
             });
     }
 
+    const computeAudio = (isDeaf) => {
+        if (isDeaf)
+            if (!muted) {
+                const audio = new Audio(muteSound);
+                audio.volume = 0.6;
+                audio.play();
+            } else {
+                const audio = new Audio(unmuteSound);
+                audio.volume = 0.6;
+                audio.play();
+            }
+        else
+            if (!deaf) {
+                const audio = new Audio(deafSound);
+                audio.volume = 0.6;
+                audio.play();
+            } else {
+                const audio = new Audio(undeafSound);
+                audio.volume = 0.6;
+                audio.play();
+            }
+    }
+
+    const undeafOnMute = () => { setDeaf(false); }
+    const muteOnDeaf = () => { setMuted(true); computeAudio(false); }
+    const unmuteOnDeaf = () => { setMuted(false); computeAudio(false); }
+    const muteAndDeaf = () => { setMuted(true); setDeaf(true); computeAudio(false); }
+
     const muteMic = () => {
+        if (muted) undeafOnMute();
         at.toggleMute();
         setMuted(!muted);
+        if (muted && deaf) computeAudio(false)
+        if (muted && !deaf) computeAudio(true)
+        if (!muted && !deaf) computeAudio(true)
     }
 
     const deafHeadphones = () => {
-        muteMic()
-        setDeaf(!deaf)
+        if (!muted) muteOnDeaf()
+        else if (muted && !deaf) muteAndDeaf()
+        else unmuteOnDeaf();
+        setDeaf(!deaf);
     }
 
     return (

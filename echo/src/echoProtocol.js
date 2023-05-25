@@ -80,7 +80,7 @@ export async function sendMessage(msg) {
 
 export async function sendAudioPacket(id, left, right) {
     if (socket) {
-        console.log("sending pachet", id)
+        // console.log("sending pachet", id)
         socket.emit("audioPacket", {
             id: id,
             left: left,
