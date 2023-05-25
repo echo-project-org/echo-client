@@ -32,12 +32,15 @@ var socket;
 // // errors
 
 export async function openConnection(id) {
-    socket = io("ws://kury.ddns.net:6982");
+    console.log("opening connection with socket")
+    socket = io("ws://localhost:6982");
     
-    socket.on("open", (event) => {
+    // join the transmission on current room
+    socket.emit("join", { id, roomId: 0 });
+
+    socket.on("ready", (event) => {
         console.log("opened");
         ar.startOutputAudioStream(id)
-        socket.emit("join", id);
     });
 
     socket.on("receiveAudioPacket", (data) => {
@@ -56,16 +59,17 @@ export async function openConnection(id) {
         console.log(error);
         alert("The audio server connection has errored out")
         at.stopAudioStream();
+        socket.close();
     });
 
     socket.io.on("ping", () => { console.log("pong") });
 }
 
 export async function closeConnection(id) {
-    if(socket){
-        socket.send("ECHO QUIT " + id);
-        socket.close();
-    }
+    console.log("closing connection with socket")
+    if (socket) socket.emit("end", id);
+    // if we let client handle disconnection, then recursive happens cause of the event "close"
+    // socket.close();
 }
 
 export async function sendMessage(msg) {
@@ -76,6 +80,7 @@ export async function sendMessage(msg) {
 
 export async function sendAudioPacket(id, left, right) {
     if (socket) {
+        console.log("sending pachet", id)
         socket.emit("audioPacket", {
             id: id,
             left: left,
