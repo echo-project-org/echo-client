@@ -42,7 +42,7 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}>
           <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
-            <Avatar alt={nick} src={decodeUrl(imgUrl)} sx={{height: '3.5rem', width:'3.5rem'}}/>
+            <Avatar alt={nick} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
           </Badge>
           <p className='onlineUserNick'>{nick}</p>
         </div>

@@ -4,9 +4,11 @@
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1);
   }
+
   100% {
     transform: scale(0);
   }
@@ -16,6 +18,7 @@
   0% {
     transform: scale(0);
   }
+
   100% {
     transform: scale(1);
   }
@@ -25,6 +28,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     animation-delay: 1.5s;
     opacity: 1;
@@ -40,12 +44,12 @@
   --main-text-color: #fff;
 }
 
-html{
+html {
   height: 100%;
   overflow: hidden;
 }
 
-body{
+body {
   margin: 0;
   padding: 0;
   background-color: var(--main-bg-color);
@@ -65,19 +69,20 @@ body{
   flex: 0 0 auto
 }
 
-.onlineUserIcon {
-  height: 5rem;
-  margin-top: 1rem;
-  margin-left: 1rem;
+.roomUsers {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem;
 }
 
-.onlineUserImg {
-  height: 3.5rem;
-  border-radius: 100%;
+.onlineUserIcon {
+  display: flex;
+  align-items: center;
+  margin-bottom: .5rem;
 }
 
 .onlineUserNick {
-  margin-top: 0.2rem;
+  margin: 0 0 0 0.5rem;
   font-family: Roboto Condensed;
   color: var(--color3)
 }
@@ -120,12 +125,12 @@ body{
 .mainLogoImg {
   color: var(--color3);
   height: 15rem;
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  margin:auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
   animation: 1500ms ease 0s 1 popIn;
 }
 
@@ -156,7 +161,7 @@ body{
 }
 
 .loginButtons {
-  position:absolute;
+  position: absolute;
   padding-bottom: 2rem;
   left: 0;
   right: 0;
@@ -191,7 +196,7 @@ body{
   touch-action: manipulation;
   animation: 500ms ease 0s 1 fadeIn;
 
-  position:absolute;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 2rem;
@@ -200,8 +205,7 @@ body{
   cursor: pointer;
 }
 
-.connectButton:after
-{
+.connectButton:after {
   background-color: #111;
   border-radius: 8px;
   content: "";
@@ -230,7 +234,7 @@ body{
 }
 
 .loadingAnimation {
-  position:absolute;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -252,30 +256,38 @@ body{
   border-radius: 20px;
   animation: wave 1s ease infinite;
 }
+
 .wave:nth-child(2) {
   animation-delay: 0.1s;
 }
+
 .wave:nth-child(3) {
   animation-delay: 0.2s;
 }
+
 .wave:nth-child(4) {
   animation-delay: 0.3s;
 }
+
 .wave:nth-child(5) {
   animation-delay: 0.4s;
 }
+
 .wave:nth-child(6) {
   animation-delay: 0.5s;
 }
+
 .wave:nth-child(7) {
   animation-delay: 0.6s;
 }
-.wave:nth-child(8) {
-}
+
+.wave:nth-child(8) {}
+
 .wave:nth-child(9) {
   animation-delay: 0.7s;
   animation-delay: 0.8s;
 }
+
 .wave:nth-child(10) {
   animation-delay: 0.9s;
 }
@@ -295,7 +307,7 @@ body{
   color: Orange;
 }
 
-.topBar{
+.topBar {
   position: absolute;
   top: 0;
   width: 100%;
@@ -309,14 +321,14 @@ body{
 
 .noselect {
   -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.pointer:hover{
+.pointer:hover {
   cursor: pointer;
 }
 
@@ -324,14 +336,14 @@ body{
   -webkit-app-region: none;
 }
 
-.backButton{
+.backButton {
   position: absolute;
   top: 0;
   left: 0;
   -webkit-app-region: none;
 }
 
-.sideWithChat{
+.sideWithChat {
   display: flex;
   flex-direction: row;
   height: 100%;
@@ -378,7 +390,7 @@ body{
   margin-right: 2rem;
 }
 
-.userMenuModal{
+.userMenuModal {
   background-color: var(--color3);
 }
 
@@ -389,7 +401,10 @@ body{
 }
 
 .room {
-  background-color: red;
+  background-color: #3e2542;
+  border-right: 1px solid var(--color3);
+  border-bottom: 1px solid var(--color3);
+  border-bottom-right-radius: 1rem;
 }
 
 .roomName {
