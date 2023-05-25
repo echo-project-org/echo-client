@@ -357,8 +357,8 @@ body{
   flex-direction: column-reverse;
   flex: 1 1 auto;
   background-color: #3e2542;
-  border-top-left-radius: 1rem;
   border-bottom-left-radius: 1rem;
+  margin-left: 0.6rem;
 }
 
 .chatControls {
@@ -374,4 +374,8 @@ body{
   display: flex;
   flex: row;
   margin-right: 2rem;
+}
+
+.userMenuModal{
+  background-color: var(--color3);
 }
