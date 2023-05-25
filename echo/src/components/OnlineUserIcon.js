@@ -15,7 +15,7 @@ const decodeUrl = (url) => {
   }
 }
 
-function OnlineUserIcon({imgUrl, nick, talking, audioVolume}) {
+function OnlineUserIcon({imgUrl, nick, talking}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userVolume, setUserVolulme] = React.useState(0.5);
   const open = Boolean(anchorEl);
@@ -81,7 +81,6 @@ OnlineUserIcon.defaultProps = {
     imgUrl: "https://kurickigabriele2020.altervista.org/Kury.jpg",
     nick: "Kury",
     talking: false,
-    audioVolume: 0.5,
 }
 
 export default OnlineUserIcon
