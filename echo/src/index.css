@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap');
 
 @keyframes wave {
   0% {
@@ -78,7 +78,7 @@ body{
 
 .onlineUserNick {
   margin-top: 0.2rem;
-  font-family: Open Sans;
+  font-family: Roboto Condensed;
   color: var(--color3)
 }
 
@@ -88,7 +88,7 @@ body{
   margin-bottom: 1rem;
   margin-left: 1rem;
   margin-right: 1rem;
-  font-family: Open Sans;
+  font-family: Roboto Condensed;
   font-size: 1rem;
   border-radius: 1rem;
   border: 1px var(--main-bg-color) solid;
@@ -151,7 +151,7 @@ body{
   margin-top: -10rem;
   margin-left: -10rem;
   padding: 1rem;
-  font-family: Open Sans;
+  font-family: Roboto Condensed;
   color: var(--main-bg-color);
 }
 
@@ -176,7 +176,7 @@ body{
   color: var(--main-bg-color);
   cursor: pointer;
   display: flex;
-  font-family: Open Sans;
+  font-family: Roboto Condensed;
   font-size: 16px;
   height: 80px;
   justify-content: center;
@@ -394,7 +394,7 @@ body{
 
 .roomName {
   margin-top: 0.2rem;
-  font-family: Open Sans;
+  font-family: Roboto Condensed;
   color: var(--color3)
 }
 
