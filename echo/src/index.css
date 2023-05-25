@@ -441,3 +441,14 @@ body{
   display: inline-block;
   font-family: Roboto Condensed;
 }
+
+.roomControl {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+
+.roomControl div {
+  margin-left: 10px;
+  margin-right: 10px;
+}

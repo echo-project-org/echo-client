@@ -36,6 +36,15 @@ function RoomControl({ screenSharing }) {
 
     let navigate = useNavigate();
 
+    const muteAudio = new Audio(muteSound);
+    muteAudio.volume = 0.6;
+    const unmuteAudio = new Audio(unmuteSound);
+    unmuteAudio.volume = 0.6;
+    const deafAudio = new Audio(deafSound);
+    deafAudio.volume = 0.6;
+    const undeafAudio = new Audio(undeafSound);
+    undeafAudio.volume = 0.6;
+
     const exitRoom = () => {
         //Notify api
         var nickname = localStorage.getItem("userNick");
@@ -52,23 +61,15 @@ function RoomControl({ screenSharing }) {
     const computeAudio = (isDeaf) => {
         if (isDeaf)
             if (!muted) {
-                const audio = new Audio(muteSound);
-                audio.volume = 0.6;
-                audio.play();
+                muteAudio.play();
             } else {
-                const audio = new Audio(unmuteSound);
-                audio.volume = 0.6;
-                audio.play();
+                unmuteAudio.play();
             }
         else
             if (!deaf) {
-                const audio = new Audio(deafSound);
-                audio.volume = 0.6;
-                audio.play();
+                deafAudio.play();
             } else {
-                const audio = new Audio(undeafSound);
-                audio.volume = 0.6;
-                audio.play();
+                undeafAudio.play();
             }
     }
 
@@ -97,12 +98,14 @@ function RoomControl({ screenSharing }) {
         <div className='roomControl'>
             <ThemeProvider theme={theme}>
                 <ButtonGroup variant='text'>
-                    <Button onClick={muteMic}>
+                    <Button disableRipple onClick={muteMic}>
                         {!muted ? <KeyboardVoiceRoundedIcon /> : <MicOffRoundedIcon />}
                     </Button>
-                    <Button onClick={deafHeadphones}>
+                    <Button disableRipple onClick={deafHeadphones}>
                         {!deaf ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
                     </Button>
+                </ButtonGroup>
+                <ButtonGroup variant='text'>
                     <Button>
                         {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
                     </Button>
@@ -119,7 +122,7 @@ function RoomControl({ screenSharing }) {
 
 RoomControl.defaultProps = {
     muted: false,
-    audioMuted: false
+    deaf: false
 }
 
 export default RoomControl
