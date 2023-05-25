@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import OnlineUsers from './OnlineUsers';
 import Sidebar from './Sidebar';
+import RoomContent from './RoomContent';
+
 var api = require('../api')
 var at = require('../audioTransmitter')
 
@@ -39,7 +41,11 @@ const MainPage = () => {
             exit={{opacity: 0}}
         >
             <OnlineUsers users={users}/>
-            <Sidebar />
+            <div className='sideWithChat'>
+                <Sidebar />
+                <RoomContent />
+            </div>
+            
         </motion.div>
     )
 }
