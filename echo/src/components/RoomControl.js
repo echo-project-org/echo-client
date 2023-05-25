@@ -1,5 +1,5 @@
 import '../index.css'
-import React from 'react'
+import { useState } from 'react'
 import Button from '@mui/material/Button'
 import { ButtonGroup } from '@mui/material'
 import KeyboardVoiceRoundedIcon from '@mui/icons-material/KeyboardVoiceRounded';
@@ -15,7 +15,7 @@ import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 const api = require('../api')
 const at = require('../audioTransmitter')
 const ar = require('../audioReceiver')
-const ep = require('../echoProtocol')
+// const ep = require('../echoProtocol')
 
 const theme = createTheme({
     palette: {
@@ -24,33 +24,44 @@ const theme = createTheme({
     },
 });
 
-function RoomControl({ muted, audioMuted, screenSharing }) {
+function RoomControl({ screenSharing }) {
+    const [muted, setMuted] = useState(false);
+    const [deaf, setDeaf] = useState(false);
+
     let navigate = useNavigate();
 
-    const exitRoom = async () => {
+    const exitRoom = () => {
         //Notify api
         var nickname = localStorage.getItem("userNick");
-        const res = await api.call('setOnline/' + nickname + '/F');
-        // at.startInputAudioStream();
-        ar.stopOutputAudioStream();
-        at.stopAudioStream();
+        api.call('setOnline/' + nickname + '/F')
+            .then(res => {
+                // at.startInputAudioStream();
+                ar.stopOutputAudioStream();
+                at.stopAudioStream();
+                if (!res.ok) console.error("Could not set user as offline");
+                navigate("/");
+            });
+    }
 
-        if (!res.ok) {
-            console.error("Could not set user as offline");
-        }
+    const muteMic = () => {
+        at.toggleMute();
+        setMuted(!muted);
+    }
 
-        navigate("/");
+    const deafHeadphones = () => {
+        muteMic()
+        setDeaf(!deaf)
     }
 
     return (
         <div className='roomControl'>
             <ThemeProvider theme={theme}>
                 <ButtonGroup variant='text'>
-                    <Button>
+                    <Button onClick={muteMic}>
                         {!muted ? <KeyboardVoiceRoundedIcon /> : <MicOffRoundedIcon />}
                     </Button>
-                    <Button>
-                        {!audioMuted ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
+                    <Button onClick={deafHeadphones}>
+                        {!deaf ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
                     </Button>
                     <Button>
                         {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}

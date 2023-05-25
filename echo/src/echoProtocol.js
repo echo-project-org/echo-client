@@ -33,14 +33,14 @@ var socket;
 
 export async function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io("ws://localhost:6982");
+    socket = io("ws://localhost:6982", { query: { id } });
     
     // join the transmission on current room
     socket.emit("join", { id, roomId: 0 });
 
-    socket.on("ready", (event) => {
-        console.log("opened");
-        ar.startOutputAudioStream(id)
+    socket.on("ready", (remoteId) => {
+        console.log("opened", remoteId);
+        ar.startOutputAudioStream(remoteId)
     });
 
     socket.on("receiveAudioPacket", (data) => {
