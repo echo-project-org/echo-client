@@ -13,7 +13,7 @@ function ActiveRoom({ users, onClick, data }) {
   
   return (
     <div className='room' onClick={handleClick}>
-        <p className='roomName'>{data.name}</p>
+        <p className='roomName noselect'>{data.name}</p>
         <div className="roomUsers">
             {
               users.map(user => (
