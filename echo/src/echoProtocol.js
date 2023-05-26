@@ -44,9 +44,6 @@ export function openConnection(id) {
             ping = duration;
         });
     }, 5000);
-    
-    // join the transmission on current room
-    socket.emit("join", { id, roomId: 0 });
 
     socket.on("ready", (remoteId) => {
         console.log("opened", remoteId);
@@ -70,6 +67,13 @@ export function openConnection(id) {
     });
 
     // socket.io.on("ping", () => { console.log("pong") });
+}
+
+export function joinRoom(id, roomId) {
+    // join the transmission on current room
+    socket.emit("join", { id, roomId, cb: () => {
+        console.log("response from join, i'm in channel")
+    }});
 }
 
 export function getPing() {
