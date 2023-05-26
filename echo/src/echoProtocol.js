@@ -44,10 +44,7 @@ export async function openConnection(id) {
     });
 
     socket.on("receiveAudioPacket", (data) => {
-        var lc = new Float32Array(data.left);
-        var rc = new Float32Array(data.right);
-
-        ar.addToBuffer(data.id, lc, rc);
+        ar.addToBuffer(data.id, new Float32Array(data.left), new Float32Array(data.right));
     });
 
     socket.io.on("close", () => {
@@ -63,6 +60,10 @@ export async function openConnection(id) {
     });
 
     socket.io.on("ping", () => { console.log("pong") });
+}
+
+export async function deafUser(id, value) {
+    if (socket) socket.emit("deaf", { value, id });
 }
 
 export async function closeConnection(id) {

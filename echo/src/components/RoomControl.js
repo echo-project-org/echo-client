@@ -22,7 +22,7 @@ import undeafSound from "../audio/undeaf.mp3";
 const api = require('../api')
 const at = require('../audioTransmitter')
 const ar = require('../audioReceiver')
-// const ep = require('../echoProtocol')
+const ep = require('../echoProtocol')
 
 const theme = createTheme({
     palette: {
@@ -34,6 +34,7 @@ const theme = createTheme({
 function RoomControl({ screenSharing }) {
     const [muted, setMuted] = useState(false);
     const [deaf, setDeaf] = useState(false);
+    const [wasMuted, setWasMuted] = useState(false);
 
     let navigate = useNavigate();
 
@@ -42,6 +43,10 @@ function RoomControl({ screenSharing }) {
         // console.log(muted)
         at.toggleMute(muted);
     }, [muted]);
+
+    useEffect(() => {
+        ep.deafUser(localStorage.getItem("userId"), deaf);
+    }, [deaf])
 
     const muteAudio = new Audio(muteSound);
     muteAudio.volume = 0.6;
@@ -88,8 +93,10 @@ function RoomControl({ screenSharing }) {
     const muteMic = () => {
         if (muted) undeafOnMute();
         setMuted(!muted);
+        if (!deaf) setWasMuted(true);
+        if (wasMuted) setWasMuted(false);
         if (muted && deaf) computeAudio(false)
-        if (muted && !deaf) computeAudio(true)
+        if (muted && !deaf) { computeAudio(true); }
         if (!muted && !deaf) computeAudio(true)
     }
 
@@ -97,6 +104,7 @@ function RoomControl({ screenSharing }) {
         if (!muted) muteOnDeaf()
         else if (muted && !deaf) muteAndDeaf()
         else unmuteOnDeaf();
+        if (wasMuted && deaf) { setMuted(true); }
         setDeaf(!deaf);
     }
 

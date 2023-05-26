@@ -10,7 +10,7 @@ class User {
     }
 
     deaf(id) {
-        
+        console.log("deaf request from", id)
     }
 
     end(id) {
