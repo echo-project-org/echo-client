@@ -33,7 +33,7 @@ var socket;
 
 export async function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io("ws://kury.ddns.net:6982", { query: { id } });
+    socket = io("ws://localhost:6982", { query: { id } });
     
     // join the transmission on current room
     socket.emit("join", { id, roomId: 0 });

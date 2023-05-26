@@ -3,34 +3,22 @@ class User {
         this.id = id;
         this.socket = socket;
         this.socketId = socket.id;
-        console.log("new user, socketid", this.socketId);
+        this.lastRoom = 0;
+        this.isDeaf = false;
 
-        this.remoteUsers = new Map();
-
-        this.socket.on("join", (data) => { this.join(data) });
-        this.socket.on("end", (id) => { this.end(id) });
-        this.socket.on("mute", (id) => { this.mute(id); })
+        this.socket.on("deaf", (id) => { this.deaf(id); })
     }
 
-    mute(id) {
+    deaf(id) {
         
     }
 
     end(id) {
-        console.log("requesting end ws with", id, this.socketId);
         this.socket.disconnect();
     }
 
     join(data) {
-        console.log("new user", data);
-
         this.registerAudioListener();
-    }
-
-    addRemoteUser(remoteUser) {
-        console.log("adding remote user", remoteUser.id, "to", this.id);
-        this.remoteUsers.set(remoteUser.id, remoteUser);
-        this.socket.emit("ready", remoteUser.id);
     }
 
     registerAudioListener(cb) {
@@ -45,6 +33,12 @@ class User {
                 this.socket.emit("receiveAudioPacket", packet);
             });
         });
+    }
+
+    setLastRoom(roomId) {
+        if (typeof roomId !== "number") roomId = Number(roomId);
+        if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setLastRoom")
+        this.lastRoom = roomId;
     }
 }
 
