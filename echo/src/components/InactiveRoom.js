@@ -8,7 +8,7 @@ const StyledAvatarGroup = styled(AvatarGroup)({
     },
 });
 
-function SecondRoom({ SecondRoomName, users }) {
+function InactiveRoom({ users }) {
     return (
         <div className='secondRoom'>
             <p className='roomName'>Hello</p>
@@ -23,4 +23,4 @@ function SecondRoom({ SecondRoomName, users }) {
     )
 }
 
-export default SecondRoom
+export default InactiveRoom

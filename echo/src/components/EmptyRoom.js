@@ -1,6 +1,6 @@
 import React from 'react'
 
-function ThirdRoom({ SecondRoomName, users }) {
+function EmptyRoom({ SecondRoomName, users }) {
     return (
         <div className='secondRoom'>
             <p className='SecondRoomName'>Kok</p>
@@ -8,4 +8,4 @@ function ThirdRoom({ SecondRoomName, users }) {
     )
 }
 
-export default ThirdRoom
+export default EmptyRoom
