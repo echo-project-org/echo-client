@@ -310,14 +310,6 @@ body {
   background-color: var(--color1);
 }
 
-.title {
-  vertical-align: middle;
-  margin: 0 0 0 1rem;
-  font-family: 'Rubik Iso';
-  font-size: 4rem;
-  color: Orange;
-}
-
 .topBar {
   width: 100%;
   min-height: 1.7rem;
