@@ -1,7 +1,7 @@
 import '../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import OnlineUsers from './OnlineUsers';
+import Utilities from './Utilities';
 import Sidebar from './Sidebar';
 import RoomContent from './RoomContent';
 
@@ -40,7 +40,7 @@ const MainPage = () => {
             animate={{opacity: 1}}
             exit={{opacity: 0}}
         >
-            <OnlineUsers users={users}/>
+            <Utilities />
             <div className='sideWithChat'>
                 <Sidebar users={users}/>
                 <RoomContent />

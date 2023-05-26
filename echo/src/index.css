@@ -316,6 +316,8 @@ body {
   background-color: var(--main-bg-color);
   display: flex;
   flex-direction: row-reverse;
+  -webkit-app-region: none;
+  z-index: 1;
 }
 
 .noDrag {
@@ -342,6 +344,7 @@ body {
 
 .windowControl {
   -webkit-app-region: none;
+  z-index: 999;
 }
 
 .backButton {
