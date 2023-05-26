@@ -14,7 +14,7 @@ function Rooms({ }) {
       name: "none",
       description: "none",
       img: "none",
-      maxUsers: 0 
+      users: []
     }
   ])
 
@@ -24,21 +24,8 @@ function Rooms({ }) {
   }
 
   useEffect(() => {
-    console.log("sto cambiando")
-  }, [remoteRooms]);
-
-  useEffect(() => {
-    // const getResult = async () => {
-    //   const result = await api.getRooms();
-    //   console.log(result);
-    //   setRemoteRooms(result);
-    // }
-
-    // getResult();
-
     api.getRooms()
       .then((result) => {
-        console.log(result);
         setRemoteRooms(result);
       });
   }, []);
