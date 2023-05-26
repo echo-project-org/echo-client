@@ -1,4 +1,5 @@
 const User = require("./users");
+const Chat = require("./chat");
 
 const Colors = require("./colors");
 const colors = new Colors();
@@ -8,15 +9,16 @@ class Rooms {
         this.emitter = io;
         this.rooms = new Map();
         this.connectedClients = new Map();
-        this.socket;
+        this.socket = null;
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
 
         this.enstablishConnection()
             .then((socket) => {
-                this.socket = socket;
-                this.registerRoomEvents();
+                // socket.reconnects = false;
+                this.registerRoomEvents(socket);
             })
+            .catch(console.error);
     }
 
     enstablishConnection() {
@@ -35,19 +37,23 @@ class Rooms {
         });
     }
 
-    registerRoomEvents() {
-        this.joinRoom.bind(this);
+    registerRoomEvents(socket) {
+        this.socket = socket;
         this.socket.on("join", (data) => this.joinRoom(data));
         this.socket.on("end", (id) => this.end(id));
     }
 
-    joinRoom({ userId, roomId }) {
-        if (!this.rooms.has(roomId)) this.addRoom(roomId);
-        if (this.connectedClients.has(userId)) this.addUserToRoom(userId, roomId);
-        else console.log(colors.changeColor("red", "Can't add user " + userId + " to room " + roomId + ", user is not connected to socket"));
+    joinRoom(data) {
+        console.log("got join message", data)
+        data.userId = data.id;
+        if (!this.rooms.has(data.roomId)) this.addRoom(data.roomId);
+        if (this.connectedClients.has(data.userId)) this.addUserToRoom(data.userId, data.roomId);
+        else console.log(colors.changeColor("red", "Can't add user " + data.userId + " to room " + data.roomId + ", user is not connected to socket"));
     }
 
-    end(id) {
+    end(userId) {
+        console.log("ending", userId)
+        this.removeUserFromRooms(userId);
         // if ()
     }
 
@@ -57,8 +63,23 @@ class Rooms {
             private: false,
             users: new Map(),
             password: null,
-            display: "New room"
+            display: "New room",
+            chat: new Chat(id)
         })
+    }
+
+    removeUserFromRooms(userId) {
+        if (this.connectedClients.has(userId)) {
+            this.rooms.forEach((room, id, arr) => {
+                if (room.users.has(userId)) {
+                    console.log("removing userId", userId, "from room", id);
+                    room.users.delete(userId);
+                    // breaks the foreach to save resources??? maybe idk...
+                    arr.length = id + 1;
+                }
+            });
+            this.connectedClients.delete(userId);
+        }
     }
 
     addUserToRoom(userId, roomId) {
