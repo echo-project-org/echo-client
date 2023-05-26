@@ -40,7 +40,6 @@ const MainPage = () => {
             animate={{opacity: 1}}
             exit={{opacity: 0}}
         >
-            <Utilities />
             <div className='sideWithChat'>
                 <Sidebar users={users}/>
                 <RoomContent />
