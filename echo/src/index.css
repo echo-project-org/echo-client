@@ -41,6 +41,8 @@
   --color2: #ce8ca5;
   --color3: #f5e8da;
   --color4: #E4DAF5;
+  --chat-background-color: #3e2542;
+  --context-menu-background: #4d3352;
   --main-text-color: #fff;
 }
 
@@ -81,12 +83,6 @@ body {
   display: flex;
   flex-direction: row;
   flex: 0 0 auto;
-}
-
-.roomUsers {
-  display: flex;
-  flex-direction: column;
-  margin-left: 0.5rem;
 }
 
 .onlineUserIcon {
@@ -390,7 +386,7 @@ body {
   display: flex;
   flex-direction: column-reverse;
   flex: 1 1 auto;
-  background-color: #3e2542;
+  background-color: var(--chat-background-color);
   border-bottom-left-radius: 1rem;
   margin-left: 0.6rem;
 }
@@ -412,7 +408,9 @@ body {
 }
 
 .userMenuModal {
-  background-color: var(--color3);
+  color: white;
+  min-width: 12rem;
+  background-color: var(--context-menu-background);
 }
 
 .roomsContainer {
@@ -422,15 +420,18 @@ body {
 }
 
 .secondRoom {
-  background-color: #3e2542;
+  background-color: var(--chat-background-color);
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
   margin-bottom: 0.5rem;
+  transition: all .1s ease-in-out;
+  cursor: pointer;
 }
 
 .secondRoom:hover {
-  border-inline-end: 2px solid var(--color3);
-  box-shadow: 0 0 .3rem 0 rgba(255, 255, 255, 0.705);
+  /* border-inline-end: 2px solid var(--color3); */
+  box-shadow: .2rem 0 .3rem .5px var(--color3);
+  transition: all .1s ease-in-out;
 }
 
 .SecondRoomName {
@@ -445,7 +446,7 @@ body {
 }
 
 .room {
-  background-color: #3e2542;
+  background-color: var(--chat-background-color);
   border-right: 2px solid var(--color3);
   border-bottom: 2px solid var(--color3);
   border-bottom-right-radius: 1rem;
@@ -453,9 +454,15 @@ body {
 }
 
 .roomName {
-  margin-top: 0.2rem;
+  margin-top: 0.5rem;
   font-family: Roboto Condensed;
   color: var(--color3)
+}
+
+.roomUsers {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0.5rem;
 }
 
 .rightMessage {

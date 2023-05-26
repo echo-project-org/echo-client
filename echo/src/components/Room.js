@@ -1,6 +1,6 @@
 import React from 'react'
 import OnlineUserIcon from './OnlineUserIcon'
-
+import { Divider } from '@mui/material'
 
 function Room({roomName, users}) {
   return (
