@@ -12,6 +12,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useNavigate } from 'react-router-dom';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import muteSound from "../audio/mute.mp3";
 import unmuteSound from "../audio/unmute.mp3";
@@ -104,10 +105,11 @@ function RoomControl({ screenSharing }) {
                     <Button disableRipple onClick={deafHeadphones}>
                         {!deaf ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
                     </Button>
-                </ButtonGroup>
-                <ButtonGroup variant='text'>
                     <Button>
                         {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+                    </Button>
+                    <Button>
+                        <SettingsIcon />
                     </Button>
                     <Button onClick={exitRoom}>
                         <LogoutIcon />

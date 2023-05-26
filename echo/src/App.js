@@ -12,12 +12,16 @@ function App() {
   
   return (
     <div className="App">
-      <div className="topBar noDrag">
-        <WindowControls/>
+      <div className="appWrapper">
+        <div className="topBar">
+          <WindowControls/>
+        </div>
+        <div className="animatedRoutes">
+          <HashRouter>
+            <AnimatedRoutes/>
+          </HashRouter>
+        </div>
       </div>
-      <HashRouter>
-        <AnimatedRoutes/>
-      </HashRouter>
       
       <script src="/socket.io/socket.io.js"></script>
     </div>

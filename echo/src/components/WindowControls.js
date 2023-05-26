@@ -40,7 +40,7 @@ function WindowControls({ muted, audioMuted }) {
     }
 
     return (
-        <>
+        <div className='noDrag'>
             <ThemeProvider theme={theme}>
                 <ButtonGroup variant='text' size="small" className='windowControls'>
                     <Button onClick={minimize}>
@@ -54,7 +54,7 @@ function WindowControls({ muted, audioMuted }) {
                     </Button>
                 </ButtonGroup>
             </ThemeProvider>
-        </>
+        </div>
 
 
     )

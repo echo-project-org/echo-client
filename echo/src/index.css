@@ -60,6 +60,20 @@ body {
   height: 100%;
 }
 
+.App{
+  height: 100%;
+}
+
+.appWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.animatedRoutes {
+  flex: 1 1 auto;
+}
+
 .utilitiesBar {
   height: 3rem;
   background-color: var(--main-bg-color);
@@ -67,7 +81,6 @@ body {
   display: flex;
   flex-direction: row;
   flex: 0 0 auto;
-  -webkit-app-region: drag;
 }
 
 .roomUsers {
@@ -112,8 +125,8 @@ body {
 }
 
 .mainScreen {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -309,13 +322,13 @@ body {
 }
 
 .topBar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: fit-content;marker-end: c;
+  width: 100%;
+  min-height: 1.7rem;
   background-color: var(--main-bg-color);
   display: flex;
   flex-direction: row-reverse;
+  flex: 0 0 auto;
+  -webkit-app-region: drag;
 }
 
 .noDrag {
@@ -340,7 +353,7 @@ body {
   cursor: pointer;
 }
 
-.windowControl {
+.windowControls {
   -webkit-app-region: none;
 }
 
