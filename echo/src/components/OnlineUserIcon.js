@@ -148,6 +148,7 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
                 <Stack spacing={2} direction="row" alignItems="center">
                   <VolumeUp fontSize="10px" />
                   <Slider
+                    sx={{width: 110}}
                     valueLabelDisplay="auto"
                     valueLabelFormat={(v) => { return v + "%" }}
                     aria-label="Volume"
