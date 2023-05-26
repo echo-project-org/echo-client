@@ -1,14 +1,14 @@
 import React from 'react'
 import Room from './Room'
-import SecondRoom from './SecondRoom'
-import ThirdRoom from './ThirdRoom'
+import EmptyRoom from './EmptyRoom'
+import InactiveRoom from './InactiveRoom'
 
 function Rooms({users}) {
   return (
     <div className='roomsContainer'>
         <Room users={users}/>
-        <SecondRoom users={users}/>
-        <ThirdRoom users={users}/>
+        <InactiveRoom users={users}/>
+        <EmptyRoom users={users}/>
     </div>
   )
 }

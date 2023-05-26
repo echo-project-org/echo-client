@@ -447,10 +447,10 @@ body {
 
 .room {
   background-color: var(--chat-background-color);
-  border-right: 2px solid var(--color3);
-  border-bottom: 2px solid var(--color3);
   border-bottom-right-radius: 1rem;
   margin-bottom: 0.5rem;
+  box-shadow: .2rem .2rem .3rem .5px var(--color3);
+  transition: all .1s ease-in-out;
 }
 
 .roomName {
