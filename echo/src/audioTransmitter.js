@@ -9,8 +9,9 @@ var id = localStorage.getItem('userId');
 
 var muted = false;
 
-export function toggleMute() {
-    muted = !muted;
+export function toggleMute(bool) {
+    // console.log("setting mute to", bool)
+    muted = bool;
 }
 
 export async function startInputAudioStream() {
