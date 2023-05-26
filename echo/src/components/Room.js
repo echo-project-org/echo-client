@@ -1,6 +1,6 @@
 import React from 'react'
-import Avatar from '@mui/material/Avatar';
 import OnlineUserIcon from './OnlineUserIcon'
+
 
 function Room({roomName, users}) {
   return (
