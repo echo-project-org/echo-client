@@ -1,4 +1,5 @@
 var mysql = require('mysql'); 
+const { resolve } = require('path');
 const app = require('express')();
 const {HOST, USER, PSW, DB} = require('./constants')
 const PORT = 6980;
@@ -81,7 +82,7 @@ app.get('/getOnlineUsers', (req, res) => {
                 jsonOut.push({ 
                         "nick" : plate.nick,
                         "img" : plate.img,
-                        "stanza" : plate.stanza,
+                        "room" : plate.stanza,
                         "lastIP" : plate.lastIP,
                 });
             })
@@ -90,6 +91,63 @@ app.get('/getOnlineUsers', (req, res) => {
             res.status(200).send(jsonOut);
         }
     });
+});
+
+function fetchOnlineUsersInRoom(roomId) {
+    return new Promise((resolve, reject) => {
+        var jsonOut = [];
+        con.query("SELECT id, nick, img, stanza, lastIP FROM users WHERE online = 'T' AND NOT id=1 AND stanza = " + roomId, function (err, result, fields) {
+            if (err) {
+                return reject(err);
+            }
+            if (result.length > 0) {
+                result.map(function (plate) {
+                    jsonOut.push({
+                        "id": plate.id,
+                        "nick": plate.nick,
+                        "img": plate.img,
+                    });
+                })
+            }
+            resolve(jsonOut)
+        })
+    })
+}
+
+function fetchRoomsWithUsers() {
+    return new Promise ((resolve, reject) => {
+        con.query("SELECT r.id, r.name, r.description, r.img, r.maxUsers FROM rooms as r WHERE NOT id=0 ORDER BY 'order'", async function (err, result, fields) {
+            if (err) {
+                return reject(err)
+            }
+    
+            var jsonOut = [];
+            if(result.length > 0){
+                for(var plate of result){
+                    const users = await fetchOnlineUsersInRoom(plate.id)
+                    jsonOut.push({ 
+                            "id" : plate.id,
+                            "name" : plate.name,
+                            "description" : plate.description,
+                            "img" : plate.img,
+                            "maxUser" : plate.maxUser,
+                            "users": users,
+                    });
+                }
+            }
+            resolve(jsonOut)
+        });
+    })
+}
+
+app.get('/getRooms', (req, res) => {
+    print("Room requested");
+    res.header("Access-Control-Allow-Origin", "*");
+    fetchRoomsWithUsers().then((result) => {
+        res.status(200).send(result);
+    }).catch((err) => {
+        res.status(500).send(err);
+    });    
 });
 
 app.get('/setOnline/:nick/:status', (req, res) => {
