@@ -3,7 +3,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
-import VolumeDown from '@mui/icons-material/VolumeDown';
+// import VolumeDown from '@mui/icons-material/VolumeDown';
 import VolumeUp from '@mui/icons-material/VolumeUp';
 import MessageIcon from '@mui/icons-material/Message';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
@@ -134,7 +134,7 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
           >
             <div style={{
               width: "100%",
-              textAlign: "center",
+              // textAlign: "center",
               textAlign: "-webkit-center",
               marginBottom: ".3rem",
             }}>

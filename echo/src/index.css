@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap');
 
+* {
+  font-family: Roboto Condensed;
+}
+
 @keyframes wave {
   0% {
     transform: scale(0);
@@ -93,7 +97,6 @@ body {
 
 .onlineUserNick {
   margin: 0 0 0 0.5rem;
-  font-family: Roboto Condensed;
   color: var(--color3)
 }
 
@@ -166,7 +169,6 @@ body {
   margin-top: -10rem;
   margin-left: -10rem;
   padding: 1rem;
-  font-family: Roboto Condensed;
   color: var(--main-bg-color);
 }
 
@@ -191,7 +193,6 @@ body {
   color: var(--main-bg-color);
   cursor: pointer;
   display: flex;
-  font-family: Roboto Condensed;
   font-size: 16px;
   height: 80px;
   justify-content: center;
@@ -435,7 +436,6 @@ body {
 }
 
 .SecondRoomName {
-  font-family: Roboto Condensed;
   color: var(--color3)
 }
 
@@ -455,7 +455,6 @@ body {
 
 .roomName {
   margin-top: 0.5rem;
-  font-family: Roboto Condensed;
   color: var(--color3)
 }
 
@@ -484,7 +483,6 @@ body {
   text-align: left;
   vertical-align: middle;
   display: inline-block;
-  font-family: Roboto Condensed;
 }
 
 .leftMessage {
@@ -506,7 +504,6 @@ body {
   text-align: left;
   vertical-align: middle;
   display: inline-block;
-  font-family: Roboto Condensed;
 }
 
 .roomControl {
@@ -515,7 +512,30 @@ body {
   align-items: center;
 }
 
-.roomControl div {
-  margin-left: 10px;
-  margin-right: 10px;
+.buttonGroup {
+  position: relative;
+}
+
+.voiceConnected {
+  font-size: 1rem;
+  user-select: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  height: auto;
+  width: 80%;
+  color: white;
+  border: 1px solid rgb(235, 144, 235);
+  background: rgb(110,64,110);
+  background: linear-gradient(30deg, rgb(107, 65, 107) 0%, rgb(134, 76, 134) 50%, rgb(155, 95, 155) 100%);
+  box-shadow: 0 0 .3rem .1rem rgba(78, 46, 78, .8);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.voiceConnected p {
+  line-height: normal;
+  display: inline;
+  vertical-align: middle;
 }

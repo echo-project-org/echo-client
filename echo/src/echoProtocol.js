@@ -3,6 +3,7 @@ const ar = require('./audioReceiver');
 
 const io = require("socket.io-client");
 var socket;
+var ping = 0;
 
 // socket.onmessage = function (event) {
 //     parseMessage(event.data)
@@ -31,9 +32,18 @@ var socket;
 
 // // errors
 
-export async function openConnection(id) {
+export function openConnection(id) {
     console.log("opening connection with socket")
     socket = io("ws://localhost:6982", { query: { id } });
+
+    setInterval(() => {
+        const start = Date.now();
+      
+        socket.emit("ping", () => {
+            const duration = Date.now() - start;
+            ping = duration;
+        });
+    }, 5000);
     
     // join the transmission on current room
     socket.emit("join", { id, roomId: 0 });
@@ -59,27 +69,31 @@ export async function openConnection(id) {
         socket.close();
     });
 
-    socket.io.on("ping", () => { console.log("pong") });
+    // socket.io.on("ping", () => { console.log("pong") });
 }
 
-export async function deafUser(id, value) {
+export function getPing() {
+    return ping;
+}
+
+export function deafUser(id, value) {
     if (socket) socket.emit("deaf", { value, id });
 }
 
-export async function closeConnection(id) {
+export function closeConnection(id) {
     console.log("closing connection with socket")
     if (socket) socket.emit("end", id);
     // if we let client handle disconnection, then recursive happens cause of the event "close"
     // socket.close();
 }
 
-export async function sendMessage(msg) {
+export function sendMessage(msg) {
     if (socket) {
         // socket.send("ECHO MSG" + msg);
     }
 }
 
-export async function sendAudioPacket(id, left, right) {
+export function sendAudioPacket(id, left, right) {
     if (socket) {
         // console.log("sending pachet", id)
         socket.emit("audioPacket", {

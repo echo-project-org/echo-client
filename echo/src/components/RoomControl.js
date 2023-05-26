@@ -1,18 +1,22 @@
-import '../index.css'
-import { useState, useEffect } from 'react'
-import Button from '@mui/material/Button'
-import { ButtonGroup } from '@mui/material'
+import '../index.css';
+import { useState, useEffect } from 'react';
+import Button from '@mui/material/Button';
+import Zoom from '@mui/material/Zoom';
+import Tooltip from "@mui/material/Tooltip";
+import { ButtonGroup } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
+
 import KeyboardVoiceRoundedIcon from '@mui/icons-material/KeyboardVoiceRounded';
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 import HeadsetMicRoundedIcon from '@mui/icons-material/HeadsetMicRounded';
-import { createTheme } from '@mui/material/styles';
-import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
-import { ThemeProvider } from '@emotion/react';
-import LogoutIcon from '@mui/icons-material/Logout';
-import ScreenShareIcon from '@mui/icons-material/ScreenShare';
-import { useNavigate } from 'react-router-dom';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ScreenShareIcon from '@mui/icons-material/ScreenShare';
+import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 
 import muteSound from "../audio/mute.mp3";
 import unmuteSound from "../audio/unmute.mp3";
@@ -35,18 +39,13 @@ function RoomControl({ screenSharing }) {
     const [muted, setMuted] = useState(false);
     const [deaf, setDeaf] = useState(false);
     const [wasMuted, setWasMuted] = useState(false);
+    const [connectionState, setConnState] = useState("Not connected");
+    const [ping, setPing] = useState(0);
 
     let navigate = useNavigate();
 
-    useEffect(() => {
-        // console.log("muted is changing")
-        // console.log(muted)
-        at.toggleMute(muted);
-    }, [muted]);
-
-    useEffect(() => {
-        ep.deafUser(localStorage.getItem("userId"), deaf);
-    }, [deaf])
+    useEffect(() => { at.toggleMute(muted) }, [muted]);
+    useEffect(() => { ep.deafUser(localStorage.getItem("userId"), deaf) }, [deaf]);
 
     const muteAudio = new Audio(muteSound);
     muteAudio.volume = 0.6;
@@ -57,6 +56,19 @@ function RoomControl({ screenSharing }) {
     const undeafAudio = new Audio(undeafSound);
     undeafAudio.volume = 0.6;
 
+    var interval = null;
+    const updatePing = () => {
+        interval = setInterval(() => {
+            setPing(ep.getPing());
+        }, 1000);
+    }
+
+    const stopUpdatePing = () => {
+        clearInterval(interval);
+        interval = null;
+        console.log("removed interval")
+    }
+
     const exitRoom = () => {
         //Notify api
         var nickname = localStorage.getItem("userNick");
@@ -66,6 +78,7 @@ function RoomControl({ screenSharing }) {
                 ar.stopOutputAudioStream();
                 at.stopAudioStream();
                 if (!res.ok) console.error("Could not set user as offline");
+                setConnState("Not connected")
                 navigate("/");
             });
     }
@@ -111,7 +124,10 @@ function RoomControl({ screenSharing }) {
     return (
         <div className='roomControl'>
             <ThemeProvider theme={theme}>
-                <ButtonGroup variant='text'>
+                <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom}>
+                    <div className="voiceConnected"><p>{connectionState}</p> <p><SignalCellularAltIcon /></p></div>
+                </Tooltip>
+                <ButtonGroup variant='text' className='buttonGroup'>
                     <Button disableRipple onClick={muteMic}>
                         {!muted ? <KeyboardVoiceRoundedIcon /> : <MicOffRoundedIcon />}
                     </Button>

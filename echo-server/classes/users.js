@@ -6,7 +6,10 @@ class User {
         this.lastRoom = 0;
         this.isDeaf = false;
 
-        this.socket.on("deaf", (id) => { this.deaf(id); })
+        this.socket.on("deaf", (id) => { this.deaf(id); });
+        this.socket.on("ping", (callback) => {
+            callback();
+        });
     }
 
     deaf(id) {
