@@ -421,11 +421,34 @@ body {
   flex-direction: column;
 }
 
+.secondRoom {
+  background-color: #3e2542;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.secondRoom:hover {
+  border: 1px solid var(--color3);
+}
+
+.SecondRoomName {
+  font-family: Roboto Condensed;
+  color: var(--color3)
+}
+
+.SecondRoomUsers {
+  display: flex;
+  flex-direction: row;
+  margin: 0 .5rem .5rem 0;
+}
+
 .room {
   background-color: #3e2542;
   border-right: 1px solid var(--color3);
   border-bottom: 1px solid var(--color3);
   border-bottom-right-radius: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .roomName {
