@@ -55,46 +55,51 @@ const Register = () => {
             //If user has not filled the entire form
             showError("All fields must be populated!")
         } else {
-            if(psw === psw2){
+            if (psw === psw2) {
                 //if passwords match send them to the api
                 //fist check if hash exists
                 var hashed = await hash(usrName + "@" + psw);
                 //TODO replace this so it verifies that the nickname is available fist
                 //(nick must be unique in db)
-                const res = await api.call('authenticateUser/' + hashed);
-                const data = await res.json();
-                if(!res.ok){
-                    //if api returns 200 OK
-                    if(data.id == null){
-                        //Can create account
-                        hideError();
-                        const request = 'addUser/' + usrName + "/" + usrImg + "/" + hashed;
-                        console.log(request);
-                        const res = await api.call(request);
-                        if(res.ok){
-                            const res = await api.call('authenticateUser/' + hashed);
-                            const data = await res.json();
-                            if(res.ok){
+                api.call('authenticateUser/' + hashed)
+                    .then(async (res) => {
+                        const data = await res.json();
+                        if (!res.ok) {
+                            //if api returns 200 OK
+                            if (data.id == null) {
+                                //Can create account
                                 hideError();
-                                localStorage.setItem("userId", data.id);
-                                localStorage.setItem("userNick", data.nick);
-                                navigate("/");
+                                const request = 'addUser/' + usrName + "/" + usrImg + "/" + hashed;
+                                // console.log(request);
+                                api.call(request)
+                                    .then((res) => {
+                                        if (res.ok) {
+                                            api.call('authenticateUser/' + hashed)
+                                                .then(async (res) => {
+                                                    const data = await res.json();
+                                                    if (res.ok) {
+                                                        hideError();
+                                                        localStorage.setItem("userId", data.id);
+                                                        localStorage.setItem("userNick", data.nick);
+                                                        navigate("/");
+                                                    } else {
+                                                        showError("Something went wrong!");
+                                                    }
+                                                });
+                                        } else {
+                                            //Api errored out!
+                                            showError("Unable to create account! Api error.");
+                                        }
+                                    });
                             } else {
-                                showError("Something went wrong!");
+                                //hash already present in db
+                                showError("User already exists!")
                             }
                         } else {
-                            //Api errored out!
-                            showError("Unable to create account! Api error.");
+                            //If api errors out
+                            showError("Api errored out!");
                         }
-                    } else {
-                        //hash already present in db
-                        showError("User already exists!")
-                    }
-                } else {
-                    //If api errors out
-                    showError("Api errored out!");
-                }
-    
+                    });
             } else {
                 // passwords don't match
                 showError("Passwords do not match!");

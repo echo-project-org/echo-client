@@ -54,16 +54,18 @@ const Login = () => {
         } else {
             var hashed = await hash(usrName + "@" + psw);
             
-            const res = await api.call('authenticateUser/' + hashed);
-            const data = await res.json();
-            if(res.ok){
-                hideError();
-                localStorage.setItem("userId", data.id);
-                localStorage.setItem("userNick", data.nick);
-                navigate("/");
-            } else {
-                showError("Username or password do not match!");
-            }
+            api.call('authenticateUser/' + hashed)
+                .then(async (res) => {
+                    const data = await res.json();
+                    if(res.ok){
+                        hideError();
+                        localStorage.setItem("userId", data.id);
+                        localStorage.setItem("userNick", data.nick);
+                        navigate("/");
+                    } else {
+                        showError("Username or password do not match!");
+                    }
+                });
         }
     }
 

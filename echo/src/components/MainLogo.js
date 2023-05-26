@@ -29,32 +29,31 @@ const MainLogo = () => {
     }
 
     useEffect(() => {
-        const fetchServerSettings = async () => {
-            //Getting server audio settings, this also is used to check if the API are responding
-            const res = await api.call('getAudioServerAddress');
-            const data = await res.json();
+        //Getting server audio settings, this also is used to check if the API are responding
+        api.call('getAudioServerAddress')
+            .then(async (res) => {
+                const data = await res.json();
+    
+                //TODO check if api errors out
+    
+                //Saving the audio settings
+                setServerAddress(data.address);
+                setServerPort(data.port);
+                //Hide loading animation
+                setLoadingVisibility(false);
+                
+                if(userNickCookie != null) {
+                    //If cookies are found then prompt user to access the app
+                    setAccessBtnVisibility(true);
+                    setLoginBtnVisibility(false);
+                    setUserNickname(userNickCookie);
+                } else {
+                    //If no cookies are found then ask for login / registration
+                    setAccessBtnVisibility(false);
+                    setLoginBtnVisibility(true);
+                }
+            });
 
-            //TODO check if api errors out
-
-            //Saving the audio settings
-            setServerAddress(data.address);
-            setServerPort(data.port);
-            //Hide loading animation
-            setLoadingVisibility(false);
-            
-            if(userNickCookie != null) {
-                //If cookies are found then prompt user to access the app
-                setAccessBtnVisibility(true);
-                setLoginBtnVisibility(false);
-                setUserNickname(userNickCookie);
-            } else {
-                //If no cookies are found then ask for login / registration
-                setAccessBtnVisibility(false);
-                setLoginBtnVisibility(true);
-            }
-        }
-
-        fetchServerSettings();
     }, [])
 
     return (

@@ -14,7 +14,7 @@ const MainPage = () => {
         [
             {
                 "nick": "Undefined",
-                "img": "https://kurickigabriele2020.altervista.org/Kury.jpg",
+                "img": "none",
                 "stanza": 1,
                 "lastIP": "0.0.0.0"
             }
@@ -22,9 +22,11 @@ const MainPage = () => {
     );
     
     const fetchOnlineUsers = async () => {
-        const res = await api.call('getOnlineUsers');
-        const data = await res.json();
-        setUsers(data);
+        api.call('getOnlineUsers')
+            .then(async (res) => {
+                const data = await res.json();
+                setUsers(data);
+            });
     }
     
 

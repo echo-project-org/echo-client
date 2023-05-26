@@ -1,4 +1,20 @@
 export async function call(endpoint) {
-    const res = await fetch('https://timspik.ddns.net/' + endpoint);
-    return res;
+    return new Promise((resolve, reject) => {
+        fetch('https://timspik.ddns.net/' + endpoint)
+            .then((response) => {
+                resolve(response);
+            })
+            .catch(reject);
+    });
+}
+
+export async function getRooms() {
+    return new Promise((resolve, reject) => {
+        fetch("https://timspik.ddns.net/getRooms")
+            .then(async (response) => {
+                const data = await response.json();
+                resolve(data);
+            })
+            .catch(reject);
+    })
 }

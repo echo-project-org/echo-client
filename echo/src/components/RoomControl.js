@@ -95,7 +95,7 @@ function RoomControl({ screenSharing }) {
   const exitRoom = () => {
     //Notify api
     var nickname = localStorage.getItem("userNick");
-    api.call('setOnline/' + nickname + '/F')
+    api.call('setOnline/' + nickname + '/F/0')
       .then(res => {
         // at.startInputAudioStream();
         ar.stopOutputAudioStream();
@@ -147,7 +147,7 @@ function RoomControl({ screenSharing }) {
   return (
     <div className='roomControl'>
       <ThemeProvider theme={theme}>
-        <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor>
+        <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
           <div className="voiceConnected"><p>{connectionState}</p> <p><SignalCellularAltIcon /></p></div>
         </Tooltip>
         <ButtonGroup variant='text' className='buttonGroup'>
@@ -161,15 +161,21 @@ function RoomControl({ screenSharing }) {
               {!deaf ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
             </Button>
           </Tooltip>
-          <Button>
-            {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
-          </Button>
-          <Button>
-            <SettingsIcon />
-          </Button>
-          <Button onClick={exitRoom}>
-            <LogoutIcon />
-          </Button>
+          <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+            <Button>
+              {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+            </Button>
+          </Tooltip>
+          <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+            <Button>
+              <SettingsIcon />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+            <Button onClick={exitRoom}>
+              <LogoutIcon />
+            </Button>
+          </Tooltip>
         </ButtonGroup>
       </ThemeProvider>
     </div>

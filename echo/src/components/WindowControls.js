@@ -26,7 +26,7 @@ function WindowControls({ muted, audioMuted }) {
         at.stopAudioStream();
         ar.stopOutputAudioStream();
         var nickname = localStorage.getItem("userNick");
-        await api.call('setOnline/' + nickname + '/F');
+        api.call('setOnline/' + nickname + '/F/0');
         
         ipcRenderer.send("exitApplication", true);
     }

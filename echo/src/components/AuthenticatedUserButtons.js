@@ -25,13 +25,15 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
     }
 
     const enterRoom = async () => {
-        const res = await api.call('setOnline/' + nickname + '/T');
-        if (res.ok) {
-            ep.openConnection(localStorage.getItem('userId'));
-            navigate("/main");
-        } else {
-            console.error("Could not set user as online");
-        }
+        api.call('setOnline/' + nickname + '/T/1')
+            .then((res) => {
+                if (res.ok) {
+                    ep.openConnection(localStorage.getItem('userId'));
+                    navigate("/main");
+                } else {
+                    console.error("Could not set user as online");
+                }
+            });
     }
     if (!visibility) return null
     return (
