@@ -1,5 +1,5 @@
 import '../index.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Button from '@mui/material/Button'
 import { ButtonGroup } from '@mui/material'
 import KeyboardVoiceRoundedIcon from '@mui/icons-material/KeyboardVoiceRounded';
@@ -35,6 +35,12 @@ function RoomControl({ screenSharing }) {
     const [deaf, setDeaf] = useState(false);
 
     let navigate = useNavigate();
+
+    useEffect(() => {
+        // console.log("muted is changing")
+        // console.log(muted)
+        at.toggleMute(muted);
+    }, [muted]);
 
     const muteAudio = new Audio(muteSound);
     muteAudio.volume = 0.6;
@@ -80,7 +86,6 @@ function RoomControl({ screenSharing }) {
 
     const muteMic = () => {
         if (muted) undeafOnMute();
-        at.toggleMute();
         setMuted(!muted);
         if (muted && deaf) computeAudio(false)
         if (muted && !deaf) computeAudio(true)
