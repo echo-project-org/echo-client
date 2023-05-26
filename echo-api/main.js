@@ -150,7 +150,7 @@ app.get('/getRooms', (req, res) => {
     });    
 });
 
-app.get('/setOnline/:nick/:status', (req, res) => {
+app.get('/setOnline/:nick/:status/:room', (req, res) => {
     print("Set online requested");
     res.header("Access-Control-Allow-Origin", "*");
 
@@ -158,8 +158,9 @@ app.get('/setOnline/:nick/:status', (req, res) => {
 
     const {nick} = req.params;
     const {status} = req.params;
+    const {room} = req.params;
 
-    con.query("UPDATE users SET online = '"+ status +"', lastSeen = CURRENT_TIMESTAMP(), lastIP = '" + ip + "' WHERE nick = '" + nick + "'", function (err, result, fields) {
+    con.query("UPDATE users SET online = '"+ status +"', lastSeen = CURRENT_TIMESTAMP(), lastIP = '" + ip + "', stanza = '" + room + "' WHERE nick = '" + nick + "'", function (err, result, fields) {
         if (err) {
             res.status(400).send({
                 error: "You messed up the request."
