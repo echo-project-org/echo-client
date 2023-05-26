@@ -9,6 +9,27 @@ function Rooms({users}) {
         <Room users={users}/>
         <InactiveRoom users={users}/>
         <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
+        <EmptyRoom users={users}/>
     </div>
   )
 }

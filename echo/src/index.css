@@ -55,6 +55,17 @@ html {
   overflow: hidden;
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color3); 
+  border-radius: 50px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color2); 
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -407,9 +418,12 @@ body {
 }
 
 .roomsContainer {
+  height: 0;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .secondRoom {
@@ -419,6 +433,7 @@ body {
   margin-bottom: 0.5rem;
   transition: all .1s ease-in-out;
   cursor: pointer;
+  margin-right: .75rem;
 }
 
 .secondRoom:hover {
@@ -443,6 +458,7 @@ body {
   margin-bottom: 0.5rem;
   box-shadow: .2rem .2rem .3rem .5px var(--color3);
   transition: all .1s ease-in-out;
+  margin-right: .75rem;
 }
 
 .roomName {
