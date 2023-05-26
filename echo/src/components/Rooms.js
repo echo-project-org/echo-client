@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import EmptyRoom from './EmptyRoom';
 import Room from './Room';
-import InactiveRoom from './InactiveRoom';
+
 
 const ep = require("../echoProtocol");
 const api = require("../api");
@@ -35,7 +34,7 @@ function Rooms({ }) {
     <div className='roomsContainer'>
       {
         remoteRooms.map((room) => (
-          <Room key={room.id} users={room.users} onClick={onRoomClick} data={room}/>
+          <Room key={room.id} onClick={onRoomClick} data={room}/>
         ))
       }
     </div>

@@ -8,10 +8,10 @@ const StyledAvatarGroup = styled(AvatarGroup)({
     },
 });
 
-function InactiveRoom({ users }) {
+function InactiveRoom({ users, data}) {
     return (
         <div className='secondRoom'>
-            <p className='roomName'>Hello</p>
+            <p className='roomName'>{data.name}</p>
             <StyledAvatarGroup max={4} sx={{justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem'}}>
                 {
                     users.map((user) => (
