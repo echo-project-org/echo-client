@@ -559,3 +559,18 @@ body {
 .tooltipButton {
   background-color: red;
 }
+
+.modalDiv {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settingsModalSubDiv {
+  background-color: var(--main-bg-color);
+  padding: 1rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

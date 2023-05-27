@@ -6,95 +6,85 @@ import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Divider } from '@mui/material'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import MicIcon from '@mui/icons-material/Mic';
+import Fade from '@mui/material/Fade';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Select from '@mui/material/Select';
 import React from 'react'
+import InputDevicesSettings from './InputDevicesSettings';
+import OutputDevicesSettings from './OutputDevicesSettings';
 
 const ar = require('../audioReceiver')
 const at = require('../audioTransmitter')
 
-const theme = createTheme({
-    components: {
-        MuiMenu: {
-            styleOverrides: {
-                root: {
-                    borderRadius: '20px',
-                    background: "none"
-                },
-                paper: {
-                    borderRadius: '20px',
-                    background: "none",
-                    boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)"
-                },
-                list: {
-                    borderRadius: '20px',
-                    boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)"
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '40rem',
+    bgcolor: '#4d3352',
+    color: '#f5e8da',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '1rem',
+};
+
+const modalTheme = createTheme({
+    palette: {
+        primary: { main: '#f5e8da', },
+        secondary: { main: '#ce8ca5', },
+    },
+    typography: {
+        fontFamily: ['Roboto Condensed'].join(','),
+    },
+    MuiSlider: {
+        styleOverrides: {
+            thumb: {
+                cursor: "e-resize",
+                width: "15px",
+                height: "15px",
+                color: "white",
+                ":hover": {
+                    color: "white",
+                    boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
                 }
             },
-        },
-        MuiSlider: {
-            styleOverrides: {
-                thumb: {
-                    cursor: "e-resize",
-                    width: "15px",
-                    height: "15px",
-                    color: "white",
-                    ":hover": {
-                        color: "white",
-                        boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
-                    }
-                },
-                valueLabel: {
-                    backgroundColor: "#3e2542",
-                    color: "white",
-                    borderRadius: "10px",
-                },
-                valueLabelOpen: {
-                    backgroundColor: "#3e2542",
-                    color: "white",
-                    borderRadius: "10px",
-                },
-                colorPrimary: {
-                    color: "white",
-                    // backgroundColor: "white"
-                },
-                colorSecondary: {
-                    color: "white",
-                    // backgroundColor: "white"
-                },
-                markLabel: {
-                    color: "white"
-                }
-            }
-        },
-        MuiMenuItem: {
-            defaultProps: {
-                disableRipple: true
+            valueLabel: {
+                backgroundColor: "#3e2542",
+                color: "white",
+                borderRadius: "10px",
             },
-            styleOverrides: {
-                root: {
-                    ":hover": {
-                        backgroundColor: "rgba(0, 0, 0, .1)",
-                        transitionDuration: ".1s"
-                    }
-                }
+            valueLabelOpen: {
+                backgroundColor: "#3e2542",
+                color: "white",
+                borderRadius: "10px",
+            },
+            colorPrimary: {
+                color: "white",
+                // backgroundColor: "white"
+            },
+            colorSecondary: {
+                color: "white",
+                // backgroundColor: "white"
+            },
+            markLabel: {
+                color: "white"
             }
         }
     },
 });
 
 function SettingsButton() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [micVolume, setMicVolulme] = React.useState(100);
     const [inputDevices, setInputDevices] = React.useState([]);
     const [outputDevices, setOutputDevices] = React.useState([]);
-
-    const open = Boolean(anchorEl);
-
-    const handleMicVolumeChange = (event, newValue) => {
-        //set user volume
-        setMicVolulme(newValue);
-    };
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const handleModalOpen = () => setModalOpen(true);
+    const handleModalClose = () => setModalOpen(false);
 
     const handleClick = (event) => {
         ar.getAudioDevices().then((devices) => {
@@ -105,11 +95,8 @@ function SettingsButton() {
             setInputDevices(devices)
         })
 
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+        handleModalOpen();
+    }; 
 
     return (
         <>
@@ -118,45 +105,27 @@ function SettingsButton() {
                     <SettingsIcon onClick={handleClick} />
                 </Button>
             </Tooltip>
-            <ThemeProvider theme={theme}>
-                <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    transitionDuration={100}
-                    MenuListProps={{
-                        'aria-labelledby': 'userIcon',
-                        'className': 'userMenuModal'
-                    }}
-                >   
-                    <MenuItem>
-                        <p className='onlineUserNick'>Audio settings</p>
-                    </MenuItem>
-                    <MenuItem>
-                        <div style={{ width: "100%" }}>
-                            <Stack spacing={2} direction="row" alignItems="center">
-                                <MicIcon fontSize="10px" />
-                                <Slider
-                                    sx={{ width: 110 }}
-                                    valueLabelDisplay="auto"
-                                    valueLabelFormat={(v) => { return v + "%" }}
-                                    aria-label="Volume"
-                                    value={micVolume}
-                                    onChange={handleMicVolumeChange}
-                                    size='medium'
-                                />
-                            </Stack>
-                        </div>
-                    </MenuItem>
-                    <Divider sx={{ my: 0.5 }} variant='middle' />
-                    <MenuItem>
-                        Audio inputs here
-                    </MenuItem>
-                    <Divider sx={{ my: 0.5 }} variant='middle' />
-                    <MenuItem>
-                        Audio outputs here
-                    </MenuItem>
-                </Menu>
+
+            <ThemeProvider theme={modalTheme}>
+                <Modal
+                    open={modalOpen}
+                    onClose={handleModalClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Fade in={modalOpen}>
+                        <Box sx={modalStyle}>
+                            <div className='modalDiv'>
+                                <Typography id="modal-modal-title" variant="h3">
+                                    Echo settings
+                                </Typography>
+
+                                <InputDevicesSettings inputDevices={inputDevices} />
+                                <OutputDevicesSettings outputDevices={outputDevices} />
+                            </div>
+                        </Box>
+                    </Fade>
+                </Modal>
             </ThemeProvider>
         </>
     )

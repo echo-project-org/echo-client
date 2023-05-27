@@ -12,8 +12,6 @@ import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
-import HeadsetRoundedIcon from '@mui/icons-material/HeadsetRounded';
-import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import MicIcon from '@mui/icons-material/Mic';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
