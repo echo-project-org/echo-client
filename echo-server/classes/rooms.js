@@ -44,8 +44,7 @@ class Rooms {
         if (this.connectedClients.has(data.id)) {
             const roomId = this.connectedClients.get(data.id).getLastRoom();
             if (this.rooms.has(roomId)) {
-                const users = this.rooms.get(roomId).users;
-                users.forEach((user, id) => {
+                this.rooms.get(roomId).users.forEach((user, id) => {
                     if (String(id) !== String(data.id) && !user.isDeaf)
                         user.sendAudioPacket(data);
                 })

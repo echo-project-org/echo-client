@@ -43,7 +43,7 @@ class User {
             this.devLog = 0;
         }
         this.devLog++;
-        this.socket.emit("receiveAudioPacket", { id: this.id, left: data.left, right: data.right });
+        this.socket.emit("receiveAudioPacket", { id: data.id, left: data.left, right: data.right });
     }
 
     deaf(data) {
