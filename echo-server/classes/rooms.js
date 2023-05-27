@@ -9,63 +9,60 @@ class Rooms {
         this.emitter = io;
         this.rooms = new Map();
         this.connectedClients = new Map();
+        this.userListeners = new Map();
         this.socket = null;
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
+        
+        this.emitter.on('connection', (socket) => {
+            const request = socket.request;
+            // console.log(request._query)
+            const id = request._query["id"];
+            if (!id) return reject("no-id-in-query");
 
-        this.enstablishConnection()
-            .then((socket) => {
-                // socket.reconnects = false;
-                this.registerRoomEvents(socket);
-            })
-            .catch(console.error);
-    }
-
-    enstablishConnection() {
-        return new Promise((resolve, reject) => {
-            this.emitter.on('connection', (socket) => {
-                const request = socket.request;
-                // console.log(request._query)
-                const id = request._query["id"];
-                if (!id) return reject("no-id-in-query");
-    
-                const newUser = new User(socket, id);
-                this.connectedClients.set(id, newUser);
-                console.log(colors.changeColor("yellow", "New socket connection from client " + id));
-                resolve(socket);
-            });
+            const newUser = new User(socket, id);
+            this.connectedClients.set(id, newUser);
+            console.log(colors.changeColor("yellow", "New socket connection from client " + id));
+            this.registerClientEvents(newUser);
         });
     }
 
-    registerRoomEvents(socket) {
-        this.socket = socket;
-        this.socket.on("join", (data) => this.joinRoom(data));
-        this.socket.on("end", (id) => this.end(id));
+    registerClientEvents(user) {
+        console.log("registering events for", user.id);
+        user.registerEvent("join", (data) => {
+            this.joinRoom(data);
+        });
+        user.registerEvent("end", (data) => {
+            this.endConnection(data);
+        });
     }
 
     joinRoom(data) {
         console.log("got join message", data)
         data.userId = data.id;
-        if (!this.rooms.has(data.roomId)) this.addRoom(data.roomId);
-        if (this.connectedClients.has(data.userId)) this.addUserToRoom(data.userId, data.roomId);
-        else console.log(colors.changeColor("red", "Can't add user " + data.userId + " to room " + data.roomId + ", user is not connected to socket"));
+        this.addRoom(data.roomId);
+        this.addUserToRoom(data.userId, data.roomId);
     }
 
-    end(userId) {
-        console.log("ending", userId)
-        this.removeUserFromRooms(userId);
+    endConnection(data) {
+        console.log("ending", data.id)
+        this.removeUserFromRooms(data.id);
+        this.connectedClients.delete(data.id);
         // if ()
     }
 
     addRoom(id) {
-        this.rooms.set(id, {
-            id,
-            private: false,
-            users: new Map(),
-            password: null,
-            display: "New room",
-            chat: new Chat(id)
-        })
+        if (!this.rooms.has(id)) {
+            console.log("creating room", id)
+            this.rooms.set(id, {
+                id,
+                private: false,
+                users: new Map(),
+                password: null,
+                display: "New room",
+                chat: new Chat(id)
+            });
+        }
     }
 
     removeUserFromRooms(userId) {
@@ -78,16 +75,17 @@ class Rooms {
                     arr.length = id + 1;
                 }
             });
-            this.connectedClients.delete(userId);
         }
     }
 
     addUserToRoom(userId, roomId) {
-        if (this.rooms.has(roomId)) {
-            const user = this.connectedClients.get(userId);
-            user.setLastRoom(roomId);
-            this.rooms.get(roomId).users.set(user.id, user);
-        }
+        if (this.connectedClients.has(userId)) {
+            if (this.rooms.has(roomId)) {
+                const user = this.connectedClients.get(userId);
+                user.setLastRoom(roomId);
+                this.rooms.get(roomId).users.set(user.id, user);
+            }
+        } else console.log(colors.changeColor("red", "Can't add user " + userId + " to room " + roomId + ", user is not connected to socket"));
     }
 
     getUsersInRoom(id) {
