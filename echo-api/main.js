@@ -21,8 +21,10 @@ app.use((req, res, next) => {
 const users = require("./routes/users");
 const auth = require("./routes/auth");
 const rooms = require("./routes/rooms");
+const app = require("./routes/app");
 app.use("/users", users);
 app.use("/auth", auth);
 app.use("/rooms", rooms);
+app.use("/app", app);
 
 app.listen(config.port, () => console.log("It's alive on port", config.port));
