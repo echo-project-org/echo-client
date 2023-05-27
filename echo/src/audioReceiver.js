@@ -27,8 +27,17 @@ export async function stopOutputAudioStream() {
     clientIds = [];
     startTimes = [];
 }
+
+var devLog = 0;
+
 export async function addToBuffer(clientId, left, right) {
-    if(clientIds.includes(clientId)){
+    if (devLog > 100) {
+        console.log(clientIds, clientId);
+        devLog = 0;
+    }
+    devLog++;
+    if (clientIds.includes(clientId)) {
+        console.log("should be pushing buffer")
         let index = clientIds.indexOf(clientId);
 
         let source = clientSources[index];

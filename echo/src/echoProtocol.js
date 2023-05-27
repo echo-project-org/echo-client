@@ -52,7 +52,7 @@ export function openConnection(id) {
     });
 
     socket.on("receiveAudioPacket", (data) => {
-        console.log("got pack from", data.id)
+        // console.log("got pack from", data.id)
         ar.addToBuffer(data.id, new Float32Array(data.left), new Float32Array(data.right));
     });
 
@@ -67,6 +67,11 @@ export function openConnection(id) {
         at.stopAudioStream();
         socket.close();
     });
+
+    socket.on("userJoinedChannel", (data) => {
+        console.log("user", data, "joined your channel, starting listening audio");
+        ar.startOutputAudioStream(data.id)
+    })
 
     // socket.io.on("ping", () => { console.log("pong") });
 }

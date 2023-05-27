@@ -41,13 +41,15 @@ class Rooms {
     }
 
     sendAudioToConnectedClients(data) {
-        const roomId = this.connectedClients.get(data.id).getLastRoom();
-        if (this.rooms.has(roomId)) {
-            const users = this.rooms.get(roomId).users;
-            users.forEach((user, id) => {
-                if (id !== data.id && !user.isDeaf)
-                    user.sendAudioPacket(data);
-            })
+        if (this.connectedClients.has(data.id)) {
+            const roomId = this.connectedClients.get(data.id).getLastRoom();
+            if (this.rooms.has(roomId)) {
+                const users = this.rooms.get(roomId).users;
+                users.forEach((user, id) => {
+                    if (id !== data.id && !user.isDeaf)
+                        user.sendAudioPacket(data);
+                })
+            }
         }
     }
 
@@ -97,6 +99,13 @@ class Rooms {
                 const user = this.connectedClients.get(userId);
                 user.setLastRoom(roomId);
                 this.rooms.get(roomId).users.set(user.id, user);
+                this.rooms.get(roomId).users.forEach((remoteUser, id) => {
+                    console.log("loopig", id)
+                    if (id !== user.id) {
+                        console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
+                        remoteUser.userJoinedCurrentChannel(user.id);
+                    }
+                })
             }
         } else console.log(colors.changeColor("red", "Can't add user " + userId + " to room " + roomId + ", user is not connected to socket"));
     }
