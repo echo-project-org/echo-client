@@ -86,8 +86,6 @@ class Rooms {
                 if (room.users.has(userId)) {
                     console.log("removing userId", userId, "from room", id);
                     room.users.delete(userId);
-                    // breaks the foreach to save resources??? maybe idk...
-                    arr.length = id + 1;
                 }
             });
         }
@@ -104,6 +102,8 @@ class Rooms {
                     if (id !== user.id) {
                         console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
                         remoteUser.userJoinedCurrentChannel(user.id);
+                        console.log("sending message porcoddio to", user.id, "about", id)
+                        user.userJoinedCurrentChannel(id);
                     }
                 })
             }
