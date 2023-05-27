@@ -14,9 +14,15 @@ export async function startOutputAudioStream(clientId) {
         audioContexts.push(context);
         clientSources.push(source);
         startTimes.push(context.currentTime);
-    }else {
+    } else {
         let index = clientIds.indexOf(clientId);
-        startTimes[index] = audioContexts[index].currentTime;
+        var context1 = new AudioContext();
+        let source = context.createBufferSource()
+        source.connect(context.destination)
+
+        audioContexts[index] = context1;
+        clientSources[index] = source;
+        startTimes[index] = context1.currentTime;
     }
 }
 
