@@ -17,6 +17,7 @@ export function toggleMute(bool) {
 export async function startInputAudioStream() {
     id = localStorage.getItem('userId');
     if (!isTransmitting) {
+        console.log(">>>> STARTING STREAM")
         navigator.getUserMedia({
             audio: {
                 channelCount: 2,
@@ -66,7 +67,7 @@ export async function startInputAudioStream() {
 export function stopAudioStream() {
     id = localStorage.getItem('userId');
     if (isTransmitting) {
-        console.log("STOPPING STREAM");
+        console.log(">>>> STOPPING STREAM");
         ep.closeConnection(id)
         if (mediaStream) {
             mediaStream.getAudioTracks().forEach((track) => {
