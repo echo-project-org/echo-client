@@ -18,7 +18,7 @@ function Rooms({ }) {
   ])
 
   const onRoomClick = (joiningId) => {
-    console.log("joining", joiningId)
+    ep.joinRoom(localStorage.getItem("userId"), joiningId);
     setRoomId(joiningId);
   }
 

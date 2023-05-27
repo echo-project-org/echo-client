@@ -8,9 +8,13 @@ const StyledAvatarGroup = styled(AvatarGroup)({
     },
 });
 
-function InactiveRoom({ users, data}) {
+function InactiveRoom({ users, onClick, data}) {
+    const handleClick = () => {
+      onClick(data.id);
+    }
+
     return (
-        <div className='secondRoom'>
+        <div className='secondRoom' onClick={handleClick}>
             <p className='roomName noselect'>{data.name}</p>
             <StyledAvatarGroup max={4} sx={{justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem'}}>
                 {

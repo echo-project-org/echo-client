@@ -3,7 +3,6 @@ import OnlineUserIcon from './OnlineUserIcon'
 import { Divider } from '@mui/material'
 
 function ActiveRoom({ users, onClick, data }) {
-
   const handleClick = () => {
     onClick(data.id);
   }
