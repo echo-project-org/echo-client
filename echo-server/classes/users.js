@@ -7,6 +7,8 @@ class User {
         this.isDeaf = false;
         this.events = {};
 
+        this.devLog = 0;
+
         this.socket.on("deaf", (id) => { this.deaf(id); });
         this.socket.on("ping", (callback) => { callback(); });
         this.socket.on("join", (data) => this.triggerEvent("join", data));
@@ -20,33 +22,40 @@ class User {
     }
 
     triggerEvent(event, data) {
-        if (this.events[event]) this.events[event].cb(data);
-        else console.log("can't trigger event", event, "NOT FOUND")
+        // register event and save the reference function to be called
+        if (this.events[event]) this.events[event].cb(data)
+        else console.log("can't trigger event", event, "NOT FOUND", this.id);
+        // call same function if it exists
+        if (this[event]) this[event](data);
     }
 
-    deaf(id) {
-        console.log("deaf request from", id)
+    sendAudioPacket(data) {
+        if (this.devLog === 50) {
+            console.log("sending audio to", data.id, "from", this.id);
+            this.devLog = 0;
+        }
+        this.devLog++;
+        this.socket.emit("receiveAudioPacket", data);
+    }
+
+    deaf(data) {
+        console.log("deaf request from", data)
+        this.isDeaf = data.value
     }
 
     end(id) {
         this.socket.disconnect();
     }
 
+    // when current user join a room we start listening for packets
     join(data) {
-        this.registerAudioListener();
+        this.registerAudioListener(data);
     }
 
-    registerAudioListener(cb) {
+    registerAudioListener(data) {
         console.log("started audio listener for user", this.id)
         this.socket.on("audioPacket", (packet) => {
-            // console.log("got pack", this.socket.id, packet.id);
-            // console.log("got pack")
-            // console.log(packet);
-            this.remoteUsers.forEach((user, id) => {
-                // console.log(id, userId);
-                // console.log("sending audio to", id, "from", this.id);
-                this.socket.emit("receiveAudioPacket", packet);
-            });
+            this.triggerEvent("receiveAudioPacket", packet);
         });
     }
 
@@ -54,6 +63,10 @@ class User {
         if (typeof roomId !== "number") roomId = Number(roomId);
         if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setLastRoom")
         this.lastRoom = roomId;
+    }
+
+    getLastRoom() {
+        return this.lastRoom;
     }
 }
 

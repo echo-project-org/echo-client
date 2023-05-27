@@ -52,6 +52,7 @@ export function openConnection(id) {
     });
 
     socket.on("receiveAudioPacket", (data) => {
+        console.log("got pack from", data.id)
         ar.addToBuffer(data.id, new Float32Array(data.left), new Float32Array(data.right));
     });
 

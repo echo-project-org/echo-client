@@ -29,12 +29,26 @@ class Rooms {
 
     registerClientEvents(user) {
         console.log("registering events for", user.id);
+        user.registerEvent("receiveAudioPacket", (data) => {
+            this.sendAudioToConnectedClients(data);
+        });
         user.registerEvent("join", (data) => {
             this.joinRoom(data);
         });
         user.registerEvent("end", (data) => {
             this.endConnection(data);
         });
+    }
+
+    sendAudioToConnectedClients(data) {
+        const roomId = this.connectedClients.get(data.id).getLastRoom();
+        if (this.rooms.has(roomId)) {
+            const users = this.rooms.get(roomId).users;
+            users.forEach((user, id) => {
+                if (id !== data.id && !user.isDeaf)
+                    user.sendAudioPacket(data);
+            })
+        }
     }
 
     joinRoom(data) {
@@ -48,7 +62,6 @@ class Rooms {
         console.log("ending", data.id)
         this.removeUserFromRooms(data.id);
         this.connectedClients.delete(data.id);
-        // if ()
     }
 
     addRoom(id) {
