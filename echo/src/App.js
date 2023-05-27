@@ -7,7 +7,6 @@ import WindowControls from './components/WindowControls';
 
 function App() {
   useEffect(() => {
-
   }, [])
   
   return (

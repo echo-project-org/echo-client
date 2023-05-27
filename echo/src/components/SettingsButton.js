@@ -10,6 +10,9 @@ import { Divider } from '@mui/material'
 import MicIcon from '@mui/icons-material/Mic';
 import React from 'react'
 
+const ar = require('../audioReceiver')
+const at = require('../audioTransmitter')
+
 const theme = createTheme({
     components: {
         MuiMenu: {
@@ -83,6 +86,9 @@ const theme = createTheme({
 function SettingsButton() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [micVolume, setMicVolulme] = React.useState(100);
+    const [inputDevices, setInputDevices] = React.useState([]);
+    const [outputDevices, setOutputDevices] = React.useState([]);
+
     const open = Boolean(anchorEl);
 
     const handleMicVolumeChange = (event, newValue) => {
@@ -91,6 +97,14 @@ function SettingsButton() {
     };
 
     const handleClick = (event) => {
+        ar.getAudioDevices().then((devices) => {
+            setOutputDevices(devices)
+        })
+
+        at.getAudioDevices().then((devices) => {
+            setInputDevices(devices)
+        })
+
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {

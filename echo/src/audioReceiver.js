@@ -17,6 +17,26 @@ export async function startOutputAudioStream(clientId) {
     }
 }
 
+export async function getAudioDevices(){
+    return new Promise((resolve, reject) => {
+        var out = [];
+        console.log(navigator.mediaDevices.enumerateDevices())
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+            devices.forEach((device, id) => {
+                if(device.kind === "audiooutput"){
+                    out.push({
+                        "name": device.label,
+                        "id": device.deviceId
+                    })
+                }
+            })
+
+            resolve(out);
+        })
+    })
+}
+
+
 export async function stopOutputAudioStream() {
     audioContexts.forEach(e => {
         e.close();

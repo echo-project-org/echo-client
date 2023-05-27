@@ -20,7 +20,7 @@ const MainPage = () => {
             }
         ]
     );
-    
+
     const fetchOnlineUsers = async () => {
         api.call('getOnlineUsers')
             .then(async (res) => {
@@ -28,25 +28,25 @@ const MainPage = () => {
                 setUsers(data);
             });
     }
-    
 
-    useEffect(() => {   
-          fetchOnlineUsers();
-          at.startInputAudioStream();
+
+    useEffect(() => {
+        fetchOnlineUsers();
+        at.startInputAudioStream();
     }, [])
 
     return (
-        <motion.div 
+        <motion.div
             className='mainScreen'
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
         >
             <div className='sideWithChat'>
-                <Sidebar users={users}/>
+                <Sidebar users={users} />
                 <RoomContent />
             </div>
-            
+
         </motion.div>
     )
 }

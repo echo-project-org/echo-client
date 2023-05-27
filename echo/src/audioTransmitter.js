@@ -14,6 +14,26 @@ export function toggleMute(bool) {
     muted = bool;
 }
 
+export async function getAudioDevices(){
+    return new Promise((resolve, reject) => {
+        var out = [];
+        console.log(navigator.mediaDevices.enumerateDevices())
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+            devices.forEach((device, id) => {
+                if(device.kind === "audioinput"){
+                    out.push({
+                        "name": device.label,
+                        "id": device.deviceId
+                    })
+                }
+            })
+
+            resolve(out);
+        })
+    })
+}
+
+
 export async function startInputAudioStream() {
     id = localStorage.getItem('userId');
     if (!isTransmitting) {
