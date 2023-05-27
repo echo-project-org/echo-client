@@ -3,6 +3,20 @@ let clientSources = [];
 let clientIds = [];
 let startTimes = [];
 
+export async function syncAudio(){
+    clientIds.forEach((id) => {
+        let index = clientIds.indexOf(id);
+
+        var context1 = new AudioContext();
+        let source = context1.createBufferSource()
+        source.connect(context1.destination)
+
+        audioContexts[index] = context1;
+        clientSources[index] = source;
+        startTimes[index] = context1.currentTime;
+    })
+}
+
 export async function startOutputAudioStream(clientId) {
     console.log("Creating audio out")
     if (!clientIds.includes(clientId)) {

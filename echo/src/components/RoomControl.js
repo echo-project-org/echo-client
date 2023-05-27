@@ -123,7 +123,7 @@ function RoomControl({ screenSharing }) {
       }
   }
 
-  const undeafOnMute = () => { setDeaf(false); }
+  const undeafOnMute = () => { setDeaf(false);}
   const muteOnDeaf = () => { setMuted(true); computeAudio(false); }
   const unmuteOnDeaf = () => { setMuted(false); computeAudio(false); }
   const muteAndDeaf = () => { setMuted(true); setDeaf(true); computeAudio(false); }
@@ -139,10 +139,15 @@ function RoomControl({ screenSharing }) {
   }
 
   const deafHeadphones = () => {
+    
     if (!muted) muteOnDeaf()
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();
     if (wasMuted && deaf) { setMuted(true); }
+
+    if(deaf){
+      ar.syncAudio();
+    }
     setDeaf(!deaf);
   }
 
