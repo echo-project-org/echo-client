@@ -46,7 +46,7 @@ class Rooms {
             if (this.rooms.has(roomId)) {
                 const users = this.rooms.get(roomId).users;
                 users.forEach((user, id) => {
-                    if (id !== data.id && !user.isDeaf)
+                    if (String(id) !== String(data.id) && !user.isDeaf)
                         user.sendAudioPacket(data);
                 })
             }
