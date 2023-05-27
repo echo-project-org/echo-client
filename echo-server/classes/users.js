@@ -13,6 +13,7 @@ class User {
         this.socket.on("ping", (callback) => { callback(); });
         this.socket.on("join", (data) => this.triggerEvent("join", data));
         this.socket.on("end", (data) => this.triggerEvent("end", data));
+        // this.socket.on("userJoinedRoom", (data) => this.triggerEvent("userJoinedRoom", data));
     }
 
     registerEvent(event, cb) {
@@ -29,12 +30,20 @@ class User {
         if (this[event]) this[event](data);
     }
 
+    // called when remote user join the current room
+    userJoinedCurrentChannel(userId) {
+        if (this.lastRoom !== 0) {
+            this.socket.emit("userJoinedChannel", { id: userId })
+        }
+    }
+
     sendAudioPacket(data) {
-        if (this.devLog === 50) {
+        if (this.devLog === 100) {
             console.log("sending audio to", data.id, "from", this.id);
             this.devLog = 0;
         }
         this.devLog++;
+        data.id = this.id;
         this.socket.emit("receiveAudioPacket", data);
     }
 
@@ -44,6 +53,7 @@ class User {
     }
 
     end(id) {
+        this.lastRoom = 0;
         this.socket.disconnect();
     }
 
