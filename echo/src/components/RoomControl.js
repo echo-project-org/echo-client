@@ -9,13 +9,15 @@ import { ThemeProvider } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
-import HeadsetMicRoundedIcon from '@mui/icons-material/HeadsetMicRounded';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
+import HeadsetRoundedIcon from '@mui/icons-material/HeadsetRounded';
 import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import MicIcon from '@mui/icons-material/Mic';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 
 import muteSound from "../audio/mute.mp3";
 import unmuteSound from "../audio/unmute.mp3";
@@ -158,7 +160,7 @@ function RoomControl({ screenSharing }) {
           </Tooltip>
           <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={deafHeadphones}>
-              {!deaf ? <HeadsetMicRoundedIcon /> : <HeadsetOffRoundedIcon />}
+              {!deaf ? <VolumeUpIcon /> : <VolumeOffIcon />}
             </Button>
           </Tooltip>
           <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
