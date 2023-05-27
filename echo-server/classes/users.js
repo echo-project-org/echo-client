@@ -9,7 +9,7 @@ class User {
 
         this.devLog = 0;
 
-        this.socket.on("deaf", (id) => { this.deaf(id); });
+        this.socket.on("audioState", (id) => { this.triggerEvent("audioState", data) });
         this.socket.on("ping", (callback) => { callback(); });
         this.socket.on("join", (data) => this.triggerEvent("join", data));
         this.socket.on("end", (data) => this.triggerEvent("end", data));
@@ -46,9 +46,14 @@ class User {
         this.socket.emit("receiveAudioPacket", { id: data.id, left: data.left, right: data.right });
     }
 
-    deaf(data) {
+    sendAudioState(data) {
+        this.socket.emit("sendAudioState", data);
+    }
+
+    audioState(data) {
         console.log("deaf request from", data)
-        this.isDeaf = data.value
+        this.isDeaf = data.deaf;
+        this.isMuted = data.muted;
     }
 
     end(id) {

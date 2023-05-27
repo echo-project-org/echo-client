@@ -35,7 +35,7 @@ var pingInterval;
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io("ws://kury.ddns.net:6982", { query: { id } });
+    socket = io("ws://localhost:6982", { query: { id } });
 
     pingInterval = setInterval(() => {
         const start = Date.now();
@@ -71,6 +71,10 @@ export function openConnection(id) {
     socket.on("userJoinedChannel", (data) => {
         console.log("user", data, "joined your channel, starting listening audio");
         ar.startOutputAudioStream(data.id)
+    });
+
+    socket.on("sendAudioState", (data) => {
+        console.log("got user audio info from server", data);
     })
 
     // socket.io.on("ping", () => { console.log("pong") });
@@ -88,8 +92,8 @@ export function getPing() {
     return ping;
 }
 
-export function deafUser(id, value) {
-    if (socket) socket.emit("deaf", { value, id });
+export function sendAudioState(id, data) {
+    if (socket) socket.emit("audioState", { id, deaf: data.deaf, muted: data.muted });
 }
 
 export function closeConnection(id) {

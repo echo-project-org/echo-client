@@ -38,6 +38,18 @@ class Rooms {
         user.registerEvent("end", (data) => {
             this.endConnection(data);
         });
+        user.registerEvent("audioState", (data) => {
+            this.sendAudioState(data);
+        });
+    }
+
+    sendAudioState(data) {
+        if (this.connectedClients.has(data.id)) {
+            const user = this.connectedClients.forEach((user, id) => {
+                if (String(id) !== String(data.id))
+                    user.sendAudioState(data);
+            });
+        }
     }
 
     sendAudioToConnectedClients(data) {

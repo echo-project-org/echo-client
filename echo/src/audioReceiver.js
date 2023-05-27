@@ -17,8 +17,8 @@ export async function startOutputAudioStream(clientId) {
     } else {
         let index = clientIds.indexOf(clientId);
         var context1 = new AudioContext();
-        let source = context.createBufferSource()
-        source.connect(context.destination)
+        let source = context1.createBufferSource()
+        source.connect(context1.destination)
 
         audioContexts[index] = context1;
         clientSources[index] = source;
