@@ -35,7 +35,7 @@ var pingInterval;
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io("ws://localhost:6982", { query: { id } });
+    socket = io("ws://kury.ddns.net:6982", { query: { id } });
 
     pingInterval = setInterval(() => {
         const start = Date.now();

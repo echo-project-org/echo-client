@@ -14,6 +14,9 @@ export async function startOutputAudioStream(clientId) {
         audioContexts.push(context);
         clientSources.push(source);
         startTimes.push(context.currentTime);
+    }else {
+        let index = clientIds.indexOf(clientId);
+        startTimes[index] = audioContexts[index].currentTime;
     }
 }
 
