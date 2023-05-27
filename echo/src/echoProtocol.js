@@ -75,6 +75,7 @@ export function openConnection(id) {
 
     socket.on("sendAudioState", (data) => {
         console.log("got user audio info from server", data);
+        ar.startOutputAudioStream(data.id)
     })
 
     // socket.io.on("ping", () => { console.log("pong") });
