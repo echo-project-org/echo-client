@@ -87,6 +87,7 @@ class Rooms {
                     room.users.delete(userId);
                 }
             });
+            console.log(this.rooms);
         }
     }
 
