@@ -1,0 +1,10 @@
+{
+    "log": "verbose",
+    "port": "6980",
+    "database": {
+        "host": "",
+        "user": "",
+        "password": "",
+        "database": ""
+    }
+}
