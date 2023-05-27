@@ -4,6 +4,7 @@ const ar = require('./audioReceiver');
 const io = require("socket.io-client");
 var socket;
 var ping = 0;
+var pingInterval;
 
 // socket.onmessage = function (event) {
 //     parseMessage(event.data)
@@ -36,7 +37,7 @@ export function openConnection(id) {
     console.log("opening connection with socket")
     socket = io("ws://localhost:6982", { query: { id } });
 
-    setInterval(() => {
+    pingInterval = setInterval(() => {
         const start = Date.now();
       
         socket.emit("ping", () => {
@@ -70,6 +71,7 @@ export function openConnection(id) {
 }
 
 export function joinRoom(id, roomId) {
+    console.log("joining event called", id, roomId)
     // join the transmission on current room
     socket.emit("join", { id, roomId, cb: () => {
         console.log("response from join, i'm in channel")
@@ -85,8 +87,12 @@ export function deafUser(id, value) {
 }
 
 export function closeConnection(id) {
-    console.log("closing connection with socket")
-    if (socket) socket.emit("end", id);
+    if (socket) {
+        console.log("closing connection with socket")
+        socket.emit("end", { id });
+    }
+    socket = null;
+    clearInterval(pingInterval);
     // if we let client handle disconnection, then recursive happens cause of the event "close"
     // socket.close();
 }
