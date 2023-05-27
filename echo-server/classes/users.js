@@ -9,7 +9,7 @@ class User {
 
         this.devLog = 0;
 
-        this.socket.on("audioState", (id) => { this.triggerEvent("audioState", data) });
+        this.socket.on("audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("ping", (callback) => { callback(); });
         this.socket.on("join", (data) => this.triggerEvent("join", data));
         this.socket.on("end", (data) => this.triggerEvent("end", data));
