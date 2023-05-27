@@ -8,20 +8,20 @@ import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import KeyboardVoiceRoundedIcon from '@mui/icons-material/KeyboardVoiceRounded';
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 import HeadsetMicRoundedIcon from '@mui/icons-material/HeadsetMicRounded';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
-import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import HeadsetOffRoundedIcon from '@mui/icons-material/HeadsetOffRounded';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
+import MicIcon from '@mui/icons-material/Mic';
 
 import muteSound from "../audio/mute.mp3";
 import unmuteSound from "../audio/unmute.mp3";
 import deafSound from "../audio/deaf.mp3";
 import undeafSound from "../audio/undeaf.mp3";
+import SettingsButton from './SettingsButton';
 
 const api = require('../api')
 const at = require('../audioTransmitter')
@@ -153,7 +153,7 @@ function RoomControl({ screenSharing }) {
         <ButtonGroup variant='text' className='buttonGroup'>
           <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={muteMic}>
-              {!muted ? <KeyboardVoiceRoundedIcon /> : <MicOffRoundedIcon />}
+              {!muted ? <MicIcon /> : <MicOffRoundedIcon />}
             </Button>
           </Tooltip>
           <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -166,11 +166,7 @@ function RoomControl({ screenSharing }) {
               {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
             </Button>
           </Tooltip>
-          <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Button>
-              <SettingsIcon />
-            </Button>
-          </Tooltip>
+            <SettingsButton />
           <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button onClick={exitRoom}>
               <LogoutIcon />
