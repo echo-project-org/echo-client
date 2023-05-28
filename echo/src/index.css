@@ -439,7 +439,7 @@ body {
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
   margin-bottom: 0.5rem;
-  transition: all .1s ease-in-out;
+  transition: all .2s ease-in-out;
   cursor: pointer;
   margin-right: .75rem;
 }
@@ -447,7 +447,7 @@ body {
 .secondRoom:hover {
   /* border-inline-end: 2px solid var(--color3); */
   box-shadow: .2rem 0 .3rem .5px var(--color3);
-  transition: all .1s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .SecondRoomName {
@@ -462,9 +462,10 @@ body {
 
 .room {
   background-color: var(--chat-background-color);
+  border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
   margin-bottom: 0.5rem;
-  box-shadow: .2rem .2rem .3rem .5px var(--color3);
+  box-shadow: .3rem 0 .3rem .1rem var(--color3);
   transition: all .1s ease-in-out;
   margin-right: .75rem;
 }
