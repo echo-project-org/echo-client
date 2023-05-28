@@ -24,6 +24,8 @@ server.use(bodyParser.json());
 server.use((req, res, next) => {
     console.log('Got api request:', Date.now(), "Query:", req.url);
     res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST, GET");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, HTTP_X_REQUESTED_WITH");
     req.database = con;
     // check if headers have a token and if it's valid
     if (req.headers['Authentication']) {

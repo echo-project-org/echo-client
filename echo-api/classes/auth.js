@@ -86,8 +86,8 @@ class Auth {
     loginUser(req, res) {
         const { hash } = req.params;
 
-        req.database.query("SELECT id, nick FROM users WHERE hash = '" + hash + "'", function (err, result, fields){
-            if (err) return res.status(400).send({ error: "You messed up the request." });
+        req.database.query("SELECT id, name FROM users WHERE password = '" + hash + "'", (err, result, fields) => {
+            if (err) return res.status(400).send({ message: "You messed up the request." });
             // send wrong credentials if no user was found
             if (!result) return res.status(401).send({ message: "Wrong credentials." });
 
@@ -100,7 +100,8 @@ class Auth {
                     refreshToken
                 });
             }
-            res.staus(500).json({ message: "Something went wrong." });
+
+            res.status(200).json({ message: "Username does not exist or password is incorrect." });
         });
     }
 }
