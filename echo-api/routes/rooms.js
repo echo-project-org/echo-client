@@ -6,7 +6,7 @@ router.get('/', (req, res) => {
         res.status(200).send(result);
     }).catch((err) => {
         res.status(500).send(err);
-    });    
+    });
 });
 
 function fetchOnlineUsersInRoom(roomId) {

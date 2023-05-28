@@ -1,5 +1,6 @@
 var mysql = require('mysql'); 
-const app = require('express')();
+const express = require('express');
+const app = express();
 
 const config = require("./config.json");
 
@@ -10,6 +11,10 @@ con.connect(function(err) {
     if (err) throw err;
     console.log("Connected to database!");
 });
+
+// not gud
+// app.use(express.json());
+app.use(express.bodyParser());
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
