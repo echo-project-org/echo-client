@@ -10,8 +10,47 @@ import Select from '@mui/material/Select';
 
 const at = require('../audioTransmitter')
 
+const theme = createTheme({
+    components: {
+        MuiSlider: {
+            styleOverrides: {
+                thumb: {
+                    cursor: "e-resize",
+                    width: "15px",
+                    height: "15px",
+                    color: "white",
+                    ":hover": {
+                        color: "white",
+                        boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
+                    }
+                },
+                valueLabel: {
+                    backgroundColor: "#3e2542",
+                    color: "white",
+                    borderRadius: "10px",
+                },
+                valueLabelOpen: {
+                    backgroundColor: "#3e2542",
+                    color: "white",
+                    borderRadius: "10px",
+                },
+                colorPrimary: {
+                    color: "white",
+                    // backgroundColor: "white"
+                },
+                colorSecondary: {
+                    color: "white",
+                    // backgroundColor: "white"
+                },
+                markLabel: {
+                    color: "white"
+                }
+            }
+        },
+    },
+});
 
-function InputDevicesSettings({inputDevices}) {
+function InputDevicesSettings({ inputDevices }) {
     const [inputDevice, setInputDevice] = useState('default');
     const [micVolume, setMicVolulme] = useState(100);
 
@@ -42,7 +81,7 @@ function InputDevicesSettings({inputDevices}) {
             setInputDevice(audioDeviceId);
         }
     }
-    
+
     return (
         <div className="settingsModalSubDiv">
             <Typography id="modal-modal-title" variant="h6" component="h2">
@@ -54,7 +93,7 @@ function InputDevicesSettings({inputDevices}) {
                 value={inputDevice}
                 onChange={handleInputDeviceChange}
                 autoWidth
-                sx = {{
+                sx={{
                     border: "1px solid #f5e8da",
                     color: "#f5e8da"
                 }}
@@ -64,6 +103,7 @@ function InputDevicesSettings({inputDevices}) {
             <div style={{ width: "100%" }}>
                 <Stack spacing={2} direction="row" alignItems="center">
                     <MicIcon fontSize="medium" />
+                    <ThemeProvider theme={theme} >
                     <Slider
                         sx={{ width: "10rem" }}
                         valueLabelDisplay="auto"
@@ -73,6 +113,7 @@ function InputDevicesSettings({inputDevices}) {
                         onChange={handleMicVolumeChange}
                         size='medium'
                     />
+                    </ThemeProvider>
                 </Stack>
             </div>
         </div>

@@ -2,6 +2,7 @@
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import { useState, useEffect } from 'react'
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Slider from '@mui/material/Slider';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import Typography from '@mui/material/Typography';
@@ -10,6 +11,45 @@ import React from 'react'
 
 const ar = require('../audioReceiver')
 
+const theme = createTheme({
+    components: {
+        MuiSlider: {
+            styleOverrides: {
+                thumb: {
+                    cursor: "e-resize",
+                    width: "15px",
+                    height: "15px",
+                    color: "white",
+                    ":hover": {
+                        color: "white",
+                        boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
+                    }
+                },
+                valueLabel: {
+                    backgroundColor: "#3e2542",
+                    color: "white",
+                    borderRadius: "10px",
+                },
+                valueLabelOpen: {
+                    backgroundColor: "#3e2542",
+                    color: "white",
+                    borderRadius: "10px",
+                },
+                colorPrimary: {
+                    color: "white",
+                    // backgroundColor: "white"
+                },
+                colorSecondary: {
+                    color: "white",
+                    // backgroundColor: "white"
+                },
+                markLabel: {
+                    color: "white"
+                }
+            }
+        },
+    },
+});
 
 function OutputDevicesSettings({ outputDevices }) {
     const [outputDevice, setOutputDevice] = useState('default');
@@ -64,15 +104,17 @@ function OutputDevicesSettings({ outputDevices }) {
             <div style={{ width: "100%" }}>
                 <Stack spacing={2} direction="row" alignItems="center">
                     <VolumeUpIcon fontSize="medium" />
-                    <Slider
-                        sx={{ width: "10rem" }}
-                        valueLabelDisplay="auto"
-                        valueLabelFormat={(v) => { return v + "%" }}
-                        aria-label="Volume"
-                        value={soundVolume}
-                        onChange={handleSoundVolumeChange}
-                        size='medium'
-                    />
+                    <ThemeProvider theme={theme}>
+                        <Slider
+                            sx={{ width: "10rem" }}
+                            valueLabelDisplay="auto"
+                            valueLabelFormat={(v) => { return v + "%" }}
+                            aria-label="Volume"
+                            value={soundVolume}
+                            onChange={handleSoundVolumeChange}
+                            size='medium'
+                        />
+                    </ThemeProvider>
                 </Stack>
             </div>
         </div>
