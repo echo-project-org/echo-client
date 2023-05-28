@@ -7,6 +7,7 @@ const api = require("../api");
 
 function Rooms({ }) {
   const [roomId, setRoomId] = useState(0);
+  const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
       id: 0,
@@ -20,6 +21,7 @@ function Rooms({ }) {
   const onRoomClick = (joiningId) => {
     ep.joinRoom(localStorage.getItem("userId"), joiningId);
     setRoomId(joiningId);
+    setActiveRoomId(joiningId)
   }
 
   useEffect(() => {
@@ -34,7 +36,7 @@ function Rooms({ }) {
     <div className='roomsContainer'>
       {
         remoteRooms.map((room) => (
-          <Room key={room.id} onClick={onRoomClick} data={room}/>
+          <Room active={room.id === activeRoomId? true: false} key={room.id} onClick={onRoomClick} data={room}/>
         ))
       }
     </div>
