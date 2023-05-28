@@ -54,6 +54,10 @@ function InputDevicesSettings({inputDevices}) {
                 value={inputDevice}
                 onChange={handleInputDeviceChange}
                 autoWidth
+                sx = {{
+                    border: "1px solid #f5e8da",
+                    color: "#f5e8da"
+                }}
             >
                 {renderDeviceList()}
             </Select>

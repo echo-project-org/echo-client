@@ -10,8 +10,9 @@ import React from 'react'
 
 const ar = require('../audioReceiver')
 
+
 function OutputDevicesSettings({ outputDevices }) {
-    const [outputDevice, setOutputDevice] = useState('');
+    const [outputDevice, setOutputDevice] = useState('default');
     const [soundVolume, setSoundVolulme] = useState(100);
 
     const handleOutputDeviceChange = (event) => {
@@ -53,6 +54,10 @@ function OutputDevicesSettings({ outputDevices }) {
                 value={outputDevice}
                 onChange={handleOutputDeviceChange}
                 autoWidth
+                sx = {{
+                    border: "1px solid #f5e8da",
+                    color: "#f5e8da"
+                }}
             >
                 {renderDeviceList()}
             </Select>
