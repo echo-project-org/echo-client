@@ -22,6 +22,15 @@ function Rooms({ }) {
     ep.joinRoom(localStorage.getItem("userId"), joiningId);
     setRoomId(joiningId);
     setActiveRoomId(joiningId)
+    let nick = localStorage.getItem("userNick");
+    api.call('setOnline/' + nick + '/T/' + joiningId)
+            .then((res) => {
+                if (res.ok) {
+                  
+                } else {
+                    console.error("Could not set user as online");
+                }
+            });
   }
 
   useEffect(() => {

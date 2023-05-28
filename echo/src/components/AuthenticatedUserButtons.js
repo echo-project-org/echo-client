@@ -25,7 +25,7 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
     }
 
     const enterRoom = async () => {
-        api.call('setOnline/' + nickname + '/T/1')
+        api.call('setOnline/' + nickname + '/T/0')
             .then((res) => {
                 if (res.ok) {
                     ep.openConnection(localStorage.getItem('userId'));
