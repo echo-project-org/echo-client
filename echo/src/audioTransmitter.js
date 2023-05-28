@@ -6,6 +6,7 @@ let isTransmitting = false;
 let node;
 let context = null;
 var id = localStorage.getItem('userId');
+var audioDeviceId = localStorage.getItem('inputAudioDeviceId');
 
 var muted = false;
 
@@ -14,10 +15,18 @@ export function toggleMute(bool) {
     muted = bool;
 }
 
+export function setAudioDevice(device) {
+    localStorage.setItem('inputAudioDeviceId', device);
+    audioDeviceId = device;
+    if(isTransmitting){
+        stopAudioStream();
+        startInputAudioStream();
+    }
+}
+
 export async function getAudioDevices(){
     return new Promise((resolve, reject) => {
         var out = [];
-        console.log(navigator.mediaDevices.enumerateDevices())
         navigator.mediaDevices.enumerateDevices().then((devices) => {
             devices.forEach((device, id) => {
                 if(device.kind === "audioinput"){
@@ -36,6 +45,8 @@ export async function getAudioDevices(){
 
 export async function startInputAudioStream() {
     id = localStorage.getItem('userId');
+    audioDeviceId = localStorage.getItem('inputAudioDeviceId');
+
     if (!isTransmitting) {
         console.log(">>>> STARTING STREAM")
         navigator.getUserMedia({
@@ -47,12 +58,14 @@ export async function startInputAudioStream() {
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
+                deviceId: audioDeviceId,
             },
         }, function (stream) {
             isTransmitting = true;
             mediaStream = stream;
             // create the MediaStreamAudioSourceNode
             context = new AudioContext();
+            
             var source = context.createMediaStreamSource(stream);
 
             // create a ScriptProcessorNode
@@ -61,8 +74,6 @@ export async function startInputAudioStream() {
             } else {
                 node = context.createScriptProcessor(4096, 2, 2);
             }
-
-            ar.startOutputAudioStream(id);
 
             // listen to the audio data, and record into the buffer
             node.onaudioprocess = async function (e) {

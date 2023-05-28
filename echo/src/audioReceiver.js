@@ -2,12 +2,19 @@ let audioContexts = [];
 let clientSources = [];
 let clientIds = [];
 let startTimes = [];
+let audioDeviceId = localStorage.getItem('outputAudioDeviceId')
 
 export async function syncAudio(){
     clientIds.forEach((id) => {
         let index = clientIds.indexOf(id);
+        audioDeviceId = localStorage.getItem('outputAudioDeviceId')
 
         var context1 = new AudioContext();
+        if(audioDeviceId){
+            if(audioDeviceId !== "default")
+                context1.setSinkId(audioDeviceId);
+        }
+
         let source = context1.createBufferSource()
         source.connect(context1.destination)
 
@@ -17,10 +24,20 @@ export async function syncAudio(){
     })
 }
 
+export function setAudioDevice(device) {
+    localStorage.setItem('outputAudioDeviceId', device);
+    audioDeviceId = device;
+}
+
 export async function startOutputAudioStream(clientId) {
     console.log("Creating audio out")
+    audioDeviceId = localStorage.getItem('outputAudioDeviceId')
     if (!clientIds.includes(clientId)) {
         var context = new AudioContext();
+        if(audioDeviceId){
+            if(audioDeviceId !== "default")
+                context.setSinkId(audioDeviceId);
+        }
         let source = context.createBufferSource()
         source.connect(context.destination)
 
@@ -30,6 +47,10 @@ export async function startOutputAudioStream(clientId) {
         startTimes.push(context.currentTime);
     } else {
         let index = clientIds.indexOf(clientId);
+        if(audioDeviceId){
+            if(audioDeviceId !== "default")
+                context.setSinkId(audioDeviceId);
+        }
         var context1 = new AudioContext();
         let source = context1.createBufferSource()
         source.connect(context1.destination)
@@ -43,7 +64,6 @@ export async function startOutputAudioStream(clientId) {
 export async function getAudioDevices(){
     return new Promise((resolve, reject) => {
         var out = [];
-        console.log(navigator.mediaDevices.enumerateDevices())
         navigator.mediaDevices.enumerateDevices().then((devices) => {
             devices.forEach((device, id) => {
                 if(device.kind === "audiooutput"){
@@ -85,6 +105,10 @@ export async function addToBuffer(clientId, left, right) {
 
         let source = clientSources[index];
         let context = audioContexts[index];
+        if(audioDeviceId){
+            if(audioDeviceId !== "default")
+                context.setSinkId(audioDeviceId);
+        }
         let audioBuffer = context.createBuffer(2, 4096, 48000);
         
         audioBuffer.getChannelData(0).set(left);

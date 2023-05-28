@@ -2,24 +2,46 @@ import React from 'react'
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
+import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import MicIcon from '@mui/icons-material/Mic';
 import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 
+const at = require('../audioTransmitter')
+
 
 function InputDevicesSettings({inputDevices}) {
-    const [inputDevice, setInputDevice] = React.useState({});
-    const [micVolume, setMicVolulme] = React.useState(100);
+    const [inputDevice, setInputDevice] = useState('default');
+    const [micVolume, setMicVolulme] = useState(100);
 
     const handleInputDeviceChange = (event) => {
         setInputDevice(event.target.value);
+        at.setAudioDevice(event.target.value)
     };
 
     const handleMicVolumeChange = (event, newValue) => {
         //set user volume
         setMicVolulme(newValue);
     };
+
+    const renderDeviceList = () => {
+        let a = inputDevices.map(device => (
+            <MenuItem key={device.id} value={device.id} >
+                {device.name}
+            </MenuItem>
+        ))
+
+        setSelected();
+        return a;
+    }
+
+    const setSelected = () => {
+        let audioDeviceId = localStorage.getItem('inputAudioDeviceId');
+        if (audioDeviceId && audioDeviceId !== inputDevice) {
+            setInputDevice(audioDeviceId);
+        }
+    }
     
     return (
         <div className="settingsModalSubDiv">
@@ -33,13 +55,7 @@ function InputDevicesSettings({inputDevices}) {
                 onChange={handleInputDeviceChange}
                 autoWidth
             >
-                {
-                    inputDevices.map(device => (
-                        <MenuItem key={device.id} value={device.id} >
-                            {device.name}
-                        </MenuItem>
-                    ))
-                }
+                {renderDeviceList()}
             </Select>
             <div style={{ width: "100%" }}>
                 <Stack spacing={2} direction="row" alignItems="center">

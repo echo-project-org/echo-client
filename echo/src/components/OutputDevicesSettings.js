@@ -1,32 +1,46 @@
-import SettingsIcon from '@mui/icons-material/Settings';
-import Tooltip from "@mui/material/Tooltip";
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
+
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import { useState, useEffect } from 'react'
 import Slider from '@mui/material/Slider';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import MicIcon from '@mui/icons-material/Mic';
-import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import React from 'react'
 
+const ar = require('../audioReceiver')
+
 function OutputDevicesSettings({ outputDevices }) {
-    const [outputDevice, setOutputDevice] = React.useState({});
-    const [soundVolume, setSoundVolulme] = React.useState(100);
+    const [outputDevice, setOutputDevice] = useState('');
+    const [soundVolume, setSoundVolulme] = useState(100);
 
     const handleOutputDeviceChange = (event) => {
         setOutputDevice(event.target.value);
+        ar.setAudioDevice(event.target.value)
     };
 
     const handleSoundVolumeChange = (event, newValue) => {
         //set user volume
         setSoundVolulme(newValue);
     };
+
+    const renderDeviceList = () => {
+        let a = outputDevices.map(device => (
+            <MenuItem key={device.id} value={device.id} >
+                {device.name}
+            </MenuItem>
+        ))
+
+        setSelected();
+        return a;
+    }
+
+    const setSelected = () => {
+        let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
+        if (audioDeviceId && audioDeviceId !== outputDevice) {
+            setOutputDevice(audioDeviceId);
+        }
+    }
 
     return (
         <div className="settingsModalSubDiv">
@@ -40,13 +54,7 @@ function OutputDevicesSettings({ outputDevices }) {
                 onChange={handleOutputDeviceChange}
                 autoWidth
             >
-                {
-                    outputDevices.map(device => (
-                        <MenuItem key={device.id} value={device.id} >
-                            {device.name}
-                        </MenuItem>
-                    ))
-                }
+                {renderDeviceList()}
             </Select>
             <div style={{ width: "100%" }}>
                 <Stack spacing={2} direction="row" alignItems="center">
