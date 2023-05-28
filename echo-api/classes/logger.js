@@ -1,4 +1,5 @@
-const config = require("../config.json");
+const cLoader = require("./configLoader");
+const config = new cLoader().getCfg();
 // replace console.log function with a custom one that logs to a file
 // and also send the log to the console
 const fs = require("fs");

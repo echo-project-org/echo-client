@@ -18,7 +18,7 @@ router.get('/socket', (req, res) => {
     });
 });
 
-router.get('/getAudioSettings', (req, res) => {
+router.get('/settings', (req, res) => {
     con.query("SELECT sampleRate, bits, channels FROM audioSettings WHERE id = 1", function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 

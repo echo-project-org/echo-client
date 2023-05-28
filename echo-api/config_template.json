@@ -1,6 +1,7 @@
 {
     "log": "verbose",
     "port": "0000",
+    "tokenExpireTime": 7,
     "database": {
         "host": "",
         "user": "",

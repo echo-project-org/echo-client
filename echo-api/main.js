@@ -3,44 +3,50 @@ const express = require('express');
 const server = express();
 const bodyParser = require('body-parser');
 
-const config = require("./config.json");
+const cLoader = require("./classes/configLoader");
+const config = new cLoader().getCfg();
+
+const OAuth = require("./classes/auth");
+const authenticator = new OAuth();
 
 require("./classes/logger");
 
-// const con = mysql.createConnection(config.database);
-// con.connect(function(err) {
-//     if (err) throw err;
-//     console.log("Connected to database!");
-// });
+const con = mysql.createConnection(config.database);
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected to database!");
+});
 
-// not gud
-// app.use(express.json());
-// old express version
-// server.use(express.bodyParser());
+// add body parser middleware for api requests
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
 server.use((req, res, next) => {
+    console.log('Got api request:', Date.now(), "Query:", req.url);
     res.header("Access-Control-Allow-Origin", "*");
+    req.database = con;
     // check if headers have a token and if it's valid
-    if (req.headers['x-access-token']) {
-        if (auth.checkToken(req.headers['x-access-token'])) {
+    if (req.headers['Authentication']) {
+        if (authenticator.checkToken(req.headers['Authentication'])) {
             return next();
         }
     } else {
-        // check if user is trying to login
+        // check if url contains auth
+        if (req.url.includes("/auth")) {
+            authenticator.loginUser(req, res);
+        } else if (req.url.includes("/refresh")) {
+            authenticator.refreshAuth(req, res);
+        } else {
+            res.status(401).json({ message: "Unauthorized" });
+        }
+        // next();
     }
-    console.log('Got api request:', Date.now(), "Query:", req.url);
-    // req.database = con;
-    next();
-})
+});
 
 const users = require("./routes/users");
-const auth = require("./routes/auth");
 const rooms = require("./routes/rooms");
 const app = require("./routes/app");
 server.use("/users", users);
-server.use("/auth", auth);
 server.use("/rooms", rooms);
 server.use("/app", app);
 
