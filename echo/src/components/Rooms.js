@@ -24,20 +24,24 @@ function Rooms({ }) {
     setActiveRoomId(joiningId)
     let nick = localStorage.getItem("userNick");
     api.call('setOnline/' + nick + '/T/' + joiningId)
-            .then((res) => {
-                if (res.ok) {
-                  
-                } else {
-                    console.error("Could not set user as online");
-                }
-            });
+      .then((res) => {
+        if (res.ok) {
+          updateRooms();
+        } else {
+          console.error("Could not set user as online");
+        }
+      });
   }
 
-  useEffect(() => {
+  const updateRooms = () => {
     api.getRooms()
       .then((result) => {
         setRemoteRooms(result);
       });
+  }
+
+  useEffect(() => {
+    updateRooms();
   }, []);
 
 
@@ -45,7 +49,7 @@ function Rooms({ }) {
     <div className='roomsContainer'>
       {
         remoteRooms.map((room) => (
-          <Room active={room.id === activeRoomId? true: false} key={room.id} onClick={onRoomClick} data={room}/>
+          <Room active={room.id === activeRoomId ? true : false} key={room.id} onClick={onRoomClick} data={room} />
         ))
       }
     </div>
