@@ -1,6 +1,7 @@
 var mysql = require('mysql'); 
 const express = require('express');
-const app = express();
+const server = express();
+const bodyParser = require('body-parser');
 
 const config = require("./config.json");
 
@@ -14,9 +15,11 @@ con.connect(function(err) {
 
 // not gud
 // app.use(express.json());
-app.use(express.bodyParser());
+// old express version
+// server.use(express.bodyParser());
+server.use(bodyParser);
 
-app.use((req, res, next) => {
+server.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     console.log('Got api request:', Date.now(), "Query:", req.query);
     req.database = con;
@@ -27,9 +30,9 @@ const users = require("./routes/users");
 const auth = require("./routes/auth");
 const rooms = require("./routes/rooms");
 const app = require("./routes/app");
-app.use("/users", users);
-app.use("/auth", auth);
-app.use("/rooms", rooms);
-app.use("/app", app);
+server.use("/users", users);
+server.use("/auth", auth);
+server.use("/rooms", rooms);
+server.use("/app", app);
 
-app.listen(config.port, () => console.log("It's alive on port", config.port));
+server.listen(config.port, () => console.log("It's alive on port", config.port));
