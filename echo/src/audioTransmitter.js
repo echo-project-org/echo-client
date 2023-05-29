@@ -7,12 +7,22 @@ let node;
 let context = null;
 var id = localStorage.getItem('userId');
 var audioDeviceId = localStorage.getItem('inputAudioDeviceId');
+var micVolume = localStorage.getItem('micVolume');
 
 var muted = false;
 
 export function toggleMute(bool) {
     // console.log("setting mute to", bool)
     muted = bool;
+}
+
+export function setMicVolume(volume) {
+    localStorage.setItem('micVolume', volume);
+    micVolume = volume;
+    if(isTransmitting){
+        stopAudioStream();
+        startInputAudioStream();
+    }
 }
 
 export function setAudioDevice(device) {
@@ -46,6 +56,10 @@ export async function getAudioDevices(){
 export async function startInputAudioStream() {
     id = localStorage.getItem('userId');
     audioDeviceId = localStorage.getItem('inputAudioDeviceId');
+    micVolume = localStorage.getItem('micVolume');
+    if(!micVolume) {
+        micVolume = 1;
+    }
 
     if (!isTransmitting) {
         console.log(">>>> STARTING STREAM")
@@ -54,7 +68,7 @@ export async function startInputAudioStream() {
                 channelCount: 2,
                 sampleRate: 48000,
                 sampleSize: 16,
-                volume: 1,
+                volume: micVolume,
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
