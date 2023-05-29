@@ -3,7 +3,6 @@ const router = express.Router();
 const fs = require("fs");
 
 router.get("/image/:id", (req, res) => {
-    console.log("got req")
     var { id } = req.params;
     // check if reqeust has .png at the end, if it does remove it
     if (id.endsWith(".png")) id = id.substring(0, id.length - 4);

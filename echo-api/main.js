@@ -35,7 +35,13 @@ server.use((req, res, next) => {
     } else {
         // check if url contains auth
         if (req.url.includes("/auth")) {
-            authenticator.loginUser(req, res);
+            console.log(req.body)
+            // check if in body there is a type "register" or "login"
+            if (req.body.type === "register") {
+                authenticator.registerUser(req, res);
+            } else if (req.body.type === "login") {
+                authenticator.loginUser(req, res);
+            }
         } else if (req.url.includes("/refresh")) {
             authenticator.refreshAuth(req, res);
         } else {

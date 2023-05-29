@@ -84,9 +84,10 @@ class Auth {
 
     // check user credentials, and send token to user
     loginUser(req, res) {
-        const { hash } = req.params;
+        console.log(req.body)
+        const { username, password } = req.body;
 
-        req.database.query("SELECT id, name FROM users WHERE password = '" + hash + "'", (err, result, fields) => {
+        req.database.query("SELECT id, name FROM users WHERE password = '" + password + "'", (err, result, fields) => {
             if (err) return res.status(400).send({ message: "You messed up the request." });
             // send wrong credentials if no user was found
             if (!result) return res.status(401).send({ message: "Wrong credentials." });
@@ -96,6 +97,27 @@ class Auth {
                 return res.status(200).json({
                     id: result[0].id,
                     nick: result[0].nick,
+                    token,
+                    refreshToken
+                });
+            }
+
+            res.status(200).json({ message: "Username does not exist or password is incorrect." });
+        });
+    }
+
+    // register user in the database
+    registerUser(req, res) {
+        const { username, password } = req.body;
+
+        req.database.query("INSERT INTO users (nick, password) VALUES ('" + username + "', '" + password + "')", (err, result, fields) => {
+            if (err) return res.status(400).send({ message: "You messed up the request." });
+            
+            if (result && result.affectedRows > 0) {
+                const { token, refreshToken } = this.generateToken(result.insertId);
+                return res.status(200).json({
+                    id: result.insertId,
+                    nick: username,
                     token,
                     refreshToken
                 });
