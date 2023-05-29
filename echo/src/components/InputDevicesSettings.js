@@ -62,6 +62,7 @@ function InputDevicesSettings({ inputDevices }) {
     const handleMicVolumeChange = (event, newValue) => {
         //set user volume
         setMicVolulme(newValue);
+        at.setMicVolume(newValue / 100)
     };
 
     const renderDeviceList = () => {
@@ -79,6 +80,11 @@ function InputDevicesSettings({ inputDevices }) {
         let audioDeviceId = localStorage.getItem('inputAudioDeviceId');
         if (audioDeviceId && audioDeviceId !== inputDevice) {
             setInputDevice(audioDeviceId);
+        }
+
+        let micVol = localStorage.getItem('micVolume') * 100;
+        if(micVol && micVol !== micVolume){
+            setMicVolulme(micVol);
         }
     }
 
