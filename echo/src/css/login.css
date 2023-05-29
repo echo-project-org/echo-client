@@ -1,0 +1,151 @@
+:root {
+  --login-form-background: #ab6fb4;
+  --input-background: #7d5284;
+  --input-box-shadow: #7d5284;
+  --input-placeholder-color: #9b76a1;
+}
+
+/* animate breathing effect and add pulse white shadow circular including the container */
+@keyframes breathing {
+  0% {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  60% {
+    background: rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 1.5rem rgba(255, 255, 255, 0);
+  }
+  100% {
+    background: rgba(255, 255, 255, 0);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* animate size breathing sync with breathing anim */
+@keyframes breathingSize {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.ripple {
+  left: 0;
+  right: 0;
+  top: 2.2rem;
+  position: absolute;
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+  margin: auto;
+  /* background-color: red; */
+  animation: breathing 3s ease-out infinite;
+}
+
+.boxedLogo {
+  height: 5rem;
+  width: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  animation: breathingSize 3s ease-out infinite;
+}
+
+.loginForm {
+  background-color: var(--login-form-background);
+  border: 2px solid #111;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 25rem;
+  height: 25rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  padding: 1rem;
+  box-shadow: 0 0 5px 1px #111;
+  transition: all .1s ease;
+}
+
+/* when hover on loginform, add boxshadow for 3d effect and move container */
+.loginForm:hover {
+  box-shadow: 0 15px 15px 8px #111;
+  transform: translateY(-5px);
+  transition: all .1s ease;
+}
+
+.loginForm h1 {
+  color: white;
+}
+
+.loginButtons {
+  position: absolute;
+  padding-bottom: 2rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 15rem;
+  height: 60px;
+  cursor: pointer;
+}
+
+.loginForm .input {
+  /* hide normal input */
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  outline: none;
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  background: var(--input-background);
+  border: 1px solid var(--input-box-shadow);
+  box-shadow: 0px 1px 5px var(--input-box-shadow);
+}
+
+.input::placeholder {
+  font-weight: bold;
+  color: var(--input-placeholder-color);
+  opacity: 1; /* Firefox */
+}
+.input:-ms-input-placeholder {
+  font-weight: bold;
+  color: var(--input-placeholder-color);
+}
+.input::-ms-input-placeholder {
+  font-weight: bold;
+  color: var(--input-placeholder-color);
+}
+
+.input:hover {
+  transition: all .1s ease;
+  border: 1px solid white;
+}
+
+.input:focus {
+  transition: all .1s ease;
+  border: 1px solid white;
+  box-shadow: 0px 1px 8px white;
+}
+
+/* firefox */
+.input &:focus-visible {
+  outline: 0;
+}

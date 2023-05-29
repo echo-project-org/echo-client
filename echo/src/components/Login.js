@@ -1,19 +1,21 @@
 import '../index.css'
-import { useState, useEffect } from 'react'
+import "../css/login.css"
+
+import { useState, useEffect, forwardRef } from 'react'
 import { motion } from 'framer-motion'
-import { Alert, Button, createTheme, Snackbar, TextField } from '@mui/material'
+import { Alert, Button, createTheme, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import BackButton from './BackButton';
+
+import imgLogo from "../img/headphones.svg"
+
 var api = require('../api')
 
 const theme = createTheme({
     palette: {
       primary: {main: '#2b192e',},
       secondary: {main: '#2b192e',},
-    },
-    input: {
-        color: '#2b192e'
-    },
+    }
 });
 
 
@@ -54,17 +56,20 @@ const Login = () => {
         } else {
             var hashed = await hash(usrName + "@" + psw);
             
-            api.call('authenticateUser/' + hashed)
-                .then(async (res) => {
-                    const data = await res.json();
-                    if(res.ok){
+            api.call('auth', "POST", { type: "login", username: usrName, password: hashed })
+                .then(async (data) => {
+                    console.log(data);
+                    if (data.ok) {
                         hideError();
                         localStorage.setItem("userId", data.id);
                         localStorage.setItem("userNick", data.nick);
                         navigate("/");
                     } else {
-                        showError("Username or password do not match!");
+                        showError(data.message);
                     }
+                })
+                .catch((err) => {
+                    showError("Something went wrong!");
                 });
         }
     }
@@ -87,51 +92,45 @@ const Login = () => {
     return (
         <motion.div 
             className='splashScreen'
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            exit={{opacity: 0}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
         >
         
-        <BackButton/>
-        <div className="loginForm">
-            <h1>Login</h1>
-            <TextField
-                sx={{input: {color: '#2b192e'}}}
-                required
-                id="usernameBox"
-                variant="standard"
-                label="Username"
-                error={loginError}
-            />
-            <TextField
-                required
-                sx={{input: {color: '#2b192e'}}}
-                id="passwordBox"
-                variant="standard"
-                type="password"
-                label="Password"
-                onKeyPress={(e) => {
-                    if(e.key === 'Enter') {
-                        //If key pressed is Enter
-                        checkCredentials();
-                    }
-                }}
-                error={loginError}
-            />
-            <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>
-        </div>
+            <BackButton/>
+            <div className="loginForm">
+                <div className="boxedLogoContainer">
+                    <img className="boxedLogo" src={imgLogo} alt='echoLogo'/>
+                    <div className="ripple"></div>
+                </div>
+                <h1>Login</h1>
+                <input
+                    id="usernameBox"
+                    type="text"
+                    className="input"
+                    placeholder="Username"
+                />
+                <input
+                    id="passwordBox"
+                    type="password"
+                    className="input"
+                    placeholder="Password"
+                />
 
-        <Snackbar 
-            anchorOrigin={{ vertical, horizontal }}
-            open={open}
-            onClose={handleClose}
-            message={message}
-            key={vertical + horizontal}
-        >
-            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                {message}
-            </Alert>
-        </Snackbar>
+                <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>
+            </div>
+
+            <Snackbar 
+                anchorOrigin={{ vertical, horizontal }}
+                open={open}
+                onClose={handleClose}
+                message={message}
+                key={vertical + horizontal}
+            >
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    {message}
+                </Alert>
+            </Snackbar>
         </motion.div>
     )
 }

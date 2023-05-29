@@ -61,43 +61,36 @@ const Register = () => {
                 var hashed = await hash(usrName + "@" + psw);
                 //TODO replace this so it verifies that the nickname is available fist
                 //(nick must be unique in db)
-                api.call('authenticateUser/' + hashed)
-                    .then(async (res) => {
-                        const data = await res.json();
-                        if (!res.ok) {
-                            //if api returns 200 OK
-                            if (data.id == null) {
-                                //Can create account
-                                hideError();
-                                const request = 'addUser/' + usrName + "/" + usrImg + "/" + hashed;
-                                // console.log(request);
-                                api.call(request)
-                                    .then((res) => {
-                                        if (res.ok) {
-                                            api.call('authenticateUser/' + hashed)
-                                                .then(async (res) => {
-                                                    const data = await res.json();
-                                                    if (res.ok) {
-                                                        hideError();
-                                                        localStorage.setItem("userId", data.id);
-                                                        localStorage.setItem("userNick", data.nick);
-                                                        navigate("/");
-                                                    } else {
-                                                        showError("Something went wrong!");
-                                                    }
-                                                });
-                                        } else {
-                                            //Api errored out!
-                                            showError("Unable to create account! Api error.");
-                                        }
-                                    });
-                            } else {
-                                //hash already present in db
-                                showError("User already exists!")
-                            }
+                api.call('auth', "POST", { type: "register", password: hashed, username: usrName })
+                    .then(async (data) => {
+                        if (data.id == null) {
+                            //Can create account
+                            hideError();
+                            const request = 'addUser/' + usrName + "/" + usrImg + "/" + hashed;
+                            // console.log(request);
+                            api.call(request)
+                                .then((res) => {
+                                    if (res.ok) {
+                                        api.call('authenticateUser/' + hashed)
+                                            .then(async (res) => {
+                                                const data = await res.json();
+                                                if (res.ok) {
+                                                    hideError();
+                                                    localStorage.setItem("userId", data.id);
+                                                    localStorage.setItem("userNick", data.nick);
+                                                    navigate("/");
+                                                } else {
+                                                    showError("Something went wrong!");
+                                                }
+                                            });
+                                    } else {
+                                        //Api errored out!
+                                        showError("Unable to create account! Api error.");
+                                    }
+                                });
                         } else {
-                            //If api errors out
-                            showError("Api errored out!");
+                            //hash already present in db
+                            showError("User already exists!")
                         }
                     });
             } else {
