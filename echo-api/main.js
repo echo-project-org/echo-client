@@ -24,12 +24,14 @@ server.use(bodyParser.json());
 server.use((req, res, next) => {
     console.log('Got api request:', Date.now(), "Query:", req.url);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authentication")
+    res.header("Access-Control-Expose-Headers", "Authentication")
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, GET");
     req.database = con;
     req.authenticator = authenticator;
     req.utils = require("./classes/utils");
     // check if headers have a token and if it's valid
+    console.log(res.headers.get('Authentication'))
     if (req.headers['Authentication']) {
         if (authenticator.checkToken(req.headers['Authentication'])) {
             return next();

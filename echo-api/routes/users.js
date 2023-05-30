@@ -52,29 +52,12 @@ router.get('/', (req, res) => {
     });
 });
 
-// create new user
-router.post('/', (req, res) => {
-    const body = req.body;
-    const id = body.id;
-    const url = body.status;
-    const hash = body.room;
+// update user status
+router.post('/status', (req, res) => {
+    const ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
+    const { id, username, img, status } = req.body;
 
-    con.query("REPLACE INTO users SET nick = '" + id + "', img = '" + url + "', firstJoin = NOW(), hash = '" + hash + "';", function (err, result, fields) {
-        if (err) res.status(400).send({ error: "You messed up the request." });
-        else res.status(200).send({ message: "User added" });
-    });
-});
-
-// update an existing user
-router.post('/update', (req, res) => {
-    var ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
-
-    const body = req.body;
-    const id = body.id;
-    const status = body.status;
-    const room = body.room;
-
-    con.query("UPDATE users SET online = '"+ status +"', lastSeen = CURRENT_TIMESTAMP(), lastIP = '" + ip + "', stanza = '" + room + "' WHERE nick = '" + id + "'", function (err, result, fields) {
+    con.query("UPDATE users SET online = '" + status + "', lastSeen = CURRENT_TIMESTAMP(), ip = '" + ip + "', WHERE id = '" + id + "'", function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." })
         res.status(200).send({  message: "Status updated!" });
     });

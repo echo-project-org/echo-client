@@ -52,17 +52,22 @@ const MainLogo = () => {
         //         }
         //     });
         
-        var userNickCookie = localStorage.getItem('username');
-        if (userNickCookie) {
-            //If cookies are found then prompt user to access the app
-            setAccessBtnVisibility(true);
-            setLoginBtnVisibility(false);
-            setUserNickname(userNickCookie);
-        } else {
-            //If no cookies are found then ask for login / registration
-            setAccessBtnVisibility(false);
-            setLoginBtnVisibility(true);
-        }
+        // cause it's cool :3
+        setLoadingVisibility(true);
+        setTimeout(() => {
+            setLoadingVisibility(false);
+            var userNickCookie = localStorage.getItem('username');
+            if (userNickCookie) {
+                //If cookies are found then prompt user to access the app
+                setAccessBtnVisibility(true);
+                setLoginBtnVisibility(false);
+                setUserNickname(userNickCookie);
+            } else {
+                //If no cookies are found then ask for login / registration
+                setAccessBtnVisibility(false);
+                setLoginBtnVisibility(true);
+            }
+        }, 1500);
 
     }, [])
 

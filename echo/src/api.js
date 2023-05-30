@@ -28,6 +28,8 @@ export async function call(path, method = "GET", body = null) {
             .then(({ status, json, ok }) => {
                 const message = json.message;
                 if (!ok) return reject({ status, message });
+                if (typeof json === "string") json = JSON.parse(json);
+                console.log("response", json)
                 resolve({ status, message, json });
             })
             .catch(reject);
@@ -53,6 +55,8 @@ export async function call(path, method = "GET", body = null) {
             .then(({ status, json, ok }) => {
                 const message = json.message;
                 if (!ok) return reject({ status, message });
+                if (typeof json === "string") json = JSON.parse(json);
+                console.log("response", json)
                 resolve({ status, message, json });
             })
             .catch(reject);

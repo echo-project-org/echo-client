@@ -60,12 +60,13 @@ const Login = () => {
                 .then((hashed) => {
                     api.call('auth/login', "POST", { email, password: hashed })
                         .then((data) => {
+                            console.log(data);
                             hideError();
-                            localStorage.setItem("id", data.id);
-                            localStorage.setItem("username", data.nick);
-                            localStorage.setItem("email", data.email);
-                            localStorage.setItem("token", data.token);
-                            localStorage.setItem("refreshToken", data.refreshToken);
+                            localStorage.setItem("id", data.json.id);
+                            localStorage.setItem("username", data.json.username);
+                            localStorage.setItem("email", data.json.email);
+                            localStorage.setItem("token", data.json.token);
+                            localStorage.setItem("refreshToken", data.json.refreshToken);
                             navigate("/");
                         })
                         .catch((err) => {

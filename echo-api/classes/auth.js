@@ -47,11 +47,16 @@ class Auth {
 
     // check if a token is valid and not expired
     checkToken(token) {
+        // if contains Bearer remove it
+        if (token.includes("Bearer ")) token = token.replace("Bearer ", "");
+
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i].token == token) {
                 if (this.tokens[i].expires > new Date().getTime()) {
+                    console.log("Token valid for user", this.tokens[i].user)
                     return this.tokens[i].user;
                 } else {
+                    console.log("Token expired for user", this.tokens[i].user)
                     // remove the token if it is expired
                     this.removeToken(token);
                     return false;
