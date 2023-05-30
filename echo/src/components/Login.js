@@ -48,28 +48,26 @@ const Login = () => {
     }
 
     const checkCredentials = async () => {
-        var usrName = document.getElementById('usernameBox').value
-        var psw = document.getElementById('passwordBox').value
+        var email = document.getElementById('usernameBox').value
+        var password = document.getElementById('passwordBox').value
 
-        if(usrName === "" || psw === ""){
+        if(email === "" || password === ""){
             showError("All fields must be populated!");
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            showError("Invalid email address!");
         } else {
-            var hashed = await hash(usrName + "@" + psw);
-            
-            api.call('auth', "POST", { type: "login", username: usrName, password: hashed })
-                .then(async (data) => {
-                    console.log(data);
-                    if (data.ok) {
-                        hideError();
-                        localStorage.setItem("userId", data.id);
-                        localStorage.setItem("userNick", data.nick);
-                        navigate("/");
-                    } else {
-                        showError(data.message);
-                    }
-                })
-                .catch((err) => {
-                    showError("Something went wrong!");
+            hash(email + "@" + password)
+                .then((hashed) => {
+                    api.call('auth/login', "POST", { email, password: hashed })
+                        .then((data) => {
+                            hideError();
+                            localStorage.setItem("userId", data.id);
+                            localStorage.setItem("userNick", data.nick);
+                            navigate("/");
+                        })
+                        .catch((err) => {
+                            showError(err.message);
+                        });
                 });
         }
     }
@@ -98,7 +96,7 @@ const Login = () => {
         >
         
             <BackButton/>
-            <div className="loginForm">
+            <div className="loginForm" style={{ height: "28rem" }}>
                 <div className="boxedLogoContainer">
                     <img className="boxedLogo" src={imgLogo} alt='echoLogo'/>
                     <div className="ripple"></div>
@@ -108,7 +106,7 @@ const Login = () => {
                     id="usernameBox"
                     type="text"
                     className="input"
-                    placeholder="Username"
+                    placeholder="Email"
                 />
                 <input
                     id="passwordBox"

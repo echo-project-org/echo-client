@@ -13,10 +13,23 @@ export async function call(path, method = "GET", body = null) {
                     'Content-Type': 'application/json',
                     "Authentication": "Bearer " + localStorage.getItem("token")
                 },
-                body
+                body: typeof body === "string" ? body : JSON.stringify(body)
             })
-            .then((response) => { return response.json(); })
-            .then((data) => { resolve(data); })
+            .then((response) => {
+                return new Promise((resolve) => response.json()
+                    .then((json) => resolve(
+                        {
+                            status: response.status,
+                            ok: response.ok,
+                            json,
+                        }
+                    )));
+            })
+            .then(({ status, json, ok }) => {
+                const message = json.message;
+                if (!ok) return reject({ status, message });
+                resolve({ status, message, json });
+            })
             .catch(reject);
         else
             fetch('http://localhost:6980/' + path, {
@@ -27,24 +40,22 @@ export async function call(path, method = "GET", body = null) {
                     "Authentication": "Bearer " + localStorage.getItem("token")
                 },
             })
-            .then((response) => { return response.json(); })
-            .then((data) => { resolve(data); })
+            .then((response) => {
+                return new Promise((resolve) => response.json()
+                    .then((json) => resolve(
+                        {
+                            status: response.status,
+                            ok: response.ok,
+                            json,
+                        }
+                    )));
+            })
+            .then(({ status, json, ok }) => {
+                const message = json.message;
+                if (!ok) return reject({ status, message });
+                resolve({ status, message, json });
+            })
             .catch(reject);
-    });
-}
-
-export async function login(path) {
-    return new Promise((resolve, reject) => {
-        fetch('http://localhost:6980/' + path, {
-            method: "GET",
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then((response) => { return response.json(); })
-        .then((data) => { resolve(data); })
-        .catch(reject);
     });
 }
 
