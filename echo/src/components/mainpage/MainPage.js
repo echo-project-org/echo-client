@@ -1,12 +1,12 @@
-import '../index.css'
+import '../../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Utilities from './Utilities';
-import Sidebar from './Sidebar';
-import RoomContent from './RoomContent';
+import Utilities from '../user/Utilities';
+import Sidebar from '../sidebar/Sidebar';
+import RoomContent from '../rooms/RoomContent';
 
-var api = require('../api')
-var at = require('../audioTransmitter')
+var api = require('../../api')
+var at = require('../../audioTransmitter')
 
 const MainPage = () => {
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import Chat from './Chat'
-import ChatControls from './ChatControls'
+import Chat from '../chat/Chat'
+import ChatControls from '../chat/ChatControls'
 
 function RoomContent() {
   return (

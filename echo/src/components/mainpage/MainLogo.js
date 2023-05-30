@@ -1,13 +1,13 @@
-import '../index.css'
+import '../../index.css'
 import { useState, useEffect } from 'react'
-import imgLogo from "../img/headphones.svg"
+import imgLogo from "../../img/headphones.svg"
 import { motion } from 'framer-motion'
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from './LoadingAnimation';
-import AuthenticatedUserButtons from './AuthenticatedUserButtons';
+import AuthenticatedUserButtons from '../user/AuthenticatedUserButtons';
 import LoginButtons from './LoginButtons';
 
-var api = require('../api')
+var api = require('../../api')
 
 const MainLogo = () => {
     let navigate = useNavigate(); 

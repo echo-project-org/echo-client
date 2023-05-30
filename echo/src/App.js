@@ -1,9 +1,9 @@
 import './App.css';
 import { useState, useEffect } from 'react'
 import { HashRouter } from "react-router-dom";
-import AnimatedRoutes from './components/AnimatedRoutes';
-import CloseButton from './components/WindowControls';
-import WindowControls from './components/WindowControls';
+import AnimatedRoutes from './components/mainpage/AnimatedRoutes';
+import CloseButton from './components/header/WindowControls';
+import WindowControls from './components/header/WindowControls';
 
 function App() {
   useEffect(() => {

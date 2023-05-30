@@ -1,4 +1,4 @@
-import '../index.css';
+import '../../index.css';
 import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Zoom from '@mui/material/Zoom';
@@ -17,16 +17,16 @@ import MicIcon from '@mui/icons-material/Mic';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 
-import muteSound from "../audio/mute.mp3";
-import unmuteSound from "../audio/unmute.mp3";
-import deafSound from "../audio/deaf.mp3";
-import undeafSound from "../audio/undeaf.mp3";
-import SettingsButton from './SettingsButton';
+import muteSound from "../../audio/mute.mp3";
+import unmuteSound from "../../audio/unmute.mp3";
+import deafSound from "../../audio/deaf.mp3";
+import undeafSound from "../../audio/undeaf.mp3";
+import SettingsButton from '../settings/SettingsButton';
 
-const api = require('../api')
-const at = require('../audioTransmitter')
-const ar = require('../audioReceiver')
-const ep = require('../echoProtocol')
+const api = require('../../api')
+const at = require('../../audioTransmitter')
+const ar = require('../../audioReceiver')
+const ep = require('../../echoProtocol')
 
 const theme = createTheme({
   palette: {

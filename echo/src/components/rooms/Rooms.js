@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import Room from './Room';
 
 
-const ep = require("../echoProtocol");
-const api = require("../api");
+const ep = require("../../echoProtocol");
+const api = require("../../api");
 
 function Rooms({ }) {
   const [roomId, setRoomId] = useState(0);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import OnlineUserIcon from './OnlineUserIcon'
+import OnlineUserIcon from '../user/OnlineUserIcon'
 import { Divider } from '@mui/material'
 
 function ActiveRoom({ users, onClick, data }) {

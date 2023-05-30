@@ -14,11 +14,11 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import React from 'react'
-import InputDevicesSettings from './InputDevicesSettings';
-import OutputDevicesSettings from './OutputDevicesSettings';
+import InputDevicesSettings from '../settings/InputDevicesSettings';
+import OutputDevicesSettings from '../settings/OutputDevicesSettings';
 
-const ar = require('../audioReceiver')
-const at = require('../audioTransmitter')
+const ar = require('../../audioReceiver')
+const at = require('../../audioTransmitter')
 
 const modalStyle = {
     position: 'absolute',

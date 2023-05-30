@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 import React from 'react'
 
-const ar = require('../audioReceiver')
+const ar = require('../../audioReceiver')
 
 const theme = createTheme({
     components: {
