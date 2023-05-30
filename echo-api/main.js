@@ -13,7 +13,7 @@ require("./classes/logger");
 
 const con = mysql.createConnection(config.database);
 con.connect(function(err) {
-    if (err) throw err;
+    if (err) return console.log(err);
     console.log("Connected to database!");
 });
 
@@ -23,30 +23,17 @@ server.use(bodyParser.json());
 
 server.use((req, res, next) => {
     console.log('Got api request:', Date.now(), "Query:", req.url);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authentication")
-    res.header("Access-Control-Expose-Headers", "Authentication")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+    res.header("Access-Control-Expose-Headers", "Authorization")
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, GET");
-    req.database = con;
-    req.authenticator = authenticator;
-    req.utils = require("./classes/utils");
-    // check if headers have a token and if it's valid
-    console.log(res.headers.get('Authentication'))
-    if (req.headers['Authentication']) {
-        if (authenticator.checkToken(req.headers['Authentication'])) {
-            return next();
-        }
-    } else {
-        // check if url contains auth
-        if (req.url.includes("/auth")) {
-            // check if in body there is a type "register" or "login"
-            console.log("Auth request")
-            return next();
-        } else {
-            res.status(401).json({ message: "Unauthorized" });
-        }
-        // next();
-    }
+    if (!req.database) req.database = con;
+    if (!req.authenticator) req.authenticator = authenticator;
+    if (!req.utils) req.utils = require("./classes/utils");
+
+    if (con.state === "disconnected") return res.status(500).send({ message: "Database is not connected" });
+
+    next();
 });
 
 server.use("/users", require("./routes/users"));

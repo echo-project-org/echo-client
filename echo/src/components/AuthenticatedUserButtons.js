@@ -30,10 +30,13 @@ const AuthenticatedUserButtons = ({ visibility = false, nickname }) => {
     const enterRoom = async () => {
         // TODO: check the initial status of user (maybe get it from the login form?)
         // and check if we need to update it or not
-        api.call('status', "POST", { id: localStorage.getItem('id'), status: 1 })
+        api.call('users/status', "POST", { id: localStorage.getItem('id'), status: 1 })
             .then((res) => {
                 ep.openConnection(localStorage.getItem('id'));
                 navigate("/main");
+            })
+            .catch((err) => {
+                console.log(err.message);
             });
     }
     if (!visibility) return null

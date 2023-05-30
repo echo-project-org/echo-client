@@ -40,6 +40,7 @@ class Auth {
         var refreshToken = this.generateRandomString(64);
         // ad expiring date to token
         var expireDate = new Date();
+        console.log("generating token for user", user, config.tokenExpireInDays)
         expireDate.setDate(expireDate.getDate() + config.tokenExpireInDays);
         this.tokens.push({ token: token, user: user, expires: expireDate.getTime(), refreshToken: refreshToken });
         return { token: token, refreshToken: refreshToken };
@@ -85,6 +86,18 @@ class Auth {
             return res.status(200).json({ token: newToken });
         }
         res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // check authentication
+    checkAuth(req, res) {
+        if (config.env == "dev") return true;
+        
+        if (req.headers.authorization)
+            if (!req.authenticator.checkToken(req.headers.authorization)) {
+                res.status(401).send({ message: "Unauthorized" });
+                return false;
+            }
+        return true;
     }
 }
 

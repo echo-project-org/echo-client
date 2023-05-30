@@ -13,7 +13,7 @@ const MainPage = () => {
     const [users, setUsers] = useState(
         [
             {
-                "nick": "Undefined",
+                "name": "Undefined",
                 "img": "none",
                 "stanza": 1,
                 "lastIP": "0.0.0.0"
@@ -22,10 +22,9 @@ const MainPage = () => {
     );
 
     const fetchOnlineUsers = async () => {
-        api.call('getOnlineUsers')
-            .then(async (res) => {
-                const data = await res.json();
-                setUsers(data);
+        api.call('friends')
+            .then((data) => {
+                setUsers(data.json);
             });
     }
 

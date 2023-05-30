@@ -89,7 +89,7 @@ const theme = createTheme({
   },
 });
 
-function OnlineUserIcon({imgUrl, nick, talking}) {
+function OnlineUserIcon({imgUrl, name, talking}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userVolume, setUserVolulme] = React.useState(100);
   const open = Boolean(anchorEl);
@@ -116,9 +116,9 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}>
           <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
-            <Avatar alt={nick} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
+            <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
           </Badge>
-          <p className='onlineUserNick'>{nick}</p>
+          <p className='onlineUserNick'>{name}</p>
         </div>
 
         <ThemeProvider theme={theme}>
@@ -138,7 +138,7 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
               textAlign: "-webkit-center",
               marginBottom: ".3rem",
             }}>
-              <Avatar alt={nick} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{
+              <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{
                 border: "3px solid white"
               }}/>
             </div>
@@ -172,7 +172,7 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
 
 OnlineUserIcon.defaultProps = {
     imgUrl: "https://kurickigabriele2020.altervista.org/Kury.jpg",
-    nick: "Kury",
+    name: "Kury",
     talking: false,
 }
 

@@ -22,8 +22,8 @@ function Rooms({ }) {
     ep.joinRoom(localStorage.getItem("id"), joiningId);
     setRoomId(joiningId);
     setActiveRoomId(joiningId)
-    let nick = localStorage.getItem("username");
-    api.call('setOnline/' + nick + '/T/' + joiningId)
+    let name = localStorage.getItem("username");
+    api.call('setOnline/' + name + '/T/' + joiningId)
       .then((res) => {
         if (res.ok) {
           updateRooms();
@@ -34,9 +34,10 @@ function Rooms({ }) {
   }
 
   const updateRooms = () => {
-    api.getRooms()
+    api.call("rooms")
       .then((result) => {
-        setRemoteRooms(result);
+        console.log("rooms: ", result.json)
+        setRemoteRooms(result.json);
       });
   }
 

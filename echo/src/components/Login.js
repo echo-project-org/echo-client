@@ -111,12 +111,14 @@ const Login = () => {
                     type="text"
                     className="input"
                     placeholder="Email"
+                    value="test@example.com"
                 />
                 <input
                     id="passwordBox"
                     type="password"
                     className="input"
                     placeholder="Password"
+                    value="test"
                 />
 
                 <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>

@@ -11,7 +11,7 @@ export async function call(path, method = "GET", body = null) {
                 cache: 'no-cache',
                 headers: {
                     'Content-Type': 'application/json',
-                    "Authentication": "Bearer " + localStorage.getItem("token")
+                    "Authorization": "Bearer " + localStorage.getItem("token")
                 },
                 body: typeof body === "string" ? body : JSON.stringify(body)
             })
@@ -39,7 +39,7 @@ export async function call(path, method = "GET", body = null) {
                 cache: 'no-cache',
                 headers: {
                     'Content-Type': 'application/json',
-                    "Authentication": "Bearer " + localStorage.getItem("token")
+                    "Authorization": "Bearer " + localStorage.getItem("token")
                 },
             })
             .then((response) => {
@@ -61,15 +61,4 @@ export async function call(path, method = "GET", body = null) {
             })
             .catch(reject);
     });
-}
-
-export async function getRooms() {
-    return new Promise((resolve, reject) => {
-        fetch("https://timspik.ddns.net/getRooms")
-            .then(async (response) => {
-                const data = await response.json();
-                resolve(data);
-            })
-            .catch(reject);
-    })
 }
