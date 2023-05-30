@@ -18,7 +18,7 @@ const MainLogo = () => {
     var [serverPort, setServerPort] = useState('00000');
     var [userNickname, setUserNickname] = useState("undefined");
 
-    var userNickCookie = localStorage.getItem('userNick');
+    var userNickCookie = localStorage.getItem('username');
 
     const goToPage = (page) => {
         navigate(page);

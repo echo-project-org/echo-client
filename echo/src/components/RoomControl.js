@@ -67,8 +67,8 @@ function RoomControl({ screenSharing }) {
 
   let navigate = useNavigate();
 
-  useEffect(() => { ep.sendAudioState(localStorage.getItem("userId"), { deaf, muted }); at.toggleMute(muted); }, [muted]);
-  useEffect(() => { ep.sendAudioState(localStorage.getItem("userId"), { deaf, muted }); }, [deaf]);
+  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); at.toggleMute(muted); }, [muted]);
+  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); }, [deaf]);
 
   const muteAudio = new Audio(muteSound);
   muteAudio.volume = 0.6;
@@ -94,7 +94,7 @@ function RoomControl({ screenSharing }) {
 
   const exitRoom = () => {
     //Notify api
-    var nickname = localStorage.getItem("userNick");
+    var nickname = localStorage.getItem("username");
     api.call('setOnline/' + nickname + '/F/0')
       .then(res => {
         // at.startInputAudioStream();

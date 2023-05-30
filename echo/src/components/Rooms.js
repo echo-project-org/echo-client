@@ -19,10 +19,10 @@ function Rooms({ }) {
   ])
 
   const onRoomClick = (joiningId) => {
-    ep.joinRoom(localStorage.getItem("userId"), joiningId);
+    ep.joinRoom(localStorage.getItem("id"), joiningId);
     setRoomId(joiningId);
     setActiveRoomId(joiningId)
-    let nick = localStorage.getItem("userNick");
+    let nick = localStorage.getItem("username");
     api.call('setOnline/' + nick + '/T/' + joiningId)
       .then((res) => {
         if (res.ok) {

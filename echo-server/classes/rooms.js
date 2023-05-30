@@ -66,9 +66,9 @@ class Rooms {
 
     joinRoom(data) {
         console.log("got join message", data)
-        data.userId = data.id;
+        data.id = data.id;
         this.addRoom(data.roomId);
-        this.addUserToRoom(data.userId, data.roomId);
+        this.addUserToRoom(data.id, data.roomId);
     }
 
     endConnection(data) {
@@ -91,22 +91,22 @@ class Rooms {
         }
     }
 
-    removeUserFromRooms(userId) {
-        if (this.connectedClients.has(userId)) {
+    removeUserFromRooms(id) {
+        if (this.connectedClients.has(id)) {
             this.rooms.forEach((room, id, arr) => {
-                if (room.users.has(userId)) {
-                    console.log("removing userId", userId, "from room", id);
-                    room.users.delete(userId);
+                if (room.users.has(id)) {
+                    console.log("removing id", id, "from room", id);
+                    room.users.delete(id);
                 }
             });
             console.log(this.rooms);
         }
     }
 
-    addUserToRoom(userId, roomId) {
-        if (this.connectedClients.has(userId)) {
+    addUserToRoom(id, roomId) {
+        if (this.connectedClients.has(id)) {
             if (this.rooms.has(roomId)) {
-                const user = this.connectedClients.get(userId);
+                const user = this.connectedClients.get(id);
                 user.setLastRoom(roomId);
                 this.rooms.get(roomId).users.set(user.id, user);
                 this.rooms.get(roomId).users.forEach((remoteUser, id) => {
@@ -119,7 +119,7 @@ class Rooms {
                     }
                 })
             }
-        } else console.log(colors.changeColor("red", "Can't add user " + userId + " to room " + roomId + ", user is not connected to socket"));
+        } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + roomId + ", user is not connected to socket"));
     }
 
     getUsersInRoom(id) {

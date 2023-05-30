@@ -31,9 +31,9 @@ class User {
     }
 
     // called when remote user join the current room
-    userJoinedCurrentChannel(userId) {
+    userJoinedCurrentChannel(id) {
         if (this.lastRoom !== 0) {
-            this.socket.emit("userJoinedChannel", { id: userId })
+            this.socket.emit("userJoinedChannel", { id: id })
         }
     }
 

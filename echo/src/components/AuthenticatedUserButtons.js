@@ -17,8 +17,8 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
     let navigate = useNavigate();
 
     const logout = async () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userNick");
+        localStorage.removeItem("id");
+        localStorage.removeItem("username");
 
         window.location.reload();
 
@@ -28,7 +28,7 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
         api.call('setOnline/' + nickname + '/T/0')
             .then((res) => {
                 if (res.ok) {
-                    ep.openConnection(localStorage.getItem('userId'));
+                    ep.openConnection(localStorage.getItem('id'));
                     navigate("/main");
                 } else {
                     console.error("Could not set user as online");

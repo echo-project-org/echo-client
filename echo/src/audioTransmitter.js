@@ -5,7 +5,7 @@ let mediaStream = null;
 let isTransmitting = false;
 let node;
 let context = null;
-var id = localStorage.getItem('userId');
+var id = localStorage.getItem('id');
 var audioDeviceId = localStorage.getItem('inputAudioDeviceId');
 var micVolume = localStorage.getItem('micVolume');
 
@@ -54,7 +54,7 @@ export async function getAudioDevices(){
 
 
 export async function startInputAudioStream() {
-    id = localStorage.getItem('userId');
+    id = localStorage.getItem('id');
     audioDeviceId = localStorage.getItem('inputAudioDeviceId');
     micVolume = localStorage.getItem('micVolume');
     if(!micVolume) {
@@ -110,7 +110,7 @@ export async function startInputAudioStream() {
 }
 
 export function stopAudioStream() {
-    id = localStorage.getItem('userId');
+    id = localStorage.getItem('id');
     if (isTransmitting) {
         console.log(">>>> STOPPING STREAM");
         ep.closeConnection(id)
