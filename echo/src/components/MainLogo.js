@@ -18,8 +18,6 @@ const MainLogo = () => {
     var [serverPort, setServerPort] = useState('00000');
     var [userNickname, setUserNickname] = useState("undefined");
 
-    var userNickCookie = localStorage.getItem('username');
-
     const goToPage = (page) => {
         navigate(page);
     }
@@ -54,9 +52,17 @@ const MainLogo = () => {
         //         }
         //     });
         
-            
-        setLoadingVisibility(false);
-        setLoginBtnVisibility(true);
+        var userNickCookie = localStorage.getItem('username');
+        if (userNickCookie) {
+            //If cookies are found then prompt user to access the app
+            setAccessBtnVisibility(true);
+            setLoginBtnVisibility(false);
+            setUserNickname(userNickCookie);
+        } else {
+            //If no cookies are found then ask for login / registration
+            setAccessBtnVisibility(false);
+            setLoginBtnVisibility(true);
+        }
 
     }, [])
 
