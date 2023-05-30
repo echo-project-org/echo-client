@@ -61,8 +61,11 @@ const Login = () => {
                     api.call('auth/login', "POST", { email, password: hashed })
                         .then((data) => {
                             hideError();
-                            localStorage.setItem("userId", data.id);
-                            localStorage.setItem("userNick", data.nick);
+                            localStorage.setItem("id", data.id);
+                            localStorage.setItem("username", data.nick);
+                            localStorage.setItem("email", data.email);
+                            localStorage.setItem("token", data.token);
+                            localStorage.setItem("refreshToken", data.refreshToken);
                             navigate("/");
                         })
                         .catch((err) => {
