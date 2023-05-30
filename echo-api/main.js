@@ -23,10 +23,12 @@ server.use(bodyParser.json());
 
 server.use((req, res, next) => {
     console.log('Got api request:', Date.now(), "Query:", req.url);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authentication")
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, GET");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, HTTP_X_REQUESTED_WITH");
     req.database = con;
+    req.authenticator = authenticator;
+    req.utils = require("./classes/utils");
     // check if headers have a token and if it's valid
     if (req.headers['Authentication']) {
         if (authenticator.checkToken(req.headers['Authentication'])) {
@@ -35,15 +37,9 @@ server.use((req, res, next) => {
     } else {
         // check if url contains auth
         if (req.url.includes("/auth")) {
-            console.log(req.body)
             // check if in body there is a type "register" or "login"
-            if (req.body.type === "register") {
-                authenticator.registerUser(req, res);
-            } else if (req.body.type === "login") {
-                authenticator.loginUser(req, res);
-            }
-        } else if (req.url.includes("/refresh")) {
-            authenticator.refreshAuth(req, res);
+            console.log("Auth request")
+            return next();
         } else {
             res.status(401).json({ message: "Unauthorized" });
         }
@@ -51,11 +47,9 @@ server.use((req, res, next) => {
     }
 });
 
-const users = require("./routes/users");
-const rooms = require("./routes/rooms");
-const app = require("./routes/app");
-server.use("/users", users);
-server.use("/rooms", rooms);
-server.use("/app", app);
+server.use("/users", require("./routes/users"));
+server.use("/rooms", require("./routes/rooms"));
+server.use("/app", require("./routes/app"));
+server.use("/auth", require("./routes/auth"));
 
-server.listen(config.port, () => console.log("It's alive on port", config.port));
+server.listen(config.port, () => console.log("API online and listening on port", config.port));
