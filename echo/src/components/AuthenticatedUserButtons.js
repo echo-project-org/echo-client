@@ -13,26 +13,27 @@ const theme = createTheme({
     },
 });
 
-const AuthenticatedUserButtons = ({ visibility, nickname}) => {
+const AuthenticatedUserButtons = ({ visibility = false, nickname }) => {
     let navigate = useNavigate();
 
     const logout = async () => {
         localStorage.removeItem("id");
         localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
 
+        // EEEEEEEEWWWWWWWWWWWWWWW
         window.location.reload();
-
     }
 
     const enterRoom = async () => {
-        api.call('setOnline/' + nickname + '/T/0')
+        // TODO: check the initial status of user (maybe get it from the login form?)
+        // and check if we need to update it or not
+        api.call('status', "POST", { id: localStorage.getItem('id'), status: 1 })
             .then((res) => {
-                if (res.ok) {
-                    ep.openConnection(localStorage.getItem('id'));
-                    navigate("/main");
-                } else {
-                    console.error("Could not set user as online");
-                }
+                ep.openConnection(localStorage.getItem('id'));
+                navigate("/main");
             });
     }
     if (!visibility) return null
