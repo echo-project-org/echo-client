@@ -4,6 +4,7 @@ let clientIds = [];
 let startTimes = [];
 let audioDeviceId = localStorage.getItem('outputAudioDeviceId')
 let mainOutVoume = localStorage.getItem('mainOutVolume')
+let userVolumes = [];
 
 export async function syncAudio(){
     clientIds.forEach((id) => {
@@ -30,6 +31,18 @@ export async function syncAudio(){
         clientSources[index] = source;
         startTimes[index] = context1.currentTime;
     })
+}
+
+export function setUserAudioVolume(volume, uId) {
+    userVolumes.forEach((vol) => {
+        if(volume.id === uId){
+            vol.volume = volume;
+            return;
+        }
+    })
+
+    userVolumes.push({'id': uId, 'volume': volume})
+    localStorage.setItem('userVolumes', userVolumes);
 }
 
 export function setAudioVolume(volume) {
