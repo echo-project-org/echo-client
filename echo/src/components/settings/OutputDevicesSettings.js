@@ -63,6 +63,7 @@ function OutputDevicesSettings({ outputDevices }) {
     const handleSoundVolumeChange = (event, newValue) => {
         //set user volume
         setSoundVolulme(newValue);
+        ar.setAudioVolume(newValue / 100);
     };
 
     const renderDeviceList = () => {
@@ -80,6 +81,12 @@ function OutputDevicesSettings({ outputDevices }) {
         let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
         if (audioDeviceId && audioDeviceId !== outputDevice) {
             setOutputDevice(audioDeviceId);
+        }
+
+        let audioVol = localStorage.getItem('mainOutVolume') * 100;
+        audioVol = Math.round(audioVol);
+        if(audioVol && audioVol !== soundVolume){
+            setSoundVolulme(audioVol);
         }
     }
 

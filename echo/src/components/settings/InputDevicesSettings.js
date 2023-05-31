@@ -83,6 +83,7 @@ function InputDevicesSettings({ inputDevices }) {
         }
 
         let micVol = localStorage.getItem('micVolume') * 100;
+        micVol = Math.round(micVol);
         if(micVol && micVol !== micVolume){
             setMicVolulme(micVol);
         }
