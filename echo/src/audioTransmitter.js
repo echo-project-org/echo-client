@@ -8,6 +8,7 @@ let context = null;
 var id = localStorage.getItem('userId');
 var audioDeviceId = localStorage.getItem('inputAudioDeviceId');
 var micVolume = localStorage.getItem('micVolume');
+let gainNode;
 
 var muted = false;
 
@@ -19,10 +20,6 @@ export function toggleMute(bool) {
 export function setMicVolume(volume) {
     localStorage.setItem('micVolume', volume);
     micVolume = volume;
-    if(isTransmitting){
-        stopAudioStream();
-        startInputAudioStream();
-    }
 }
 
 export function setAudioDevice(device) {
@@ -95,11 +92,20 @@ export async function startInputAudioStream() {
                 var left = e.inputBuffer.getChannelData(0);
                 var right = e.inputBuffer.getChannelData(1);
                 if (!muted) ep.sendAudioPacket(id, left, right);
-                //ar.addToBuffer(id, left, right)
-            }
 
-            // connect the ScriptProcessorNode with the input audio
-            source.connect(node);
+                micVolume = localStorage.getItem('micVolume');
+                if(micVolume){
+                    gainNode.gain.value = micVolume;
+                }
+                
+            }
+            gainNode = context.createGain();
+            if(micVolume){
+                gainNode.gain.value = micVolume;
+            }
+            
+            source.connect(gainNode);
+            gainNode.connect(node);
             // if the ScriptProcessorNode is not connected to an output the "onaudioprocess" event is not triggered in chrome
             node.connect(context.destination);
         }, function (e) {
