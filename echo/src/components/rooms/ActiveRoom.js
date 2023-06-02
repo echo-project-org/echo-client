@@ -16,7 +16,7 @@ function ActiveRoom({ users, onClick, data }) {
         <div className="roomUsers">
             {
               users.map(user => (
-                <OnlineUserIcon key={user.nick} imgUrl={user.img} nick={user.nick} />
+                <OnlineUserIcon key={user.nick} imgUrl={user.img} nick={user.nick} id={user.id}/>
               ))
             }
         </div>

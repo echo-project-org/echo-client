@@ -12,6 +12,8 @@ import React from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+const ar = require('../../audioReceiver')
+
 const decodeUrl = (url) => {
   if(url.includes("/")){
     return url;
@@ -89,7 +91,7 @@ const theme = createTheme({
   },
 });
 
-function OnlineUserIcon({imgUrl, nick, talking}) {
+function OnlineUserIcon({imgUrl, nick, talking, id}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userVolume, setUserVolulme] = React.useState(100);
   const open = Boolean(anchorEl);
@@ -104,6 +106,7 @@ function OnlineUserIcon({imgUrl, nick, talking}) {
   const handleVolumeChange = (event, newValue) => {
     //set user volume
     setUserVolulme(newValue);
+    ar.setUserAudioVolume(newValue / 100, id)
   };
 
 
