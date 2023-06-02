@@ -25,6 +25,7 @@ export function setMicVolume(volume) {
 export function setAudioDevice(device) {
     localStorage.setItem('inputAudioDeviceId', device);
     audioDeviceId = device;
+
     if(isTransmitting){
         stopAudioStream();
         startInputAudioStream();
@@ -65,7 +66,7 @@ export async function startInputAudioStream() {
                 channelCount: 2,
                 sampleRate: 48000,
                 sampleSize: 16,
-                volume: micVolume,
+                volume: 1,
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
@@ -97,6 +98,11 @@ export async function startInputAudioStream() {
                 if(micVolume){
                     gainNode.gain.value = micVolume;
                 }
+
+                let a = localStorage.getItem('inputAudioDeviceId');
+                if(a && a !== "default" && a !== audioDeviceId){
+                    audioDeviceId = a;
+                }
                 
             }
             gainNode = context.createGain();
@@ -119,7 +125,6 @@ export function stopAudioStream() {
     id = localStorage.getItem('userId');
     if (isTransmitting) {
         console.log(">>>> STOPPING STREAM");
-        ep.closeConnection(id)
         if (mediaStream) {
             mediaStream.getAudioTracks().forEach((track) => {
                 track.stop(); // Stop each track in the media stream
