@@ -98,6 +98,8 @@ export async function startOutputAudioStream(clientId) {
         audioContexts[index] = context1;
         clientSources[index] = source;
         startTimes[index] = context1.currentTime;
+
+        syncAudio()
     }
 }
 
