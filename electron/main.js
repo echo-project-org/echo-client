@@ -24,6 +24,18 @@ const createMainWindow = () => {
   } else {
     win.loadURL('http://localhost:3000'); // dev
   }
+/*
+  win.setThumbarButtons([
+    {
+      tooltip: 'Mute microphone',
+      icon: path.join(__dirname, 'images', 'mic.png'),
+      click: function() { console.log('button1 clicked') }
+    }, {
+      tooltip: 'Deafen audio',
+      icon: path.join(__dirname, 'images', 'mic.png'),
+      click: function() { console.log('button2 clicked.') }
+    }
+  ])*/
 
   return win;
 }
