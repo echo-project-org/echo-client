@@ -55,6 +55,9 @@ app.whenReady().then(() => {
     },
   ])
   tray.setToolTip('Echo')
+  tray.on('double-click', function(e){
+    mainWindow.show();
+  })
   tray.setContextMenu(contextMenu)
 })
 
@@ -75,7 +78,9 @@ ipcMain.on("exitApplication", (event, arg) => {
 })
 
 ipcMain.on("minimize", (event, arg) => {
-  mainWindow.minimize();
+  if(tray){
+    return mainWindow.hide();
+  }
 })
 
 ipcMain.on("toggleFullscreen", (event, arg) => {
