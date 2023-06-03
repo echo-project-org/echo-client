@@ -32,8 +32,7 @@ let tray = null
 
 app.whenReady().then(() => {
   mainWindow = createMainWindow()
-
-  tray = new Tray('images/echoIcon.ico')
+  tray = new Tray(path.join(__dirname, 'images','echoIcon.png'))
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Echo",
