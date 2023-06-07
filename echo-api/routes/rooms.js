@@ -70,26 +70,28 @@ router.post('/join', (req, res) => {
         if (err) return console.error(err);
     });
 
-    // add user to joining room
-    req.database.query("INSERT INTO room_users (roomId, userId) VALUES (?, ?)", [roomId, userId], (err, result, fields) => {
-        if (err) return console.error(err);
-        // send complete room data back to client
-        req.database.query("SELECT users.id, users.name, users.img FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ?", [roomId], (err, result, fields) => {
+    // if room id is 0, then the user has left all rooms
+    if (roomId !== "0")
+        // add user to joining room
+        req.database.query("INSERT INTO room_users (roomId, userId) VALUES (?, ?)", [roomId, userId], (err, result, fields) => {
             if (err) return console.error(err);
-    
-            var jsonOut = [];
-            if (result.length > 0) {
-                result.forEach((plate) => {
-                    jsonOut.push({
-                        id: plate.id,
-                        name: plate.name,
-                        img: plate.img
+            // send complete room data back to client
+            req.database.query("SELECT users.id, users.name, users.img FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ?", [roomId], (err, result, fields) => {
+                if (err) return console.error(err);
+        
+                var jsonOut = [];
+                if (result.length > 0) {
+                    result.forEach((plate) => {
+                        jsonOut.push({
+                            id: plate.id,
+                            name: plate.name,
+                            img: plate.img
+                        });
                     });
-                });
-            }
-            res.json(jsonOut);
+                }
+                res.json(jsonOut);
+            });
         });
-    });
 });
     
 

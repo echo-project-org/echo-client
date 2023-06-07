@@ -5,7 +5,7 @@ import Room from './Room';
 const ep = require("../echoProtocol");
 const api = require("../api");
 
-function Rooms({ }) {
+function Rooms({ setState, connected }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
@@ -23,6 +23,7 @@ function Rooms({ }) {
         if (res.ok) {
           console.log("joined room: ", joiningId)
           setActiveRoomId(joiningId)
+          setState(true);
         }
       })
       .catch((err) => {
@@ -41,6 +42,14 @@ function Rooms({ }) {
   useEffect(() => {
     updateRooms();
   }, []);
+  
+  useEffect(() => {
+    if (!connected) {
+      console.log("updating rooms")
+      setActiveRoomId(0)
+      updateRooms();
+    }
+  }, [connected]);
 
 
   return (

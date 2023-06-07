@@ -10,12 +10,13 @@ import { useNavigate } from 'react-router-dom';
 
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
-import LogoutIcon from '@mui/icons-material/Logout';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import MicIcon from '@mui/icons-material/Mic';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import muteSound from "../audio/mute.mp3";
 import unmuteSound from "../audio/unmute.mp3";
@@ -58,11 +59,10 @@ const theme = createTheme({
   }
 });
 
-function RoomControl({ screenSharing }) {
+function RoomControl({ state, setState, screenSharing }) {
   const [muted, setMuted] = useState(false);
   const [deaf, setDeaf] = useState(false);
   const [wasMuted, setWasMuted] = useState(false);
-  const [connectionState, setConnState] = useState("Not connected");
   const [ping, setPing] = useState(0);
 
   let navigate = useNavigate();
@@ -92,23 +92,35 @@ function RoomControl({ screenSharing }) {
     console.log("removed interval")
   }
 
-  const exitRoom = () => {
-    //Notify api
-    api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
-      .then(res => {
-        // at.startInputAudioStream();
-        ar.stopOutputAudioStream();
-        at.stopAudioStream();
-        // TODO: check if user is connected in room, if so change icon and action when clicked
-        navigate("/");
-      })
-      .catch(err => {
-        console.error(err);
-        navigate("/");
-        setConnState("Not connected");
-        // clean cache and local storage
-        localStorage.clear();
-      });
+  const closeConnection = () => {
+    // Notify api
+    setState(false);
+    if (!state) {
+      api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
+        .then(res => {
+          // at.startInputAudioStream();
+          ar.stopOutputAudioStream();
+          at.stopAudioStream();
+          // TODO: check if user is connected in room, if so change icon and action when clicked
+          navigate("/");
+        })
+        .catch(err => {
+          console.error(err);
+          navigate("/");
+          // clean cache and local storage
+          localStorage.clear();
+        });
+    } else {
+      api.call("rooms/join", "POST", { userId: localStorage.getItem('id'), roomId: "0" })
+        .then(res => {
+          // at.startInputAudioStream();
+          ar.stopOutputAudioStream();
+          at.stopAudioStream();
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
   }
 
   const computeAudio = (isDeaf) => {
@@ -158,7 +170,7 @@ function RoomControl({ screenSharing }) {
     <div className='roomControl'>
       <ThemeProvider theme={theme}>
         <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-          <div className="voiceConnected"><p>{connectionState}</p> <p><SignalCellularAltIcon /></p></div>
+          <div className="voiceConnected"><p>{state ? "Connected" : "Not connected" }</p> <p><SignalCellularAltIcon /></p></div>
         </Tooltip>
         <ButtonGroup variant='text' className='buttonGroup'>
           <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -178,8 +190,8 @@ function RoomControl({ screenSharing }) {
           </Tooltip>
             <SettingsButton />
           <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Button onClick={exitRoom}>
-              <LogoutIcon />
+            <Button onClick={closeConnection}>
+              { state ? <PhoneDisabledIcon /> : <LogoutIcon /> }
             </Button>
           </Tooltip>
         </ButtonGroup>
