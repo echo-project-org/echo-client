@@ -1,4 +1,3 @@
-var mysql = require('mysql'); 
 const express = require('express');
 const server = express();
 const bodyParser = require('body-parser');
@@ -9,30 +8,25 @@ const config = new cLoader().getCfg();
 const OAuth = require("./classes/auth");
 const authenticator = new OAuth();
 
-require("./classes/logger");
+const SQL = require("./classes/mysql");
+const database = new SQL(config);
 
-const con = mysql.createConnection(config.database);
-con.connect(function(err) {
-    if (err) return console.log(err);
-    console.log("Connected to database!");
-});
+require("./classes/logger");
 
 // add body parser middleware for api requests
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 
 server.use((req, res, next) => {
-    console.log('Got api request:', Date.now(), "Query:", req.url);
+    console.log('Got api request:', Date.now(), "Query:", req.url, "Method:", req.method);
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
     res.header("Access-Control-Expose-Headers", "Authorization")
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, GET");
-    if (!req.database) req.database = con;
     if (!req.authenticator) req.authenticator = authenticator;
     if (!req.utils) req.utils = require("./classes/utils");
-
-    if (con.state === "disconnected") return res.status(500).send({ message: "Database is not connected" });
-
+    if (!req.database) req.database = database.getConnection();
+    
     next();
 });
 
