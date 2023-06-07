@@ -63,7 +63,7 @@ const Login = () => {
                             console.log(data);
                             hideError();
                             localStorage.setItem("id", data.json.id);
-                            localStorage.setItem("username", data.json.username);
+                            localStorage.setItem("name", data.json.name);
                             localStorage.setItem("email", data.json.email);
                             localStorage.setItem("token", data.json.token);
                             localStorage.setItem("refreshToken", data.json.refreshToken);

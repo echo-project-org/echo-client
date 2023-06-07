@@ -18,7 +18,7 @@ const AuthenticatedUserButtons = ({ visibility = false, nickname }) => {
 
     const logout = async () => {
         localStorage.removeItem("id");
-        localStorage.removeItem("username");
+        localStorage.removeItem("name");
         localStorage.removeItem("email");
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
@@ -27,10 +27,10 @@ const AuthenticatedUserButtons = ({ visibility = false, nickname }) => {
         window.location.reload();
     }
 
-    const enterRoom = async () => {
+    const enterServer = async () => {
         // TODO: check the initial status of user (maybe get it from the login form?)
         // and check if we need to update it or not
-        api.call('users/status', "POST", { id: localStorage.getItem('id'), status: 1 })
+        api.call('users/status', "POST", { id: localStorage.getItem('id'), status: "1" })
             .then((res) => {
                 ep.openConnection(localStorage.getItem('id'));
                 navigate("/main");
@@ -49,7 +49,7 @@ const AuthenticatedUserButtons = ({ visibility = false, nickname }) => {
                 variant="text"
                 className="loginButtons"
             >
-                <Button onClick={enterRoom}>Enter</Button>
+                <Button onClick={enterServer}>Enter</Button>
                 <Button onClick={logout}>Logout</Button>
             </ButtonGroup>
         </ThemeProvider>

@@ -56,7 +56,7 @@ const MainLogo = () => {
         setLoadingVisibility(true);
         setTimeout(() => {
             setLoadingVisibility(false);
-            var userNickCookie = localStorage.getItem('username');
+            var userNickCookie = localStorage.getItem('name');
             if (userNickCookie) {
                 //If cookies are found then prompt user to access the app
                 setAccessBtnVisibility(true);

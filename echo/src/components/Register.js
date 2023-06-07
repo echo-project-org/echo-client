@@ -52,13 +52,13 @@ const Register = () => {
     }
 
     const checkCredentials = async () => {
-        var username = document.getElementById('usernameBox').value;
+        var name = document.getElementById('usernameBox').value;
         var psw = document.getElementById('passwordBox').value;
         var psw2 = document.getElementById('passwordBox2').value;
         var email = document.getElementById('emailBox').value;
 
         // check if email address is valid
-        if(username === "" || psw === "" || psw2 === "" || email === ""){
+        if(name === "" || psw === "" || psw2 === "" || email === ""){
             showError("Invalid email address!");
         } else if (!/\S+@\S+\.\S+/.test(email)) {
             //If user has not filled the entire form
@@ -69,7 +69,7 @@ const Register = () => {
                 //fist check if hash exists
                 hash(email + "@" + psw)
                     .then((hashed) => {
-                        api.call('auth/register', "POST", { password: hashed, username, email })
+                        api.call('auth/register', "POST", { password: hashed, name, email })
                             .then((data) => {
                                 showSuccess(data.message);
                                 setTimeout(() => navigate('/login'), 3500);
