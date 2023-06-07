@@ -1,14 +1,15 @@
-import React from 'react'
+
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
-import Slider from '@mui/material/Slider';
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import MicIcon from '@mui/icons-material/Mic';
+import Slider from '@mui/material/Slider';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
+import React from 'react'
 
-const at = require('../audioTransmitter')
+const ar = require('../../audioReceiver')
 
 const theme = createTheme({
     components: {
@@ -50,30 +51,30 @@ const theme = createTheme({
     },
 });
 
-function InputDevicesSettings({ inputDevices }) {
-    const [inputDevice, setInputDevice] = useState('default');
-    const [micVolume, setMicVolulme] = useState(100);
+function OutputDevicesSettings({ outputDevices }) {
+    const [outputDevice, setOutputDevice] = useState('default');
+    const [soundVolume, setSoundVolulme] = useState(100);
 
-    const handleInputDeviceChange = (event) => {
-        localStorage.setItem('inputAudioDeviceId', event.target.value);
-        setInputDevice(event.target.value);
-        at.setAudioDevice(event.target.value)
+    const handleOutputDeviceChange = (event) => {
+        localStorage.setItem('outputAudioDeviceId', event.target.value);
+        setOutputDevice(event.target.value);
+        ar.setAudioDevice(event.target.value)
     };
 
-    const handleMicVolumeChange = (event, newValue) => {
+    const handleSoundVolumeChange = (event, newValue) => {
         //set user volume
-        localStorage.setItem('micVolume', newValue / 100);
-        setMicVolulme(newValue);
-        at.setMicVolume(newValue / 100)
+        localStorage.setItem('audioVolume', newValue / 100);
+        setSoundVolulme(newValue);
+        ar.setAudioVolume(newValue / 100);
     };
 
     useEffect(() => {
-        at.setMicVolume(localStorage.getItem('micVolume') || 1);
-        setMicVolulme(Math.floor(localStorage.getItem('micVolume') * 100) || 100);
+        ar.setSoundVolulme(localStorage.getItem('audioVolume') || 1);
+        setSoundVolulme(Math.floor(localStorage.getItem('audioVolume') * 100) || 100);
     }, []);
 
     const renderDeviceList = () => {
-        let a = inputDevices.map(device => (
+        let a = outputDevices.map(device => (
             <MenuItem key={device.id} value={device.id} >
                 {device.name}
             </MenuItem>
@@ -84,24 +85,30 @@ function InputDevicesSettings({ inputDevices }) {
     }
 
     const setSelected = () => {
-        let audioDeviceId = localStorage.getItem('inputAudioDeviceId');
-        if (audioDeviceId && audioDeviceId !== inputDevice) {
-            setInputDevice(audioDeviceId);
+        let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
+        if (audioDeviceId && audioDeviceId !== outputDevice) {
+            setOutputDevice(audioDeviceId);
+        }
+
+        let audioVol = localStorage.getItem('mainOutVolume') * 100;
+        audioVol = Math.round(audioVol);
+        if(audioVol && audioVol !== soundVolume){
+            setSoundVolulme(audioVol);
         }
     }
 
     return (
         <div className="settingsModalSubDiv">
             <Typography id="modal-modal-title" variant="h6" component="h2">
-                Input device
+                Output device
             </Typography>
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={inputDevice}
-                onChange={handleInputDeviceChange}
+                value={outputDevice}
+                onChange={handleOutputDeviceChange}
                 autoWidth
-                sx={{
+                sx = {{
                     border: "1px solid #f5e8da",
                     color: "#f5e8da"
                 }}
@@ -110,17 +117,17 @@ function InputDevicesSettings({ inputDevices }) {
             </Select>
             <div style={{ width: "100%" }}>
                 <Stack spacing={2} direction="row" alignItems="center">
-                    <MicIcon fontSize="medium" />
-                    <ThemeProvider theme={theme} >
-                    <Slider
-                        sx={{ width: "100%" }}
-                        valueLabelDisplay="auto"
-                        valueLabelFormat={(v) => { return v + "%" }}
-                        aria-label="Volume"
-                        value={micVolume}
-                        onChange={handleMicVolumeChange}
-                        size='medium'
-                    />
+                    <VolumeUpIcon fontSize="medium" />
+                    <ThemeProvider theme={theme}>
+                        <Slider
+                            sx={{ width: "100%" }}
+                            valueLabelDisplay="auto"
+                            valueLabelFormat={(v) => { return v + "%" }}
+                            aria-label="Volume"
+                            value={soundVolume}
+                            onChange={handleSoundVolumeChange}
+                            size='medium'
+                        />
                     </ThemeProvider>
                 </Stack>
             </div>
@@ -128,4 +135,4 @@ function InputDevicesSettings({ inputDevices }) {
     )
 }
 
-export default InputDevicesSettings
+export default OutputDevicesSettings

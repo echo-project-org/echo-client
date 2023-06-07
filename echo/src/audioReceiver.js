@@ -2,13 +2,15 @@ let audioContexts = [];
 let clientSources = [];
 let clientIds = [];
 let startTimes = [];
-let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
-var audioVolume = localStorage.getItem('audioVolume');
+let audioDeviceId = localStorage.getItem('outputAudioDeviceId')
+let mainOutVoume = localStorage.getItem('mainOutVolume')
+let userVolumes = [];
 
 export async function syncAudio() {
     clientIds.forEach((id) => {
         let index = clientIds.indexOf(id);
         audioDeviceId = localStorage.getItem('outputAudioDeviceId')
+        mainOutVoume = localStorage.getItem('mainOutVolume')
 
         var context1 = new AudioContext();
         if(audioDeviceId){
@@ -17,12 +19,30 @@ export async function syncAudio() {
         }
 
         let source = context1.createBufferSource()
-        source.connect(context1.destination)
+        let gainNode = context1.createGain();
+
+        if(mainOutVoume){
+            gainNode.gain.value = mainOutVoume;
+        }
+        gainNode.connect(context1.destination);
+        source.connect(gainNode);
 
         audioContexts[index] = context1;
         clientSources[index] = source;
         startTimes[index] = context1.currentTime;
     })
+}
+
+export function setUserAudioVolume(volume, uId) {
+    if(clientIds.includes('' + uId)){
+        let index = clientIds.indexOf('' + uId);
+        userVolumes[index] = volume;
+    }
+}
+
+export function setAudioVolume(volume) {
+    localStorage.setItem('mainOutVolume', volume);
+    mainOutVoume = volume;
 }
 
 export function setAudioDevice(device) {
@@ -36,6 +56,8 @@ export function setSoundVolulme(volume) {
 export async function startOutputAudioStream(clientId) {
     console.log("Creating audio out")
     audioDeviceId = localStorage.getItem('outputAudioDeviceId')
+    mainOutVoume = localStorage.getItem('mainOutVolume')
+
     if (!clientIds.includes(clientId)) {
         var context = new AudioContext();
         if(audioDeviceId){
@@ -43,12 +65,21 @@ export async function startOutputAudioStream(clientId) {
                 context.setSinkId(audioDeviceId);
         }
         let source = context.createBufferSource()
-        source.connect(context.destination)
+        let gainNode = context.createGain();
+
+        if(mainOutVoume){
+            gainNode.gain.value = mainOutVoume;
+        }
+        gainNode.connect(context.destination);
+        source.connect(gainNode);
 
         clientIds.push(clientId);
         audioContexts.push(context);
         clientSources.push(source);
+        userVolumes.push(1)
         startTimes.push(context.currentTime);
+
+        syncAudio()
     } else {
         let index = clientIds.indexOf(clientId);
         if(audioDeviceId){
@@ -57,11 +88,21 @@ export async function startOutputAudioStream(clientId) {
         }
         var context1 = new AudioContext();
         let source = context1.createBufferSource()
-        source.connect(context1.destination)
+        let gainNode = context1.createGain();
+        let personalGain = context1.createGain();
+
+        if(mainOutVoume){
+            gainNode.gain.value = mainOutVoume;
+        }
+        gainNode.connect(context1.destination);
+        source.connect(personalGain);
+        personalGain.connect(gainNode)
 
         audioContexts[index] = context1;
         clientSources[index] = source;
         startTimes[index] = context1.currentTime;
+
+        syncAudio()
     }
 }
 
@@ -118,9 +159,22 @@ export async function addToBuffer(clientId, left, right) {
 
         
         source = context.createBufferSource()
-        source.buffer = audioBuffer
-        source.connect(context.destination)
+        let gainNode = context.createGain();
+        let personalGain = context.createGain();
 
+        if(mainOutVoume){
+            gainNode.gain.value = mainOutVoume;
+        }
+
+        if(userVolumes[index]){
+            personalGain.gain.value = userVolumes[index];
+        }
+
+        source.buffer = audioBuffer
+        source.connect(personalGain);
+        personalGain.connect(gainNode);
+        gainNode.connect(context.destination);
+        
         if(startTimes[index] === 0) startTimes[index] = context.currentTime + (audioBuffer.length / audioBuffer.sampleRate)/2;
         source.start(startTimes[index]);
         startTimes[index] += audioBuffer.length / audioBuffer.sampleRate;

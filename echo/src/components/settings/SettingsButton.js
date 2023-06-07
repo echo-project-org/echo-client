@@ -18,8 +18,8 @@ import Zoom from '@mui/material/Zoom';
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 
-const ar = require('../audioReceiver')
-const at = require('../audioTransmitter')
+const ar = require('../../audioReceiver')
+const at = require('../../audioTransmitter')
 
 const modalStyle = {
     position: 'absolute',
