@@ -6,10 +6,10 @@ export async function call(path, method = "GET", body = null) {
         if (method === "GET" && body !== null) reject("Body is not null");
 
         if (method !== "GET")
-            fetch('http://localhost:6980/' + path, {
+            fetch('http://kury.ddns.net:6980/' + path, {
                 method: method,
                 cache: 'no-cache',
-                headers: {
+                headers: { 
                     'Content-Type': 'application/json',
                     "Authorization": "Bearer " + localStorage.getItem("token")
                 },
@@ -34,7 +34,7 @@ export async function call(path, method = "GET", body = null) {
             })
             .catch(reject);
         else
-            fetch('http://localhost:6980/' + path, {
+            fetch('http://kury.ddns.net:6980/' + path, {
                 method: method,
                 cache: 'no-cache',
                 headers: {

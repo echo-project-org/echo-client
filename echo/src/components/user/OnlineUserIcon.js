@@ -108,6 +108,7 @@ function OnlineUserIcon({ imgUrl, name, talking }) {
   const handleVolumeChange = (event, newValue) => {
     //set user volume
     setUserVolulme(newValue);
+    let id;
     ar.setUserAudioVolume(newValue / 100, id)
   };
 
