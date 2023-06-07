@@ -1,7 +1,6 @@
 import '../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Utilities from './Utilities';
 import Sidebar from './Sidebar';
 import RoomContent from './RoomContent';
 
@@ -9,28 +8,7 @@ var api = require('../api')
 var at = require('../audioTransmitter')
 
 const MainPage = () => {
-
-    const [users, setUsers] = useState(
-        [
-            {
-                "name": "Undefined",
-                "img": "none",
-                "stanza": 1,
-                "lastIP": "0.0.0.0"
-            }
-        ]
-    );
-
-    const fetchOnlineUsers = async () => {
-        api.call('friends')
-            .then((data) => {
-                setUsers(data.json);
-            });
-    }
-
-
     useEffect(() => {
-        fetchOnlineUsers();
         at.startInputAudioStream();
     }, [])
 
@@ -42,7 +20,7 @@ const MainPage = () => {
             exit={{ opacity: 0 }}
         >
             <div className='sideWithChat'>
-                <Sidebar users={users} />
+                <Sidebar />
                 <RoomContent />
             </div>
 
