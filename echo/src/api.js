@@ -5,8 +5,19 @@ export async function call(path, method = "GET", body = null) {
         if (method !== "GET" && body === null) reject("Body is null");
         if (method === "GET" && body !== null) reject("Body is not null");
 
-        if (method !== "GET")
-            fetch('http://localhost:6980/' + path, {
+        var options;
+
+        if (method === "GET")
+            options = {
+                method: method,
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            }
+        else
+            options = {
                 method: method,
                 cache: 'no-cache',
                 headers: {
@@ -14,34 +25,10 @@ export async function call(path, method = "GET", body = null) {
                     "Authorization": "Bearer " + localStorage.getItem("token")
                 },
                 body: typeof body === "string" ? body : JSON.stringify(body)
-            })
-            .then((response) => {
-                return new Promise((resolve) => response.json()
-                    .then((json) => resolve(
-                        {
-                            status: response.status,
-                            ok: response.ok,
-                            json,
-                        }
-                    )));
-            })
-            .then(({ status, json, ok }) => {
-                if (!handleErrors(status, json)) return reject({ status, message: json.message || "Something went wrong :(" });
-                if (!ok) return reject({ status, message: json.message });
-                if (typeof json === "string") json = JSON.parse(json);
-                console.log("response", json)
-                resolve({ status, message: json.message, json, ok });
-            })
-            .catch(reject);
-        else
-            fetch('http://localhost:6980/' + path, {
-                method: method,
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": "Bearer " + localStorage.getItem("token")
-                },
-            })
+            }
+            
+        
+        fetch('http://localhost:6980/' + path, options)
             .then((response) => {
                 return new Promise((resolve) => response.json()
                     .then((json) => resolve(
