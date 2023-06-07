@@ -1,4 +1,4 @@
-import OnlineUserIcon from './OnlineUserIcon'
+import OnlineUserIcon from '../user/OnlineUserIcon'
 
 function ActiveRoom({ users, onClick, data }) {
   const handleClick = () => {

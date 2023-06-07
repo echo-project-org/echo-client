@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import Rooms from './Rooms'
-import RoomControl from './RoomControl'
+import Rooms from '../rooms/Rooms'
+import RoomControl from '../rooms/RoomControl'
 import { Divider } from '@mui/material'
 
 function Sidebar({ }) {

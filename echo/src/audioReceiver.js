@@ -50,7 +50,7 @@ export function setAudioDevice(device) {
 }
 
 export function setSoundVolulme(volume) {
-    audioVolume = volume;
+    // audioVolume = volume;
 }
 
 export async function startOutputAudioStream(clientId) {

@@ -1,9 +1,9 @@
-import "../css/rooms.css"
+import "../../css/rooms.css"
 import { useState, useEffect } from 'react';
 import Room from './Room';
 
-const ep = require("../echoProtocol");
-const api = require("../api");
+const ep = require("../../echoProtocol");
+const api = require("../../api");
 
 function Rooms({ setState, connected }) {
   const [activeRoomId, setActiveRoomId] = useState(0);

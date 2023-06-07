@@ -1,4 +1,4 @@
-import '../css/onlineusers.css'
+import '../../css/onlineusers.css'
 
 import { Badge, Avatar, Divider } from '@mui/material'
 import Menu from '@mui/material/Menu';

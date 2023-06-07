@@ -1,8 +1,8 @@
 import '../../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Sidebar from './Sidebar';
-import RoomContent from './RoomContent';
+import Sidebar from '../sidebar/Sidebar';
+import RoomContent from '../rooms/RoomContent';
 
 var api = require('../../api')
 var at = require('../../audioTransmitter')

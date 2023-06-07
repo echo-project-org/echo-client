@@ -1,15 +1,15 @@
-import '../index.css'
-import "../css/login.css"
+import '../../index.css'
+import "../../css/login.css"
 
 import { useState, useEffect, forwardRef } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, createTheme, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
-import BackButton from './BackButton';
+import BackButton from '../settings/BackButton';
 
-import imgLogo from "../img/headphones.svg"
+import imgLogo from "../../img/headphones.svg"
 
-var api = require('../api')
+var api = require('../../api')
 
 const theme = createTheme({
     palette: {

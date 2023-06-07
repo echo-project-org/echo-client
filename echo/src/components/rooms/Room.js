@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 
-const api = require("../api");
+const api = require("../../api");
 
 function Room({ active, onClick, data }) {
   const [onlineUsers, setOnlineUsers] = useState([])
