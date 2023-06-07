@@ -111,25 +111,6 @@ body {
   color: var(--color3)
 }
 
-.roomBtn {
-  height: 3rem;
-  width: 13rem;
-  margin-bottom: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-  font-family: Roboto Condensed;
-  font-size: 1rem;
-  border-radius: 1rem;
-  border: 1px var(--main-bg-color) solid;
-  background-color: var(--color1);
-  color: var(--color3);
-  cursor: pointer;
-}
-
-.roomBtn:hover {
-  border: 1px var(--color3) solid;
-}
-
 .logoContainer {
   height: fit-content;
 }
@@ -360,12 +341,6 @@ body {
   flex: 0 0 auto;
 }
 
-.roomContent {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
 .chat {
   display: flex;
   flex-direction: column-reverse;
@@ -395,70 +370,6 @@ body {
   color: white;
   min-width: 12rem;
   background-color: var(--context-menu-background);
-}
-
-.roomsContainer {
-  width: 100%;
-  height: 0;
-  margin: 0 auto;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  overflow-y: show;
-  overflow-x: hidden;
-}
-
-/* 
-.roomsContainer:hover {
-  overflow-y: auto;
-}
-*/
-
-.secondRoom {
-  background-color: var(--chat-background-color);
-  border-top-right-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  margin-bottom: 0.5rem;
-  transition: all .2s ease-in-out;
-  cursor: pointer;
-  margin-right: .75rem;
-}
-
-.secondRoom:hover {
-  /* border-inline-end: 2px solid var(--color3); */
-  box-shadow: .2rem 0 .3rem .5px var(--color3);
-  transition: all .2s ease-in-out;
-}
-
-.SecondRoomName {
-  color: var(--color3)
-}
-
-.SecondRoomUsers {
-  display: flex;
-  flex-direction: row;
-  margin: 0 .5rem .5rem 0;
-}
-
-.room {
-  background-color: var(--chat-background-color);
-  border-top-right-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  margin-bottom: 0.5rem;
-  box-shadow: .3rem 0 .3rem .1rem var(--color3);
-  transition: all .1s ease-in-out;
-  margin-right: .75rem;
-}
-
-.roomName {
-  margin-top: 0.5rem;
-  color: var(--color3)
-}
-
-.roomUsers {
-  display: flex;
-  flex-direction: column;
-  margin-left: 0.5rem;
 }
 
 .rightMessage {
@@ -501,12 +412,6 @@ body {
   text-align: left;
   vertical-align: middle;
   display: inline-block;
-}
-
-.roomControl {
-  justify-content: center;
-  text-align: center;
-  align-items: center;
 }
 
 .buttonGroup {
