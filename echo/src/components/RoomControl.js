@@ -94,15 +94,20 @@ function RoomControl({ screenSharing }) {
 
   const exitRoom = () => {
     //Notify api
-    var nickname = localStorage.getItem("username");
-    api.call('setOnline/' + nickname + '/F/0')
+    api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
       .then(res => {
         // at.startInputAudioStream();
         ar.stopOutputAudioStream();
         at.stopAudioStream();
-        if (!res.ok) console.error("Could not set user as offline");
-        setConnState("Not connected")
+        // TODO: check if user is connected in room, if so change icon and action when clicked
         navigate("/");
+      })
+      .catch(err => {
+        console.error(err);
+        navigate("/");
+        setConnState("Not connected");
+        // clean cache and local storage
+        localStorage.clear();
       });
   }
 
