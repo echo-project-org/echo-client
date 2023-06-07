@@ -100,17 +100,6 @@ body {
   flex: 0 0 auto;
 }
 
-.onlineUserIcon {
-  display: flex;
-  align-items: center;
-  margin-bottom: .5rem;
-}
-
-.onlineUserNick {
-  margin: 0 0 0 0.5rem;
-  color: var(--color3)
-}
-
 .logoContainer {
   height: fit-content;
 }

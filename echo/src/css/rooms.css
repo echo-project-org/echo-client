@@ -59,7 +59,8 @@
 .roomUsers {
     display: flex;
     flex-direction: column;
-    margin-left: 0.5rem;
+    /* margin-left: 0.5rem; */
+    align-items: center;
 }
 
 .roomControl {
