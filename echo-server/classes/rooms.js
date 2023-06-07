@@ -41,6 +41,22 @@ class Rooms {
         user.registerEvent("audioState", (data) => {
             this.sendAudioState(data);
         });
+        user.registerEvent("sendChatMessage", (data) => {
+            this.sendChatMessage(data);
+        });
+    }
+
+    sendChatMessage(data) {
+        if (this.connectedClients.has(data.id)) {
+            const room = this.rooms.get(data.roomId);
+            if (room) {
+                room.chat.addMessage(data);
+                room.users.forEach((user, id) => {
+                    if (String(id) !== String(data.id))
+                        user.receiveChatMessage(data);
+                });
+            }
+        }
     }
 
     sendAudioState(data) {
