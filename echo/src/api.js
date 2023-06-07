@@ -20,7 +20,7 @@ export async function call(path, method = "GET", body = null) {
             options = {
                 method: method,
                 cache: 'no-cache',
-                headers: {
+                headers: { 
                     'Content-Type': 'application/json',
                     "Authorization": "Bearer " + localStorage.getItem("token")
                 },
