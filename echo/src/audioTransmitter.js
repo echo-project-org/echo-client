@@ -17,7 +17,6 @@ export function toggleMute(bool) {
 }
 
 export function setMicVolume(volume) {
-    localStorage.setItem('micVolume', volume);
     micVolume = volume;
     if(isTransmitting){
         stopAudioStream();
@@ -26,7 +25,6 @@ export function setMicVolume(volume) {
 }
 
 export function setAudioDevice(device) {
-    localStorage.setItem('inputAudioDeviceId', device);
     audioDeviceId = device;
     if(isTransmitting){
         stopAudioStream();

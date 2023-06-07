@@ -56,14 +56,21 @@ function OutputDevicesSettings({ outputDevices }) {
     const [soundVolume, setSoundVolulme] = useState(100);
 
     const handleOutputDeviceChange = (event) => {
+        localStorage.setItem('outputAudioDeviceId', event.target.value);
         setOutputDevice(event.target.value);
         ar.setAudioDevice(event.target.value)
     };
 
     const handleSoundVolumeChange = (event, newValue) => {
         //set user volume
+        localStorage.setItem('audioVolume', newValue / 100);
         setSoundVolulme(newValue);
     };
+
+    useEffect(() => {
+        ar.setSoundVolulme(localStorage.getItem('audioVolume') || 1);
+        setSoundVolulme(Math.floor(localStorage.getItem('audioVolume') * 100) || 100);
+    }, []);
 
     const renderDeviceList = () => {
         let a = outputDevices.map(device => (
@@ -106,7 +113,7 @@ function OutputDevicesSettings({ outputDevices }) {
                     <VolumeUpIcon fontSize="medium" />
                     <ThemeProvider theme={theme}>
                         <Slider
-                            sx={{ width: "10rem" }}
+                            sx={{ width: "100%" }}
                             valueLabelDisplay="auto"
                             valueLabelFormat={(v) => { return v + "%" }}
                             aria-label="Volume"

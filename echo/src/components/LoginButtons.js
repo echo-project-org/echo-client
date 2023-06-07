@@ -13,17 +13,17 @@ const LoginButtons = ({visibility, navigate}) => {
   if(!visibility) return null
   return (
     <ThemeProvider theme={theme}>
-        <ButtonGroup
-            size='large'
-            orientation='vertical'
-            disableElevation
-            variant="text"
-            visibility={!visibility}
-            className="loginButtons"
-        >
-            <Button onClick={() => navigate("/login")}>Login</Button>
-            <Button onClick={() => navigate("/register")}>Register</Button>
-        </ButtonGroup>
+      <ButtonGroup
+        size='large'
+        orientation='vertical'
+        disableElevation
+        variant="text"
+        visibility={!visibility}
+        className="loginButtons"
+      >
+        <Button onClick={() => navigate("/login")}>Login</Button>
+        <Button onClick={() => navigate("/register")}>Register</Button>
+      </ButtonGroup>
     </ThemeProvider>
   )
 }

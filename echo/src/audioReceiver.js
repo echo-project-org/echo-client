@@ -2,9 +2,10 @@ let audioContexts = [];
 let clientSources = [];
 let clientIds = [];
 let startTimes = [];
-let audioDeviceId = localStorage.getItem('outputAudioDeviceId')
+let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
+var audioVolume = localStorage.getItem('audioVolume');
 
-export async function syncAudio(){
+export async function syncAudio() {
     clientIds.forEach((id) => {
         let index = clientIds.indexOf(id);
         audioDeviceId = localStorage.getItem('outputAudioDeviceId')
@@ -25,8 +26,11 @@ export async function syncAudio(){
 }
 
 export function setAudioDevice(device) {
-    localStorage.setItem('outputAudioDeviceId', device);
     audioDeviceId = device;
+}
+
+export function setSoundVolulme(volume) {
+    audioVolume = volume;
 }
 
 export async function startOutputAudioStream(clientId) {
@@ -61,7 +65,7 @@ export async function startOutputAudioStream(clientId) {
     }
 }
 
-export async function getAudioDevices(){
+export async function getAudioDevices() {
     return new Promise((resolve, reject) => {
         var out = [];
         navigator.mediaDevices.enumerateDevices().then((devices) => {
@@ -81,9 +85,7 @@ export async function getAudioDevices(){
 
 
 export async function stopOutputAudioStream() {
-    audioContexts.forEach(e => {
-        e.close();
-    });
+    audioContexts.forEach(e => { e.close(); });
 
     audioContexts = [];
     clientSources = [];
