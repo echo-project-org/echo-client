@@ -40,6 +40,7 @@ class Auth {
         var refreshToken = this.generateRandomString(64);
         // ad expiring date to token
         var expireDate = new Date();
+        console.log("generating token for user", user, config.tokenExpireInDays)
         expireDate.setDate(expireDate.getDate() + config.tokenExpireInDays);
         this.tokens.push({ token: token, user: user, expires: expireDate.getTime(), refreshToken: refreshToken });
         return { token: token, refreshToken: refreshToken };
@@ -47,11 +48,16 @@ class Auth {
 
     // check if a token is valid and not expired
     checkToken(token) {
+        // if contains Bearer remove it
+        if (token.includes("Bearer ")) token = token.replace("Bearer ", "");
+
         for (var i = 0; i < this.tokens.length; i++) {
             if (this.tokens[i].token == token) {
                 if (this.tokens[i].expires > new Date().getTime()) {
+                    console.log("Token valid for user", this.tokens[i].user)
                     return this.tokens[i].user;
                 } else {
+                    console.log("Token expired for user", this.tokens[i].user)
                     // remove the token if it is expired
                     this.removeToken(token);
                     return false;
@@ -82,49 +88,16 @@ class Auth {
         res.status(401).json({ message: "Unauthorized" });
     }
 
-    // check user credentials, and send token to user
-    loginUser(req, res) {
-        console.log(req.body)
-        const { username, password } = req.body;
-
-        req.database.query("SELECT id, name FROM users WHERE password = '" + password + "'", (err, result, fields) => {
-            if (err) return res.status(400).send({ message: "You messed up the request." });
-            // send wrong credentials if no user was found
-            if (!result) return res.status(401).send({ message: "Wrong credentials." });
-
-            if (result && result.length > 0) {
-                const { token, refreshToken } = this.generateToken(result[0].id);
-                return res.status(200).json({
-                    id: result[0].id,
-                    nick: result[0].nick,
-                    token,
-                    refreshToken
-                });
+    // check authentication
+    checkAuth(req, res) {
+        if (config.env == "dev") return true;
+        
+        if (req.headers.authorization)
+            if (!req.authenticator.checkToken(req.headers.authorization)) {
+                res.status(401).send({ message: "Unauthorized" });
+                return false;
             }
-
-            res.status(200).json({ message: "Username does not exist or password is incorrect." });
-        });
-    }
-
-    // register user in the database
-    registerUser(req, res) {
-        const { username, password } = req.body;
-
-        req.database.query("INSERT INTO users (nick, password) VALUES ('" + username + "', '" + password + "')", (err, result, fields) => {
-            if (err) return res.status(400).send({ message: "You messed up the request." });
-            
-            if (result && result.affectedRows > 0) {
-                const { token, refreshToken } = this.generateToken(result.insertId);
-                return res.status(200).json({
-                    id: result.insertId,
-                    nick: username,
-                    token,
-                    refreshToken
-                });
-            }
-
-            res.status(200).json({ message: "Username does not exist or password is incorrect." });
-        });
+        return true;
     }
 }
 

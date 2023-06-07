@@ -8,18 +8,18 @@ const StyledAvatarGroup = styled(AvatarGroup)({
     },
 });
 
-function InactiveRoom({ users, onClick, data}) {
+function InactiveRoom({ users, onClick, data }) {
     const handleClick = () => {
-      onClick(data.id);
+        onClick(data.id);
     }
 
     return (
         <div className='secondRoom' onClick={handleClick}>
             <p className='roomName noselect'>{data.name}</p>
-            <StyledAvatarGroup max={4} sx={{justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem'}}>
+            <StyledAvatarGroup max={4} sx={{ justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem' }}>
                 {
                     users.map((user) => (
-                        <Avatar key={user.id} alt={users.nick} src={user.img} sx={{ height: '1.25rem', width: '1.25rem' }} />
+                        <Avatar key={user.id} alt={users.name} src={user.img} sx={{ height: '1.25rem', width: '1.25rem' }} />
                     ))
                 }
             </StyledAvatarGroup>

@@ -18,8 +18,6 @@ const MainLogo = () => {
     var [serverPort, setServerPort] = useState('00000');
     var [userNickname, setUserNickname] = useState("undefined");
 
-    var userNickCookie = localStorage.getItem('userNick');
-
     const goToPage = (page) => {
         navigate(page);
     }
@@ -30,29 +28,46 @@ const MainLogo = () => {
 
     useEffect(() => {
         //Getting server audio settings, this also is used to check if the API are responding
-        api.call('getAudioServerAddress')
-            .then(async (res) => {
-                const data = await res.json();
+        // api.call('app/settings')
+        //     .then(async (res) => {
+        //         const data = await res.json();
     
-                //TODO check if api errors out
+        //         //TODO check if api errors out
     
-                //Saving the audio settings
-                setServerAddress(data.address);
-                setServerPort(data.port);
-                //Hide loading animation
-                setLoadingVisibility(false);
+        //         //Saving the audio settings
+        //         setServerAddress(data.address);
+        //         setServerPort(data.port);
+        //         //Hide loading animation
+        //         setLoadingVisibility(false);
                 
-                if(userNickCookie != null) {
-                    //If cookies are found then prompt user to access the app
-                    setAccessBtnVisibility(true);
-                    setLoginBtnVisibility(false);
-                    setUserNickname(userNickCookie);
-                } else {
-                    //If no cookies are found then ask for login / registration
-                    setAccessBtnVisibility(false);
-                    setLoginBtnVisibility(true);
-                }
-            });
+        //         if(userNickCookie != null) {
+        //             //If cookies are found then prompt user to access the app
+        //             setAccessBtnVisibility(true);
+        //             setLoginBtnVisibility(false);
+        //             setUserNickname(userNickCookie);
+        //         } else {
+        //             //If no cookies are found then ask for login / registration
+        //             setAccessBtnVisibility(false);
+        //             setLoginBtnVisibility(true);
+        //         }
+        //     });
+        
+        // cause it's cool :3
+        setLoadingVisibility(true);
+        setTimeout(() => {
+            setLoadingVisibility(false);
+            var userNickCookie = localStorage.getItem('name');
+            if (userNickCookie) {
+                //If cookies are found then prompt user to access the app
+                setAccessBtnVisibility(true);
+                setLoginBtnVisibility(false);
+                setUserNickname(userNickCookie);
+            } else {
+                //If no cookies are found then ask for login / registration
+                setAccessBtnVisibility(false);
+                setLoginBtnVisibility(true);
+            }
+        }, 1500);
 
     }, [])
 

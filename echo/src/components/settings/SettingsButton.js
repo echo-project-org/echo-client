@@ -13,25 +13,26 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
-import React from 'react'
-import InputDevicesSettings from '../settings/InputDevicesSettings';
-import OutputDevicesSettings from '../settings/OutputDevicesSettings';
+import { useState, useEffect } from 'react';
+import Zoom from '@mui/material/Zoom';
+import InputDevicesSettings from './InputDevicesSettings';
+import OutputDevicesSettings from './OutputDevicesSettings';
 
 const ar = require('../../audioReceiver')
 const at = require('../../audioTransmitter')
 
 const modalStyle = {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '40rem',
+    top: '5%',
+    left: '15%',
+    // transform: 'translate(-50%, -50%)',
+    width: '80%',
     bgcolor: '#4d3352',
     color: '#f5e8da',
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-    borderRadius: '1rem',
+    borderRadius: '.5rem',
 };
 
 const modalTheme = createTheme({
@@ -80,9 +81,9 @@ const modalTheme = createTheme({
 });
 
 function SettingsButton() {
-    const [inputDevices, setInputDevices] = React.useState([]);
-    const [outputDevices, setOutputDevices] = React.useState([]);
-    const [modalOpen, setModalOpen] = React.useState(false);
+    const [inputDevices, setInputDevices] = useState([]);
+    const [outputDevices, setOutputDevices] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
     const handleModalOpen = () => setModalOpen(true);
     const handleModalClose = () => setModalOpen(false);
 
@@ -99,7 +100,7 @@ function SettingsButton() {
     }; 
 
     return (
-        <>
+        <div>
             <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
                 <Button>
                     <SettingsIcon onClick={handleClick} />
@@ -113,7 +114,7 @@ function SettingsButton() {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
-                    <Fade in={modalOpen}>
+                    <Zoom in={modalOpen}>
                         <Box sx={modalStyle}>
                             <div className='modalDiv'>
                                 <Typography id="modal-modal-title" variant="h3">
@@ -124,10 +125,10 @@ function SettingsButton() {
                                 <OutputDevicesSettings outputDevices={outputDevices} />
                             </div>
                         </Box>
-                    </Fade>
+                    </Zoom>
                 </Modal>
             </ThemeProvider>
-        </>
+        </div>
     )
 }
 

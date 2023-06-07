@@ -13,26 +13,30 @@ const theme = createTheme({
     },
 });
 
-const AuthenticatedUserButtons = ({ visibility, nickname}) => {
+const AuthenticatedUserButtons = ({ visibility = false, nickname }) => {
     let navigate = useNavigate();
 
     const logout = async () => {
-        localStorage.removeItem("userId");
-        localStorage.removeItem("userNick");
+        localStorage.removeItem("id");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
 
+        // EEEEEEEEWWWWWWWWWWWWWWW
         window.location.reload();
-
     }
 
-    const enterRoom = async () => {
-        api.call('setOnline/' + nickname + '/T/0')
+    const enterServer = async () => {
+        // TODO: check the initial status of user (maybe get it from the login form?)
+        // and check if we need to update it or not
+        api.call('users/status', "POST", { id: localStorage.getItem('id'), status: "1" })
             .then((res) => {
-                if (res.ok) {
-                    ep.openConnection(localStorage.getItem('userId'));
-                    navigate("/main");
-                } else {
-                    console.error("Could not set user as online");
-                }
+                ep.openConnection(localStorage.getItem('id'));
+                navigate("/main");
+            })
+            .catch((err) => {
+                console.log(err.message);
             });
     }
     if (!visibility) return null
@@ -45,7 +49,7 @@ const AuthenticatedUserButtons = ({ visibility, nickname}) => {
                 variant="text"
                 className="loginButtons"
             >
-                <Button onClick={enterRoom}>Enter</Button>
+                <Button onClick={enterServer}>Enter</Button>
                 <Button onClick={logout}>Logout</Button>
             </ButtonGroup>
         </ThemeProvider>

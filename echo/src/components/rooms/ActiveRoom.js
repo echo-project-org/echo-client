@@ -1,14 +1,9 @@
-import { useState, useEffect } from 'react';
-import OnlineUserIcon from '../user/OnlineUserIcon'
-import { Divider } from '@mui/material'
+import OnlineUserIcon from './OnlineUserIcon'
 
 function ActiveRoom({ users, onClick, data }) {
   const handleClick = () => {
     onClick(data.id);
   }
-
-  useEffect(() => {
-  }, [])
   
   return (
     <div className='room' onClick={handleClick}>
@@ -16,7 +11,7 @@ function ActiveRoom({ users, onClick, data }) {
         <div className="roomUsers">
             {
               users.map(user => (
-                <OnlineUserIcon key={user.nick} imgUrl={user.img} nick={user.nick} id={user.id}/>
+                <OnlineUserIcon key={user.name} imgUrl={user.img} name={user.name} />
               ))
             }
         </div>

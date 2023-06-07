@@ -25,7 +25,7 @@ function WindowControls({ muted, audioMuted }) {
     const closeApp = async () => {
         at.stopAudioStream();
         ar.stopOutputAudioStream();
-        var nickname = localStorage.getItem("userNick");
+        var nickname = localStorage.getItem("name");
         api.call('setOnline/' + nickname + '/F/0');
         
         ipcRenderer.send("exitApplication", true);

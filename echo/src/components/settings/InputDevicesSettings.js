@@ -55,15 +55,22 @@ function InputDevicesSettings({ inputDevices }) {
     const [micVolume, setMicVolulme] = useState(100);
 
     const handleInputDeviceChange = (event) => {
+        localStorage.setItem('inputAudioDeviceId', event.target.value);
         setInputDevice(event.target.value);
         at.setAudioDevice(event.target.value)
     };
 
     const handleMicVolumeChange = (event, newValue) => {
         //set user volume
+        localStorage.setItem('micVolume', newValue / 100);
         setMicVolulme(newValue);
         at.setMicVolume(newValue / 100)
     };
+
+    useEffect(() => {
+        at.setMicVolume(localStorage.getItem('micVolume') || 1);
+        setMicVolulme(Math.floor(localStorage.getItem('micVolume') * 100) || 100);
+    }, []);
 
     const renderDeviceList = () => {
         let a = inputDevices.map(device => (
@@ -80,12 +87,6 @@ function InputDevicesSettings({ inputDevices }) {
         let audioDeviceId = localStorage.getItem('inputAudioDeviceId');
         if (audioDeviceId && audioDeviceId !== inputDevice) {
             setInputDevice(audioDeviceId);
-        }
-
-        let micVol = localStorage.getItem('micVolume') * 100;
-        micVol = Math.round(micVol);
-        if(micVol && micVol !== micVolume){
-            setMicVolulme(micVol);
         }
     }
 
@@ -112,7 +113,7 @@ function InputDevicesSettings({ inputDevices }) {
                     <MicIcon fontSize="medium" />
                     <ThemeProvider theme={theme} >
                     <Slider
-                        sx={{ width: "10rem" }}
+                        sx={{ width: "100%" }}
                         valueLabelDisplay="auto"
                         valueLabelFormat={(v) => { return v + "%" }}
                         aria-label="Volume"

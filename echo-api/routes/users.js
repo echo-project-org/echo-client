@@ -3,6 +3,8 @@ const router = express.Router();
 const fs = require("fs");
 
 router.get("/image/:id", (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+
     var { id } = req.params;
     // check if reqeust has .png at the end, if it does remove it
     if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
@@ -19,6 +21,8 @@ router.get("/image/:id", (req, res) => {
 });
 
 router.post("/image/:id", (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+
     var { id } = req.params;
     if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
     var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
@@ -32,16 +36,47 @@ router.post("/image/:id", (req, res) => {
     });
 });
 
+router.get("/rooms", (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+   
+    req.database.query("SELECT * FROM room_users")
+});
+
+// router.get("/friends/:id", (req, res) => {
+//     if(!req.authenticator.checkAuth(req, res)) return;
+    
+//     const { id } = req.query;
+//     if (!id) return res.status(400).send({ message: "You messed up the request." });
+
+//     req.database.query("SELECT u.name, u.online, u.id FROM users u, userFriends uf WHERE uf.id = ? AND u.id = uf.otherId", [id], (err, result, fields) => {
+//         if (err) return res.status(400).send({ error: "You messed up the request." });
+
+//         var jsonOut = [];
+//         if (result.length > 0) {
+//             result.map((plate) => {
+//                 jsonOut.push({
+//                     id: plate.id,
+//                     name: plate.name,
+//                     online: plate.online,
+//                 });
+//             })
+//         }
+//         res.status(200).send(jsonOut);
+//     });
+// });
+
 // get user
 router.get('/', (req, res) => {
-    con.query("SELECT nick, img, stanza, lastIP FROM users WHERE online = 'T' AND NOT id = 1", function (err, result, fields) {
+    if(!req.authenticator.checkAuth(req, res)) return;
+    
+    con.query("SELECT name, img, stanza, lastIP FROM users WHERE online = 'T' AND NOT id = 1", function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
         if (result.length > 0) {
             result.map(function(plate) {        
                 jsonOut.push({ 
-                    "nick" : plate.nick,
+                    "name" : plate.name,
                     "img" : plate.img,
                     "room" : plate.stanza,
                     "lastIP" : plate.lastIP,
@@ -52,36 +87,47 @@ router.get('/', (req, res) => {
     });
 });
 
-// create new user
-router.post('/', (req, res) => {
-    const body = req.body;
-    const id = body.id;
-    const url = body.status;
-    const hash = body.room;
+router.get("/status/:id", (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
 
-    con.query("REPLACE INTO users SET nick = '" + id + "', img = '" + url + "', firstJoin = NOW(), hash = '" + hash + "';", function (err, result, fields) {
-        if (err) res.status(400).send({ error: "You messed up the request." });
-        else res.status(200).send({ message: "User added" });
+    const { id } = req.query;
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
+
+    req.database.query("SELECT online FROM users WHERE id = ?", [id], (err, result, fields) => {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+        if (result.length > 0) {
+            res.status(200).send({ online: result[0].online });
+        } else {
+            res.status(404).send({ error: "User not found." });
+        }
     });
 });
 
-// update an existing user
-router.post('/update', (req, res) => {
-    var ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
+// update user status
+router.post('/status', (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+    
+    const ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
+    const { id, status } = req.body;
+    if (!id || !status) return res.status(400).send({ message: "You messed up the request." });
 
-    const body = req.body;
-    const id = body.id;
-    const status = body.status;
-    const room = body.room;
+    req.database.query("UPDATE users SET online = '" + status + "', lastSeen = CURRENT_TIMESTAMP(), ip = '" + ip + "' WHERE id = " + id, function (err, result, fields) {
+        if (err) console.log(err);
+        if (err) return res.status(500).send({ error: "You messed up the request." });
+        res.status(200).send({ message: "Status updated!" });
 
-    con.query("UPDATE users SET online = '"+ status +"', lastSeen = CURRENT_TIMESTAMP(), lastIP = '" + ip + "', stanza = '" + room + "' WHERE nick = '" + id + "'", function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." })
-        res.status(200).send({  message: "Status updated!" });
+        // remove user from any rooms   
+        if (status == "0")
+            req.database.query("DELETE FROM room_users WHERE userId = " + id, function (err, result, fields) {
+                if (err) console.log(err);
+            });
     });
 });
 
 // update volume value of existing user
 router.post('/volume', (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+    
     const body = req.body;
     const id = body.id;
     const user = body.status;
@@ -94,17 +140,19 @@ router.post('/volume', (req, res) => {
 })
 
 // get personal volume levels from user id
-router.get('/volume/:nick', (req, res) => {
-    const { nick } = req.params;
+router.get('/volume/:name', (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+    
+    const { name } = req.params;
 
-    con.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + nick + "'", function (err, result, fields) {
+    con.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + name + "'", function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
         if (result.length > 0) {
             result.map(function(volumes) {        
                 jsonOut.push({ 
-                    "nick" : volumes.otherUser,
+                    "name" : volumes.otherUser,
                     "volume" : volumes.volume,
                 });
             })
@@ -117,6 +165,8 @@ router.get('/volume/:nick', (req, res) => {
 
 // get volume level of specific user
 router.get('/volume/:nick1/:nick2', (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+    
     const { nick1 } = req.params;
     const { nick2 } = req.params;
 
@@ -127,7 +177,7 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
         if (result.length > 0) {
             result.map(function(volumes) {        
                 jsonOut.push({
-                    "nick" : volumes.otherUser,
+                    "name" : volumes.otherUser,
                     "volume" : volumes.volume,
                 });
             })

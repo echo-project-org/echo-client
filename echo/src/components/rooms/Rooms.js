@@ -1,48 +1,55 @@
+import "../css/rooms.css"
 import { useState, useEffect } from 'react';
 import Room from './Room';
 
+const ep = require("../echoProtocol");
+const api = require("../api");
 
-const ep = require("../../echoProtocol");
-const api = require("../../api");
-
-function Rooms({ }) {
-  const [roomId, setRoomId] = useState(0);
+function Rooms({ setState, connected }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
       id: 0,
       name: "none",
       description: "none",
-      img: "none",
-      users: []
+      img: "none"
     }
   ])
 
   const onRoomClick = (joiningId) => {
-    ep.joinRoom(localStorage.getItem("userId"), joiningId);
-    setRoomId(joiningId);
-    setActiveRoomId(joiningId)
-    let nick = localStorage.getItem("userNick");
-    api.call('setOnline/' + nick + '/T/' + joiningId)
+    ep.joinRoom(localStorage.getItem("id"), joiningId);
+    api.call("rooms/join", "POST", { userId: localStorage.getItem("id"), roomId: joiningId })
       .then((res) => {
         if (res.ok) {
-          updateRooms();
-        } else {
-          console.error("Could not set user as online");
+          console.log("joined room: ", joiningId)
+          setActiveRoomId(joiningId)
+          setState(true);
         }
+      })
+      .catch((err) => {
+        console.error(err);
       });
   }
 
   const updateRooms = () => {
-    api.getRooms()
+    api.call("rooms")
       .then((result) => {
-        setRemoteRooms(result);
+        console.log("rooms: ", result.json)
+        setRemoteRooms(result.json);
       });
   }
 
   useEffect(() => {
     updateRooms();
   }, []);
+  
+  useEffect(() => {
+    if (!connected) {
+      console.log("updating rooms")
+      setActiveRoomId(0)
+      updateRooms();
+    }
+  }, [connected]);
 
 
   return (

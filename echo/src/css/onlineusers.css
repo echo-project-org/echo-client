@@ -1,0 +1,26 @@
+.onlineUserIcon {
+    display: flex;
+    align-items: center;
+    margin-top: .4rem;
+    margin-bottom: .4rem;
+    margin-left: 0.5rem;
+}
+
+.onlineUserContainer {
+    transition: all .1s ease-in-out;
+    width: 96%;
+    margin-bottom: .4rem;
+}
+
+.onlineUserContainer:hover {
+    transition: all .1s ease-in-out;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, .2);
+    border-radius: 8px;
+    /* background-color: red; */
+}
+
+.onlineUserNick {
+    margin: 0 0 0 0.5rem;
+    color: var(--color3)
+}
