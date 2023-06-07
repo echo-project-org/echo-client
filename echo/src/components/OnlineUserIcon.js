@@ -1,3 +1,5 @@
+import '../css/onlineusers.css'
+
 import { Badge, Avatar, Divider } from '@mui/material'
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -108,64 +110,62 @@ function OnlineUserIcon({imgUrl, name, talking}) {
 
 
   return (
-    <div>
-      <div> 
-        <div className="onlineUserIcon noselect pointer" onContextMenu={handleClick} onClick={handleClick}
-            size="small"
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}>
-          <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
-            <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
-          </Badge>
-          <p className='onlineUserNick'>{name}</p>
-        </div>
-
-        <ThemeProvider theme={theme}>
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            transitionDuration={ 100 }
-            MenuListProps={{
-              'aria-labelledby': 'userIcon',
-              'className': 'userMenuModal'
-            }}
-          >
-            <div style={{
-              width: "100%",
-              // textAlign: "center",
-              textAlign: "-webkit-center",
-              marginBottom: ".3rem",
-            }}>
-              <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{
-                border: "3px solid white"
-              }}/>
-            </div>
-
-            <MenuItem>
-              <div style={{ width: "100%" }}>
-                <Stack spacing={2} direction="row" alignItems="center">
-                  <VolumeUp fontSize="10px" />
-                  <Slider
-                    sx={{width: 110}}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(v) => { return v + "%" }}
-                    aria-label="Volume"
-                    value={userVolume}
-                    onChange={handleVolumeChange}
-                    size='medium'
-                  />
-                </Stack>
-              </div>
-            </MenuItem>
-            <Divider sx={{ my: 0.5 }} variant='middle' />
-            <MenuItem onClick={handleClose}><MessageIcon fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem>
-            <MenuItem onClick={handleClose}><DoDisturbIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem>
-            <MenuItem onClick={handleClose}><GavelIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem>
-          </Menu>
-        </ThemeProvider>
+    <div className="onlineUserContainer">
+      <div className="onlineUserIcon noselect pointer" onContextMenu={handleClick} onClick={handleClick}
+          size="small"
+          aria-controls={open ? 'account-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}>
+        <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
+          <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
+        </Badge>
+        <p className='onlineUserNick'>{name}</p>
       </div>
+
+      <ThemeProvider theme={theme}>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          transitionDuration={ 100 }
+          MenuListProps={{
+            'aria-labelledby': 'userIcon',
+            'className': 'userMenuModal'
+          }}
+        >
+          <div style={{
+            width: "100%",
+            // textAlign: "center",
+            textAlign: "-webkit-center",
+            marginBottom: ".3rem",
+          }}>
+            <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{
+              border: "3px solid white"
+            }}/>
+          </div>
+
+          <MenuItem>
+            <div style={{ width: "100%" }}>
+              <Stack spacing={2} direction="row" alignItems="center">
+                <VolumeUp fontSize="10px" />
+                <Slider
+                  sx={{width: 110}}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(v) => { return v + "%" }}
+                  aria-label="Volume"
+                  value={userVolume}
+                  onChange={handleVolumeChange}
+                  size='medium'
+                />
+              </Stack>
+            </div>
+          </MenuItem>
+          <Divider sx={{ my: 0.5 }} variant='middle' />
+          <MenuItem onClick={handleClose}><MessageIcon fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem>
+          <MenuItem onClick={handleClose}><DoDisturbIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem>
+          <MenuItem onClick={handleClose}><GavelIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem>
+        </Menu>
+      </ThemeProvider>
     </div>
   )
 }
