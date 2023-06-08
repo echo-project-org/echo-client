@@ -5,12 +5,11 @@ const webrtc = require('wrtc');
 
 const stunkStunkServer = 'stun:stun.l.google.com:19302'
 
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use((req, res, next) => {
     console.log('Got api request:', Date.now(), "Query:", req.url, "Method:", req.method);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
-    res.header("Access-Control-Expose-Headers", "Authorization")
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "POST, GET");
     next();
@@ -139,37 +138,6 @@ app.post('/subscribeAudio/:senderId/:receiverId', async ({body}, res ) => {
     res.json(payload);
 });
 
-app.post('/broadcastAudio/', async (req, res ) => {
-    console.log(req.body.sdp);
-    const { sdp, id } = req.body;
-
-    console.log(id);
-    if (!id) {
-        return res.status(400).json({ message: "Provide a valid" });
-    }
-
-    const peer = new webrtc.RTCPeerConnection({
-        iceServers: [
-            {   
-                urls: stunkStunkServer
-            }
-        ]
-    });
-
-    peer.ontrack = (e) => handleAudioTrackEvent(e, peer, id, room);
-    const desc = new webrtc.RTCSessionDescription(sdp);
-    await peer.setRemoteDescription(desc);
-
-    const answer = await peer.createAnswer();
-    await peer.setLocalDescription(answer);
-
-    const payload = {
-        sdp: peer.localDescription
-    }
-
-    res.json(payload);
-});
-
 function handleAudioTrackEvent(e, peer, id) {
     console.log("User " + id + " is broadcasting audio");
     //if id not in audioUsers, add it
@@ -183,8 +151,34 @@ function handleAudioTrackEvent(e, peer, id) {
     }
 }
 
-app.use((req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
+app.post('/broadcastAudio', async (req, res ) => {
+    console.log(req.body);
+    const { sdp, id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ message: "Provide a valid" });
+    }
+
+    const peer = new webrtc.RTCPeerConnection({
+        iceServers: [
+            {   
+                urls: stunkStunkServer
+            }
+        ]
+    });
+
+    peer.ontrack = (e) => handleAudioTrackEvent(e, peer, id);
+    const desc = new webrtc.RTCSessionDescription(sdp);
+    await peer.setRemoteDescription(desc);
+
+    const answer = await peer.createAnswer();
+    await peer.setLocalDescription(answer);
+
+    const payload = {
+        sdp: peer.localDescription
+    }
+
+    res.json(payload);
 });
 
-app.listen(6983, () => console.log('Server started'));
+app.listen(6983, () => {console.log('Server started')});
