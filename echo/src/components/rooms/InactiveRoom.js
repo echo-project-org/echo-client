@@ -19,7 +19,7 @@ function InactiveRoom({ users, onClick, data }) {
             <StyledAvatarGroup max={4} sx={{ justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem' }}>
                 {
                     users.map((user) => (
-                        <Avatar key={user.id} alt={users.name} src={user.img} sx={{ height: '1.25rem', width: '1.25rem' }} />
+                        <Avatar key={user.id} alt={users.name} src={user.img} sx={{ height: '1.25rem', width: '1.25rem', marginBottom: '.5rem' }} />
                     ))
                 }
             </StyledAvatarGroup>
