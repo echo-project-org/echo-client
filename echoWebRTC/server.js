@@ -22,9 +22,8 @@ let senders = [];
 let audioUsers = [];
 let audioStreams = [];
 
-app.post('/consumer/:senderId/:receiverId', async (req, res ) => {
-    const { senderId, receiverId } = req.params;
-    const { sdp } = req.body;
+app.post('/consumer', async (req, res ) => {
+    const { sdp, senderId, receiverId } = req.body;
 
     if (!senderId || !receiverId) {
         return res.status(400).json({ message: "Provide a valid sender and receiver id" });
@@ -60,8 +59,8 @@ app.post('/consumer/:senderId/:receiverId', async (req, res ) => {
     res.json(payload);
 });
 
-app.post('/broadcast/:id', async ({body}, res ) => {
-    const { id } = req.params;
+app.post('/broadcast', async (req, res ) => {
+    const { sdp, id } = req.body;
     if (!id) {
         return res.status(400).json({ message: "Provide a valid id" });
     }
@@ -75,7 +74,7 @@ app.post('/broadcast/:id', async ({body}, res ) => {
     });
 
     peer.ontrack = (e) => handleTrackEvent(e, peer, id);
-    const desc = new webrtc.RTCSessionDescription(body.sdp);
+    const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
 
     const answer = await peer.createAnswer();
@@ -101,8 +100,8 @@ function handleTrackEvent(e, peer, id) {
     }
 }
 
-app.post('/subscribeAudio/:senderId/:receiverId', async ({body}, res ) => {
-    const { senderId, receiverId } = req.params;
+app.post('/subscribeAudio', async (req, res ) => {
+    const { sdp, senderId, receiverId } = req.body;
 
     if (!senderId || !receiverId) {
         return res.status(400).json({ message: "Provide a valid sender and receiver id" });
@@ -121,7 +120,7 @@ app.post('/subscribeAudio/:senderId/:receiverId', async ({body}, res ) => {
         ]
     });
 
-    const desc = new webrtc.RTCSessionDescription(body.sdp);
+    const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
     //get index of senderId
     const index = audioUsers.indexOf(senderId);
@@ -152,11 +151,10 @@ function handleAudioTrackEvent(e, peer, id) {
 }
 
 app.post('/broadcastAudio', async (req, res ) => {
-    console.log(req.body);
     const { sdp, id } = req.body;
 
     if (!id) {
-        return res.status(400).json({ message: "Provide a valid" });
+        return res.status(400).json({ message: "Provide a valid id" });
     }
 
     const peer = new webrtc.RTCPeerConnection({

@@ -54,7 +54,7 @@ function createPeer() {
     const peer = new RTCPeerConnection({
         iceServers: [
             {
-                urls: "stun:stun.stunprotocol.org"
+                urls: "stun:stun.l.google.com:19302"
             }
         ]
     });
@@ -70,8 +70,6 @@ async function handleNegotiationNeededEvent(peer) {
         sdp: peer.localDescription,
         id
     };
-
-    console.log(body)
 
     fetch('http://localhost:6983/broadcastAudio', {
         method: "POST",
