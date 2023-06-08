@@ -24,9 +24,8 @@ const at = require('../../audioTransmitter')
 const modalStyle = {
     position: 'absolute',
     top: '5%',
-    left: '15%',
-    // transform: 'translate(-50%, -50%)',
-    width: '80%',
+    left: '18%',
+    width: '60%',
     bgcolor: '#4d3352',
     color: '#f5e8da',
     border: '2px solid #000',

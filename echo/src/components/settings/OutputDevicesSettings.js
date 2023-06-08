@@ -120,7 +120,7 @@ function OutputDevicesSettings({ outputDevices }) {
                     <VolumeUpIcon fontSize="medium" />
                     <ThemeProvider theme={theme}>
                         <Slider
-                            sx={{ width: "100%" }}
+                            sx={{ width: "25%" }}
                             valueLabelDisplay="auto"
                             valueLabelFormat={(v) => { return v + "%" }}
                             aria-label="Volume"
