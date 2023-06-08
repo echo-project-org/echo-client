@@ -9,7 +9,28 @@ function Chat() {
         <MessageRight sender={"Kury"}text={"Dallas fai schifo"} />
         <MessageRight sender={"Kury"}text={"Volevo dire una cosa"} />
         <MessageRight sender={"Kury"} text={"Ciao"} />
-
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
+        <MessageRight sender={"Kury"} text={"Ciao"} />
     </div>
   )
 }
