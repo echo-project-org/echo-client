@@ -6,7 +6,7 @@ const ep = require("../../echoProtocol");
 const api = require("../../api");
 var at = require('../../audioTransmitter');
 
-function Rooms({ setState, connected }) {
+function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
@@ -25,6 +25,8 @@ function Rooms({ setState, connected }) {
         if (res.ok) {
           console.log("joined room: ", joiningId)
           setActiveRoomId(joiningId)
+          // send roomid to chatcontent to fetch messages
+          updateCurrentRoom(joiningId);
           setState(true);
         }
       })
@@ -48,7 +50,8 @@ function Rooms({ setState, connected }) {
   useEffect(() => {
     if (!connected) {
       console.log("updating rooms")
-      setActiveRoomId(0)
+      setActiveRoomId(0);
+      updateCurrentRoom(0);
       updateRooms();
     }
   }, [connected]);

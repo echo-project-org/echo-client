@@ -4,10 +4,10 @@ import React from 'react'
 import Chat from '../chat/Chat'
 import ChatControls from '../chat/ChatControls'
 
-function RoomContent() {
+function RoomContent({ roomId }) {
   return (
     <div className='roomContent'>
-      <Chat />
+      <Chat currentRoomId={roomId} />
       <ChatControls />
     </div>
   )
