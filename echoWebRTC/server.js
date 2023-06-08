@@ -101,8 +101,8 @@ app.post('/subscribeAudio/:senderId/:receiverId', async ({body}, res ) => {
         return res.status(400).json({ message: "Provide a valid sender and receiver id" });
     }
 
-    //if senderId is not in senders
-    if (!senders.includes(senderId)) {
+    //if audioUsers is not in senders
+    if (!audioUsers.includes(senderId)) {
         return res.status(404).json({ message: "Stream not found" });
     }
 
