@@ -5,19 +5,27 @@ const webrtc = require('wrtc');
 
 const stunkStunkServer = 'stun:stun.l.google.com:19302'
 
-app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+    console.log('Got api request:', Date.now(), "Query:", req.url, "Method:", req.method);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+    res.header("Access-Control-Expose-Headers", "Authorization")
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST, GET");
+    next();
+});
+
 
 let senderStreams = [];
 let senders = [];
 
-let rooms = [];
 let audioUsers = [];
 let audioStreams = [];
 
-app.post('/consumer/:senderId/:receiverId', async ({body}, res ) => {
+app.post('/consumer/:senderId/:receiverId', async (req, res ) => {
     const { senderId, receiverId } = req.params;
+    const { sdp } = req.body;
 
     if (!senderId || !receiverId) {
         return res.status(400).json({ message: "Provide a valid sender and receiver id" });
@@ -36,7 +44,7 @@ app.post('/consumer/:senderId/:receiverId', async ({body}, res ) => {
         ]
     });
 
-    const desc = new webrtc.RTCSessionDescription(body.sdp);
+    const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
     //get index of senderId
     const index = senders.indexOf(senderId);
@@ -131,9 +139,10 @@ app.post('/subscribeAudio/:senderId/:receiverId', async ({body}, res ) => {
     res.json(payload);
 });
 
-app.post('/broadcastAudio/:id/', async ({body}, res ) => {
-    const { id } = req.params;
-    console.log("id: ");
+app.post('/broadcastAudio/', async (req, res ) => {
+    console.log(req.body.sdp);
+    const { sdp, id } = req.body;
+
     console.log(id);
     if (!id) {
         return res.status(400).json({ message: "Provide a valid" });
@@ -148,7 +157,7 @@ app.post('/broadcastAudio/:id/', async ({body}, res ) => {
     });
 
     peer.ontrack = (e) => handleAudioTrackEvent(e, peer, id, room);
-    const desc = new webrtc.RTCSessionDescription(body.sdp);
+    const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
 
     const answer = await peer.createAnswer();

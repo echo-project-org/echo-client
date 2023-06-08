@@ -71,12 +71,22 @@ async function handleNegotiationNeededEvent(peer) {
     const offer = await peer.createOffer();
     await peer.setLocalDescription(offer);
     const payload = {
-        sdp: peer.localDescription
+        sdp: peer.localDescription,
+        id
     };
 
-    const { data } = await axios.post('/broadcastAudio/' + id, payload);
-    const desc = new RTCSessionDescription(data.sdp);
-    peer.setRemoteDescription(desc).catch(e => console.log(e));
+    let options = {
+        method: "POST",
+        cache: 'no-cache',
+        body: JSON.stringify(payload),
+    }
+
+    fetch('http://127.0.0.1:6983/broadcastAudio', options).then((response) => {
+        response.json().then((json) => {
+            const desc = new RTCSessionDescription(json.sdp);
+            peer.setRemoteDescription(desc).catch(e => console.log(e));
+        }
+    )});
 }
 
 export async function startInputAudioStream() {
