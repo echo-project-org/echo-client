@@ -68,6 +68,7 @@ router.post('/join', (req, res) => {
     // if user is already in room, remove it
     req.database.query("DELETE FROM room_users WHERE userId = ?", [userId], (err, result, fields) => {
         if (err) return console.error(err);
+        if (roomId === "0") return res.json({ message: "Left room" });
     });
 
     // if room id is 0, then the user has left all rooms
