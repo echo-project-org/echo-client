@@ -5,7 +5,10 @@ class User {
         this.socketId = socket.id;
         this.lastRoom = 0;
         this.isDeaf = false;
+        this.isMuted = false;
         this.events = {};
+
+        this.isJoined = false;
 
         // this is dev, so TO BE REMOVED
         this.devLog = 0;
@@ -76,9 +79,12 @@ class User {
     join(data) {
         // I think i added another function call just in case i want to do something with the join event
         this.registerAudioListener(data);
+        // need to add this cause i'm creating a socket listener every time someone join a room (not good :P)
+        this.isJoined = true;
     }
 
     registerAudioListener(data) {
+        if (this.isJoined) return;
         console.log("started audio listener for user", this.id)
         this.socket.on("audioPacket", (packet) => {
             this.triggerEvent("receiveAudioPacket", packet);
