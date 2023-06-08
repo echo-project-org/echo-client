@@ -42,11 +42,12 @@ const theme = createTheme({
     },
 });
 
-function ChatControls() {
+function ChatControls({ onEmojiOn }) {
     return (
         <div className='chatControls'>
             <ThemeProvider theme={theme}>
                 <form className='chatForm' noValidate autoComplete="off">
+
                     <StyledTextField
                         id="messageBox"
                         autoFocus
@@ -62,7 +63,7 @@ function ChatControls() {
                         maxRows={2}
                         label="Send a message."
                         InputProps={{
-                            endAdornment: <MessageBoxButtons />,
+                            endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} />,
                             style: {color: "#f5e8da"}
                         }}
                     />
