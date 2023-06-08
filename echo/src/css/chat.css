@@ -5,7 +5,7 @@
 .sideWithChat {
     display: flex;
     flex-direction: row;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     height: 97vh;
     min-height: 1vh;
 }
@@ -14,8 +14,8 @@
     overflow: auto;
     display: flex;
     flex-direction: column-reverse;
-    flex: 0 0 auto;
-    height: 90vh;
+    flex: 1 0 auto;
+    height: 88vh;
     background-color: var(--chat-background-color);
     border-bottom-left-radius: 1rem;
     margin-left: 0.6rem;
