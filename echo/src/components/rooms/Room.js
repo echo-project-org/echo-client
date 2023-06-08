@@ -37,7 +37,7 @@ function Room({ active, onClick, data }) {
 
   return (
     <div>
-      {active ? <ActiveRoom users={onlineUsers} data={data} onClick={_onClick} /> : <InactiveRoom users={onlineUsers} data={data} onClick={_onClick} />}
+      { active ? <ActiveRoom users={onlineUsers} data={data} onClick={_onClick} /> : <InactiveRoom users={onlineUsers} data={data} onClick={_onClick} /> }
     </div>
   )
 }

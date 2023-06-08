@@ -29,7 +29,7 @@ const LoginButtons = ({visibility, navigate}) => {
 }
 
 LoginButtons.defaultProps = {
-    visibility: true
+  visibility: true
 }
 
 export default LoginButtons

@@ -172,23 +172,23 @@ function RoomControl({ state, setState, screenSharing }) {
   return (
     <div className='roomControl'>
       <ThemeProvider theme={theme}>
-        <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
+        <Tooltip title={ ping + " ms" } onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
           <div className="voiceConnected"><p>{state ? "Connected" : "Not connected" }</p> <p><SignalCellularAltIcon /></p></div>
         </Tooltip>
         <ButtonGroup variant='text' className='buttonGroup'>
-          <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Tooltip title={ !muted ? "Mute" : "Unmute" } placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={muteMic}>
-              {!muted ? <MicIcon /> : <MicOffRoundedIcon />}
+              { !muted ? <MicIcon /> : <MicOffRoundedIcon /> }
             </Button>
           </Tooltip>
-          <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Tooltip title={ !deaf ? "Deafen" : "Undeafen" } placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={deafHeadphones}>
-              {!deaf ? <VolumeUpIcon /> : <VolumeOffIcon />}
+              { !deaf ? <VolumeUpIcon /> : <VolumeOffIcon /> }
             </Button>
           </Tooltip>
           <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button>
-              {!screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon />}
+              { !screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon /> }
             </Button>
           </Tooltip>
             <SettingsButton />
