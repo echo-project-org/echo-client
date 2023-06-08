@@ -1,418 +1,369 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap');
 
 * {
-  font-family: Roboto Condensed;
+    font-family: Roboto Condensed;
 }
 
 @keyframes wave {
-  0% {
-    transform: scale(0);
-  }
+    0% {
+        transform: scale(0);
+    }
 
-  50% {
-    transform: scale(1);
-  }
+    50% {
+        transform: scale(1);
+    }
 
-  100% {
-    transform: scale(0);
-  }
+    100% {
+        transform: scale(0);
+    }
 }
 
 @keyframes popIn {
-  0% {
-    transform: scale(0);
-  }
+    0% {
+        transform: scale(0);
+    }
 
-  100% {
-    transform: scale(1);
-  }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
+    0% {
+        opacity: 0;
+    }
 
-  100% {
-    animation-delay: 1.5s;
-    opacity: 1;
-  }
+    100% {
+        animation-delay: 1.5s;
+        opacity: 1;
+    }
 }
 
 :root {
-  --main-bg-color: #2b192e;
-  --color1: rgb(77, 1, 77);
-  --color2: #ce8ca5;
-  --color3: #f5e8da;
-  --color4: #E4DAF5;
-  --context-menu-background: #4d3352;
-  --main-text-color: #fff;
+    --main-bg-color: #2b192e;
+    --color1: rgb(77, 1, 77);
+    --color2: #ce8ca5;
+    --color3: #f5e8da;
+    --color4: #E4DAF5;
+    --context-menu-background: #4d3352;
+    --main-text-color: #fff;
 }
 
 html {
-  height: 100%;
-  overflow: hidden;
+    height: 100%;
+    overflow: hidden;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
+    width: 5px;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--color3); 
-  border-radius: 50px;
+    background: var(--color3);
+    border-radius: 50px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color2); 
+    background: var(--color2);
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--main-bg-color);
-  height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--main-bg-color);
+    height: 100%;
 }
 
 #root {
-  height: 100%;
+    height: 100%;
 }
 
-.App{
-  height: 100%;
+.App {
+    height: 100%;
 }
 
 .appWrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .animatedRoutes {
-  flex: 1 1 auto;
+    flex: 1 1 auto;
 }
 
 .utilitiesBar {
-  height: 3rem;
-  background-color: var(--main-bg-color);
-  border-bottom: 1px solid var(--color3);
-  display: flex;
-  flex-direction: row;
-  flex: 0 0 auto;
+    height: 3rem;
+    background-color: var(--main-bg-color);
+    border-bottom: 1px solid var(--color3);
+    display: flex;
+    flex-direction: row;
+    flex: 0 0 auto;
 }
 
 .logoContainer {
-  height: fit-content;
+    height: fit-content;
 }
 
 .mainScreen {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .splashScreen {
-  height: 100vh;
-  width: 100vw;
+    height: 100vh;
+    width: 100vw;
 }
 
 .mainLogoImg {
-  color: var(--color3);
-  height: 15rem;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  animation: 1500ms ease 0s 1 popIn;
+    color: var(--color3);
+    height: 15rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    animation: 1500ms ease 0s 1 popIn;
 }
 
 .hidden {
-  visibility: 0;
+    visibility: 0;
 }
 
 .notHidden {
-  visibility: 1;
+    visibility: 1;
 }
 
 .boxedLogo {
-  height: 5rem;
-  width: 5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
+    height: 5rem;
+    width: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
 }
 
 .connectButton {
-  align-items: center;
-  background-color: var(--color3);
-  border: 2px solid #111;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: var(--main-bg-color);
-  cursor: pointer;
-  display: flex;
-  font-size: 16px;
-  height: 80px;
-  justify-content: center;
-  line-height: 24px;
-  max-width: 100%;
-  padding: 0 25px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  animation: 500ms ease 0s 1 fadeIn;
+    align-items: center;
+    background-color: var(--color3);
+    border: 2px solid #111;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: var(--main-bg-color);
+    cursor: pointer;
+    display: flex;
+    font-size: 16px;
+    height: 80px;
+    justify-content: center;
+    line-height: 24px;
+    max-width: 100%;
+    padding: 0 25px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    animation: 500ms ease 0s 1 fadeIn;
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2rem;
-  margin: auto;
-  width: 15rem;
-  cursor: pointer;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2rem;
+    margin: auto;
+    width: 15rem;
+    cursor: pointer;
 }
 
 .connectButton:after {
-  background-color: #111;
-  border-radius: 8px;
-  content: "";
-  display: block;
-  height: 80px;
-  left: 0;
-  width: 100%;
-  position: absolute;
-  top: -2px;
-  z-index: -2;
-  transform: translate(8px, 8px);
-  transition: transform .2s ease-out;
+    background-color: #111;
+    border-radius: 8px;
+    content: "";
+    display: block;
+    height: 80px;
+    left: 0;
+    width: 100%;
+    position: absolute;
+    top: -2px;
+    z-index: -2;
+    transform: translate(8px, 8px);
+    transition: transform .2s ease-out;
 }
 
 .connectButton:hover:after {
-  transform: translate(0, 0);
+    transform: translate(0, 0);
 }
 
 .connectButton:active {
-  background-color: var(--color2);
-  outline: 0;
+    background-color: var(--color2);
+    outline: 0;
 }
 
 .connectButton:hover {
-  outline: 0;
+    outline: 0;
 }
 
 .loadingAnimation {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  padding-top: 25rem;
-  height: 5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: fadeIn 3s ease;
+    position: relative;
+    margin: auto;
+    display: flex;
 }
 
 .wave {
-  width: 5px;
-  height: 30px;
-  background: linear-gradient(45deg, var(--color2), var(--color3));
-  margin: 10px;
-  border-radius: 20px;
-  animation: wave 1s ease infinite;
+    width: 5px;
+    height: 30px;
+    background: linear-gradient(45deg, var(--color2), var(--color3));
+    margin: 10px;
+    border-radius: 20px;
+    animation: wave 1s ease infinite;
 }
 
 .wave:nth-child(2) {
-  animation-delay: 0.1s;
+    animation-delay: 0.1s;
 }
 
 .wave:nth-child(3) {
-  animation-delay: 0.2s;
+    animation-delay: 0.2s;
 }
 
 .wave:nth-child(4) {
-  animation-delay: 0.3s;
+    animation-delay: 0.3s;
 }
 
 .wave:nth-child(5) {
-  animation-delay: 0.4s;
+    animation-delay: 0.4s;
 }
 
 .wave:nth-child(6) {
-  animation-delay: 0.5s;
+    animation-delay: 0.5s;
 }
 
 .wave:nth-child(7) {
-  animation-delay: 0.6s;
+    animation-delay: 0.6s;
 }
 
 .wave:nth-child(8) {}
 
 .wave:nth-child(9) {
-  animation-delay: 0.7s;
-  animation-delay: 0.8s;
+    animation-delay: 0.7s;
+    animation-delay: 0.8s;
 }
 
 .wave:nth-child(10) {
-  animation-delay: 0.9s;
+    animation-delay: 0.9s;
 }
 
 .header {
-  height: 5rem;
-  margin: auto;
-  width: 100%;
-  background-color: var(--color1);
+    height: 5rem;
+    margin: auto;
+    width: 100%;
+    background-color: var(--color1);
 }
 
 .topBar {
-  width: 100%;
-  min-height: 1.7rem;
-  background-color: var(--main-bg-color);
-  display: flex;
-  flex-direction: row-reverse;
-  flex: 0 0 auto;
-  -webkit-app-region: drag;
+    width: 100%;
+    min-height: 1.7rem;
+    background-color: var(--main-bg-color);
+    display: flex;
+    flex-direction: row-reverse;
+    flex: 0 0 auto;
+    -webkit-app-region: drag;
 }
 
 .noDrag {
-  user-drag: none;
-  -webkit-user-drag: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+    user-drag: none;
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }
 
 .noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .pointer:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .windowControls {
-  -webkit-app-region: none;
+    -webkit-app-region: none;
 }
 
 .backButton {
-  position: absolute;
-  top: 0;
-  left: 0;
-  -webkit-app-region: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-app-region: none;
 }
 
 .sidebar {
-  padding-bottom: 0.5rem;
-  width: 15rem;
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 1rem;
-  flex: 0 0 auto;
+    padding-bottom: 0.5rem;
+    width: 15rem;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1rem;
+    flex: 0 0 auto;
 }
 
 .userMenuModal {
-  color: white;
-  min-width: 12rem;
-  background-color: var(--context-menu-background);
-}
-
-.rightMessage {
-  max-width: 66%;
-  min-height: 1.7rem;
-  padding: 0.5rem 1rem 0.5rem 0.5rem;
-  background-color: var(--color4);
-  border-radius: 1rem 1rem 0 1rem;
-  width: fit-content;
-  margin: 1rem 1rem 1rem auto;
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-.rightMessageText {
-  margin: auto;
-  color: black;
-  text-align: left;
-  vertical-align: middle;
-  display: inline-block;
-}
-
-.leftMessage {
-  max-width: 66%;
-  min-height: 1.7rem;
-  padding: 0.5rem 1rem 0.5rem 0.5rem;
-  background-color: var(--color3);
-  border-radius: 1rem 1rem 1rem 0;
-  width: fit-content;
-  margin: 1rem;
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-}
-
-.leftMessageText {
-  margin: auto;
-  color: black;
-  text-align: left;
-  vertical-align: middle;
-  display: inline-block;
+    color: white;
+    min-width: 12rem;
+    background-color: var(--context-menu-background);
 }
 
 .buttonGroup {
-  position: relative;
+    position: relative;
 }
 
 .voiceConnected {
-  font-size: 1rem;
-  user-select: none;
-  cursor: pointer;
-  margin-bottom: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  height: auto;
-  width: 80%;
-  color: white;
-  border: 1px solid rgb(235, 144, 235);
-  background: rgb(110,64,110);
-  background: linear-gradient(30deg, rgb(107, 65, 107) 0%, rgb(134, 76, 134) 50%, rgb(155, 95, 155) 100%);
-  box-shadow: 0 0 .3rem .1rem rgba(78, 46, 78, .8);
-  border-radius: 10px;
-  padding: 5px;
+    font-size: 1rem;
+    user-select: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    height: auto;
+    width: 80%;
+    color: white;
+    border: 1px solid rgb(235, 144, 235);
+    background: rgb(110, 64, 110);
+    background: linear-gradient(30deg, rgb(107, 65, 107) 0%, rgb(134, 76, 134) 50%, rgb(155, 95, 155) 100%);
+    box-shadow: 0 0 .3rem .1rem rgba(78, 46, 78, .8);
+    border-radius: 10px;
+    padding: 5px;
 }
 
 .voiceConnected p {
-  line-height: normal;
-  display: inline;
-  vertical-align: middle;
+    line-height: normal;
+    display: inline;
+    vertical-align: middle;
 }
 
 .tooltipButton {
-  background-color: red;
+    background-color: red;
 }
 
 .modalDiv {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .settingsModalSubDiv {
-  background-color: var(--main-bg-color);
-  padding: 1rem;
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    background-color: var(--main-bg-color);
+    padding: 1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
