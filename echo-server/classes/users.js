@@ -3,7 +3,7 @@ class User {
         this.id = id;
         this.socket = socket;
         this.socketId = socket.id;
-        this.lastRoom = 0;
+        this.currentRoom = 0;
         this.isDeaf = false;
         this.isMuted = false;
         this.events = {};
@@ -41,7 +41,7 @@ class User {
 
     // called when remote user join the current room
     userJoinedCurrentChannel(id) {
-        if (this.lastRoom !== 0) {
+        if (this.currentRoom !== 0) {
             this.socket.emit("userJoinedChannel", { id: id })
         }
     }
@@ -71,8 +71,13 @@ class User {
 
     // you know what this does
     end(id) {
-        this.lastRoom = 0;
+        this.currentRoom = 0;
         this.socket.disconnect();
+    }
+
+    // when user exit the channel
+    exit(data) {
+        this.currentRoom = 0;
     }
 
     // when current user join a room we start listening for packets
@@ -81,32 +86,40 @@ class User {
         this.registerAudioListener(data);
         // need to add this cause i'm creating a socket listener every time someone join a room (not good :P)
         this.isJoined = true;
+        // set last room to current room just in case
+        this.currentRoom = data.roomId;
     }
 
+    // does this make sens??? i don't know, but it's here so.... :P
     registerAudioListener(data) {
         if (this.isJoined) return;
         console.log("started audio listener for user", this.id)
         this.socket.on("audioPacket", (packet) => {
+            if (this.devLog === 100) {
+                console.log("got audio from", this.id, packet, this.currentRoom);
+                this.devLog = 0;
+            }
+            this.devLog++;
             this.triggerEvent("receiveAudioPacket", packet);
         });
     }
 
     // unused for now, could be handy in case of connection problems
     // (like reconnecting to the last room)
-    setLastRoom(roomId) {
+    setCurrentRoom(roomId) {
         if (typeof roomId !== "number") roomId = Number(roomId);
-        if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setLastRoom")
-        this.lastRoom = roomId;
+        if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setCurrentRoom")
+        this.currentRoom = roomId;
     }
 
     userLeftCurrentChannel(id) {
-        if (this.lastRoom !== 0) {
+        if (this.currentRoom !== 0) {
             this.socket.emit("userLeftChannel", { id: id })
         }
     }
 
-    getLastRoom() {
-        return this.lastRoom;
+    getCurrentRoom() {
+        return this.currentRoom;
     }
 
     // send the chat message to the non-sender users
