@@ -44,6 +44,9 @@ class Rooms {
         user.registerEvent("sendChatMessage", (data) => {
             this.sendChatMessage(data);
         });
+        user.registerEvent("exit", (data) => {
+            this.exitRoom(data);
+        });
     }
 
     sendChatMessage(data) {
@@ -116,6 +119,25 @@ class Rooms {
                 }
             });
             console.log(this.rooms);
+        }
+    }
+
+    exitRoom(data) {
+        console.log("exiting room", data.id)
+        if (this.connectedClients.has(data.id)) {
+            const user = this.connectedClients.get(data.id);
+            const roomId = user.getLastRoom();
+            if (this.rooms.has(roomId)) {
+                const room = this.rooms.get(roomId);
+                room.users.delete(data.id);
+                console.log("deleted user", data.id, "from room", roomId)
+                room.users.forEach((remoteUser, id) => {
+                    if (id !== user.id) {
+                        console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
+                        remoteUser.userLeftCurrentChannel(user.id);
+                    }
+                })
+            }
         }
     }
 

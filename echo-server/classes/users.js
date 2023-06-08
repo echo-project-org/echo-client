@@ -15,6 +15,7 @@ class User {
         this.socket.on("join", (data) => this.triggerEvent("join", data));
         this.socket.on("end", (data) => this.triggerEvent("end", data));
         this.socket.on("sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
+        this.socket.on("exit", (data) => this.triggerEvent("exit", data));
     }
 
     registerEvent(event, cb) {
@@ -90,6 +91,12 @@ class User {
         if (typeof roomId !== "number") roomId = Number(roomId);
         if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setLastRoom")
         this.lastRoom = roomId;
+    }
+
+    userLeftCurrentChannel(id) {
+        if (this.lastRoom !== 0) {
+            this.socket.emit("userLeftChannel", { id: id })
+        }
     }
 
     getLastRoom() {
