@@ -6,33 +6,6 @@ var socket;
 var ping = 0;
 var pingInterval;
 
-// socket.onmessage = function (event) {
-//     parseMessage(event.data)
-// };
-
-// socket.onclose = function (event) {
-//     if (event.wasClean) {
-//         //If closing was clean
-//     } else {
-//         // alert('Connection with the server died');
-//     }
-    
-//     at.stopAudioStream();
-// };
-
-// // when found connection and enstablishing a new connection
-
-// // attempt in reconnection
-// socket.io.on("reconnect_attempt", (attempt) => {
-//     alert("reconnecting. attempt " + attempt)
-// });
-
-// socket.io.on("reconnect", (attempt) => {});
-// socket.io.on("reconnect_error", (error) => {});
-// socket.io.on("reconnect_failed", () => {});
-
-// // errors
-
 export function openConnection(id) {
     console.log("opening connection with socket")
     socket = io("ws://localhost:6982", { query: { id } });

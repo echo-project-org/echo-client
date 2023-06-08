@@ -28,7 +28,7 @@ export async function call(path, method = "GET", body = null) {
             }
             
         
-        fetch('http://localhost:6980/' + path, options)
+        fetch('http://kury.ddns.net:6980/' + path, options)
             .then((response) => {
                 return new Promise((resolve) => response.json()
                     .then((json) => resolve(

@@ -1,3 +1,7 @@
+import axios from 'axios';
+
+axios.defaults.baseURL = "http://127.0.0.1:6983/";
+
 const ep = require('./echoProtocol')
 const ar = require('./audioReceiver')
 
@@ -9,6 +13,8 @@ var id = localStorage.getItem('id');
 var audioDeviceId = localStorage.getItem('inputAudioDeviceId');
 var micVolume = localStorage.getItem('micVolume');
 let gainNode;
+
+let peer;
 
 var muted = false;
 
@@ -48,6 +54,30 @@ export async function getAudioDevices(){
     })
 }
 
+function createPeer() {
+    const peer = new RTCPeerConnection({
+        iceServers: [
+            {
+                urls: "stun:stun.stunprotocol.org"
+            }
+        ]
+    });
+    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+
+    return peer;
+}
+
+async function handleNegotiationNeededEvent(peer) {
+    const offer = await peer.createOffer();
+    await peer.setLocalDescription(offer);
+    const payload = {
+        sdp: peer.localDescription
+    };
+
+    const { data } = await axios.post('/broadcastAudio/' + id, payload);
+    const desc = new RTCSessionDescription(data.sdp);
+    peer.setRemoteDescription(desc).catch(e => console.log(e));
+}
 
 export async function startInputAudioStream() {
     id = localStorage.getItem('id');
@@ -72,6 +102,9 @@ export async function startInputAudioStream() {
             },
         }, function (stream) {
             isTransmitting = true;
+            peer = createPeer();
+            stream.getTracks().forEach(track => peer.addTrack(track, stream));
+            
             mediaStream = stream;
             // create the MediaStreamAudioSourceNode
             context = new AudioContext();
@@ -90,7 +123,7 @@ export async function startInputAudioStream() {
                 //Here i have the raw data
                 var left = e.inputBuffer.getChannelData(0);
                 var right = e.inputBuffer.getChannelData(1);
-                if (!muted) ep.sendAudioPacket(id, left, right);
+                //if (!muted) ep.sendAudioPacket(id, left, right);
 
                 micVolume = localStorage.getItem('micVolume');
                 if(micVolume){

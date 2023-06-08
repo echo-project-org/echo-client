@@ -133,6 +133,8 @@ app.post('/subscribeAudio/:senderId/:receiverId', async ({body}, res ) => {
 
 app.post('/broadcastAudio/:id/', async ({body}, res ) => {
     const { id } = req.params;
+    console.log("id: ");
+    console.log(id);
     if (!id) {
         return res.status(400).json({ message: "Provide a valid" });
     }
@@ -171,5 +173,9 @@ function handleAudioTrackEvent(e, peer, id) {
         audioStreams[index] = e.streams[0];
     }
 }
+
+app.use((req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+});
 
 app.listen(6983, () => console.log('Server started'));
