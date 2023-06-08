@@ -20,12 +20,12 @@ router.get("/image/:id", (req, res) => {
     res.status(404).send("File not found");
 });
 
-router.post("/image/:id", (req, res) => {
+router.post("/image", (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 
-    var { id } = req.params;
+    var { id, img } = req.body;
     if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
-    var base64Data = req.body.img.replace(/^data:image\/png;base64,/, "");
+    var base64Data = img.replace(/^data:image\/png;base64,/, "");
     fs.writeFile("./images/" + id + ".png", base64Data, "base64", function (err) {
         if (err) {
             console.log(err);
