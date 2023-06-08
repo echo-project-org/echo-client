@@ -77,7 +77,12 @@ export function openConnection(id) {
         console.log("got user audio info from server", data);
         if(!data.deaf || !data.mute)
             ar.startOutputAudioStream(data.id)
-    })
+    });
+
+    socket.on("userLeftChannel", (data) => {
+        console.log("user", data, "left your channel, stopping listening audio");
+        ar.stopOutputAudioStream(data.id)
+    });
 
     // socket.io.on("ping", () => { console.log("pong") });
 }
@@ -96,6 +101,11 @@ export function getPing() {
 
 export function sendAudioState(id, data) {
     if (socket) socket.emit("audioState", { id, deaf: data.deaf, muted: data.muted });
+}
+
+export function exitFromRoom(id) {
+    console.log("exit from room", id)
+    if (socket) socket.emit("exit", { id });
 }
 
 export function closeConnection(id) {

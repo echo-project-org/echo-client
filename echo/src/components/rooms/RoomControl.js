@@ -98,6 +98,7 @@ function RoomControl({ state, setState, screenSharing }) {
     if (!state) {
       api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
         .then(res => {
+          console.log("got response, left application")
           // at.startInputAudioStream();
           ar.stopOutputAudioStream();
           at.stopAudioStream();
@@ -113,7 +114,9 @@ function RoomControl({ state, setState, screenSharing }) {
     } else {
       api.call("rooms/join", "POST", { userId: localStorage.getItem('id'), roomId: "0" })
         .then(res => {
+          console.log("got response, left room")
           // at.startInputAudioStream();
+          ep.exitFromRoom(localStorage.getItem('id'));
           ar.stopOutputAudioStream();
           at.stopAudioStream();
         })

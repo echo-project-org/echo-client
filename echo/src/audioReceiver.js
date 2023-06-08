@@ -124,14 +124,26 @@ export async function getAudioDevices() {
     })
 }
 
+export async function stopOutputAudioStream(id = null) {
+    if (id) {
+        if (clientIds.includes(id)) {
+            let index = clientIds.indexOf(id);
+            audioContexts[index].close();
+            audioContexts.splice(index, 1);
+            clientSources.splice(index, 1);
+            clientIds.splice(index, 1);
+            startTimes.splice(index, 1);
+            userVolumes.splice(index, 1);
+        }
+    } else {
+        audioContexts.forEach(e => { e.close(); });
 
-export async function stopOutputAudioStream() {
-    audioContexts.forEach(e => { e.close(); });
-
-    audioContexts = [];
-    clientSources = [];
-    clientIds = [];
-    startTimes = [];
+        audioContexts = [];
+        clientSources = [];
+        clientIds = [];
+        startTimes = [];
+        userVolumes = [];
+    }
 }
 
 var devLog = 0;
