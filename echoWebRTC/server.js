@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const webrtc = require('wrtc');
 
-const stunkStunkServer = 'stun:stun.l.google.com:19302'
+const stunkStunkServer = 'stun:stun1.l.google.com:19302'
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -109,6 +109,7 @@ app.post('/subscribeAudio', async (req, res ) => {
 
     //if audioUsers is not in senders
     if (!audioUsers.includes(senderId)) {
+        console.log(audioUsers)
         return res.status(404).json({ message: "Stream not found" });
     }
 

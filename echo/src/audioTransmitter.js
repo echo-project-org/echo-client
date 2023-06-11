@@ -54,11 +54,28 @@ function createPeer() {
     const peer = new RTCPeerConnection({
         iceServers: [
             {
-                urls: "stun:stun.l.google.com:19302"
+                "urls": ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"]
             }
         ]
     });
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
+    peer.onicecandidate = (e) => {
+        console.log("ice candidate", e)
+        return
+        if (e.candidate) {
+            const body = {
+                candidate: e.candidate,
+                id
+            };
+            fetch('http://localhost:6983/broadcastAudio', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+            })
+        }
+    };
 
     return peer;
 }
@@ -109,7 +126,11 @@ export async function startInputAudioStream() {
         }, function (stream) {
             isTransmitting = true;
             peer = createPeer();
-            stream.getTracks().forEach(track => peer.addTrack(track, stream));
+            stream.getTracks().forEach(track => {
+                console.log("added track", track)
+                // peer.addStream(stream);
+                peer.addTrack(track, stream)
+            });
             
             mediaStream = stream;
             // create the MediaStreamAudioSourceNode
