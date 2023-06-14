@@ -129,7 +129,9 @@ app.post('/subscribeAudio', async (req, res) => {
     audioStreams[index].getTracks().forEach(track => peer.addTrack(track, audioStreams[index]));
 
     const answer = await peer.createAnswer();
-    //answer.sdp = answer.sdp.replace('useinbandfec=1', 'useinbandfec=1; stereo=1; maxaveragebitrate=510000');
+    let parsed = sdpTransform.parse(answer.sdp);
+    parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+    answer.sdp = sdpTransform.write(parsed);
     await peer.setLocalDescription(answer);
 
     const payload = {
@@ -172,7 +174,10 @@ app.post('/broadcastAudio', async (req, res) => {
     await peer.setRemoteDescription(desc);
 
     const answer = await peer.createAnswer();
-    //answer.sdp = answer.sdp.replace('useinbandfec=1', 'useinbandfec=1; stereo=1; maxaveragebitrate=510000');
+    let parsed = sdpTransform.parse(answer.sdp);
+    parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+    answer.sdp = sdpTransform.write(parsed);
+
     await peer.setLocalDescription(answer);
 
     const payload = {
