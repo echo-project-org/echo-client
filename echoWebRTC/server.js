@@ -22,7 +22,7 @@ let senders = [];
 let audioUsers = [];
 let audioStreams = [];
 
-app.post('/consumer', async (req, res ) => {
+app.post('/consumer', async (req, res) => {
     const { sdp, senderId, receiverId } = req.body;
 
     if (!senderId || !receiverId) {
@@ -54,12 +54,12 @@ app.post('/consumer', async (req, res ) => {
 
     const payload = {
         sdp: peer.localDescription
-    } 
+    }
 
     res.json(payload);
 });
 
-app.post('/broadcast', async (req, res ) => {
+app.post('/broadcast', async (req, res) => {
     const { sdp, id } = req.body;
     if (!id) {
         return res.status(400).json({ message: "Provide a valid id" });
@@ -67,7 +67,7 @@ app.post('/broadcast', async (req, res ) => {
 
     const peer = new webrtc.RTCPeerConnection({
         iceServers: [
-            {   
+            {
                 urls: stunkStunkServer
             }
         ]
@@ -100,7 +100,7 @@ function handleTrackEvent(e, peer, id) {
     }
 }
 
-app.post('/subscribeAudio', async (req, res ) => {
+app.post('/subscribeAudio', async (req, res) => {
     const { sdp, senderId, receiverId } = req.body;
 
     if (!senderId || !receiverId) {
@@ -126,13 +126,14 @@ app.post('/subscribeAudio', async (req, res ) => {
     const index = audioUsers.indexOf(senderId.toString());
     console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
     audioStreams[index].getTracks().forEach(track => peer.addTrack(track, audioStreams[index]));
-   
+
     const answer = await peer.createAnswer();
+    //answer.sdp = answer.sdp.replace('useinbandfec=1', 'useinbandfec=1; stereo=1; maxaveragebitrate=510000');
     await peer.setLocalDescription(answer);
 
     const payload = {
         sdp: peer.localDescription
-    } 
+    }
 
     res.json(payload);
 });
@@ -150,7 +151,7 @@ function handleAudioTrackEvent(e, peer, id) {
     }
 }
 
-app.post('/broadcastAudio', async (req, res ) => {
+app.post('/broadcastAudio', async (req, res) => {
     const { sdp, id } = req.body;
 
     if (!id) {
@@ -159,7 +160,7 @@ app.post('/broadcastAudio', async (req, res ) => {
 
     const peer = new webrtc.RTCPeerConnection({
         iceServers: [
-            {   
+            {
                 urls: stunkStunkServer
             }
         ]
@@ -170,6 +171,7 @@ app.post('/broadcastAudio', async (req, res ) => {
     await peer.setRemoteDescription(desc);
 
     const answer = await peer.createAnswer();
+    //answer.sdp = answer.sdp.replace('useinbandfec=1', 'useinbandfec=1; stereo=1; maxaveragebitrate=510000');
     await peer.setLocalDescription(answer);
 
     const payload = {
@@ -179,4 +181,4 @@ app.post('/broadcastAudio', async (req, res ) => {
     res.json(payload);
 });
 
-app.listen(6983, () => {console.log('Server started')});
+app.listen(6983, () => { console.log('Server started') });

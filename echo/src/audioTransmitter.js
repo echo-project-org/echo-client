@@ -66,6 +66,8 @@ function createPeer() {
 
 async function handleNegotiationNeededEvent(peer) {
     const offer = await peer.createOffer();
+    console.log("offer", offer.sdp);
+    
     await peer.setLocalDescription(offer);
     const body = {
         sdp: peer.localDescription,
@@ -80,6 +82,7 @@ async function handleNegotiationNeededEvent(peer) {
         body: JSON.stringify(body),
     }).then((response) => {
         response.json().then((json) => {
+            console.log(json.sdp.sdp)
             const desc = new RTCSessionDescription(json.sdp);
             peer.setRemoteDescription(desc).catch(e => console.log(e));
             console.log(peer)
@@ -112,6 +115,9 @@ export async function startInputAudioStream() {
 
         peer = createPeer();
         stream.getTracks().forEach(track => peer.addTrack(track, stream));
+
+        let asd = peer.getTransceivers()[0].sender.getParameters().codecs;
+        console.log(asd);
     }
 }
 

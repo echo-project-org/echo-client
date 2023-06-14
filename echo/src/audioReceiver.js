@@ -89,18 +89,10 @@ async function handleNegotiationNeededEvent(peer, senderId) {
 }
 
 export function subscribeToAudioStream(senderId) {
-    if(clientIds.includes(senderId)) return;
-
     clientIds.push(senderId);
     const peer = createPeer(senderId);
     peer.addTransceiver("audio", { direction: "recvonly" })
-
-    if (clientIds.includes(senderId)) {
-        let index = clientIds.indexOf(senderId);
-        peers[index] = peer;
-    } else {
-        peers.push(peer);
-    }
+    peers.push(peer);
 }
 
 export function setAudioVolume(volume) {
