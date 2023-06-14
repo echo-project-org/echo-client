@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const webrtc = require('wrtc');
+const sdpTransform = require('sdp-transform');
 
 const stunkStunkServer = 'stun:stun1.l.google.com:19302'
 

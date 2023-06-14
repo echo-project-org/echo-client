@@ -1,5 +1,6 @@
 const ep = require('./echoProtocol')
 const ar = require('./audioReceiver')
+const sdpTransform = require('sdp-transform');
 
 let mediaStream = null;
 let isTransmitting = false;
@@ -65,9 +66,10 @@ function createPeer() {
 }
 
 async function handleNegotiationNeededEvent(peer) {
-    const offer = await peer.createOffer();
-    console.log("offer", offer.sdp);
-    
+    const offer = await peer.createOffer();  
+    let parsed = sdpTransform.parse(offer.sdp);
+    console.log(parsed);
+
     await peer.setLocalDescription(offer);
     const body = {
         sdp: peer.localDescription,
@@ -82,10 +84,8 @@ async function handleNegotiationNeededEvent(peer) {
         body: JSON.stringify(body),
     }).then((response) => {
         response.json().then((json) => {
-            console.log(json.sdp.sdp)
             const desc = new RTCSessionDescription(json.sdp);
             peer.setRemoteDescription(desc).catch(e => console.log(e));
-            console.log(peer)
         })
     });
 }
@@ -105,19 +105,17 @@ export async function startInputAudioStream() {
                 channelCount: 2,
                 sampleRate: 48000,
                 sampleSize: 16,
-                volume: 1,
+                volume: 1.0,
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
                 deviceId: audioDeviceId,
-            }
+            },
+            video: false,
         });
 
         peer = createPeer();
         stream.getTracks().forEach(track => peer.addTrack(track, stream));
-
-        let asd = peer.getTransceivers()[0].sender.getParameters().codecs;
-        console.log(asd);
     }
 }
 

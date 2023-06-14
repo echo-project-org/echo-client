@@ -62,7 +62,6 @@ function handleTrackEvent(e) {
     x.srcObject = e.streams[0];
     x.autoplay = true;
     x.play();
-    console.log(e.streams[0].getAudioTracks())
 };
 
 async function handleNegotiationNeededEvent(peer, senderId) {
