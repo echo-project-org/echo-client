@@ -34,7 +34,6 @@ function Rooms({ setState, connected }) {
   const updateRooms = () => {
     api.call("rooms")
       .then((result) => {
-        console.log("rooms: ", result.json)
         setRemoteRooms(result.json);
       });
   }
@@ -45,7 +44,6 @@ function Rooms({ setState, connected }) {
   
   useEffect(() => {
     if (!connected) {
-      console.log("updating rooms")
       setActiveRoomId(0)
       updateRooms();
     }

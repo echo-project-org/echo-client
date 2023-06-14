@@ -60,7 +60,9 @@ function createPeer(senderId) {
 function handleTrackEvent(e) {
     var x = new Audio();
     x.srcObject = e.streams[0];
+    x.autoplay = true;
     x.play();
+    console.log(e.streams[0].getAudioTracks())
 };
 
 async function handleNegotiationNeededEvent(peer, senderId) {
@@ -87,6 +89,8 @@ async function handleNegotiationNeededEvent(peer, senderId) {
 }
 
 export function subscribeToAudioStream(senderId) {
+    if(clientIds.includes(senderId)) return;
+
     clientIds.push(senderId);
     const peer = createPeer(senderId);
     peer.addTransceiver("audio", { direction: "recvonly" })

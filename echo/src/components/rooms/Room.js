@@ -17,7 +17,6 @@ function Room({ active, onClick, data }) {
     // get online users in room using data.id
     api.call("rooms/" + data.id + "/users")
       .then((result) => {
-        console.log("online users: ", result.json, "in room: ", data.id)
         setOnlineUsers(result.json);
       })
       .catch((err) => {

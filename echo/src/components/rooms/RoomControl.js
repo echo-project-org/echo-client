@@ -89,7 +89,6 @@ function RoomControl({ state, setState, screenSharing }) {
   const stopUpdatePing = () => {
     clearInterval(interval);
     interval = null;
-    console.log("removed interval")
   }
 
   const closeConnection = () => {
@@ -98,7 +97,6 @@ function RoomControl({ state, setState, screenSharing }) {
     if (!state) {
       api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
         .then(res => {
-          console.log("got response, left application")
           // at.startInputAudioStream();
           ar.stopOutputAudioStream();
           at.stopAudioStream();

@@ -9,6 +9,7 @@ var id = localStorage.getItem('id');
 var audioDeviceId = localStorage.getItem('inputAudioDeviceId');
 var micVolume = localStorage.getItem('micVolume');
 let gainNode;
+let stream;
 
 let peer;
 
@@ -54,7 +55,7 @@ function createPeer() {
     const peer = new RTCPeerConnection({
         iceServers: [
             {
-                "urls": ["stun:stun1.l.google.com:19302"]
+                "urls": "stun:stun1.l.google.com:19302"
             }
         ]
     });
@@ -81,8 +82,8 @@ async function handleNegotiationNeededEvent(peer) {
         response.json().then((json) => {
             const desc = new RTCSessionDescription(json.sdp);
             peer.setRemoteDescription(desc).catch(e => console.log(e));
-        }
-        )
+            console.log(peer)
+        })
     });
 }
 
@@ -96,7 +97,7 @@ export async function startInputAudioStream() {
 
     if (!isTransmitting) {
         console.log(">>>> STARTING STREAM")
-        navigator.getUserMedia({
+        stream = await navigator.mediaDevices.getUserMedia({
             audio: {
                 channelCount: 2,
                 sampleRate: 48000,
@@ -106,60 +107,11 @@ export async function startInputAudioStream() {
                 noiseSuppression: false,
                 autoGainControl: false,
                 deviceId: audioDeviceId,
-            },
-        }, function (stream) {
-            isTransmitting = true;
-            peer = createPeer();
-            stream.getTracks().forEach(track => {
-                console.log("added track", track)
-                // peer.addStream(stream);
-                peer.addTrack(track, stream)
-            });
-
-            mediaStream = stream;
-            // create the MediaStreamAudioSourceNode
-            context = new AudioContext();
-
-            var source = context.createMediaStreamSource(stream);
-
-            // create a ScriptProcessorNode
-            if (!context.createScriptProcessor) {
-                node = context.createJavaScriptNode(4096, 2, 2);
-            } else {
-                node = context.createScriptProcessor(4096, 2, 2);
             }
-
-            // listen to the audio data, and record into the buffer
-            node.onaudioprocess = async function (e) {
-                //Here i have the raw data
-                var left = e.inputBuffer.getChannelData(0);
-                var right = e.inputBuffer.getChannelData(1);
-                //if (!muted) ep.sendAudioPacket(id, left, right);
-
-                micVolume = localStorage.getItem('micVolume');
-                if (micVolume) {
-                    gainNode.gain.value = micVolume;
-                }
-
-                let a = localStorage.getItem('inputAudioDeviceId');
-                if (a && a !== "default" && a !== audioDeviceId) {
-                    audioDeviceId = a;
-                }
-
-            }
-            gainNode = context.createGain();
-            if (micVolume) {
-                gainNode.gain.value = micVolume;
-            }
-
-            source.connect(gainNode);
-            gainNode.connect(node);
-            // if the ScriptProcessorNode is not connected to an output the "onaudioprocess" event is not triggered in chrome
-            node.connect(context.destination);
-        }, function (e) {
-            alert("Audio stuff error")
-            stopAudioStream();
         });
+
+        peer = createPeer();
+        stream.getTracks().forEach(track => peer.addTrack(track, stream));
     }
 }
 
