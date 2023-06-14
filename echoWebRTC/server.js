@@ -108,8 +108,8 @@ app.post('/subscribeAudio', async (req, res ) => {
     }
 
     //if audioUsers is not in senders
-    if (!audioUsers.includes(senderId)) {
-        console.log(audioUsers)
+    if (!audioUsers.includes(senderId.toString())) {
+        console.log(audioUsers, senderId.toString())
         return res.status(404).json({ message: "Stream not found" });
     }
 
@@ -124,7 +124,7 @@ app.post('/subscribeAudio', async (req, res ) => {
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
     //get index of senderId
-    const index = audioUsers.indexOf(senderId);
+    const index = audioUsers.indexOf(senderId.toString());
     console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
     audioStreams[index].getTracks().forEach(track => peer.addTrack(track, audioStreams[index]));
 

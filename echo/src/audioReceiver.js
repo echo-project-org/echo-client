@@ -47,7 +47,7 @@ function createPeer(senderId) {
     const peer = new RTCPeerConnection({
         iceServers: [
             {
-                urls: "stun:stun.stunprotocol.org"
+                urls: "stun:stun.l.google.com:19302"
             }
         ]
     });
@@ -58,7 +58,9 @@ function createPeer(senderId) {
 }
 
 function handleTrackEvent(e) {
-    //document.getElementById("video").srcObject = e.streams[0];
+    var x = new Audio();
+    x.srcObject = e.streams[0];
+    x.play();
 };
 
 async function handleNegotiationNeededEvent(peer, senderId) {
@@ -67,7 +69,7 @@ async function handleNegotiationNeededEvent(peer, senderId) {
     const body = {
         sdp: peer.localDescription,
         senderId: senderId,
-        receiverId: id,
+        receiverId: localStorage.getItem('id'),
     };
 
     fetch('http://localhost:6983/subscribeAudio', {
@@ -108,6 +110,7 @@ export function setAudioDevice(device) {
 
 export async function startOutputAudioStream(clientId) {
     console.log("Creating audio out")
+    subscribeToAudioStream(5)
     audioDeviceId = localStorage.getItem('outputAudioDeviceId')
     mainOutVoume = localStorage.getItem('mainOutVolume')
 

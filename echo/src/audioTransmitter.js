@@ -26,18 +26,18 @@ export function setMicVolume(volume) {
 export function setAudioDevice(device) {
     audioDeviceId = device;
 
-    if(isTransmitting){
+    if (isTransmitting) {
         stopAudioStream();
         startInputAudioStream();
     }
 }
 
-export async function getAudioDevices(){
+export async function getAudioDevices() {
     return new Promise((resolve, reject) => {
         var out = [];
         navigator.mediaDevices.enumerateDevices().then((devices) => {
             devices.forEach((device, id) => {
-                if(device.kind === "audioinput"){
+                if (device.kind === "audioinput") {
                     out.push({
                         "name": device.label,
                         "id": device.deviceId
@@ -54,28 +54,11 @@ function createPeer() {
     const peer = new RTCPeerConnection({
         iceServers: [
             {
-                "urls": ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"]
+                "urls": ["stun:stun1.l.google.com:19302"]
             }
         ]
     });
     peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
-    peer.onicecandidate = (e) => {
-        console.log("ice candidate", e)
-        return
-        if (e.candidate) {
-            const body = {
-                candidate: e.candidate,
-                id
-            };
-            fetch('http://localhost:6983/broadcastAudio', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            })
-        }
-    };
 
     return peer;
 }
@@ -85,7 +68,7 @@ async function handleNegotiationNeededEvent(peer) {
     await peer.setLocalDescription(offer);
     const body = {
         sdp: peer.localDescription,
-        id
+        id: id
     };
 
     fetch('http://localhost:6983/broadcastAudio', {
@@ -99,14 +82,15 @@ async function handleNegotiationNeededEvent(peer) {
             const desc = new RTCSessionDescription(json.sdp);
             peer.setRemoteDescription(desc).catch(e => console.log(e));
         }
-    )});
+        )
+    });
 }
 
 export async function startInputAudioStream() {
     id = localStorage.getItem('id');
     audioDeviceId = localStorage.getItem('inputAudioDeviceId');
     micVolume = localStorage.getItem('micVolume');
-    if(!micVolume) {
+    if (!micVolume) {
         micVolume = 1;
     }
 
@@ -131,11 +115,11 @@ export async function startInputAudioStream() {
                 // peer.addStream(stream);
                 peer.addTrack(track, stream)
             });
-            
+
             mediaStream = stream;
             // create the MediaStreamAudioSourceNode
             context = new AudioContext();
-            
+
             var source = context.createMediaStreamSource(stream);
 
             // create a ScriptProcessorNode
@@ -153,21 +137,21 @@ export async function startInputAudioStream() {
                 //if (!muted) ep.sendAudioPacket(id, left, right);
 
                 micVolume = localStorage.getItem('micVolume');
-                if(micVolume){
+                if (micVolume) {
                     gainNode.gain.value = micVolume;
                 }
 
                 let a = localStorage.getItem('inputAudioDeviceId');
-                if(a && a !== "default" && a !== audioDeviceId){
+                if (a && a !== "default" && a !== audioDeviceId) {
                     audioDeviceId = a;
                 }
-                
+
             }
             gainNode = context.createGain();
-            if(micVolume){
+            if (micVolume) {
                 gainNode.gain.value = micVolume;
             }
-            
+
             source.connect(gainNode);
             gainNode.connect(node);
             // if the ScriptProcessorNode is not connected to an output the "onaudioprocess" event is not triggered in chrome
