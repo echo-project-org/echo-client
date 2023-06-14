@@ -68,7 +68,9 @@ function createPeer() {
 async function handleNegotiationNeededEvent(peer) {
     const offer = await peer.createOffer();  
     let parsed = sdpTransform.parse(offer.sdp);
-    console.log(parsed);
+    
+    parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+    offer.sdp = sdpTransform.write(parsed);
 
     await peer.setLocalDescription(offer);
     const body = {

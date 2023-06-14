@@ -1,3 +1,5 @@
+const sdpTransform = require('sdp-transform');
+
 let audioContexts = [];
 let clientSources = [];
 let startTimes = [];
@@ -66,6 +68,12 @@ function handleTrackEvent(e) {
 
 async function handleNegotiationNeededEvent(peer, senderId) {
     const offer = await peer.createOffer();
+
+    let parsed = sdpTransform.parse(offer.sdp);
+    parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+    console.log(parsed)
+    offer.sdp = sdpTransform.write(parsed);
+
     await peer.setLocalDescription(offer);
     const body = {
         sdp: peer.localDescription,
