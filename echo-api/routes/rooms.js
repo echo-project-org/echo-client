@@ -72,7 +72,7 @@ router.post('/join', (req, res) => {
     });
 
     // if room id is 0, then the user has left all rooms
-    if (roomId !== "0")
+    if (roomId !== "0"){    
         // add user to joining room
         req.database.query("INSERT INTO room_users (roomId, userId) VALUES (?, ?)", [roomId, userId], (err, result, fields) => {
             if (err) return console.error(err);
@@ -93,6 +93,8 @@ router.post('/join', (req, res) => {
                 res.json(jsonOut);
             });
         });
+    }
+    return res.status(200).json({ message: "Done" });
 });
     
 

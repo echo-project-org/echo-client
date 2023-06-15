@@ -139,7 +139,7 @@ class audioRtcReceiver {
         });
     }
 
-    async getAudioDevices() {
+    static async getAudioDevices() {
         return new Promise((resolve, reject) => {
             var out = [];
             navigator.mediaDevices.enumerateDevices().then((devices) => {

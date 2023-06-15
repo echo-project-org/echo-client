@@ -124,8 +124,10 @@ app.post('/subscribeAudio', async (req, res) => {
 
     if (audioListeners.includes(receiverId)) {
         let index = audioListeners.indexOf(receiverId);
-        outPeers[index].close();
-        outPeers[index] = null;
+        if(outPeers[index]){
+            outPeers[index].close();
+            outPeers[index] = null;
+        }
     } else{
         audioListeners.push(receiverId);
         outPeers.push(null);

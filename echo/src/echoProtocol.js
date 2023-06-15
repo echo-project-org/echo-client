@@ -103,11 +103,11 @@ export function setUserVolume(volume, remoteId){
 }
 
 export function getSpeakerDevices(){
-    return audioRtcReceiver.getDevices();
+    return audioRtcReceiver.getAudioDevices();
 }
 
 export function getMicrophoneDevices(){
-    return audioRtcTransmitter.getDevices();
+    return audioRtcTransmitter.getAudioDevices();
 }
 
 export function openConnection(id) {
@@ -185,7 +185,6 @@ export function sendAudioState(id, data) {
 
 export function exitFromRoom(id) {
     console.log("exit from room", id)
-    stopTransmitting();
     stopReceiving();
     if (socket) socket.emit("exit", { id });
 }
@@ -196,7 +195,6 @@ export function closeConnection(id) {
         socket.emit("end", { id });
     }
 
-    stopTransmitting();
     stopReceiving();
 
     socket = null;

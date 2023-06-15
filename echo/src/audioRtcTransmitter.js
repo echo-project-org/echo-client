@@ -58,7 +58,7 @@ class audioRtcTransmitter {
         //Create the peer
         this.peer = this.createPeer();
         //Add the tracks
-        this.stream.getTracks().forEach(track => this.peer.addTrack(track, this.stream));
+        mediaStreamDestination.stream.getTracks().forEach(track => this.peer.addTrack(track, mediaStreamDestination.stream));
         this.isTransmitting = true;
     }
 
@@ -74,6 +74,7 @@ class audioRtcTransmitter {
 
         this.volume = volume;
         if (this.gainNode) {
+            console.log("changing volume to", volume)
             this.gainNode.gain.value = volume;
         }
     }
@@ -177,7 +178,7 @@ class audioRtcTransmitter {
      * @function getAudioDevices - Gets the audio devices
      * @returns {Promise} - The promise that resolves when the audio devices are found
      */
-    async getAudioDevices() {
+    static async getAudioDevices() {
         //Gets the audio devices
         return new Promise((resolve, reject) => {
             var out = [];
