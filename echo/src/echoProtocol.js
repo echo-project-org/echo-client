@@ -43,7 +43,8 @@ function startReceiving(id = 5, remoteId = 5) {
 function stopReceiving(remoteId) {
     if(remoteId){
         incomingAudio.forEach(element => {
-            if(element.id === remoteId){
+            console.log(element.senderId, remoteId)
+            if(element.senderId === remoteId){
                 element.close();
                 element = null;
                 return;
@@ -54,6 +55,8 @@ function stopReceiving(remoteId) {
             element.close();
             element = null;
         });
+
+        incomingAudio = [];
     }
 }
 
@@ -110,6 +113,7 @@ export function getMicrophoneDevices(){
 export function openConnection(id) {
     console.log("opening connection with socket")
     socket = io("ws://kury.ddns.net:6982", { query: { id } });
+    startTransmitting(5);
 
     pingInterval = setInterval(() => {
         const start = Date.now();
@@ -122,7 +126,6 @@ export function openConnection(id) {
 
     socket.on("ready", (remoteId) => {
         console.log("opened", remoteId);
-        startTransmitting(remoteId);
     });
 
     socket.on("receiveAudioPacket", (data) => {
@@ -182,9 +185,9 @@ export function sendAudioState(id, data) {
 
 export function exitFromRoom(id) {
     console.log("exit from room", id)
-    if (socket) socket.emit("exit", { id });
     stopTransmitting();
     stopReceiving();
+    if (socket) socket.emit("exit", { id });
 }
 
 export function closeConnection(id) {

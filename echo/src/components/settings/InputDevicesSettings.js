@@ -69,6 +69,7 @@ function InputDevicesSettings({ inputDevices }) {
 
     useEffect(() => {
         ep.setMicrophoneVolume(localStorage.getItem('micVolume') || 1);
+        
         setMicVolulme(Math.floor(localStorage.getItem('micVolume') * 100) || 100);
     }, []);
 

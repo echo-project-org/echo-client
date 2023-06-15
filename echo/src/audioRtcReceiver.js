@@ -1,6 +1,7 @@
 const sdpTransform = require('sdp-transform');
-
-const stunkServer = "stun:stun1.l.google.com:19302";
+const stunkServer = [
+    "stun:kury.ddns.net:6984"
+];
 const signalServer = "http://localhost:6983";
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
@@ -58,11 +59,23 @@ class audioRtcReceiver {
     }
 
     close() {
-        this.audioElement.pause();
-        this.audioElement = null;
-        
-        this.stream.getTracks().forEach(track => track.stop());
-        this.peer.close();
+        if(this.audioElement){
+            this.audioElement.pause();
+            this.audioElement = null;
+        } else {
+            console.log("Elemtn null")
+        }
+        if(this.stream && this.stream.getTracks()){
+            this.stream.getTracks().forEach(track => track.stop());
+        }
+        else {
+            console.log("stream null")
+        }
+        if(this.peer){
+            this.peer.close();
+        }else {
+            console.log("peer null")
+        }
 
         this.stream = null;
         this.peer = null;
@@ -91,7 +104,7 @@ class audioRtcReceiver {
         this.audioElement.srcObject = this.stream;
         this.audioElement.autoplay = true;
         if(this.deviceId !== 'default'){
-            //x.setSinkId(this.deviceId);
+            //this.audioElement.setSinkId(this.deviceId);
         }
         this.audioElement.play();
         this.isReceiving = true;

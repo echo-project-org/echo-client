@@ -1,6 +1,8 @@
 const sdpTransform = require('sdp-transform');
 
-const stunkServer = "stun:stun1.l.google.com:19302";
+const stunkServer = [
+    "stun:kury.ddns.net:6984"
+];
 const signalServer = "http://localhost:6983";
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
@@ -41,7 +43,7 @@ class audioRtcTransmitter {
     /**
      * @function init - Starts the audio transmission
      */
-    async init(){
+    async init() {
         //Create stream
         this.stream = await navigator.mediaDevices.getUserMedia(this.constraints);
         //Setup the volume stuff
@@ -64,27 +66,27 @@ class audioRtcTransmitter {
      * @function setVolume - Sets the volume of the audio
      * @param {float} volume 
      */
-    setVolume(volume){
-        if(volume > 1.0 || volume < 0.0){
+    setVolume(volume) {
+        if (volume > 1.0 || volume < 0.0) {
             console.error("Volume must be between 0.0 and 1.0", volume);
             volume = 1.0;
         }
 
         this.volume = volume;
-        if(this.gainNode){
+        if (this.gainNode) {
             this.gainNode.gain.value = volume;
         }
     }
 
-    mute(){
-        if(this.stream){
+    mute() {
+        if (this.stream) {
             this.stream.getTracks().forEach(track => track.enabled = false);
             this.isMuted = true;
         }
     }
 
-    unmute(){
-        if(this.stream){
+    unmute() {
+        if (this.stream) {
             this.stream.getTracks().forEach(track => track.enabled = true);
             this.isMuted = false;
         }
@@ -104,7 +106,7 @@ class audioRtcTransmitter {
         });
         //Handle the ice candidates
         peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
-    
+
         return peer;
     }
 
@@ -115,17 +117,17 @@ class audioRtcTransmitter {
     async handleNegotiationNeededEvent(peer) {
         const offer = await peer.createOffer();
         let parsed = sdpTransform.parse(offer.sdp);
-        
+
         //Edit the sdp to make the audio sound better
         parsed.media[0].fmtp[0].config = goodOpusSettings;
         offer.sdp = sdpTransform.write(parsed);
-    
+
         await peer.setLocalDescription(offer);
         const body = {
             sdp: peer.localDescription,
             id: this.id
         };
-        
+
         //Send the sdp to the server
         fetch(signalServer + '/broadcastAudio', {
             method: "POST",
@@ -144,16 +146,28 @@ class audioRtcTransmitter {
     /**
      * @function close - Closes the transmission
      */
-    close(){
+    close() {
         //Closes the transmission
-        if(this.stream){
+        if (this.stream) {
             this.stream.getTracks().forEach(track => track.stop());
         }
 
-        if(this.peer){
+        if (this.peer) {
             this.peer.close();
         }
-        
+
+        const body = {
+            id: this.id
+        };
+        //Send the close to the server
+        fetch(signalServer + '/stopAudioBroadcast', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+
         this.stream = null;
         this.peer = null;
         this.isTransmitting = false;

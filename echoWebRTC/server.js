@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const webrtc = require('wrtc');
 const sdpTransform = require('sdp-transform');
 
-const stunkStunkServer = 'stun:stun1.l.google.com:19302'
+const stunkStunkServer = [
+    "stun:kury.ddns.net:6984"
+];
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -23,6 +25,9 @@ let senders = [];
 let audioUsers = [];
 let audioStreams = [];
 let inPeers = [];
+
+let audioListeners = [];
+let outPeers = [];
 
 app.post('/consumer', async (req, res) => {
     const { sdp, senderId, receiverId } = req.body;
@@ -99,20 +104,31 @@ function handleTrackEvent(e, peer, id) {
         //if id is in senders, replace the stream
         const index = audioUsers.indexOf(id);
         audioUsers[index].stop();
-        audioUsers[index] = e.streams[0];
+        audioStreams[index] = e.streams[0];
     }
 }
 
 app.post('/subscribeAudio', async (req, res) => {
-    const { sdp, senderId, receiverId } = req.body;
+    let { sdp, senderId, receiverId } = req.body;
+    receiver = String(receiverId)
+    senderId = String(senderId)
 
     if (!senderId || !receiverId) {
         return res.status(400).json({ message: "Provide a valid sender and receiver id" });
     }
 
     //if audioUsers is not in senders
-    if (!audioUsers.includes(String(senderId))) {
+    if (!audioUsers.includes(senderId)) {
         return res.status(404).json({ message: "Stream not found" });
+    }
+
+    if (audioListeners.includes(receiverId)) {
+        let index = audioListeners.indexOf(receiverId);
+        outPeers[index].close();
+        outPeers[index] = null;
+    } else{
+        audioListeners.push(receiverId);
+        outPeers.push(null);
     }
 
     const peer = new webrtc.RTCPeerConnection({
@@ -126,7 +142,7 @@ app.post('/subscribeAudio', async (req, res) => {
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
     //get index of senderId
-    const index = audioUsers.indexOf(senderId.toString());
+    const index = audioUsers.indexOf(senderId);
     console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
     audioStreams[index].getTracks().forEach(track => peer.addTrack(track, audioStreams[index]));
 
@@ -139,6 +155,9 @@ app.post('/subscribeAudio', async (req, res) => {
     const payload = {
         sdp: peer.localDescription
     }
+
+    let listenerIndex = audioListeners.indexOf(receiverId);
+    outPeers[listenerIndex] = peer;
 
     res.json(payload);
 });
@@ -153,7 +172,7 @@ function handleAudioTrackEvent(e, peer, id) {
     } else {
         //if id is in audioUsers, replace the stream
         console.log("User " + id + " is broadcasting audio again");
-        
+
         const index = audioUsers.indexOf(id);
         audioStreams[index] = e.streams[0];
     }
@@ -167,7 +186,7 @@ app.post('/broadcastAudio', async (req, res) => {
         return res.status(400).json({ message: "Provide a valid id" });
     }
 
-    
+
     const peer = new webrtc.RTCPeerConnection({
         iceServers: [
             {
@@ -190,7 +209,7 @@ app.post('/broadcastAudio', async (req, res) => {
         sdp: peer.localDescription
     }
 
-    if(audioUsers.includes(id)) {
+    if (audioUsers.includes(id)) {
         const index = audioUsers.indexOf(id);
         inPeers[index] = peer;
     } else {
@@ -198,6 +217,28 @@ app.post('/broadcastAudio', async (req, res) => {
     }
 
     res.json(payload);
+});
+app.post('/stopAudioBroadcast', async (req, res) => {
+    let { id } = req.body;
+    if (!id) {
+        return res.status(400).json({ message: "Provide a valid id" });
+    }
+
+    id = String(id);
+
+    if (audioUsers.includes(id)) {
+        const index = audioUsers.indexOf(id);
+        audioStreams[index].getTracks().forEach(track => track.stop());
+        audioStreams[index] = null;
+        inPeers[index].close();
+        inPeers[index] = null;
+
+        audioUsers.splice(index, 1);
+        audioStreams.splice(index, 1);
+        inPeers.splice(index, 1);
+    }
+
+    return res.status(200).json({ message: "Broadcast stopped" });
 });
 
 app.listen(6983, () => { console.log('Server started') });
