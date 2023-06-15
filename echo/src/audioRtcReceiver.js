@@ -38,6 +38,9 @@ class audioRtcReceiver {
     }
 
     setDevice(deviceId){
+        if(deviceId === 'default'){
+            return
+        }
         this.deviceId = deviceId;
         if(this.audioElement){
             this.audioElement.setSinkId(this.deviceId);
@@ -83,13 +86,14 @@ class audioRtcReceiver {
     }
 
     handleTrackEvent(e) {
-        var x = new Audio();
+        this.audioElement = new Audio();
         this.stream = e.streams[0];
-        x.srcObject = this.stream;
-        x.autoplay = true;
-        x.setSinkid(this.deviceId);
-        x.play();
-        this.audioElement = x;
+        this.audioElement.srcObject = this.stream;
+        this.audioElement.autoplay = true;
+        if(this.deviceId !== 'default'){
+            //x.setSinkId(this.deviceId);
+        }
+        this.audioElement.play();
         this.isReceiving = true;
     };
 
@@ -141,3 +145,5 @@ class audioRtcReceiver {
     }
 
 }
+
+export default audioRtcReceiver;

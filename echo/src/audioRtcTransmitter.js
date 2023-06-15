@@ -76,6 +76,20 @@ class audioRtcTransmitter {
         }
     }
 
+    mute(){
+        if(this.stream){
+            this.stream.getTracks().forEach(track => track.enabled = false);
+            this.isMuted = true;
+        }
+    }
+
+    unmute(){
+        if(this.stream){
+            this.stream.getTracks().forEach(track => track.enabled = true);
+            this.isMuted = false;
+        }
+    }
+
     /**
      * @function createPeer - Creates the peer connection
      * @returns {RTCPeerConnection} peer - The peer connection
@@ -168,3 +182,5 @@ class audioRtcTransmitter {
         })
     }
 }
+
+export default audioRtcTransmitter;

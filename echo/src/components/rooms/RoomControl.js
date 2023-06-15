@@ -25,8 +25,6 @@ import undeafSound from "../../audio/undeaf.mp3";
 import SettingsButton from '../settings/SettingsButton';
 
 const api = require('../../api')
-const at = require('../../audioTransmitter')
-const ar = require('../../audioReceiver')
 const ep = require('../../echoProtocol')
 
 const theme = createTheme({
@@ -67,7 +65,7 @@ function RoomControl({ state, setState, screenSharing }) {
 
   let navigate = useNavigate();
 
-  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); at.toggleMute(muted); }, [muted]);
+  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
   useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); }, [deaf]);
 
   const muteAudio = new Audio(muteSound);
@@ -97,9 +95,7 @@ function RoomControl({ state, setState, screenSharing }) {
     if (!state) {
       api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
         .then(res => {
-          // at.startInputAudioStream();
-          ar.stopOutputAudioStream();
-          at.stopAudioStream();
+          ep.closeConnection();
           // TODO: check if user is connected in room, if so change icon and action when clicked
           navigate("/");
         })
@@ -115,8 +111,6 @@ function RoomControl({ state, setState, screenSharing }) {
           console.log("got response, left room")
           // at.startInputAudioStream();
           ep.exitFromRoom(localStorage.getItem('id'));
-          ar.stopOutputAudioStream();
-          at.stopAudioStream();
         })
         .catch(err => {
           console.error(err);
@@ -160,10 +154,6 @@ function RoomControl({ state, setState, screenSharing }) {
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();
     if (wasMuted && deaf) { setMuted(true); }
-
-    if(deaf){
-      ar.syncAudio();
-    }
     setDeaf(!deaf);
   }
 

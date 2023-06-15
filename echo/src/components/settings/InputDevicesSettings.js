@@ -8,7 +8,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 
-const at = require('../../audioTransmitter')
+const ep = require('../../echoProtocol'); 
 
 const theme = createTheme({
     components: {
@@ -57,18 +57,18 @@ function InputDevicesSettings({ inputDevices }) {
     const handleInputDeviceChange = (event) => {
         localStorage.setItem('inputAudioDeviceId', event.target.value);
         setInputDevice(event.target.value);
-        at.setAudioDevice(event.target.value)
+        ep.setMicrophoneDevice(event.target.value);
     };
 
     const handleMicVolumeChange = (event, newValue) => {
         //set user volume
         localStorage.setItem('micVolume', newValue / 100);
         setMicVolulme(newValue);
-        at.setMicVolume(newValue / 100)
+        ep.setMicrophoneVolume(newValue / 100);
     };
 
     useEffect(() => {
-        at.setMicVolume(localStorage.getItem('micVolume') || 1);
+        ep.setMicrophoneVolume(localStorage.getItem('micVolume') || 1);
         setMicVolulme(Math.floor(localStorage.getItem('micVolume') * 100) || 100);
     }, []);
 

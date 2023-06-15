@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 import React from 'react'
 
-const ar = require('../../audioReceiver')
+const ep = require('../../echoProtocol');
 
 const theme = createTheme({
     components: {
@@ -58,18 +58,18 @@ function OutputDevicesSettings({ outputDevices }) {
     const handleOutputDeviceChange = (event) => {
         localStorage.setItem('outputAudioDeviceId', event.target.value);
         setOutputDevice(event.target.value);
-        ar.setAudioDevice(event.target.value)
+        ep.setSpeakerDevice(event.target.value)
     };
 
     const handleSoundVolumeChange = (event, newValue) => {
         //set user volume
         localStorage.setItem('audioVolume', newValue / 100);
         setSoundVolulme(newValue);
-        ar.setAudioVolume(newValue / 100);
+        ep.setSpeakerVolume(newValue / 100);
     };
 
     useEffect(() => {
-        ar.setSoundVolulme(localStorage.getItem('audioVolume') || 1);
+        ep.setSpeakerDevice(localStorage.getItem('audioVolume') || 1);
         setSoundVolulme(Math.floor(localStorage.getItem('audioVolume') * 100) || 100);
     }, []);
 
