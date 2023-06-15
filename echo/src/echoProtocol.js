@@ -5,16 +5,15 @@ const io = require("socket.io-client");
 var socket;
 var ping = 0;
 var pingInterval;
-var ar = null;
 var at = null;
 var incomingAudio = [];
 
-function startTransmitting(id = 5) {
+async function startTransmitting(id = 5) {
     if(at){
         stopTransmitting();
     }
     at = new audioRtcTransmitter(id);
-    at.init();
+    await at.init();
 }
 
 function stopTransmitting() {
@@ -71,9 +70,9 @@ export function toggleMute(mutestate){
 }
 
 export function setSpeakerDevice(deviceId){
-    if(ar){
-        ar.setDevice(deviceId);
-    }
+    incomingAudio.forEach(element => {
+        element.setDevice(deviceId);
+    });
 }
 
 export function setSpeakerVolume(volume){

@@ -3,7 +3,7 @@ const sdpTransform = require('sdp-transform');
 const stunkServer = [
     "stun:kury.ddns.net:6984"
 ];
-const signalServer = "http://localhost:6983";
+const signalServer = "http://127.0.0.1:6983";
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
 /**
@@ -184,7 +184,7 @@ class audioRtcTransmitter {
             var out = [];
             navigator.mediaDevices.enumerateDevices().then((devices) => {
                 devices.forEach((device, id) => {
-                    if (device.kind === "audioinput") {
+                    if (device.kind === "audioinput" && device.deviceId !== "communications" && device.deviceId !== "default") {
                         out.push({
                             "name": device.label,
                             "id": device.deviceId

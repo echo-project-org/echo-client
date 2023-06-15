@@ -92,7 +92,7 @@ const theme = createTheme({
   },
 });
 
-function OnlineUserIcon({ imgUrl, name, talking }) {
+function OnlineUserIcon({ imgUrl, name, id, talking }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userVolume, setUserVolulme] = React.useState(100);
   const open = Boolean(anchorEl);
@@ -107,7 +107,6 @@ function OnlineUserIcon({ imgUrl, name, talking }) {
   const handleVolumeChange = (event, newValue) => {
     //set user volume
     setUserVolulme(newValue);
-    let id;
     ep.setUserVolume(newValue / 100, id)
   };
 

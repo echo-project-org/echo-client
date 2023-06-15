@@ -69,7 +69,7 @@ function OutputDevicesSettings({ outputDevices }) {
     };
 
     useEffect(() => {
-        ep.setSpeakerDevice(localStorage.getItem('audioVolume') || 1);
+        ep.setSpeakerDevice(localStorage.getItem('outputAudioDeviceId') || 1);
         setSoundVolulme(Math.floor(localStorage.getItem('audioVolume') * 100) || 100);
     }, []);
 
