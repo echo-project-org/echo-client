@@ -22,6 +22,7 @@ let senders = [];
 
 let audioUsers = [];
 let audioStreams = [];
+let inPeers = [];
 
 app.post('/consumer', async (req, res) => {
     const { sdp, senderId, receiverId } = req.body;
@@ -96,8 +97,9 @@ function handleTrackEvent(e, peer, id) {
         senderStreams.push(e.streams[0]);
     } else {
         //if id is in senders, replace the stream
-        const index = senders.indexOf(id);
-        senderStreams[index] = e.streams[0];
+        const index = audioUsers.indexOf(id);
+        audioUsers[index].stop();
+        audioUsers[index] = e.streams[0];
     }
 }
 
@@ -109,7 +111,7 @@ app.post('/subscribeAudio', async (req, res) => {
     }
 
     //if audioUsers is not in senders
-    if (!audioUsers.includes(senderId.toString())) {
+    if (!audioUsers.includes(String(senderId))) {
         return res.status(404).json({ message: "Stream not found" });
     }
 
@@ -142,25 +144,30 @@ app.post('/subscribeAudio', async (req, res) => {
 });
 
 function handleAudioTrackEvent(e, peer, id) {
-    console.log("User " + id + " is broadcasting audio");
+    id = String(id);
     //if id not in audioUsers, add it
     if (!audioUsers.includes(id)) {
+        console.log("User " + id + " is broadcasting audio");
         audioUsers.push(id);
         audioStreams.push(e.streams[0]);
     } else {
         //if id is in audioUsers, replace the stream
+        console.log("User " + id + " is broadcasting audio again");
+        
         const index = audioUsers.indexOf(id);
         audioStreams[index] = e.streams[0];
     }
 }
 
 app.post('/broadcastAudio', async (req, res) => {
-    const { sdp, id } = req.body;
+    let { sdp, id } = req.body;
+    id = String(id);
 
     if (!id) {
         return res.status(400).json({ message: "Provide a valid id" });
     }
 
+    
     const peer = new webrtc.RTCPeerConnection({
         iceServers: [
             {
@@ -168,7 +175,6 @@ app.post('/broadcastAudio', async (req, res) => {
             }
         ]
     });
-
     peer.ontrack = (e) => handleAudioTrackEvent(e, peer, id);
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
@@ -182,6 +188,13 @@ app.post('/broadcastAudio', async (req, res) => {
 
     const payload = {
         sdp: peer.localDescription
+    }
+
+    if(audioUsers.includes(id)) {
+        const index = audioUsers.indexOf(id);
+        inPeers[index] = peer;
+    } else {
+        inPeers.push(peer);
     }
 
     res.json(payload);

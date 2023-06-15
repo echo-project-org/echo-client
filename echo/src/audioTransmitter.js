@@ -66,9 +66,9 @@ function createPeer() {
 }
 
 async function handleNegotiationNeededEvent(peer) {
-    const offer = await peer.createOffer();  
+    const offer = await peer.createOffer();
     let parsed = sdpTransform.parse(offer.sdp);
-    
+
     parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
     offer.sdp = sdpTransform.write(parsed);
 
@@ -118,6 +118,7 @@ export async function startInputAudioStream() {
 
         peer = createPeer();
         stream.getTracks().forEach(track => peer.addTrack(track, stream));
+        isTransmitting = true;
     }
 }
 
@@ -125,12 +126,9 @@ export function stopAudioStream() {
     id = localStorage.getItem('id');
     if (isTransmitting) {
         console.log(">>>> STOPPING STREAM");
-        if (mediaStream) {
-            mediaStream.getAudioTracks().forEach((track) => {
-                track.stop(); // Stop each track in the media stream
-            });
-            context.suspend();
-            mediaStream = null; // Reset the media stream variable
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            //peer.close();
         }
 
         isTransmitting = false;

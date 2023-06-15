@@ -10,6 +10,8 @@ let userVolumes = [];
 
 let clientIds = [];
 let peers = [];
+let streams = [];
+let audioElements = [];
 
 export async function syncAudio() {
     clientIds.forEach((id) => {
@@ -61,9 +63,11 @@ function createPeer(senderId) {
 
 function handleTrackEvent(e) {
     var x = new Audio();
+    streams.push(e.streams[0]);
     x.srcObject = e.streams[0];
     x.autoplay = true;
     x.play();
+    audioElements.push(x);
 };
 
 async function handleNegotiationNeededEvent(peer, senderId) {
@@ -96,10 +100,19 @@ async function handleNegotiationNeededEvent(peer, senderId) {
 }
 
 export function subscribeToAudioStream(senderId) {
-    clientIds.push(senderId);
-    const peer = createPeer(senderId);
-    peer.addTransceiver("audio", { direction: "recvonly" })
-    peers.push(peer);
+    senderId = String(senderId)
+    console.log(clientIds, senderId)
+    if(clientIds.includes(senderId)){
+        let index = clientIds.indexOf(senderId);
+        const peer = createPeer(senderId);
+        peer.addTransceiver("audio", { direction: "recvonly" })
+        peers[index] = peer;
+    } else {
+        clientIds.push(senderId);
+        const peer = createPeer(senderId);
+        peer.addTransceiver("audio", { direction: "recvonly" })
+        peers.push(peer);
+    }
 }
 
 export function setAudioVolume(volume) {
@@ -190,13 +203,15 @@ export async function stopOutputAudioStream(id = null) {
             audioContexts[index].close();
             audioContexts.splice(index, 1);
             clientSources.splice(index, 1);
-            clientIds.splice(index, 1);
             startTimes.splice(index, 1);
             userVolumes.splice(index, 1);
-        }
+        }   
     } else {
+        streams.forEach(e => { console.log(e.getTracks()) });
+        streams.forEach(e => { e.getTracks().forEach(t => { t.stop(); }); });
+        audioElements.forEach(e => { e.pause(); });
         audioContexts.forEach(e => { e.close(); });
-
+        audioElements = [];
         audioContexts = [];
         clientSources = [];
         clientIds = [];
