@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
                 });
             });
         }
-        res.json(jsonOut);
+        return res.json(jsonOut);
     });
 });
 
@@ -68,9 +68,9 @@ router.post('/join', (req, res) => {
     // if user is already in room, remove it
     req.database.query("DELETE FROM room_users WHERE userId = ?", [userId], (err, result, fields) => {
         if (err) return console.error(err);
-        if (roomId === "0") return res.json({ message: "Left room" });
     });
 
+    if (roomId === "0") return res.json({ message: "Left room" });
     // if room id is 0, then the user has left all rooms
     if (roomId !== "0"){    
         // add user to joining room
@@ -90,11 +90,10 @@ router.post('/join', (req, res) => {
                         });
                     });
                 }
-                res.json(jsonOut);
+                return res.json(jsonOut);
             });
         });
     }
-    return res.status(200).json({ message: "Done" });
 });
     
 
@@ -117,7 +116,8 @@ router.get('/:id/users', (req, res) => {
                 });
             });
         }
-        res.json(jsonOut);
+
+        return res.json(jsonOut);
     });
 });
 
