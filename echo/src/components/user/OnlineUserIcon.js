@@ -13,8 +13,7 @@ import GavelIcon from '@mui/icons-material/Gavel';
 import { useState } from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const ar = require('../../audioReceiver');
+const ep = require('../../echoProtocol');
 
 const decodeUrl = (url) => {
   if (url.includes("/")) {
@@ -93,9 +92,9 @@ const theme = createTheme({
   },
 });
 
-function OnlineUserIcon({ imgUrl, name, talking }) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [userVolume, setUserVolulme] = useState(100);
+function OnlineUserIcon({ imgUrl, name, id, talking }) {
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [userVolume, setUserVolulme] = React.useState(100);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -108,8 +107,7 @@ function OnlineUserIcon({ imgUrl, name, talking }) {
   const handleVolumeChange = (event, newValue) => {
     //set user volume
     setUserVolulme(newValue);
-    let id;
-    ar.setUserAudioVolume(newValue / 100, id)
+    ep.setUserVolume(newValue / 100, id)
   };
 
   return (

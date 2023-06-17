@@ -1,41 +1,118 @@
-const at = require('./audioTransmitter');
-const ar = require('./audioReceiver');
+import audioRtcTransmitter from "./audioRtcTransmitter";
+import audioRtcReceiver from "./audioRtcReceiver";
 
 const io = require("socket.io-client");
 var socket;
 var ping = 0;
 var pingInterval;
+var at = null;
+var incomingAudio = [];
 
-// socket.onmessage = function (event) {
-//     parseMessage(event.data)
-// };
+async function startTransmitting(id = 5) {
+    if(at){
+        stopTransmitting();
+    }
+    at = new audioRtcTransmitter(id);
+    await at.init();
+}
 
-// socket.onclose = function (event) {
-//     if (event.wasClean) {
-//         //If closing was clean
-//     } else {
-//         // alert('Connection with the server died');
-//     }
+function stopTransmitting() {
+    if(at){
+        at.close();
+        at = null;
+    }
+}
+
+function startReceiving(id = 5, remoteId = 5) {
+    console.log(id, remoteId)
+    incomingAudio.forEach(element => {
+        if(element.id === id){
+            element.close();
+            element = new audioRtcReceiver(id, remoteId);
+            element.init();
+            return;
+        }
+    });
+
+    let r = new audioRtcReceiver(id, remoteId);
+    r.init();
+    incomingAudio.push(r);
+}
+
+function stopReceiving(remoteId) {
+    if(remoteId){
+        incomingAudio.forEach(element => {
+            console.log(element.senderId, remoteId)
+            if(element.senderId === remoteId){
+                element.close();
+                element = null;
+                return;
+            }   
+        });
+    } else {
+        incomingAudio.forEach(element => {
+            element.close();
+            element = null;
+        });
+
+        incomingAudio = [];
+    }
+}
+
+export function toggleMute(mutestate){
+    if(at){
+        if(mutestate){
+            at.mute();
+        } else {
+            at.unmute();
+        }
+    }
+}
+
+export function setSpeakerDevice(deviceId){
+    incomingAudio.forEach(element => {
+        element.setDevice(deviceId);
+    });
+}
+
+export function setSpeakerVolume(volume){
     
-//     at.stopAudioStream();
-// };
+}
 
-// // when found connection and enstablishing a new connection
+export function setMicrophoneDevice(deviceId){
+    if(at){
+        at.close();
+        at = new audioRtcTransmitter(deviceId);
+    }
+}
 
-// // attempt in reconnection
-// socket.io.on("reconnect_attempt", (attempt) => {
-//     alert("reconnecting. attempt " + attempt)
-// });
+export function setMicrophoneVolume(volume){
+    if(at){
+        at.setVolume(volume);
+    }
+}
 
-// socket.io.on("reconnect", (attempt) => {});
-// socket.io.on("reconnect_error", (error) => {});
-// socket.io.on("reconnect_failed", () => {});
+export function setUserVolume(volume, remoteId){
+    incomingAudio.forEach(element => {
+        if(element.senderId === remoteId){
+            element.setVolume(volume);
+            return;
+        }
+    });
+}
 
-// // errors
+export function getSpeakerDevices(){
+    return audioRtcReceiver.getAudioDevices();
+}
+
+export function getMicrophoneDevices(){
+    return audioRtcTransmitter.getAudioDevices();
+}
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io("ws://localhost:6982", { query: { id } });
+    socket = io("ws://kury.ddns.net:6982", { query: { id } });
+    startTransmitting(id);
 
     pingInterval = setInterval(() => {
         const start = Date.now();
@@ -48,40 +125,44 @@ export function openConnection(id) {
 
     socket.on("ready", (remoteId) => {
         console.log("opened", remoteId);
-        ar.startOutputAudioStream(remoteId)
     });
 
     socket.on("receiveAudioPacket", (data) => {
         // console.log("got pack from", data.id)
-        ar.addToBuffer(data.id, new Float32Array(data.left), new Float32Array(data.right));
+        //ar.addToBuffer(data.id, new Float32Array(data.left), new Float32Array(data.right));
     });
 
     socket.io.on("close", () => {
         console.log("connection closed");
-        at.stopAudioStream();
+        stopTransmitting();
+        stopReceiving();
     })
     
     socket.io.on("error", (error) => {
         console.log(error);
         alert("The audio server connection has errored out")
-        at.stopAudioStream();
+        stopTransmitting();
+        stopReceiving();
         socket.close();
     });
 
     socket.on("userJoinedChannel", (data) => {
         console.log("user", data, "joined your channel, starting listening audio");
-        ar.startOutputAudioStream(data.id)
+        startReceiving(id, data);
     });
 
     socket.on("sendAudioState", (data) => {
         console.log("got user audio info from server", data);
-        if(!data.deaf || !data.mute)
-            ar.startOutputAudioStream(data.id)
+        if(!data.deaf || !data.mute){
+            //startReceiving()
+            ;
+
+        }
     });
 
     socket.on("userLeftChannel", (data) => {
         console.log("user", data, "left your channel, stopping listening audio");
-        ar.stopOutputAudioStream(data.id)
+        stopReceiving(data);
     });
 
     // socket.io.on("ping", () => { console.log("pong") });
@@ -93,6 +174,7 @@ export function joinRoom(id, roomId) {
     socket.emit("join", { id, roomId, cb: () => {
         console.log("response from join, i'm in channel")
     }});
+    //startReceiving(5, 5);
 }
 
 export function getPing() {
@@ -105,6 +187,7 @@ export function sendAudioState(id, data) {
 
 export function exitFromRoom(id) {
     console.log("exit from room", id)
+    stopReceiving();
     if (socket) socket.emit("exit", { id });
 }
 
@@ -113,6 +196,9 @@ export function closeConnection(id) {
         console.log("closing connection with socket")
         socket.emit("end", { id });
     }
+
+    stopReceiving();
+
     socket = null;
     clearInterval(pingInterval);
     // if we let client handle disconnection, then recursive happens cause of the event "close"
@@ -124,15 +210,3 @@ export function sendMessage(msg) {
         // socket.send("ECHO MSG" + msg);
     }
 }
-
-export function sendAudioPacket(id, left, right) {
-    if (socket) {
-        // console.log("sending pachet", id)
-        socket.emit("audioPacket", {
-            id: id,
-            left: left,
-            right: right
-        });
-    }
-}
-

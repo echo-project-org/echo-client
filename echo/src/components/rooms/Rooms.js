@@ -38,7 +38,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   const updateRooms = () => {
     api.call("rooms")
       .then((result) => {
-        console.log("rooms: ", result.json)
         setRemoteRooms(result.json);
       });
   }
@@ -49,9 +48,8 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   
   useEffect(() => {
     if (!connected) {
-      console.log("updating rooms")
-      setActiveRoomId(0);
-      updateCurrentRoom(0);
+      setActiveRoomId(0)
+
       updateRooms();
     }
   }, [connected]);

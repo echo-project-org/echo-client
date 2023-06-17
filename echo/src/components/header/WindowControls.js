@@ -10,8 +10,6 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 
 const api = require('../../api')
 const ep = require('../../echoProtocol')
-const ar = require('../../audioReceiver')
-const at = require('../../audioTransmitter')
 const { ipcRenderer } = window.require('electron');
 
 const theme = createTheme({
@@ -23,8 +21,7 @@ const theme = createTheme({
 
 function WindowControls({ muted, audioMuted }) {
     const closeApp = async () => {
-        at.stopAudioStream();
-        ar.stopOutputAudioStream();
+        ep.closeConnection();
         var nickname = localStorage.getItem("name");
         api.call('setOnline/' + nickname + '/F/0');
         

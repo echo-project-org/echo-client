@@ -18,8 +18,7 @@ import Zoom from '@mui/material/Zoom';
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 
-const ar = require('../../audioReceiver')
-const at = require('../../audioTransmitter')
+const ep = require('../../echoProtocol');
 
 const modalStyle = {
     position: 'absolute',
@@ -87,11 +86,11 @@ function SettingsButton() {
     const handleModalClose = () => setModalOpen(false);
 
     const handleClick = (event) => {
-        ar.getAudioDevices().then((devices) => {
+        ep.getSpeakerDevices().then((devices) => {
             setOutputDevices(devices)
         })
 
-        at.getAudioDevices().then((devices) => {
+        ep.getMicrophoneDevices().then((devices) => {
             setInputDevices(devices)
         })
 

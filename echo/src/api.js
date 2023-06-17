@@ -1,5 +1,4 @@
 export async function call(path, method = "GET", body = null) {
-    console.log("new request", path, method, body);
     return new Promise((resolve, reject) => {
         // if method is not GET, then add the body to the request
         if (method !== "GET" && body === null) reject("Body is null");
@@ -28,7 +27,7 @@ export async function call(path, method = "GET", body = null) {
             }
             
         
-        fetch('http://localhost:6980/' + path, options)
+        fetch('http://kury.ddns.net:6980/' + path, options)
             .then((response) => {
                 return new Promise((resolve) => response.json()
                     .then((json) => resolve(
@@ -43,7 +42,6 @@ export async function call(path, method = "GET", body = null) {
                 if (!handleErrors(status, json)) return reject({ status, message: json.message || "Something went wrong :(" });
                 if (!ok) return reject({ status, message: json.message });
                 if (typeof json === "string") json = JSON.parse(json);
-                console.log("response", json)
                 resolve({ status, message: json.message, json, ok });
             })
             .catch(reject);
