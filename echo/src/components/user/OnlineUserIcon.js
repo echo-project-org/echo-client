@@ -93,8 +93,8 @@ const theme = createTheme({
 });
 
 function OnlineUserIcon({ imgUrl, name, id, talking }) {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [userVolume, setUserVolulme] = React.useState(100);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [userVolume, setUserVolulme] = useState(100);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {

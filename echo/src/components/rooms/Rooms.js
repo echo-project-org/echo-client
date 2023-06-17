@@ -4,7 +4,6 @@ import Room from './Room';
 
 const ep = require("../../echoProtocol");
 const api = require("../../api");
-var at = require('../../audioTransmitter');
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
@@ -18,7 +17,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   ])
 
   const onRoomClick = (joiningId) => {
-    at.startInputAudioStream();
     ep.joinRoom(localStorage.getItem("id"), joiningId);
     api.call("rooms/join", "POST", { userId: localStorage.getItem("id"), roomId: joiningId })
       .then((res) => {
