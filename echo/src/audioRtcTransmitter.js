@@ -1,9 +1,13 @@
 const sdpTransform = require('sdp-transform');
 
 const stunkServer = [
-    "stun:kury.ddns.net:6984"
+    {
+        username: 'echo',
+        credential: 'echo123',
+        urls: ["turn:kury.ddns.net:6984"]
+    }
 ];
-const signalServer = "http://127.0.0.1:6983";
+const signalServer = "http://kury.ddns.net:6983";
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
 /**
@@ -48,17 +52,17 @@ class audioRtcTransmitter {
         this.stream = await navigator.mediaDevices.getUserMedia(this.constraints);
         //Setup the volume stuff
         const context = new AudioContext();
-        const mediaStreamSource = context.createMediaStreamSource(this.stream);
-        const mediaStreamDestination = context.createMediaStreamDestination();
+        const source = context.createMediaStreamSource(this.stream);
+        const destination = context.createMediaStreamDestination();
         this.gainNode = context.createGain();
-        mediaStreamSource.connect(this.gainNode);
-        this.gainNode.connect(mediaStreamDestination);
+        source.connect(this.gainNode);
+        this.gainNode.connect(destination);
         //Set the volume
         this.setVolume(this.volume);
         //Create the peer
         this.peer = this.createPeer();
         //Add the tracks
-        mediaStreamDestination.stream.getTracks().forEach(track => this.peer.addTrack(track, mediaStreamDestination.stream));
+        destination.stream.getTracks().forEach(track => this.peer.addTrack(track, destination.stream));
         this.isTransmitting = true;
     }
 
@@ -99,14 +103,21 @@ class audioRtcTransmitter {
      */
     createPeer() {
         const peer = new RTCPeerConnection({
-            iceServers: [
-                {
-                    "urls": stunkServer
-                }
-            ]
+            iceServers: stunkServer
         });
         //Handle the ice candidates
         peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
+        peer.onconnectionstatechange  = () => {
+            if(peer.connectionState  === 'failed'){
+                peer.restartIce();
+            }
+        }
+
+        peer.oniceconnectionstatechange = () => {
+            if (peer.iceconnectionState === 'failed') {
+                peer.restartIce()
+              }
+        }
 
         return peer;
     }
@@ -151,10 +162,14 @@ class audioRtcTransmitter {
         //Closes the transmission
         if (this.stream) {
             this.stream.getTracks().forEach(track => track.stop());
+        } else {
+            console.log("Stream is null")
         }
 
         if (this.peer) {
             this.peer.close();
+        } else {
+            console.log("Peer is null")
         }
 
         const body = {

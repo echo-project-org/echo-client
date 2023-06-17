@@ -71,6 +71,22 @@ app.whenReady().then(() => {
     mainWindow.show();
   })
   tray.setContextMenu(contextMenu)
+
+  var rtcInternals = new BrowserWindow({
+    width: 1000,
+    height: 600,
+    title: "Echo",
+    frame: false,
+    icon: 'images/echoIcon',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      devTools: true
+    }
+  })
+
+  rtcInternals.loadURL("chrome://webrtc-internals");
+  rtcInternals.show();
 })
 
 app.on('window-all-closed', () => {

@@ -80,7 +80,7 @@ app.post('/broadcast', async (req, res) => {
         ]
     });
 
-    peer.ontrack = (e) => handleTrackEvent(e, peer, id);
+    peer.ontrack = (e) => {handleTrackEvent(e, peer, id)};
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
 
@@ -196,7 +196,7 @@ app.post('/broadcastAudio', async (req, res) => {
             }
         ]
     });
-    peer.ontrack = (e) => handleAudioTrackEvent(e, peer, id);
+    peer.ontrack = (e) => {handleAudioTrackEvent(e, peer, id)};
     const desc = new webrtc.RTCSessionDescription(sdp);
     await peer.setRemoteDescription(desc);
 

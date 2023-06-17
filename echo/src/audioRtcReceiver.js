@@ -1,8 +1,12 @@
 const sdpTransform = require('sdp-transform');
 const stunkServer = [
-    "stun:kury.ddns.net:6984"
+    {
+        username: 'echo',
+        credential: 'echo123',
+        urls: ["turn:kury.ddns.net:6984"]
+    }
 ];
-const signalServer = "http://127.0.0.1:6983";
+const signalServer = "http://kury.ddns.net:6983";
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
 class audioRtcReceiver {
@@ -99,11 +103,7 @@ class audioRtcReceiver {
 
     createPeer() {
         const peer = new RTCPeerConnection({
-            iceServers: [
-                {
-                    "urls": stunkServer
-                }
-            ]
+            iceServers: stunkServer
         });
         peer.ontrack = (e) => {this.handleTrackEvent(e)};
         //Handle the ice candidates
