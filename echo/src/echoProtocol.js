@@ -112,7 +112,7 @@ export function getMicrophoneDevices(){
 export function openConnection(id) {
     console.log("opening connection with socket")
     socket = io("ws://kury.ddns.net:6982", { query: { id } });
-    startTransmitting(5);
+    startTransmitting(id);
 
     pingInterval = setInterval(() => {
         const start = Date.now();
@@ -148,13 +148,16 @@ export function openConnection(id) {
 
     socket.on("userJoinedChannel", (data) => {
         console.log("user", data, "joined your channel, starting listening audio");
-        //startReceiving('5', data.id);
+        startReceiving(id, data);
     });
 
     socket.on("sendAudioState", (data) => {
         console.log("got user audio info from server", data);
-        if(!data.deaf || !data.mute)
-            startReceiving()
+        if(!data.deaf || !data.mute){
+            //startReceiving()
+            ;
+
+        }
     });
 
     socket.on("userLeftChannel", (data) => {
@@ -171,7 +174,7 @@ export function joinRoom(id, roomId) {
     socket.emit("join", { id, roomId, cb: () => {
         console.log("response from join, i'm in channel")
     }});
-    startReceiving(5, 5);
+    //startReceiving(5, 5);
 }
 
 export function getPing() {
@@ -207,15 +210,3 @@ export function sendMessage(msg) {
         // socket.send("ECHO MSG" + msg);
     }
 }
-
-export function sendAudioPacket(id, left, right) {
-    if (socket) {
-        // console.log("sending pachet", id)
-        socket.emit("audioPacket", {
-            id: id,
-            left: left,
-            right: right
-        });
-    }
-}
-
