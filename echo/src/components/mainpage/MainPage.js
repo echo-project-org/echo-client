@@ -1,9 +1,7 @@
 import '../../index.css'
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
-
 var api = require('../../api')
 
 const MainPage = () => {
@@ -18,8 +16,8 @@ const MainPage = () => {
             exit={{ opacity: 0 }}
         >
             <div className='sideWithChat'>
-                <Sidebar />
-                <RoomContent />
+                <Sidebar updateCurrentRoom={updateCurrentRoom}/>
+                <RoomContent roomId={roomId} />
             </div>
 
         </motion.div>

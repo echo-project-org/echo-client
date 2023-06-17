@@ -10,13 +10,13 @@ import VolumeUp from '@mui/icons-material/VolumeUp';
 import MessageIcon from '@mui/icons-material/Message';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import GavelIcon from '@mui/icons-material/Gavel';
-import React from 'react'
+import { useState } from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 const ep = require('../../echoProtocol');
 
 const decodeUrl = (url) => {
-  if(url.includes("/")){
+  if (url.includes("/")) {
     return url;
   } else {
     return decodeURIComponent(url);
@@ -110,14 +110,17 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
     ep.setUserVolume(newValue / 100, id)
   };
 
-
   return (
     <div className="onlineUserContainer">
-      <div className="onlineUserIcon noselect pointer" onContextMenu={handleClick} onClick={handleClick}
-          size="small"
-          aria-controls={open ? 'account-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}>
+      <div
+        className="onlineUserIcon noselect pointer"
+        onContextMenu={handleClick}
+        onClick={handleClick}
+        size="small"
+        aria-controls={ open ? 'account-menu' : undefined }
+        aria-haspopup="true"
+        aria-expanded={ open ? 'true' : undefined }
+      >
         <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
           <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
         </Badge>
@@ -130,20 +133,11 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
           open={open}
           onClose={handleClose}
           transitionDuration={ 100 }
-          MenuListProps={{
-            'aria-labelledby': 'userIcon',
-            'className': 'userMenuModal'
-          }}
+          MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
         >
-          <div style={{
-            width: "100%",
-            // textAlign: "center",
-            textAlign: "-webkit-center",
-            marginBottom: ".3rem",
-          }}>
-            <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{
-              border: "3px solid white"
-            }}/>
+          <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
+            <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
+            <p style={{ marginTop: ".8rem" }}>{name}</p>
           </div>
 
           <MenuItem>
@@ -151,7 +145,7 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
               <Stack spacing={2} direction="row" alignItems="center">
                 <VolumeUp fontSize="10px" />
                 <Slider
-                  sx={{width: 110}}
+                  sx={{ width: 110 }}
                   valueLabelDisplay="auto"
                   valueLabelFormat={(v) => { return v + "%" }}
                   aria-label="Volume"
@@ -173,9 +167,9 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
 }
 
 OnlineUserIcon.defaultProps = {
-    imgUrl: "https://kurickigabriele2020.altervista.org/Kury.jpg",
-    name: "Kury",
-    talking: false,
+  imgUrl: "http://localhost:6980/users/image/default",
+  name: "None",
+  talking: false,
 }
 
 export default OnlineUserIcon

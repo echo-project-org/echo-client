@@ -42,19 +42,28 @@ const theme = createTheme({
     },
 });
 
-function ChatControls() {
+function ChatControls({ onEmojiOn }) {
     return (
         <div className='chatControls'>
             <ThemeProvider theme={theme}>
                 <form className='chatForm' noValidate autoComplete="off">
+
                     <StyledTextField
                         id="messageBox"
+                        autoFocus
+                        onKeyDown = {(e) => {
+                            // check if enter is pressed
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                console.log('Enter key pressed, Send message.');
+                            }
+                        }}
                         fullWidth
                         multiline
                         maxRows={2}
                         label="Send a message."
                         InputProps={{
-                            endAdornment: <MessageBoxButtons />,
+                            endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} />,
                             style: {color: "#f5e8da"}
                         }}
                     />

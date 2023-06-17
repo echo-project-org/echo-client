@@ -96,7 +96,6 @@ router.post('/join', (req, res) => {
     }
 });
     
-
 router.get('/:id/users', (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 
@@ -118,6 +117,43 @@ router.get('/:id/users', (req, res) => {
         }
 
         return res.json(jsonOut);
+    });
+});
+
+router.get('/:id/messages', (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ message: "Provide a valid room id" });
+
+    req.database.query("SELECT room_messages.id, room_messages.message, room_messages.userId, users.name, users.img FROM room_messages INNER JOIN users ON room_messages.userId = users.id WHERE room_messages.roomId = ? ORDER BY room_messages.id DESC", [id], (err, result, fields) => {
+        if (err) return console.error(err);
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.forEach((plate) => {
+                jsonOut.push({
+                    id: plate.id,
+                    message: plate.message,
+                    userId: plate.userId,
+                    name: plate.name,
+                    img: plate.img
+                });
+            });
+        }
+        res.json(jsonOut);
+    });
+});
+
+router.post('/messages', (req, res) => {
+    if(!req.authenticator.checkAuth(req, res)) return;
+
+    const { roomId, userId, message } = req.body;
+    if (!roomId || !userId || !message) return res.status(400).json({ message: "Provide a valid room id" });
+
+    req.database.query("INSERT INTO room_messages (roomId, userId, message) VALUES (?, ?, ?)", [roomId, userId, message], (err, result, fields) => {
+        if (err) return console.error(err);
+        res.json({ message: "Message sent!" });
     });
 });
 

@@ -73,7 +73,7 @@ class Rooms {
 
     sendAudioToConnectedClients(data) {
         if (this.connectedClients.has(data.id)) {
-            const roomId = this.connectedClients.get(data.id).getLastRoom();
+            const roomId = this.connectedClients.get(data.id).getCurrentRoom();
             if (this.rooms.has(roomId)) {
                 this.rooms.get(roomId).users.forEach((user, id) => {
                     if (String(id) !== String(data.id) && !user.isDeaf)
@@ -126,7 +126,7 @@ class Rooms {
         console.log("exiting room", data.id)
         if (this.connectedClients.has(data.id)) {
             const user = this.connectedClients.get(data.id);
-            const roomId = user.getLastRoom();
+            const roomId = user.getCurrentRoom();
             if (this.rooms.has(roomId)) {
                 const room = this.rooms.get(roomId);
                 room.users.delete(data.id);
@@ -145,7 +145,7 @@ class Rooms {
         if (this.connectedClients.has(id)) {
             if (this.rooms.has(roomId)) {
                 const user = this.connectedClients.get(id);
-                user.setLastRoom(roomId);
+                user.setCurrentRoom(roomId);
                 this.rooms.get(roomId).users.set(user.id, user);
                 this.rooms.get(roomId).users.forEach((remoteUser, id) => {
                     console.log("loopig", id)

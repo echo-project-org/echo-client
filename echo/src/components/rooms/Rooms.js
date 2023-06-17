@@ -4,8 +4,9 @@ import Room from './Room';
 
 const ep = require("../../echoProtocol");
 const api = require("../../api");
+var at = require('../../audioTransmitter');
 
-function Rooms({ setState, connected }) {
+function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
@@ -17,12 +18,15 @@ function Rooms({ setState, connected }) {
   ])
 
   const onRoomClick = (joiningId) => {
+    at.startInputAudioStream();
     ep.joinRoom(localStorage.getItem("id"), joiningId);
     api.call("rooms/join", "POST", { userId: localStorage.getItem("id"), roomId: joiningId })
       .then((res) => {
         if (res.ok) {
           console.log("joined room: ", joiningId)
           setActiveRoomId(joiningId)
+          // send roomid to chatcontent to fetch messages
+          updateCurrentRoom(joiningId);
           setState(true);
         }
       })
@@ -45,6 +49,7 @@ function Rooms({ setState, connected }) {
   useEffect(() => {
     if (!connected) {
       setActiveRoomId(0)
+
       updateRooms();
     }
   }, [connected]);

@@ -100,8 +100,8 @@ function SettingsButton() {
     return (
         <div>
             <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-                <Button>
-                    <SettingsIcon onClick={handleClick} />
+                <Button onClick={handleClick}>
+                    <SettingsIcon />
                 </Button>
             </Tooltip>
 
