@@ -5,7 +5,11 @@ const webrtc = require('wrtc');
 const sdpTransform = require('sdp-transform');
 
 const stunkStunkServer = [
-    "stun:kury.ddns.net:6984"
+    {
+        username: 'echo',
+        credential: 'echo123',
+        urls: ["turn:kury.ddns.net:6984"]
+    }
 ];
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -134,11 +138,7 @@ app.post('/subscribeAudio', async (req, res) => {
     }
 
     const peer = new webrtc.RTCPeerConnection({
-        iceServers: [
-            {
-                urls: stunkStunkServer
-            }
-        ]
+        iceServers: stunkStunkServer
     });
 
     const desc = new webrtc.RTCSessionDescription(sdp);
@@ -190,11 +190,7 @@ app.post('/broadcastAudio', async (req, res) => {
 
 
     const peer = new webrtc.RTCPeerConnection({
-        iceServers: [
-            {
-                urls: stunkStunkServer
-            }
-        ]
+        iceServers: stunkStunkServer
     });
     peer.ontrack = (e) => {handleAudioTrackEvent(e, peer, id)};
     const desc = new webrtc.RTCSessionDescription(sdp);
