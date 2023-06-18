@@ -69,12 +69,13 @@ class ServerRTC {
         //if audioUsers is not in senders
         if (!this.inPeers.has(senderId)) return "NO-SENDER-CONNECTION";
 
-        this.outPeers.forEach((value, key) => {
-            if (value.sender === senderId) {
+        this.outPeers.filter((value, key) => {
+            if (value.receiver !== receiverId) {
                 console.log("User " + value.receiver + " is already connected to user " + senderId + "'s audio stream")
                 value.peer.close();
-                this.outPeers.splice(key, 1);
+                return true;
             }
+            return false;
         });
 
         const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
@@ -110,12 +111,13 @@ class ServerRTC {
             this.inPeers.delete(id);
         }
         
-        this.outPeers.forEach((value, key) => {
+        this.outPeers.filter((value, key) => {
             if (value.sender === id || value.receiver === id) {
-                console.log("Removing user " + value.receiver + " from user " + value.sender + "'s audio stream");
+                console.log("User " + value.receiver + " is already connected to user " + senderId + "'s audio stream")
                 value.peer.close();
-                this.outPeers.splice(key, 1);
+                return true;
             }
+            return false;
         });
     }
 
