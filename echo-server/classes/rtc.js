@@ -94,7 +94,8 @@ class ServerRTC {
         
         this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
 
-        return peer.localDescription;
+        // return peer.localDescription;
+        return answer;
     }
 
     clearUserConnection(data) {
