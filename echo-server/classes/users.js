@@ -142,7 +142,6 @@ class User {
     async broadcastAudio(data, cb) {
         if (this.rtc) {
             const resp = await this.rtc.broadcastAudio(data);
-            console.log("broadcastAudio", resp)
             switch (resp) {
                 case "NO-ID":
                     console.log("NO-ID");
@@ -157,7 +156,6 @@ class User {
     async subscribeAudio(data, cb) {
         if (this.rtc) {
             const resp = await this.rtc.subscribeAudio(data);
-            console.log("subscribeAudio", resp)
             switch (resp) {
                 case "NO-SENDER-ID":
                     console.log("NO-SENDER-ID");

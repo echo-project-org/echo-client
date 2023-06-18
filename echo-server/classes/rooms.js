@@ -41,6 +41,7 @@ class Rooms {
         });
         user.registerEvent("end", (data) => {
             this.endConnection(data);
+            user.rtc.clearUserConnection(data);
         });
         user.registerEvent("audioState", (data) => {
             this.sendAudioState(data);
