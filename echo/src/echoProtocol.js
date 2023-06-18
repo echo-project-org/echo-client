@@ -168,8 +168,8 @@ export function openConnection(id) {
     });
 
     socket.on("userLeftChannel", (data) => {
-        console.log("user", data, "left your channel, stopping listening audio");
-        stopReceiving(data);
+        console.log("user", data.id, "left your channel, stopping listening audio");
+        stopReceiving(data.id);
     });
 
     // socket.io.on("ping", () => { console.log("pong") });
