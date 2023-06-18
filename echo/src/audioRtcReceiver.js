@@ -1,6 +1,13 @@
 const sdpTransform = require('sdp-transform');
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
+const SIGNAL_SERVER = "http://localhost:6983/";
+const ICE_SERVERS = [{
+  username: 'echo',
+  credential: 'echo123',
+  urls: ["turn:kury.ddns.net:6984"]
+}];
+
 class audioRtcReceiver {
   constructor(id, senderId, deviceId = 'default', volume = 1.0) {
     this.id = id;
@@ -95,7 +102,7 @@ class audioRtcReceiver {
 
   createPeer() {
     const peer = new RTCPeerConnection({
-      iceServers: process.env.ICE_SERVERS
+      iceServers: ICE_SERVERS
     });
     peer.ontrack = (e) => { this.handleTrackEvent(e) };
     //Handle the ice candidates
@@ -151,7 +158,7 @@ class audioRtcReceiver {
       receiverId: this.id,
     };
 
-    fetch(process.env.SIGNAL_SERVER + 'subscribeAudio', {
+    fetch(SIGNAL_SERVER + 'subscribeAudio', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

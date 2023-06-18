@@ -1,3 +1,6 @@
+
+const API_URL = "http://localhost:6980/";
+
 export async function call(path, method = "GET", body = null) {
   return new Promise((resolve, reject) => {
     // if method is not GET, then add the body to the request
@@ -27,7 +30,7 @@ export async function call(path, method = "GET", body = null) {
       }
 
 
-    fetch(process.env.API_URL + path, options)
+    fetch(API_URL + path, options)
       .then((response) => {
         return new Promise((resolve) => response.json()
           .then((json) => resolve(

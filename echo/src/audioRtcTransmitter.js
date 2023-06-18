@@ -1,6 +1,13 @@
 const sdpTransform = require('sdp-transform');
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
+const SIGNAL_SERVER = "http://localhost:6983/";
+const ICE_SERVERS = [{
+  username: 'echo',
+  credential: 'echo123',
+  urls: ["turn:kury.ddns.net:6984"]
+}];
+
 /**
  * @class audioRtcTransmitter
  * @classdesc A class that handles the audio transmission
@@ -94,7 +101,7 @@ class audioRtcTransmitter {
    */
   createPeer() {
     const peer = new RTCPeerConnection({
-      iceServers: process.env.ICE_SERVERS
+      iceServers: ICE_SERVERS
     });
     //Handle the ice candidates
     peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
@@ -132,7 +139,7 @@ class audioRtcTransmitter {
     };
 
     //Send the sdp to the server
-    fetch(process.env.SIGNAL_SERVER + 'broadcastAudio', {
+    fetch(SIGNAL_SERVER + 'broadcastAudio', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -167,7 +174,7 @@ class audioRtcTransmitter {
       id: this.id
     };
     //Send the close to the server
-    fetch(process.env.SIGNAL_SERVER + 'stopAudioBroadcast', {
+    fetch(SIGNAL_SERVER + 'stopAudioBroadcast', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

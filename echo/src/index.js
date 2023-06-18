@@ -4,14 +4,6 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-process.env.API_URL = 'http://localhost:6980/';
-process.env.SIGNAL_SERVER = 'http://kury.ddns.net:6983/';
-process.env.ICE_SERVERS = {
-  username: 'echo',
-  credential: 'echo123',
-  urls: ["turn:kury.ddns.net:6984"]
-};
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <App />
