@@ -29,10 +29,14 @@ class ServerRTC {
         if (typeof id !== "string") id = String(id);
 
         const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
-        peer.ontrack = (e) => { this.inPeers.set(id, { peer, audioStream: e.streams[0] }); };
+        peer.ontrack = (e) => {
+            console.log("peer.ontrack called, populating inPeers")
+            this.inPeers.set(id, { peer, audioStream: e.streams[0] });
+        };
         const desc = new webrtc.RTCSessionDescription(sdp);
         await peer.setRemoteDescription(desc);
 
+        console.log("User " + id + " connected and started broadcasting audio");
         const answer = await peer.createAnswer();
         let parsed = sdpTransform.parse(answer.sdp);
         parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
@@ -43,6 +47,7 @@ class ServerRTC {
         // TODO: check if inPeers.audioStream is not null, if so
         // do not set the audioStream to null
 
+        console.log("populating inPeers, but audioStream is null")
         this.inPeers.set(id, { peer, audioStream: null });
         // respond with the payload
         return peer.localDescription;
@@ -73,7 +78,7 @@ class ServerRTC {
         const desc = new webrtc.RTCSessionDescription(sdp);
         await peer.setRemoteDescription(desc);
         
-        console.log("User " + this.receiver + " connected to user " + this.sender + "'s audio stream");
+        console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
         const stream = this.inPeers.get(senderId).audioStream;
         stream.getTracks().forEach(track => peer.addTrack(track, stream));
 
