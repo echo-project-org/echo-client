@@ -44,8 +44,8 @@ class ServerRTC {
 
         await peer.setLocalDescription(answer);
 
-        // TODO: check if inPeers.audioStream is not null, if so
-        // do not set the audioStream to null
+        // if the audioStream and the peer is already populated, immediately return
+        if (this.inPeers.has(id)) return peer.localDescription;
 
         console.log("populating inPeers, but audioStream is null")
         this.inPeers.set(id, { peer, audioStream: null });
