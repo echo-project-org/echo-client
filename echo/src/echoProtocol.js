@@ -8,6 +8,8 @@ var pingInterval;
 var at = null;
 var incomingAudio = [];
 
+const SERVER_URL = "ws://localhost:6982"
+
 async function startTransmitting(id = 5) {
     if(at){
         stopTransmitting();
@@ -111,7 +113,7 @@ export function getMicrophoneDevices(){
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io("ws://kury.ddns.net:6982", { query: { id } });
+    socket = io(SERVER_URL, { query: { id } });
     startTransmitting(id);
 
     pingInterval = setInterval(() => {
@@ -191,8 +193,9 @@ export function exitFromRoom(id) {
     if (socket) socket.emit("exit", { id });
 }
 
-export function closeConnection(id) {
+export function closeConnection(id = null) {
     if (socket) {
+        if (!id) id = localStorage.getItem('id');
         console.log("closing connection with socket")
         socket.emit("end", { id });
     }
