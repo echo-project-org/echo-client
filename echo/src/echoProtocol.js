@@ -11,7 +11,7 @@ var incomingAudio = [];
 const SERVER_URL = "ws://localhost:6982"
 
 async function startTransmitting(id = 5) {
-    if(at){
+    if (at) {
         stopTransmitting();
     }
     at = new audioRtcTransmitter(id);
@@ -19,7 +19,7 @@ async function startTransmitting(id = 5) {
 }
 
 function stopTransmitting() {
-    if(at){
+    if (at) {
         at.close();
         at = null;
     }
@@ -28,7 +28,7 @@ function stopTransmitting() {
 function startReceiving(id = 5, remoteId = 5) {
     console.log(id, remoteId)
     incomingAudio.forEach(element => {
-        if(element.id === id){
+        if (element.id === id) {
             element.close();
             element = new audioRtcReceiver(id, remoteId);
             element.init();
@@ -42,14 +42,14 @@ function startReceiving(id = 5, remoteId = 5) {
 }
 
 function stopReceiving(remoteId) {
-    if(remoteId){
+    if (remoteId) {
         incomingAudio.forEach(element => {
             console.log(element.senderId, remoteId)
-            if(element.senderId === remoteId){
+            if (element.senderId === remoteId) {
                 element.close();
                 element = null;
                 return;
-            }   
+            }
         });
     } else {
         incomingAudio.forEach(element => {
@@ -61,9 +61,9 @@ function stopReceiving(remoteId) {
     }
 }
 
-export function toggleMute(mutestate){
-    if(at){
-        if(mutestate){
+export function toggleMute(mutestate) {
+    if (at) {
+        if (mutestate) {
             at.mute();
         } else {
             at.unmute();
@@ -71,43 +71,43 @@ export function toggleMute(mutestate){
     }
 }
 
-export function setSpeakerDevice(deviceId){
+export function setSpeakerDevice(deviceId) {
     incomingAudio.forEach(element => {
         element.setDevice(deviceId);
     });
 }
 
-export function setSpeakerVolume(volume){
-    
+export function setSpeakerVolume(volume) {
+
 }
 
-export function setMicrophoneDevice(deviceId){
-    if(at){
+export function setMicrophoneDevice(deviceId) {
+    if (at) {
         at.close();
         at = new audioRtcTransmitter(deviceId);
     }
 }
 
-export function setMicrophoneVolume(volume){
-    if(at){
+export function setMicrophoneVolume(volume) {
+    if (at) {
         at.setVolume(volume);
     }
 }
 
-export function setUserVolume(volume, remoteId){
+export function setUserVolume(volume, remoteId) {
     incomingAudio.forEach(element => {
-        if(element.senderId === remoteId){
+        if (element.senderId === remoteId) {
             element.setVolume(volume);
             return;
         }
     });
 }
 
-export function getSpeakerDevices(){
+export function getSpeakerDevices() {
     return audioRtcReceiver.getAudioDevices();
 }
 
-export function getMicrophoneDevices(){
+export function getMicrophoneDevices() {
     return audioRtcTransmitter.getAudioDevices();
 }
 
@@ -118,7 +118,7 @@ export function openConnection(id) {
 
     pingInterval = setInterval(() => {
         const start = Date.now();
-      
+
         socket.emit("ping", () => {
             const duration = Date.now() - start;
             ping = duration;
@@ -139,7 +139,7 @@ export function openConnection(id) {
         stopTransmitting();
         stopReceiving();
     })
-    
+
     socket.io.on("error", (error) => {
         console.log(error);
         alert("The audio server connection has errored out")
@@ -155,7 +155,7 @@ export function openConnection(id) {
 
     socket.on("sendAudioState", (data) => {
         console.log("got user audio info from server", data);
-        if(!data.deaf || !data.mute){
+        if (!data.deaf || !data.mute) {
             //startReceiving()
             ;
 
@@ -173,9 +173,11 @@ export function openConnection(id) {
 export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
-    socket.emit("join", { id, roomId, cb: () => {
-        console.log("response from join, i'm in channel")
-    }});
+    socket.emit("join", {
+        id, roomId, cb: () => {
+            console.log("response from join, i'm in channel")
+        }
+    });
     //startReceiving(5, 5);
 }
 
