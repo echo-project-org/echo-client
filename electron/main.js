@@ -78,7 +78,6 @@ app.whenReady().then(() => {
     width: 1000,
     height: 600,
     title: "Echo",
-    frame: false,
     icon: 'images/echoIcon',
     webPreferences: {
       nodeIntegration: true,
