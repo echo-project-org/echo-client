@@ -73,7 +73,7 @@ class ServerRTC {
             if (value.sender === senderId) {
                 console.log("User " + value.receiver + " is already connected to user " + senderId + "'s audio stream")
                 value.peer.close();
-                this.outPeers.delete(key);
+                this.outPeers.splice(key, 1);
             }
         });
 
@@ -114,7 +114,7 @@ class ServerRTC {
             if (value.sender === id || value.receiver === id) {
                 console.log("Removing user " + value.receiver + " from user " + value.sender + "'s audio stream");
                 value.peer.close();
-                this.outPeers.delete(key);
+                this.outPeers.splice(key, 1);
             }
         });
     }
