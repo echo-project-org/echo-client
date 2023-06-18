@@ -28,7 +28,6 @@ class Rooms {
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
             this.registerClientEvents(newUser);
-            this.registerRTCEvents(newUser);
         });
     }
 
@@ -51,20 +50,6 @@ class Rooms {
         });
         user.registerEvent("exit", (data) => {
             this.exitRoom(data);
-        });
-    }
-
-    registerRTCEvents(user) {
-        user.rtc.registerEvent("subscribeAudio", (data) => {
-
-        });
-
-        user.rtc.registerEvent("broadcastAudio", (data) => {
-
-        });
-
-        user.rtc.registerEvent("stopAudioBroadcast", (data) => {
-
         });
     }
 
