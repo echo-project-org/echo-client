@@ -166,6 +166,10 @@ class audioRtcReceiver {
             },
             body: JSON.stringify(body),
         }).then((response) => {
+            if(!response.ok){
+                console.error("Error subscribing to audio", response);
+                return;
+            }
             response.json().then((json) => {
                 const desc = new RTCSessionDescription(json.sdp);
                 peer.setRemoteDescription(desc).catch(e => console.log(e));
