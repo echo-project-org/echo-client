@@ -24,7 +24,7 @@ class User {
         // first call when user join application ("hey i'm here, i'm sending audio packets")
         this.socket.on("broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
         // when user join a room, we send the connected user streams to the new user ("hey, send me the requested stream")
-        this.socket.on("subscribeAudio", (data) => this.subscribeAudio(data, cb));
+        this.socket.on("subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
         this.socket.on("stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
     }
 
