@@ -113,7 +113,7 @@ class ServerRTC {
         
         this.outPeers = this.outPeers.filter((value, key) => {
             if (value.sender === id || value.receiver === id) {
-                console.log("User " + value.receiver + " is already connected to user " + senderId + "'s audio stream")
+                console.log("Closing all streams connected to user " + id);
                 value.peer.close();
                 return false;
             }
