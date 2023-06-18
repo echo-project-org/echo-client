@@ -8,7 +8,7 @@ var pingInterval;
 var at = null;
 var incomingAudio = [];
 
-const SERVER_URL = "ws://localhost:6982"
+const SERVER_URL = "ws://kury.ddns.net:6982"
 
 async function startTransmitting(id = 5) {
     if (at) {
@@ -156,9 +156,7 @@ export function openConnection(id) {
     socket.on("sendAudioState", (data) => {
         console.log("got user audio info from server", data);
         if (!data.deaf || !data.mute) {
-            //startReceiving()
-            ;
-
+            //startReceiving();
         }
     });
 
@@ -204,14 +202,27 @@ export function closeConnection(id = null) {
 
     stopReceiving();
 
+    socket.close();
     socket = null;
     clearInterval(pingInterval);
     // if we let client handle disconnection, then recursive happens cause of the event "close"
     // socket.close();
 }
 
-export function sendMessage(msg) {
+export function broadcastAudio(data, cb) {
     if (socket) {
-        // socket.send("ECHO MSG" + msg);
+        socket.emit("broadcastAudio", data, (description) => {
+            console.log("---> Got description 'broadcastAudio' from socket")
+            cb(description);
+        });
+    }
+}
+
+export function subscribeAudio(data, cb) {
+    if (socket) {
+        socket.emit("subscribeAudio", data, (description) => {
+            console.log("---> Got description 'subscribeAudio' from socket")
+            cb(description);
+        });
     }
 }

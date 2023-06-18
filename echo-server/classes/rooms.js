@@ -1,5 +1,6 @@
 const User = require("./users");
 const Chat = require("./chat");
+const ServerRTC = require("./rtc");
 
 const Colors = require("./colors");
 const colors = new Colors();
@@ -12,6 +13,8 @@ class Rooms {
         this.userListeners = new Map();
         this.socket = null;
 
+        const rtc = new ServerRTC();
+
         console.log(colors.changeColor("green", "Listening for new client connections"));
         
         this.emitter.on('connection', (socket) => {
@@ -21,9 +24,11 @@ class Rooms {
             if (!id) return reject("no-id-in-query");
 
             const newUser = new User(socket, id);
+            newUser.setRtc(rtc);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
             this.registerClientEvents(newUser);
+            this.registerRTCEvents(newUser);
         });
     }
 
@@ -46,6 +51,20 @@ class Rooms {
         });
         user.registerEvent("exit", (data) => {
             this.exitRoom(data);
+        });
+    }
+
+    registerRTCEvents(user) {
+        user.rtc.registerEvent("subscribeAudio", (data) => {
+
+        });
+
+        user.rtc.registerEvent("broadcastAudio", (data) => {
+
+        });
+
+        user.rtc.registerEvent("stopAudioBroadcast", (data) => {
+
         });
     }
 

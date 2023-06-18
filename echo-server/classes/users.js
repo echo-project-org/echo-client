@@ -9,6 +9,8 @@ class User {
         this.events = {};
 
         this.isJoined = false;
+        // define rtc
+        this.rtc = null;
 
         // this is dev, so TO BE REMOVED
         this.devLog = 0;
@@ -19,6 +21,11 @@ class User {
         this.socket.on("end", (data) => this.triggerEvent("end", data));
         this.socket.on("sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("exit", (data) => this.triggerEvent("exit", data));
+        // first call when user join application ("hey i'm here, i'm sending audio packets")
+        this.socket.on("broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
+        // when user join a room, we send the connected user streams to the new user ("hey, send me the requested stream")
+        this.socket.on("subscribeAudio", (data) => this.subscribeAudio(data, cb));
+        this.socket.on("stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
     }
 
     registerEvent(event, cb) {
@@ -125,6 +132,50 @@ class User {
     // send the chat message to the non-sender users
     receiveChatMessage(data) {
         this.socket.emit("receiveChatMessage", data);
+    }
+
+    // set the user's rtc definition
+    setRtc(rtc) {
+        this.rtc = rtc;
+    }
+
+    async broadcastAudio(data, cb) {
+        if (this.rtc) {
+            const resp = await this.rtc.broadcastAudio(data);
+            switch (resp) {
+                case "NO-ID":
+                    console.log("NO-ID");
+                    break;
+                default:
+                    cb(resp);
+                    break;
+            }
+        }
+    }
+
+    async subscribeAudio(data, cb) {
+        if (this.rtc) {
+            const resp = await this.rtc.subscribeAudio(data);
+            switch (resp) {
+                case "NO-SENDER-ID":
+                    console.log("NO-SENDER-ID");
+                    break;
+                case "NO-RECEIVER-ID":
+                    console.log("NO-RECEIVER-ID");
+                    break;
+                case "NO-SENDER-CONNECTION":
+                    console.log("NO-SENDER-CONNECTION");
+                    break;
+                default:
+                    cb(resp);
+                    break;
+            }
+        }
+    }
+
+    stopAudioBroadcast(data) {
+        if (this.rtc)
+            this.rtc.stopAudioBroadcast(data);
     }
 }
 

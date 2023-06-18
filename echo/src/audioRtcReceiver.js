@@ -1,7 +1,7 @@
 const sdpTransform = require('sdp-transform');
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+const ep = require("./echoProtocol.js");
 
-const SIGNAL_SERVER = "http://localhost:6983/";
 const ICE_SERVERS = [{
   username: 'echo',
   credential: 'echo123',
@@ -152,23 +152,14 @@ class audioRtcReceiver {
     offer.sdp = sdpTransform.write(parsed);
 
     await peer.setLocalDescription(offer);
-    const body = {
+
+    ep.subscribeAudio({
       sdp: peer.localDescription,
       senderId: this.senderId,
       receiverId: this.id,
-    };
-
-    fetch(SIGNAL_SERVER + 'subscribeAudio', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    }).then((response) => {
-      response.json().then((json) => {
-        const desc = new RTCSessionDescription(json.sdp);
-        peer.setRemoteDescription(desc).catch(e => console.log(e));
-      })
+    }, (description) => {
+      const desc = new RTCSessionDescription(description);
+      peer.setRemoteDescription(desc).catch(e => console.log(e));
     });
   }
 

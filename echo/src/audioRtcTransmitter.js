@@ -1,7 +1,7 @@
 const sdpTransform = require('sdp-transform');
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+const ep = require("./echoProtocol.js");
 
-const SIGNAL_SERVER = "http://localhost:6983/";
 const ICE_SERVERS = [{
   username: 'echo',
   credential: 'echo123',
@@ -133,24 +133,14 @@ class audioRtcTransmitter {
     offer.sdp = sdpTransform.write(parsed);
 
     await peer.setLocalDescription(offer);
-    const body = {
+
+    ep.broadcastAudio({
       sdp: peer.localDescription,
       id: this.id
-    };
-
-    //Send the sdp to the server
-    fetch(SIGNAL_SERVER + 'broadcastAudio', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    }).then((response) => {
-      response.json().then((json) => {
-        const desc = new RTCSessionDescription(json.sdp);
-        peer.setRemoteDescription(desc).catch(e => console.log(e));
-      })
-    });
+    }, (description) => {
+      const desc = new RTCSessionDescription(description);
+      peer.setRemoteDescription(desc).catch(e => console.log(e));
+    })
   }
 
   /**
@@ -170,17 +160,17 @@ class audioRtcTransmitter {
       console.log("Peer is null")
     }
 
-    const body = {
-      id: this.id
-    };
-    //Send the close to the server
-    fetch(SIGNAL_SERVER + 'stopAudioBroadcast', {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
+    // const body = {
+    //   id: this.id
+    // };
+    // //Send the close to the server
+    // fetch(SIGNAL_SERVER + 'stopAudioBroadcast', {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(body),
+    // });
 
     this.stream = null;
     this.peer = null;
