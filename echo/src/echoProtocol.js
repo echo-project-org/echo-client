@@ -147,8 +147,8 @@ export function openConnection(id) {
     });
 
     socket.on("userJoinedChannel", (data) => {
-        console.log("user", data, "joined your channel, starting listening audio");
-        startReceiving(id, data);
+        console.log("user", data.id, "joined your channel, starting listening audio");
+        startReceiving(id, data.id);
     });
 
     socket.on("sendAudioState", (data) => {

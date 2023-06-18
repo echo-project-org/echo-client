@@ -14,7 +14,7 @@
     overflow: auto;
     display: flex;
     flex-direction: column-reverse;
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     height: 88vh;
     background-color: var(--chat-background-color);
     border-bottom-left-radius: 1rem;
