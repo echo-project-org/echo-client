@@ -15,7 +15,7 @@ class ServerRTC {
         // inbound rtc connections (users)
         this.inPeers = new Map();
         // outbound rtc connections (users)
-        this.outPeers = new Map();
+        this.outPeers = new Array();
     }
 
     async broadcastAudio(data) {
@@ -69,10 +69,13 @@ class ServerRTC {
         //if audioUsers is not in senders
         if (!this.inPeers.has(senderId)) return "NO-SENDER-CONNECTION";
 
-        if (this.outPeers.has(receiverId)) {
-            this.outPeers.get(receiverId).close();
-            this.outPeers.delete(receiverId);
-        }
+        this.outPeers.forEach((value, key) => {
+            if (value.sender === senderId) {
+                console.log("User " + value.receiver + " is already connected to user " + senderId + "'s audio stream")
+                value.peer.close();
+                this.outPeers.delete(key);
+            }
+        });
 
         const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
         const desc = new webrtc.RTCSessionDescription(sdp);
@@ -88,9 +91,32 @@ class ServerRTC {
         answer.sdp = sdpTransform.write(parsed);
         await peer.setLocalDescription(answer);
         
-        this.outPeers.set(receiverId, { peer });
+        this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
 
         return peer.localDescription;
+    }
+
+    clearUserConnection(data) {
+        /**
+         * data has
+         * id (String)
+         */
+        let { id } = data;
+        if (!id) return "NO-ID";
+        if (typeof id !== "string") id = String(id);
+
+        if (this.inPeers.has(id)) {
+            this.inPeers.get(id).peer.close();
+            this.inPeers.delete(id);
+        }
+        
+        this.outPeers.forEach((value, key) => {
+            if (value.sender === id || value.receiver === id) {
+                console.log("Removing user " + value.receiver + " from user " + value.sender + "'s audio stream");
+                value.peer.close();
+                this.outPeers.delete(key);
+            }
+        });
     }
 
     async stopAudioBroadcast(data) {
