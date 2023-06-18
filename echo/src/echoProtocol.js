@@ -27,21 +27,14 @@ function stopTransmitting() {
 
 function startReceiving(id = 5, remoteId = 5) {
     console.log(id, remoteId)
-    let a = false;
-    incomingAudio.forEach(element => {
-        console.log(typeof element.id, typeof id)
-        console.log(element.id, id)
-        if (element.id === id) {
+    incomingAudio = incomingAudio.filter(element => {
+        if(element.senderId === remoteId) {
             element.close();
-            element = new audioRtcReceiver(id, remoteId);
-            element.init();
-            a = true;
+            return false;
         }
-    });
 
-    if (a) {
-        return;
-    }
+        return true;
+    });
 
     let r = new audioRtcReceiver(id, remoteId);
     r.init();
