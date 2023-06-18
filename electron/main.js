@@ -73,7 +73,7 @@ app.whenReady().then(() => {
   tray.setContextMenu(contextMenu)
 
   //WebRTC internals window
-  /*
+  
   var rtcInternals = new BrowserWindow({
     width: 1000,
     height: 600,
@@ -88,7 +88,7 @@ app.whenReady().then(() => {
   })
 
   rtcInternals.loadURL("chrome://webrtc-internals");
-  rtcInternals.show();*/
+  rtcInternals.show();
 })
 
 app.on('window-all-closed', () => {
