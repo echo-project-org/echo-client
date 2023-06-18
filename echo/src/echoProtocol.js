@@ -43,18 +43,17 @@ function startReceiving(id = 5, remoteId = 5) {
 
 function stopReceiving(remoteId) {
     if (remoteId) {
-        incomingAudio.forEach(element => {
-            console.log(element.senderId, remoteId)
-            if (element.senderId === remoteId) {
+        incomingAudio = incomingAudio.filter(element => {
+            if(element.senderId === remoteId) {
                 element.close();
-                element = null;
-                return;
+                return false;
             }
+    
+            return true;
         });
     } else {
         incomingAudio.forEach(element => {
             element.close();
-            element = null;
         });
 
         incomingAudio = [];
