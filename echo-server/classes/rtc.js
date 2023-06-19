@@ -46,7 +46,6 @@ class ServerRTC {
 
                             peer.setLocalDescription(answer)
                                 .then(() => {
-
                                     // if the audioStream and the peer is already populated, immediately return
                                     if (this.inPeers.has(id)) return resolve(peer.localDescription);
 
@@ -100,8 +99,14 @@ class ServerRTC {
                             answer.sdp = sdpTransform.write(parsed);
                             peer.setLocalDescription(answer)
                                 .then(() => {
-                                    this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
-                                    resolve(peer.localDescription);
+                                    console.log("peer.canTrickleIceCandidates", peer.canTrickleIceCandidates)
+                                    if (peer.canTrickleIceCandidates) return resolve(peer.localDescription);
+                                    peer.onicegatheringstatechange = (e) => {
+                                        if (e.target.iceGatheringState !== "complete") return;
+                                        console.log("resolving ice candidates and sending them to client")
+                                        resolve(peer.localDescription);
+                                        this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
+                                    }
                                 });
                         });
                 });
