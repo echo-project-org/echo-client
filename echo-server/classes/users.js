@@ -26,6 +26,7 @@ class User {
         // when user join a room, we send the connected user streams to the new user ("hey, send me the requested stream")
         this.socket.on("subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
         this.socket.on("stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
+        this.socket.on("stopAudioSubscription", (data) => this.stopAudioSubscription(data));
     }
 
     registerEvent(event, cb) {
@@ -179,6 +180,22 @@ class User {
             switch (resp) {
                 case "NO-ID":
                     console.log("NO-ID");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    async stopAudioSubscription(data) {
+        if (this.rtc) {
+            const resp = await this.rtc.stopAudioSubscription(data);
+            switch (resp) {
+                case "NO-SENDER-ID":
+                    console.log("NO-SENDER-ID");
+                    break;
+                case "NO-RECEIVER-ID":
+                    console.log("NO-RECEIVER-ID");
                     break;
                 default:
                     break;

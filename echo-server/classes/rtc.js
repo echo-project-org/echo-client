@@ -143,6 +143,29 @@ class ServerRTC {
 
         return "OK";
     }
+
+    async stopAudioSubscription(data) {
+        /**
+         * data has
+         * senderId (String), receiverId (String)
+         */
+        let { senderId, receiverId } = data;
+        if (!senderId) return "NO-SENDER-ID";
+        if (!receiverId) return "NO-RECEIVER-ID";
+        if (typeof senderId !== "string") senderId = String(senderId);
+        if (typeof receiverId !== "string") receiverId = String(receiverId);
+
+        this.outPeers = this.outPeers.filter((value, key) => {
+            if (value.sender === senderId && value.receiver === receiverId) {
+                console.log("Closing user " + receiverId + "'s connection to user " + senderId + "'s audio stream");
+                value.peer.close();
+                return false;
+            }
+            return true;
+        });
+
+        return "OK";
+    }
 }
 
 module.exports = ServerRTC;
