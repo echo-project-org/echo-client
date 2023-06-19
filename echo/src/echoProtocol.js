@@ -159,6 +159,10 @@ export function openConnection(id) {
         stopReceiving(data.id);
     });
 
+    socket.on("server.iceCandidate", (data) => {
+        console.log("got ice candidate from server", data);
+    });
+
     // socket.io.on("ping", () => { console.log("pong") });
 }
 
@@ -223,10 +227,8 @@ export function stopAudioBroadcast(data) {
     }
 }
 
-export function sendIceCandidate(data, cb) {
+export function sendIceCandidate(data) {
     if (socket) {
-        socket.emit("client.iceCandidate", data, (description) => {
-            cb(description);
-        });
+        socket.emit("client.iceCandidate", data);
     }
 }
