@@ -8,12 +8,8 @@ class User {
         this.isMuted = false;
         this.events = {};
 
-        this.isJoined = false;
         // define rtc
         this.rtc = null;
-
-        // this is dev, so TO BE REMOVED
-        this.devLog = 0;
 
         this.socket.on("audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("ping", (callback) => { callback(); });
@@ -54,17 +50,6 @@ class User {
         }
     }
 
-    sendAudioPacket(data) {
-        // this is dev, so TO BE REMOVED
-        if (this.devLog === 100) {
-            console.log("sending audio to", data.id, "from", this.id);
-            this.devLog = 0;
-        }
-        this.devLog++;
-        // --------------------- //
-        this.socket.emit("receiveAudioPacket", { id: data.id, left: data.left, right: data.right });
-    }
-
     // send the audio state of the sender user to the non-sender users
     sendAudioState(data) {
         this.socket.emit("sendAudioState", data);
@@ -90,26 +75,8 @@ class User {
 
     // when current user join a room we start listening for packets
     join(data) {
-        // I think i added another function call just in case i want to do something with the join event
-        this.registerAudioListener(data);
-        // need to add this cause i'm creating a socket listener every time someone join a room (not good :P)
-        this.isJoined = true;
         // set last room to current room just in case
         this.currentRoom = data.roomId;
-    }
-
-    // does this make sens??? i don't know, but it's here so.... :P
-    registerAudioListener(data) {
-        if (this.isJoined) return;
-        console.log("started audio listener for user", this.id)
-        this.socket.on("audioPacket", (packet) => {
-            if (this.devLog === 100) {
-                console.log("got audio from", this.id, packet, this.currentRoom);
-                this.devLog = 0;
-            }
-            this.devLog++;
-            this.triggerEvent("receiveAudioPacket", packet);
-        });
     }
 
     // unused for now, could be handy in case of connection problems

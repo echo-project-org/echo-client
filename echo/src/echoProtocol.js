@@ -128,11 +128,6 @@ export function openConnection(id) {
         console.log("opened", remoteId);
     });
 
-    socket.on("receiveAudioPacket", (data) => {
-        // console.log("got pack from", data.id)
-        //ar.addToBuffer(data.id, new Float32Array(data.left), new Float32Array(data.right));
-    });
-
     socket.io.on("close", () => {
         console.log("connection closed");
         stopTransmitting();
@@ -170,11 +165,7 @@ export function openConnection(id) {
 export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
-    socket.emit("join", {
-        id, roomId, cb: () => {
-            console.log("response from join, i'm in channel")
-        }
-    });
+    socket.emit("join", { id, roomId });
     //startReceiving(5, 5);
 }
 

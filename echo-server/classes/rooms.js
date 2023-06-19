@@ -33,9 +33,6 @@ class Rooms {
 
     registerClientEvents(user) {
         console.log("registering events for", user.id);
-        user.registerEvent("receiveAudioPacket", (data) => {
-            this.sendAudioToConnectedClients(data);
-        });
         user.registerEvent("join", (data) => {
             this.joinRoom(data);
         });
@@ -73,18 +70,6 @@ class Rooms {
                 if (String(id) !== String(data.id))
                     user.sendAudioState(data);
             });
-        }
-    }
-
-    sendAudioToConnectedClients(data) {
-        if (this.connectedClients.has(data.id)) {
-            const roomId = this.connectedClients.get(data.id).getCurrentRoom();
-            if (this.rooms.has(roomId)) {
-                this.rooms.get(roomId).users.forEach((user, id) => {
-                    if (String(id) !== String(data.id) && !user.isDeaf)
-                        user.sendAudioPacket(data);
-                })
-            }
         }
     }
 
