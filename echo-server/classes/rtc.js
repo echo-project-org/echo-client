@@ -16,13 +16,25 @@ class ServerRTC {
         this.inPeers = new Map();
         // outbound rtc connections (users)
         this.outPeers = new Array();
+        this.registeredEvents = new Map();
+    }
+
+    registerEvents() {
+        this.registeredEvents.forEach((value, key) => {
+            if (value.registered) return;
+            value.registered = true;
+            value.onCanditate = (data) => {
+                console.log("onCanditate called, sending to " + key)
+                value.socket.emit("server.iceCandidate", data);
+            }
+        })
     }
 
     async broadcastAudio(data) {
         /**
          * data has
          * sdp (rtc connection description)
-         * id (String) user making the connection
+         * id (String) user making the connection (sender)
          */
         return new Promise((resolve, reject) => {
             let { sdp, id } = data;
@@ -87,6 +99,10 @@ class ServerRTC {
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             const desc = new webrtc.RTCSessionDescription(sdp);
+
+            this.registeredEvents.set(senderId, { onCanditate: peer.onicecandidate, socket: data.socket, registered: false, senderId, receiverId });
+            this.registerEvents()
+
             peer.setRemoteDescription(desc)
                 .then(() => {
                     console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
@@ -99,14 +115,16 @@ class ServerRTC {
                             answer.sdp = sdpTransform.write(parsed);
                             peer.setLocalDescription(answer)
                                 .then(() => {
-                                    console.log("peer.canTrickleIceCandidates", peer.canTrickleIceCandidates)
-                                    if (peer.canTrickleIceCandidates) return resolve(peer.localDescription);
-                                    peer.onicegatheringstatechange = (e) => {
-                                        if (e.target.iceGatheringState !== "complete") return;
-                                        console.log("resolving ice candidates and sending them to client")
-                                        resolve(peer.localDescription);
-                                        this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
-                                    }
+                                    // console.log("peer.canTrickleIceCandidates", peer.canTrickleIceCandidates)
+                                    // if (peer.canTrickleIceCandidates) return resolve(peer.localDescription);
+                                    // peer.onicegatheringstatechange = (e) => {
+                                    //     if (e.target.iceGatheringState !== "complete") return;
+                                    //     console.log("resolving ice candidates and sending them to client")
+                                    //     resolve(peer.localDescription);
+                                    //     this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
+                                    // }
+                                    resolve(peer.localDescription);
+                                    this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
                                 });
                         });
                 });
@@ -151,6 +169,7 @@ class ServerRTC {
             audioStream.getTracks().forEach(track => track.stop());
             peer.close();
             this.inPeers.delete(id);
+            this.registeredEvents.delete(id);
         }
 
         return "OK";
@@ -175,6 +194,9 @@ class ServerRTC {
             }
             return true;
         });
+
+        // this.registeredEvents.delete(receiverId);
+        // this.registeredEvents.delete(senderId);
 
         return "OK";
     }

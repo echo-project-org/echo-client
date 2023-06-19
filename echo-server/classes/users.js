@@ -23,6 +23,8 @@ class User {
         this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
         this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
         this.socket.on("client.stopAudioSubscription", (data) => this.stopAudioSubscription(data));
+        // receive request for icecandidate
+        this.socket.on("client.iceCandidate", (data, cb) => this.iceCandidate(data, cb));
     }
 
     registerEvent(event, cb) {
@@ -107,9 +109,9 @@ class User {
         this.rtc = rtc;
     }
 
-    async broadcastAudio(data, cb) {
+    broadcastAudio(data, cb) {
         if (this.rtc) {
-            this.rtc.broadcastAudio(data)
+            this.rtc.broadcastAudio(data, cb)
                 .then((resp) => {
                     cb(resp);
                 })
@@ -121,6 +123,7 @@ class User {
 
     subscribeAudio(data, cb) {
         if (this.rtc) {
+            data.socket = this.socket;
             this.rtc.subscribeAudio(data)
                 .then((resp) => {
                     cb(resp);
@@ -157,6 +160,18 @@ class User {
                 default:
                     break;
             }
+        }
+    }
+
+    iceCandidate(data, cb) {
+        if (this.rtc) {
+            this.rtc.iceCandidate(data)
+                .then((resp) => {
+                    cb(resp);
+                })
+                .catch((err) => {
+                    console.log("iceCandidate error", err);
+                });
         }
     }
 }
