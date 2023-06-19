@@ -23,34 +23,41 @@ class ServerRTC {
          * data has
          * sdp (rtc connection description)
          * id (String) user making the connection
-        */
-        let { sdp, id } = data;
-        if (!id) return "NO-ID";
-        if (typeof id !== "string") id = String(id);
+         */
+        return new Promise((resolve, reject) => {
+            let { sdp, id } = data;
+            if (!id) return reject("NO-ID");
+            if (typeof id !== "string") id = String(id);
 
-        const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
-        peer.ontrack = (e) => {
-            console.log("peer.ontrack called, populating inPeers")
-            this.inPeers.set(id, { peer, audioStream: e.streams[0] });
-        };
-        const desc = new webrtc.RTCSessionDescription(sdp);
-        peer.setRemoteDescription(desc);
+            const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
+            peer.ontrack = (e) => {
+                console.log("peer.ontrack called, populating inPeers")
+                this.inPeers.set(id, { peer, audioStream: e.streams[0] });
+            };
+            const desc = new webrtc.RTCSessionDescription(sdp);
+            peer.setRemoteDescription(desc)
+                .then(() => {
+                    console.log("User " + id + " connected and started broadcasting audio");
+                    peer.createAnswer()
+                        .then((answer) => {
+                            let parsed = sdpTransform.parse(answer.sdp);
+                            parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+                            answer.sdp = sdpTransform.write(parsed);
 
-        console.log("User " + id + " connected and started broadcasting audio");
-        const answer = await peer.createAnswer();
-        let parsed = sdpTransform.parse(answer.sdp);
-        parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
-        answer.sdp = sdpTransform.write(parsed);
+                            peer.setLocalDescription(answer)
+                                .then(() => {
 
-        await peer.setLocalDescription(answer);
+                                    // if the audioStream and the peer is already populated, immediately return
+                                    if (this.inPeers.has(id)) return resolve(peer.localDescription);
 
-        // if the audioStream and the peer is already populated, immediately return
-        if (this.inPeers.has(id)) return peer.localDescription;
-
-        console.log("populating inPeers, but audioStream is null")
-        this.inPeers.set(id, { peer, audioStream: null });
-        // respond with the payload
-        return peer.localDescription;
+                                    console.log("populating inPeers, but audioStream is null")
+                                    this.inPeers.set(id, { peer, audioStream: null });
+                                    // respond with the payload
+                                    resolve(peer.localDescription);
+                                });
+                        });
+                });
+        })
     }
 
     subscribeAudio(data) {
@@ -62,13 +69,13 @@ class ServerRTC {
 
         return new Promise((resolve, reject) => {
             let { sdp, senderId, receiverId } = data;
-            if (!senderId) return "NO-SENDER-ID";
-            if (!receiverId) return "NO-RECEIVER-ID";
+            if (!senderId) return reject("NO-SENDER-ID");
+            if (!receiverId) return reject("NO-RECEIVER-ID");
             if (typeof senderId !== "string") senderId = String(senderId);
             if (typeof receiverId !== "string") receiverId = String(receiverId);
 
             //if audioUsers is not in senders
-            if (!this.inPeers.has(senderId)) return "NO-SENDER-CONNECTION";
+            if (!this.inPeers.has(senderId)) return reject("NO-SENDER-CONNECTION");
 
             this.outPeers = this.outPeers.filter((value, key) => {
                 if (value.receiver === receiverId) {
@@ -114,7 +121,7 @@ class ServerRTC {
             this.inPeers.get(id).peer.close();
             this.inPeers.delete(id);
         }
-        
+
         this.outPeers = this.outPeers.filter((value, key) => {
             if (value.sender === id || value.receiver === id) {
                 console.log("Closing all streams connected to user " + id);

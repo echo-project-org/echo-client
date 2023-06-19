@@ -109,41 +109,31 @@ class User {
 
     async broadcastAudio(data, cb) {
         if (this.rtc) {
-            const resp = await this.rtc.broadcastAudio(data);
-            switch (resp) {
-                case "NO-ID":
-                    console.log("NO-ID");
-                    break;
-                default:
+            this.rtc.broadcastAudio(data)
+                .then((resp) => {
                     cb(resp);
-                    break;
-            }
+                })
+                .catch((err) => {
+                    console.log("broadcastAudio error", err);
+                });
         }
     }
 
-    async subscribeAudio(data, cb) {
+    subscribeAudio(data, cb) {
         if (this.rtc) {
-            const resp = await this.rtc.subscribeAudio(data);
-            switch (resp) {
-                case "NO-SENDER-ID":
-                    console.log("NO-SENDER-ID");
-                    break;
-                case "NO-RECEIVER-ID":
-                    console.log("NO-RECEIVER-ID");
-                    break;
-                case "NO-SENDER-CONNECTION":
-                    console.log("NO-SENDER-CONNECTION");
-                    break;
-                default:
+            this.rtc.subscribeAudio(data)
+                .then((resp) => {
                     cb(resp);
-                    break;
-            }
+                })
+                .catch((err) => {
+                    console.log("subscribeAudio error", err);
+                });
         }
     }
 
-    async stopAudioBroadcast(data) {
+    stopAudioBroadcast(data) {
         if (this.rtc) {
-            const resp = await this.rtc.stopAudioBroadcast(data);
+            const resp = this.rtc.stopAudioBroadcast(data);
             switch (resp) {
                 case "NO-ID":
                     console.log("NO-ID");
@@ -154,9 +144,9 @@ class User {
         }
     }
     
-    async stopAudioSubscription(data) {
+    stopAudioSubscription(data) {
         if (this.rtc) {
-            const resp = await this.rtc.stopAudioSubscription(data);
+            const resp = this.rtc.stopAudioSubscription(data);
             switch (resp) {
                 case "NO-SENDER-ID":
                     console.log("NO-SENDER-ID");
