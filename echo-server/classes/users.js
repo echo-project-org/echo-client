@@ -11,18 +11,18 @@ class User {
         // define rtc
         this.rtc = null;
 
-        this.socket.on("audioState", (data) => { this.triggerEvent("audioState", data) });
-        this.socket.on("ping", (callback) => { callback(); });
-        this.socket.on("join", (data) => this.triggerEvent("join", data));
-        this.socket.on("end", (data) => this.triggerEvent("end", data));
-        this.socket.on("sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
-        this.socket.on("exit", (data) => this.triggerEvent("exit", data));
+        this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
+        this.socket.on("client.ping", (callback) => { callback(); });
+        this.socket.on("client.join", (data) => this.triggerEvent("join", data));
+        this.socket.on("client.end", (data) => this.triggerEvent("end", data));
+        this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
+        this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
         // first call when user join application ("hey i'm here, i'm sending audio packets")
-        this.socket.on("broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
+        this.socket.on("client.broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
         // when user join a room, we send the connected user streams to the new user ("hey, send me the requested stream")
-        this.socket.on("subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
-        this.socket.on("stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
-        this.socket.on("stopAudioSubscription", (data) => this.stopAudioSubscription(data));
+        this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
+        this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
+        this.socket.on("client.stopAudioSubscription", (data) => this.stopAudioSubscription(data));
     }
 
     registerEvent(event, cb) {
@@ -46,13 +46,13 @@ class User {
     // called when remote user join the current room
     userJoinedCurrentChannel(id) {
         if (this.currentRoom !== 0) {
-            this.socket.emit("userJoinedChannel", { id: id })
+            this.socket.emit("server.userJoinedChannel", { id: id })
         }
     }
 
     // send the audio state of the sender user to the non-sender users
     sendAudioState(data) {
-        this.socket.emit("sendAudioState", data);
+        this.socket.emit("server.sendAudioState", data);
     }
 
     // update the audio state of the current user
@@ -89,7 +89,7 @@ class User {
 
     userLeftCurrentChannel(id) {
         if (this.currentRoom !== 0) {
-            this.socket.emit("userLeftChannel", { id: id })
+            this.socket.emit("server.userLeftChannel", { id: id })
         }
     }
 
@@ -99,7 +99,7 @@ class User {
 
     // send the chat message to the non-sender users
     receiveChatMessage(data) {
-        this.socket.emit("receiveChatMessage", data);
+        this.socket.emit("server.receiveChatMessage", data);
     }
 
     // set the user's rtc definition

@@ -118,13 +118,13 @@ export function openConnection(id) {
     pingInterval = setInterval(() => {
         const start = Date.now();
 
-        socket.emit("ping", () => {
+        socket.emit("client.ping", () => {
             const duration = Date.now() - start;
             ping = duration;
         });
     }, 5000);
 
-    socket.on("ready", (remoteId) => {
+    socket.on("server.ready", (remoteId) => {
         console.log("opened", remoteId);
     });
 
@@ -142,19 +142,19 @@ export function openConnection(id) {
         socket.close();
     });
 
-    socket.on("userJoinedChannel", (data) => {
+    socket.on("server.userJoinedChannel", (data) => {
         console.log("user", data.id, "joined your channel, starting listening audio");
         startReceiving(id, data.id);
     });
 
-    socket.on("sendAudioState", (data) => {
+    socket.on("server.sendAudioState", (data) => {
         console.log("got user audio info from server", data);
         if (!data.deaf || !data.mute) {
             //startReceiving();
         }
     });
 
-    socket.on("userLeftChannel", (data) => {
+    socket.on("server.userLeftChannel", (data) => {
         console.log("user", data.id, "left your channel, stopping listening audio");
         stopReceiving(data.id);
     });
@@ -165,7 +165,7 @@ export function openConnection(id) {
 export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
-    socket.emit("join", { id, roomId });
+    socket.emit("client.join", { id, roomId });
     //startReceiving(5, 5);
 }
 
@@ -174,20 +174,20 @@ export function getPing() {
 }
 
 export function sendAudioState(id, data) {
-    if (socket) socket.emit("audioState", { id, deaf: data.deaf, muted: data.muted });
+    if (socket) socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
 }
 
 export function exitFromRoom(id) {
     console.log("exit from room", id)
     stopReceiving();
-    if (socket) socket.emit("exit", { id });
+    if (socket) socket.emit("client.exit", { id });
 }
 
 export function closeConnection(id = null) {
     if (socket) {
         if (!id) id = localStorage.getItem('id');
         console.log("closing connection with socket")
-        socket.emit("end", { id });
+        socket.emit("client.end", { id });
     }
 
     stopReceiving();
@@ -201,7 +201,7 @@ export function closeConnection(id = null) {
 
 export function broadcastAudio(data, cb) {
     if (socket) {
-        socket.emit("broadcastAudio", data, (description) => {
+        socket.emit("client.broadcastAudio", data, (description) => {
             console.log("---> Got description 'broadcastAudio' from socket")
             cb(description);
         });
@@ -210,7 +210,7 @@ export function broadcastAudio(data, cb) {
 
 export function subscribeAudio(data, cb) {
     if (socket) {
-        socket.emit("subscribeAudio", data, (description) => {
+        socket.emit("client.subscribeAudio", data, (description) => {
             console.log("---> Got description 'subscribeAudio' from socket")
             cb(description);
         });
@@ -219,6 +219,6 @@ export function subscribeAudio(data, cb) {
 
 export function stopAudioBroadcast(data) {
     if (socket) {
-        socket.emit("stopAudioBroadcast", data);
+        socket.emit("client.stopAudioBroadcast", data);
     }
 }
