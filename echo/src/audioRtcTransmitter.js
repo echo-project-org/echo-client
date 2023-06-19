@@ -160,17 +160,7 @@ class audioRtcTransmitter {
       console.log("Peer is null")
     }
 
-    // const body = {
-    //   id: this.id
-    // };
-    // //Send the close to the server
-    // fetch(SIGNAL_SERVER + 'stopAudioBroadcast', {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(body),
-    // });
+    ep.stopAudioBroadcast({ id: this.id });
 
     this.stream = null;
     this.peer = null;

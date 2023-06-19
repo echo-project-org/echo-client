@@ -173,9 +173,17 @@ class User {
         }
     }
 
-    stopAudioBroadcast(data) {
-        if (this.rtc)
-            this.rtc.stopAudioBroadcast(data);
+    async stopAudioBroadcast(data) {
+        if (this.rtc) {
+            const resp = await this.rtc.stopAudioBroadcast(data);
+            switch (resp) {
+                case "NO-ID":
+                    console.log("NO-ID");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 

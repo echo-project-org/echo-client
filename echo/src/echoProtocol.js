@@ -225,3 +225,9 @@ export function subscribeAudio(data, cb) {
         });
     }
 }
+
+export function stopAudioBroadcast(data) {
+    if (socket) {
+        socket.emit("stopAudioBroadcast", data);
+    }
+}

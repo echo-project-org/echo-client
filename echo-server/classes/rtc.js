@@ -131,25 +131,17 @@ class ServerRTC {
          * id (String)
         */
         let { id } = data;
-        if (!id) {
-            return res.status(400).json({ message: "Provide a valid id" });
+        if (!id) return "NO-ID";
+        if (typeof id !== "string") id = String(id);
+
+        if (this.inPeers.has(id)) {
+            const { peer, audioStream } = this.inPeers.get(id);
+            audioStream.getTracks().forEach(track => track.stop());
+            peer.close();
+            this.inPeers.delete(id);
         }
 
-        id = String(id);
-
-        if (audioUsers.includes(id)) {
-            const index = audioUsers.indexOf(id);
-            audioStreams[index].getTracks().forEach(track => track.stop());
-            audioStreams[index] = null;
-            inPeers[index].close();
-            inPeers[index] = null;
-
-            audioUsers.splice(index, 1);
-            audioStreams.splice(index, 1);
-            inPeers.splice(index, 1);
-        }
-
-        return res.status(200).json({ message: "Broadcast stopped" });
+        return "OK";
     }
 }
 
