@@ -80,22 +80,20 @@ class audioRtcReceiver {
       this.audioElement.pause();
       this.audioElement = null;
     } else {
-      console.log("Elemtn null")
+      console.log("Audio element null")
     }
     if (this.stream && this.stream.getTracks()) {
       this.stream.getTracks().forEach(track => track.stop());
-    }
-    else {
+      this.stream = null;
+    } else {
       console.log("stream null")
     }
     if (this.peer) {
       this.peer.close();
+      this.peer = null;
     } else {
       console.log("peer null")
     }
-
-    this.stream = null;
-    this.peer = null;
 
     this.isReceiving = false;
   }
@@ -106,7 +104,7 @@ class audioRtcReceiver {
     });
     peer.ontrack = (e) => { this.handleTrackEvent(e) };
     //Handle the ice candidates
-    peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
+    peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
 
     return peer;
   }
@@ -159,6 +157,7 @@ class audioRtcReceiver {
       receiverId: this.id,
     }, (description) => {
       const desc = new RTCSessionDescription(description);
+      console.log("Got answeraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", desc)
       peer.setRemoteDescription(desc).catch(e => console.log(e));
     });
   }

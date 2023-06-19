@@ -104,7 +104,7 @@ class audioRtcTransmitter {
       iceServers: ICE_SERVERS
     });
     //Handle the ice candidates
-    peer.onnegotiationneeded = () => this.handleNegotiationNeededEvent(peer);
+    peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === 'failed') {
         peer.restartIce();
@@ -150,20 +150,20 @@ class audioRtcTransmitter {
     //Closes the transmission
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
     } else {
       console.log("Stream is null")
     }
 
     if (this.peer) {
       this.peer.close();
+      this.peer = null;
     } else {
       console.log("Peer is null")
     }
 
     ep.stopAudioBroadcast({ id: this.id });
 
-    this.stream = null;
-    this.peer = null;
     this.isTransmitting = false;
   }
 
