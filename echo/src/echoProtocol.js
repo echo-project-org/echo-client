@@ -28,7 +28,7 @@ function stopTransmitting() {
 function startReceiving(id = 5, remoteId = 5) {
     console.log(id, remoteId)
     incomingAudio = incomingAudio.filter(element => {
-        if(element.senderId === remoteId) {
+        if (element.senderId === remoteId) {
             element.close();
             return false;
         }
@@ -44,11 +44,11 @@ function startReceiving(id = 5, remoteId = 5) {
 function stopReceiving(remoteId) {
     if (remoteId) {
         incomingAudio = incomingAudio.filter(element => {
-            if(element.senderId === remoteId) {
+            if (element.senderId === remoteId) {
                 element.close();
                 return false;
             }
-    
+
             return true;
         });
     } else {
@@ -220,5 +220,13 @@ export function subscribeAudio(data, cb) {
 export function stopAudioBroadcast(data) {
     if (socket) {
         socket.emit("client.stopAudioBroadcast", data);
+    }
+}
+
+export function sendIceCandidate(data, cb) {
+    if (socket) {
+        socket.emit("client.iceCandidate", data, (description) => {
+            cb(description);
+        });
     }
 }

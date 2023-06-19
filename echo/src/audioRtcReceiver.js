@@ -76,6 +76,7 @@ class audioRtcReceiver {
   }
 
   close() {
+    console.log("=== Closing receiver for user", this.senderId, "===");
     if (this.audioElement) {
       this.audioElement.pause();
       this.audioElement = null;
@@ -96,6 +97,14 @@ class audioRtcReceiver {
     }
 
     this.isReceiving = false;
+    console.log("=== Should be closed ===");
+  }
+
+  addCandidate(candidate) {
+    if (this.peer) {
+      console.log("Adding candidate", candidate);
+      this.peer.addIceCandidate(candidate);
+    }
   }
 
   createPeer() {
@@ -105,6 +114,17 @@ class audioRtcReceiver {
     peer.ontrack = (e) => { this.handleTrackEvent(e) };
     //Handle the ice candidates
     peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
+
+    peer.onicecandidate = (e) => {
+      console.log("Got ice candidate from stun", e)
+      if (e.candidate) {
+        ep.sendIceCandidate({
+          candidate: e.candidate,
+          senderId: this.senderId,
+          receiverId: this.id,
+        });
+      }
+    }
 
     return peer;
   }
