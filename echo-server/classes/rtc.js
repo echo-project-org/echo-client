@@ -101,10 +101,10 @@ class ServerRTC {
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             const desc = new webrtc.RTCSessionDescription(sdp);
 
-            this.registeredEvents.set(senderId, { onCanditate: peer.onicecandidate, socket: data.socket, registered: false, senderId, receiverId });
+            //this.registeredEvents.set(senderId, { onCanditate: peer.onicecandidate, socket: data.socket, registered: false, senderId, receiverId });
             this.registerEvents()
             peer.onicecandidate = (e) => {
-                user.iceCandidate(e.candidate)
+                user.iceCandidate(e.candidate, senderId)
             }
 
             peer.setRemoteDescription(desc)
