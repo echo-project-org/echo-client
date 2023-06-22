@@ -24,7 +24,7 @@ class User {
         this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
         this.socket.on("client.stopAudioSubscription", (data) => this.stopAudioSubscription(data));
         // receive ice candidate from user
-        this.socket.on("client.iceCandidate", (data) => this.iceCandidate(data));
+        this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
     }
 
     registerEvent(event, cb) {
