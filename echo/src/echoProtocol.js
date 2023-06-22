@@ -161,6 +161,11 @@ export function openConnection(id) {
 
     socket.on("server.iceCandidate", (data) => {
         console.log("got ice candidate from server", data);
+        incomingAudio.forEach(element => {
+            if(element.senderId === data.id) {
+                element.addIceCandidate(data.data);
+            }
+        });
     });
 
     // socket.io.on("ping", () => { console.log("pong") });
@@ -196,8 +201,10 @@ export function closeConnection(id = null) {
 
     stopReceiving();
 
-    socket.close();
-    socket = null;
+    if(socket){
+        socket.close();
+        socket = null;
+    }
     clearInterval(pingInterval);
     // if we let client handle disconnection, then recursive happens cause of the event "close"
     // socket.close();

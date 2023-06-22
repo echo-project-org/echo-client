@@ -17,6 +17,7 @@ class ServerRTC {
         // outbound rtc connections (users)
         this.outPeers = new Array();
         this.registeredEvents = new Map();
+        this.user = null;
     }
 
     registerEvents() {
@@ -71,7 +72,7 @@ class ServerRTC {
         })
     }
 
-    subscribeAudio(data) {
+    subscribeAudio(data, user) {
         /**
          * data has
          * sdp (rtc connection description)
@@ -102,6 +103,9 @@ class ServerRTC {
 
             this.registeredEvents.set(senderId, { onCanditate: peer.onicecandidate, socket: data.socket, registered: false, senderId, receiverId });
             this.registerEvents()
+            peer.onicecandidate = (e) => {
+                user.iceCandidate(e.candidate)
+            }
 
             peer.setRemoteDescription(desc)
                 .then(() => {
@@ -199,6 +203,12 @@ class ServerRTC {
         // this.registeredEvents.delete(senderId);
 
         return "OK";
+    }
+
+    addCandidate(data) {
+        if(this.peerConnection) {
+            this.peerConnection.addIceCandidate(data.candidate);
+        }
     }
 }
 
