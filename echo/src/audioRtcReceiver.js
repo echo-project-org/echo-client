@@ -40,7 +40,6 @@ class audioRtcReceiver {
     }
 
     this.volume = volume;
-    console.log(this.audioElement, volume) //This is null, wtf
     this.personalGainNode.gain.value = volume;
     this.unmute();
 
@@ -102,7 +101,6 @@ class audioRtcReceiver {
 
   addCandidate(candidate) {
     if (this.peer) {
-      console.log("Adding candidate", candidate);
       this.peer.addIceCandidate(candidate);
     }
   }
@@ -131,7 +129,6 @@ class audioRtcReceiver {
 
   handleTrackEvent(e) {
     this.context = new AudioContext();
-    console.log(this.deviceId)
     if (this.deviceId !== 'default' && this.deviceId) {
       this.context.setSinkId(this.deviceId);
     }
@@ -166,7 +163,6 @@ class audioRtcReceiver {
 
     let parsed = sdpTransform.parse(offer.sdp);
     parsed.media[0].fmtp[0].config = goodOpusSettings;
-    console.log(parsed)
     offer.sdp = sdpTransform.write(parsed);
 
     await peer.setLocalDescription(offer);
@@ -177,7 +173,6 @@ class audioRtcReceiver {
       receiverId: this.id,
     }, (description) => {
       const desc = new RTCSessionDescription(description);
-      console.log("Got answeraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", desc)
       peer.setRemoteDescription(desc).catch(e => console.log(e));
     });
   }
