@@ -102,6 +102,9 @@ class ServerRTC {
 
             this.registeredEvents.set(senderId, { onCanditate: peer.onicecandidate, socket: data.socket, registered: false, senderId, receiverId });
             this.registerEvents()
+            peer.onicecandidate = (e) => {
+                //TODO send ice candidate to client
+            }
 
             peer.setRemoteDescription(desc)
                 .then(() => {
@@ -199,6 +202,12 @@ class ServerRTC {
         // this.registeredEvents.delete(senderId);
 
         return "OK";
+    }
+
+    addCandidate(data) {
+        if(this.peerConnection) {
+            this.peerConnection.addIceCandidate(data.candidate);
+        }
     }
 }
 
