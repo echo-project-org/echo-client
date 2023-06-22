@@ -201,8 +201,10 @@ export function closeConnection(id = null) {
 
     stopReceiving();
 
-    socket.close();
-    socket = null;
+    if(socket){
+        socket.close();
+        socket = null;
+    }
     clearInterval(pingInterval);
     // if we let client handle disconnection, then recursive happens cause of the event "close"
     // socket.close();

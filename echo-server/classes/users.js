@@ -163,8 +163,8 @@ class User {
         }
     }
 
-    iceCandidate(data) {
-        this.socket.emit("server.iceCandidate", {id: this.id, data: data});
+    iceCandidate(candidate) {
+        this.socket.emit("server.iceCandidate", {id: this.id, data: candidate});
     }
 
     setIceCandidate(data) {
