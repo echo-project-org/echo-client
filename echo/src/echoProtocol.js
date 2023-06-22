@@ -164,7 +164,7 @@ export function openConnection(id) {
         incomingAudio.forEach(element => {
             console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", element.senderId, data.id)
             if(element.senderId === data.id) {
-                element.addIceCandidate(data.data);
+                element.addCandidate(data.data);
             }
         });
     });
