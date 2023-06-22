@@ -124,7 +124,7 @@ class User {
     subscribeAudio(data, cb) {
         if (this.rtc) {
             data.socket = this.socket;
-            this.rtc.subscribeAudio(data)
+            this.rtc.subscribeAudio(data, this)
                 .then((resp) => {
                     cb(resp);
                 })

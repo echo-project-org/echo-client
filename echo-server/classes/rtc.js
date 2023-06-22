@@ -17,6 +17,7 @@ class ServerRTC {
         // outbound rtc connections (users)
         this.outPeers = new Array();
         this.registeredEvents = new Map();
+        this.user = null;
     }
 
     registerEvents() {
@@ -71,7 +72,7 @@ class ServerRTC {
         })
     }
 
-    subscribeAudio(data) {
+    subscribeAudio(data, user) {
         /**
          * data has
          * sdp (rtc connection description)
@@ -104,6 +105,7 @@ class ServerRTC {
             this.registerEvents()
             peer.onicecandidate = (e) => {
                 //TODO send ice candidate to client
+                user.iceCandidate(e.candidate)
             }
 
             peer.setRemoteDescription(desc)
