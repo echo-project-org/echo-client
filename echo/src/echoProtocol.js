@@ -162,6 +162,7 @@ export function openConnection(id) {
     socket.on("server.iceCandidate", (data) => {
         console.log("got ice candidate from server", data);
         incomingAudio.forEach(element => {
+            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", element.senderId, data.id)
             if(element.senderId === data.id) {
                 element.addIceCandidate(data.data);
             }
