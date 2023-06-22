@@ -12,10 +12,10 @@ function Sidebar({ updateCurrentRoom }) {
 
   return (
     <div className='sidebar'>
-      <RoomControl state={connectionState} setState={updateConnectionState} />
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
       <Rooms setState={updateConnectionState} connected={connectionState} updateCurrentRoom={updateCurrentRoom} />
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
+      <RoomControl state={connectionState} setState={updateConnectionState} />
     </div>
   )
 }
