@@ -20,17 +20,6 @@ class ServerRTC {
         this.user = null;
     }
 
-    registerEvents() {
-        this.registeredEvents.forEach((value, key) => {
-            if (value.registered) return;
-            value.registered = true;
-            value.onCanditate = (data) => {
-                console.log("onCanditate called, sending to " + key)
-                value.socket.emit("server.iceCandidate", data);
-            }
-        })
-    }
-
     async broadcastAudio(data) {
         /**
          * data has
@@ -101,8 +90,6 @@ class ServerRTC {
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             const desc = new webrtc.RTCSessionDescription(sdp);
 
-            //this.registeredEvents.set(senderId, { onCanditate: peer.onicecandidate, socket: data.socket, registered: false, senderId, receiverId });
-            this.registerEvents()
             peer.onicecandidate = (e) => {
                 user.iceCandidate(e.candidate, senderId)
             }
@@ -119,14 +106,6 @@ class ServerRTC {
                             answer.sdp = sdpTransform.write(parsed);
                             peer.setLocalDescription(answer)
                                 .then(() => {
-                                    // console.log("peer.canTrickleIceCandidates", peer.canTrickleIceCandidates)
-                                    // if (peer.canTrickleIceCandidates) return resolve(peer.localDescription);
-                                    // peer.onicegatheringstatechange = (e) => {
-                                    //     if (e.target.iceGatheringState !== "complete") return;
-                                    //     console.log("resolving ice candidates and sending them to client")
-                                    //     resolve(peer.localDescription);
-                                    //     this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
-                                    // }
                                     resolve(peer.localDescription);
                                     this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
                                 });
@@ -206,7 +185,7 @@ class ServerRTC {
     }
 
     addCandidate(data) {
-        if(this.peerConnection) {
+        if (this.peerConnection) {
             this.peerConnection.addIceCandidate(data.candidate);
         }
     }
