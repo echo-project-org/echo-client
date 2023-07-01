@@ -16,15 +16,18 @@ const ICE_SERVERS = [{
  * @param {float} volume - The volume of the audio
  */
 class audioRtcTransmitter {
-  constructor(id, deviceId = 'default', volume = 1.0) {
+  constructor(id, deviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
     this.id = id;
     this.peer = null;
     this.stream = null;
     this.deviceId = deviceId;
+    this.outputDeviceId = outputDeviceId;
     this.isTransmitting = false;
     this.isMuted = false;
     this.volume = volume;
     this.gainNode = null;
+    this.context = null;
+    this.inputStreams = [];
 
     //Audio only constraints
     this.constraints = {
@@ -95,6 +98,44 @@ class audioRtcTransmitter {
     }
   }
 
+  handleTrackEvent(e) {
+     console.log("Got track event", e);
+    let context = new AudioContext();
+
+    if(this.outputDeviceId !== 'default' && this.outputDeviceId){
+      context.setSinkId(this.outputDeviceId);
+    }
+
+    let source = context.createMediaStreamSource(e.streams[0]);
+    let destination = context.destination;
+
+    let personalGainNode = context.createGain();
+    let gainNode = context.createGain();
+    let muteNode = context.createGain();
+    
+    source.connect(personalGainNode);
+    personalGainNode.connect(gainNode);
+    gainNode.connect(muteNode);
+    muteNode.connect(destination);
+
+    context.resume();
+
+    //Chrome bug fix
+    let audioElement = new Audio();
+    audioElement.srcObject = e.streams[0];
+    audioElement.autoplay = true;
+    this.audioElement.pause();
+
+    this.inputStreams.push({
+      source: source,
+      context: context,
+      gainNode: gainNode,
+      muteNode: muteNode,
+      personalGainNode: personalGainNode,
+      audioElement: audioElement,
+    });
+  }
+
   /**
    * @function createPeer - Creates the peer connection
    * @returns {RTCPeerConnection} peer - The peer connection
@@ -105,6 +146,7 @@ class audioRtcTransmitter {
     });
     //Handle the ice candidates
     peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
+    peer.onTrack = (e) => { this.handleTrackEvent(e) };
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === 'failed') {
         peer.restartIce();
