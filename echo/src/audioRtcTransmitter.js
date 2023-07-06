@@ -99,10 +99,10 @@ class audioRtcTransmitter {
   }
 
   handleTrackEvent(e) {
-     console.log("Got track event", e);
+    console.log("Got track event", e);
     let context = new AudioContext();
 
-    if(this.outputDeviceId !== 'default' && this.outputDeviceId){
+    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
       context.setSinkId(this.outputDeviceId);
     }
 
@@ -112,7 +112,7 @@ class audioRtcTransmitter {
     let personalGainNode = context.createGain();
     let gainNode = context.createGain();
     let muteNode = context.createGain();
-    
+
     source.connect(personalGainNode);
     personalGainNode.connect(gainNode);
     gainNode.connect(muteNode);
@@ -160,6 +160,18 @@ class audioRtcTransmitter {
     }
 
     return peer;
+  }
+  async subscribeToAudio(id) {
+    ep.subscribeAudio({
+      sdp: this.peer.localDescription,
+      senderId: this.senderId,
+      receiverId: this.id,
+    }, (a) => {
+      if (!a) {
+        console.error("Failed to subscribe to audio");
+        return;
+      }
+    });
   }
 
   /**
