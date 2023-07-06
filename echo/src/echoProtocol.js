@@ -27,18 +27,7 @@ function stopTransmitting() {
 
 function startReceiving(id = 5, remoteId = 5) {
     console.log(id, remoteId)
-    incomingAudio = incomingAudio.filter(element => {
-        if (element.senderId === remoteId) {
-            element.close();
-            return false;
-        }
-
-        return true;
-    });
-
-    let r = new audioRtcReceiver(id, remoteId);
-    r.init();
-    incomingAudio.push(r);
+    at.subscribeToAudio(remoteId);
 }
 
 function stopReceiving(remoteId) {
@@ -144,7 +133,7 @@ export function openConnection(id) {
 
     socket.on("server.userJoinedChannel", (data) => {
         console.log("user", data.id, "joined your channel, starting listening audio");
-        at.subscribeAudio(data.id)
+        startReceiving(id, data.id);
     });
 
     socket.on("server.sendAudioState", (data) => {
