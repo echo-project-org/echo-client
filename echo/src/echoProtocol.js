@@ -162,7 +162,7 @@ export function openConnection(id) {
     socket.on("server.iceCandidate", (data) => {
         console.log("got ice candidate from server", data);
         incomingAudio.forEach(element => {
-            if(element.senderId === data.id) {
+            if (element.senderId === data.id) {
                 element.addCandidate(data.data);
             }
         });
@@ -201,7 +201,7 @@ export function closeConnection(id = null) {
 
     stopReceiving();
 
-    if(socket){
+    if (socket) {
         socket.close();
         socket = null;
     }
