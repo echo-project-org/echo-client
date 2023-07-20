@@ -136,6 +136,12 @@ class audioRtcTransmitter {
     });
   }
 
+  addCandidate(candidate) {
+    if (this.peer) {
+      this.peer.addIceCandidate(candidate);
+    }
+  }
+
   /**
    * @function createPeer - Creates the peer connection
    * @returns {RTCPeerConnection} peer - The peer connection
@@ -146,6 +152,17 @@ class audioRtcTransmitter {
     });
     //Handle the ice candidates
     peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
+
+    peer.onicecandidate = (e) => {
+      console.log("Got ice candidate from stun", e)
+      if (e.candidate) {
+        ep.sendIceCandidate({
+          candidate: e.candidate,
+          id: this.id,
+        });
+      }
+    }
+
     peer.onTrack = (e) => { this.handleTrackEvent(e) };
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === 'failed') {
