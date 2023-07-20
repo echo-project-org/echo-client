@@ -86,6 +86,9 @@ app.whenReady().then(() => {
     }
   })
 
+  // open dev tools
+  mainWindow.webContents.openDevTools();
+  // open rtc internals for degugging
   rtcInternals.loadURL("chrome://webrtc-internals");
   rtcInternals.show();
 })
