@@ -29,14 +29,7 @@ function Chat({ currentRoomId }) {
   
   return (
     <div className='chat'>
-      <LoadingAnimation visibility={loadingVisibility} style={{
-          // style the element in middle of chat div
-          position: 'absolute',
-          top: '50%',
-          left: '55%',
-          transform: 'translate(-50%, -50%)'
-        }}
-      />
+      <LoadingAnimation visibility={loadingVisibility} className='loadingAnimation'/>
 
       {messages.length > 0 ? messages.map((message) => {
         if (String(message.userId) === String(localStorage.getItem("id"))) {
