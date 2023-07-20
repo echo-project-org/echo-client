@@ -1,15 +1,15 @@
-import '../../index.css'
+import '../../css/header.css'
 
-const Header = ({title}) => {
-    return (
-        <header className='header'>
-            <h1 className='title noselect'>{title}</h1>
-        </header>
-    )
+const Header = ({ title }) => {
+  return (
+    <header className='header'>
+      <h1 className='title noselect'>{title}</h1>
+    </header>
+  )
 }
 
 Header.defaultProps = {
-    title : 'Echo'
+  title: 'Echo'
 }
 
 export default Header

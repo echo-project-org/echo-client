@@ -1,0 +1,37 @@
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.header {
+  height: 5rem;
+  margin: auto;
+  width: 100%;
+  background-color: var(--color1);
+}
+
+.topBar {
+  position: fixed;
+  width: 100%;
+  min-height: 1.7rem;
+  background-color: var(--main-bg-color);
+  display: flex;
+  flex-direction: row-reverse;
+  flex: 0 0 auto;
+  -webkit-app-region: drag;
+}
+
+.noDrag {
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}

@@ -256,32 +256,6 @@ body {
     animation-delay: 0.9s;
 }
 
-.header {
-    height: 5rem;
-    margin: auto;
-    width: 100%;
-    background-color: var(--color1);
-}
-
-.topBar {
-    width: 100%;
-    min-height: 1.7rem;
-    background-color: var(--main-bg-color);
-    display: flex;
-    flex-direction: row-reverse;
-    flex: 0 0 auto;
-    -webkit-app-region: drag;
-}
-
-.noDrag {
-    user-drag: none;
-    -webkit-user-drag: none;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-}
-
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
