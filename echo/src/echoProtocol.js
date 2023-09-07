@@ -8,7 +8,7 @@ var pingInterval;
 var at = null;
 var incomingAudio = [];
 
-const SERVER_URL = "ws://kury.ddns.net:6982"
+const SERVER_URL = "ws://turn.kuricki.com:6982"
 
 async function startTransmitting(id = 5) {
     if (at) {

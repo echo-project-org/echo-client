@@ -5,7 +5,7 @@ const ep = require("./echoProtocol.js");
 const ICE_SERVERS = [{
   username: 'echo',
   credential: 'echo123',
-  urls: ["turn:kury.ddns.net:6984"]
+  urls: ["turn:turn.kuricki.com:6984"]
 }];
 
 /**
