@@ -65,28 +65,6 @@ router.get("/rooms", (req, res) => {
 //     });
 // });
 
-// get user
-router.get('/', (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-    
-    con.query("SELECT name, img, stanza, lastIP FROM users WHERE online = 'T' AND NOT id = 1", function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
-
-        var jsonOut = [];
-        if (result.length > 0) {
-            result.map(function(plate) {        
-                jsonOut.push({ 
-                    "name" : plate.name,
-                    "img" : plate.img,
-                    "room" : plate.stanza,
-                    "lastIP" : plate.lastIP,
-                });
-            })
-        }
-        res.status(200).send(jsonOut);
-    });
-});
-
 router.get("/status/:id", (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 

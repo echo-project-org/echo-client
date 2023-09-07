@@ -23,7 +23,7 @@ router.post("/login", (req, res) => {
     
     if (!req.utils.checkEmail(email)) return res.status(406).send({ message: "Invalid email address. (Nice try...)" });
 
-    req.database.query("SELECT id, name, email FROM users WHERE password = '" + password + "'", (err, result, fields) => {
+    req.database.query("SELECT id, name, email, img FROM users WHERE password = '" + password + "'", (err, result, fields) => {
         if (err) return res.status(400).send({ message: "You messed up the request." });
         // send wrong credentials if no user was found
         if (!result) return res.status(401).send({ message: "Wrong credentials." });
@@ -34,6 +34,7 @@ router.post("/login", (req, res) => {
                 id: result[0].id,
                 name: result[0].name,
                 email: result[0].email,
+                img: result[0].img,
                 token,
                 refreshToken
             });
