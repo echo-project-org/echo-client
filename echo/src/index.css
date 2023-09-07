@@ -336,6 +336,8 @@ body {
 .settingsModalSubDiv {
     background-color: var(--main-bg-color);
     padding: 1rem;
+    justify-content: center;
+    align-items: center;
     border-radius: 1rem;
     display: flex;
     flex-direction: column;
