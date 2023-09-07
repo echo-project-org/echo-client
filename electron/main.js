@@ -6,7 +6,7 @@ var mainWindow;
 const createMainWindow = () => {
   var win = new BrowserWindow({
     width: 1000,
-    height: 600,
+    height: 700,
     title: "Echo",
     frame: false,
     icon: 'images/echoIcon',
@@ -17,7 +17,7 @@ const createMainWindow = () => {
     }
   })
 
-  win.setMinimumSize(800, 500);
+  win.setMinimumSize(800, 700);
 
   if (app.isPackaged) {
     win.loadFile('index.html'); // prod
@@ -54,15 +54,24 @@ app.whenReady().then(() => {
       type: 'separator',
     },
     {
-      label: "Show app",
+      label: "Open app",
       click: function () {
         mainWindow.show();
       }
     },
     {
-      label: "Close app",
+      label: "Check for update",
       click: function () {
-        mainWindow.close();
+      }
+    },
+    {
+      type: 'separator',
+    },
+    {
+      label: "Quit echo",
+      click: function () {
+        // mainWindow.close();
+        app.quit();
       }
     },
   ])
@@ -76,7 +85,7 @@ app.whenReady().then(() => {
   
   var rtcInternals = new BrowserWindow({
     width: 1000,
-    height: 600,
+    height: 700,
     title: "Echo",
     icon: 'images/echoIcon',
     webPreferences: {
@@ -93,11 +102,11 @@ app.whenReady().then(() => {
   rtcInternals.show();
 })
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
+// app.on('window-all-closed', () => {
+//   if (process.platform !== 'darwin') {
+//     app.quit()
+//   }
+// })
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
@@ -107,12 +116,14 @@ app.on('activate', () => {
 
 ipcMain.on("exitApplication", (event, arg) => {
   app.quit();
+  // TODO: option that hides the app to tray instead of closing it
+  // if (tray) {
+  //   return mainWindow.hide();
+  // }
 })
 
 ipcMain.on("minimize", (event, arg) => {
-  if(tray){
-    return mainWindow.hide();
-  }
+  return mainWindow.minimize();
 })
 
 ipcMain.on("toggleFullscreen", (event, arg) => {
