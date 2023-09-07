@@ -12,129 +12,130 @@ import imgLogo from "../../img/headphones.svg"
 var api = require('../../api')
 
 const theme = createTheme({
-    palette: {
-      primary: {main: '#2b192e',},
-      secondary: {main: '#2b192e',},
-    }
+  palette: {
+    primary: { main: '#2b192e', },
+    secondary: { main: '#2b192e', },
+  }
 });
 
 
 const Login = () => {
-    let navigate = useNavigate(); 
-    
-    var [loginError, setLoginError] = useState(false);
-    var [vertical, setVertical] = useState('bottom');
-    var [horizontal, sethHorizontal] = useState('left');
-    var [open, setOpen] = useState(false);
-    var [message, setMessage] = useState("Error message");
+  let navigate = useNavigate();
 
-    const showError = (msg) => {
-        //Show error message
-        setLoginError(true);
-        setOpen(true);
-        setMessage(msg);
-    }
-    
-    const hideError = () => {
-        //Hide error message
-        setOpen(false);
-        setLoginError(false);
-    }
-    
-    const handleClose = () => {
-        //Close error message handler
-        setOpen(false);
-        setLoginError(false);
-    }
+  var [loginError, setLoginError] = useState(false);
+  var [vertical, setVertical] = useState('bottom');
+  var [horizontal, sethHorizontal] = useState('left');
+  var [open, setOpen] = useState(false);
+  var [message, setMessage] = useState("Error message");
 
-    const checkCredentials = async () => {
-        var email = document.getElementById('usernameBox').value
-        var password = document.getElementById('passwordBox').value
+  const showError = (msg) => {
+    //Show error message
+    setLoginError(true);
+    setOpen(true);
+    setMessage(msg);
+  }
 
-        if(email === "" || password === ""){
-            showError("All fields must be populated!");
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            showError("Invalid email address!");
-        } else {
-            hash(email + "@" + password)
-                .then((hashed) => {
-                    api.call('auth/login', "POST", { email, password: hashed })
-                        .then((data) => {
-                            console.log(data);
-                            hideError();
-                            localStorage.setItem("id", data.json.id);
-                            localStorage.setItem("name", data.json.name);
-                            localStorage.setItem("email", data.json.email);
-                            localStorage.setItem("token", data.json.token);
-                            localStorage.setItem("refreshToken", data.json.refreshToken);
-                            navigate("/");
-                        })
-                        .catch((err) => {
-                            showError(err.message);
-                        });
-                });
-        }
-    }
+  const hideError = () => {
+    //Hide error message
+    setOpen(false);
+    setLoginError(false);
+  }
 
-    const hash = (string) => {
-        const utf8 = new TextEncoder().encode(string);
-        return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
-          const hashArray = Array.from(new Uint8Array(hashBuffer));
-          const hashHex = hashArray
-            .map((bytes) => bytes.toString(16).padStart(2, '0'))
-            .join('');
-          return hashHex;
+  const handleClose = () => {
+    //Close error message handler
+    setOpen(false);
+    setLoginError(false);
+  }
+
+  const checkCredentials = async () => {
+    var email = document.getElementById('usernameBox').value
+    var password = document.getElementById('passwordBox').value
+
+    if (email === "" || password === "") {
+      showError("All fields must be populated!");
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      showError("Invalid email address!");
+    } else {
+      hash(email + "@" + password)
+        .then((hashed) => {
+          api.call('auth/login', "POST", { email, password: hashed })
+            .then((data) => {
+              console.log(data);
+              hideError();
+              localStorage.setItem("id", data.json.id);
+              localStorage.setItem("name", data.json.name);
+              localStorage.setItem("email", data.json.email);
+              localStorage.setItem("userImage", data.json.img);
+              localStorage.setItem("token", data.json.token);
+              localStorage.setItem("refreshToken", data.json.refreshToken);
+              navigate("/");
+            })
+            .catch((err) => {
+              showError(err.message);
+            });
         });
-      }
+    }
+  }
 
-    useEffect(() => {
+  const hash = (string) => {
+    const utf8 = new TextEncoder().encode(string);
+    return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((bytes) => bytes.toString(16).padStart(2, '0'))
+        .join('');
+      return hashHex;
+    });
+  }
 
-    }, [])
+  useEffect(() => {
 
-    return (
-        <motion.div 
-            className='splashScreen'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-        >
-        
-            <BackButton/>
-            <div className="loginForm" style={{ height: "28rem" }}>
-                <div className="boxedLogoContainer">
-                    <img className="boxedLogo" src={imgLogo} alt='echoLogo'/>
-                    <div className="ripple"></div>
-                </div>
-                <h1>Login</h1>
-                <input
-                    id="usernameBox"
-                    type="text"
-                    className="input"
-                    placeholder="Email"
-                />
-                <input
-                    id="passwordBox"
-                    type="password"
-                    className="input"
-                    placeholder="Password"
-                />
+  }, [])
 
-                <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>
-            </div>
+  return (
+    <motion.div
+      className='splashScreen'
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
 
-            <Snackbar 
-                anchorOrigin={{ vertical, horizontal }}
-                open={open}
-                onClose={handleClose}
-                message={message}
-                key={vertical + horizontal}
-            >
-                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-            </Snackbar>
-        </motion.div>
-    )
+      <BackButton />
+      <div className="loginForm" style={{ height: "28rem" }}>
+        <div className="boxedLogoContainer">
+          <img className="boxedLogo" src={imgLogo} alt='echoLogo' />
+          <div className="ripple"></div>
+        </div>
+        <h1>Login</h1>
+        <input
+          id="usernameBox"
+          type="text"
+          className="input"
+          placeholder="Email"
+        />
+        <input
+          id="passwordBox"
+          type="password"
+          className="input"
+          placeholder="Password"
+        />
+
+        <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>
+      </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        onClose={handleClose}
+        message={message}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {message}
+        </Alert>
+      </Snackbar>
+    </motion.div>
+  )
 }
 
 Login.defaultProps = {
