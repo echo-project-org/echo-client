@@ -8,7 +8,7 @@ class ServerRTC {
             {
                 username: 'echo',
                 credential: 'echo123',
-                urls: ["turn:kury.ddns.net:6984"]
+                urls: ["turn:localhost:6984"]
             }
         ]
 
