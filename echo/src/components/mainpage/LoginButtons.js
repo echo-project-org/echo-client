@@ -9,8 +9,10 @@ const theme = createTheme({
     },
 });
 
-const LoginButtons = ({visibility, navigate}) => {
-  if(!visibility) return null
+const LoginButtons = ({ visibility, navigate }) => {
+  
+  if (!visibility) return null;
+
   return (
     <ThemeProvider theme={theme}>
       <ButtonGroup
@@ -18,7 +20,6 @@ const LoginButtons = ({visibility, navigate}) => {
         orientation='vertical'
         disableElevation
         variant="text"
-        visibility={!visibility}
         className="loginButtons"
       >
         <Button onClick={() => navigate("/login")}>Login</Button>
