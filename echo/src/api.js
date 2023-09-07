@@ -7,28 +7,15 @@ export async function call(path, method = "GET", body = null) {
     if (method !== "GET" && body === null) reject("Body is null");
     if (method === "GET" && body !== null) reject("Body is not null");
 
-    var options;
-
-    if (method === "GET")
-      options = {
-        method: method,
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-      }
-    else
-      options = {
-        method: method,
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        body: typeof body === "string" ? body : JSON.stringify(body)
-      }
-
+    const options = {
+      method: method,
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      body: body ? typeof body === "string" ? body : JSON.stringify(body) : null
+    };
 
     fetch(API_URL + path, options)
       .then((response) => {
