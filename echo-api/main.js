@@ -2,6 +2,9 @@ const express = require('express');
 const server = express();
 const bodyParser = require('body-parser');
 
+const { Logger } = require("./classes/logger.js");
+new Logger();
+
 const cLoader = require("./classes/configLoader");
 const config = new cLoader().getCfg();
 
@@ -10,8 +13,6 @@ const authenticator = new OAuth();
 
 const SQL = require("./classes/mysql");
 const database = new SQL(config);
-
-require("./classes/logger");
 
 // add body parser middleware for api requests
 server.use(bodyParser.urlencoded({ extended: true }));

@@ -1,43 +1,99 @@
-const cLoader = require("./configLoader");
-const config = new cLoader().getCfg();
-// replace console.log function with a custom one that logs to a file
-// and also send the log to the console
-const fs = require("fs");
 const path = require("path");
-const logFile = path.join("./logs", "log.txt");
-// create the new log file
-var logStream = fs.createWriteStream(logFile, { flags: "a" });
-console.log = async function () {
-    if (!config.log === "verbose") return;
-    if (arguments.length === 0) return;
-    // check if content is object, then stringify it
-    for (var i in arguments)
-        if (typeof arguments[i] === "object")
-            arguments[i] = JSON.stringify(arguments[i], null, 2);
-    // write the stream to file and to stdout out
-    logStream.write(new Date().toLocaleString() + " - " + Array.from(arguments).join(" ") + "\r\n");
-    // write to standard output
-    process.stdout.write(Array.from(arguments).join(" ") + "\r\n");
-    // process.stderr.write(Array.from(arguments).join(" ") + "\r\n");
-    // check if the current log file is bigger than 10MB and if so, rename it to the current date and time and create a new one
-    if (logStream.bytesWritten > 10000000) await _rotateLog();
-};
+const fs = require("fs");
 
-const _rotateLog = () => {
-    return new Promise((resolve, reject) => {
-        if (fs.existsSync(logFile)) {
-            const date = new Date();
-            // get the new path
-            const newFile = path.join("./logs", `log_${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.txt`);
-            // print file rotation
-            console.log(`Renaming log file to ${newFile}`);
-            // end the stream of the current log file
-            logStream.end();
-            // rename the current log file to the new path
-            fs.renameSync(logFile, newFile);
-            // create a new log file
-            logStream = fs.createWriteStream(logFile, { flags: "a" });
-            resolve();
+class Logger {
+    constructor() {
+        this.path = "./logs"
+        this.fileStream = null;
+        this.logStream = null;
+        this.logFile = path.join(this.path, "log.txt");
+
+        this.log = this.log.bind(this);
+        console.log = this.log;
+        this.checkFolder();
+        this.checkFile();
+        this.createStream();
+
+        this.internalId = this.id();
+
+        console.log("------------------------- LOG STARTED -------------------------");
+    }
+
+    // make id function where A are letters and 0 are numbers
+    // 0A00AA0000AAA
+    id() {
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const numbers = "0123456789";
+        let id = "";
+        for (let i = 0; i < 12; i++) {
+            if (i == 1 || i == 4) {
+                id += numbers.charAt(Math.floor(Math.random() * numbers.length));
+            } else {
+                id += letters.charAt(Math.floor(Math.random() * letters.length));
+            }
         }
-    });
+        return id;
+    }
+
+    createStream() {
+        this.logStream = fs.createWriteStream(this.logFile, { flags: "a" });
+    }
+
+    checkFolder() {
+        // create main data folder (here since this module gets required first)
+        if (!fs.existsSync(this.path)) fs.mkdirSync(this.path);
+        // check if folder exists
+        if (!fs.existsSync(path.join(this.path))) fs.mkdirSync(path.join(this.path));
+    }
+
+    checkFile() {
+        // check if file exists
+        if (!fs.existsSync(this.logFile)) {
+            // create file
+            fs.writeFileSync(this.logFile, "");
+        }
+    }
+
+    rotate() {
+        this.checkFile();
+        // rename file
+        const date = new Date();
+        // create new log file and rename adding date as DD/MM/YYYY HH:MM:SS
+        const newFile = path.join(this.path, `log_${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.txt`);
+        // print file rotation
+        console.log(`Renaming log file to ${newFile}`);
+        // end the stream of the current log file
+        logStream.end();
+        // rename the current log file to the new path
+        fs.renameSync(this.logFile, newFile);
+    }
+    
+    async log(...args) {
+        // check if args have array or object, if so, stringify it
+        args = args.map(arg => {
+            if (typeof arg === "object") {
+                return JSON.stringify(arg);
+            } else {
+                return arg;
+            }
+        });
+        // add date to log as DD/MM/YYYY HH:MM:SS
+        const date = new Date();
+        // check if date is single digit, if so, add a 0 before it
+        var dateString = `[${date.getDate() < 10 ? "0" + date.getDate() : date.getDate()}/${date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1}/${date.getFullYear()} ${date.getHours() < 10 ? "0" + date.getHours() : date.getHours()}:${date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()}:${date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds()}]`;
+        args.unshift(this.internalId + " | " + dateString);
+        // create message
+        const message = Array.from(args).join(" ") + "\r\n"
+        // write to stdout
+        process.stdout.write(message);
+        // write to log file
+        this.logStream.write(message);
+        // check if file size is bigger than 50MB
+        if (this.logStream.bytesWritten > 50000000) {
+            // rotate log file
+            this.rotate();
+        }
+    }
 }
+
+module.exports = { Logger };
