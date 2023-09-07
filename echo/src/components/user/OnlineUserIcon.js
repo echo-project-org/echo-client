@@ -10,6 +10,7 @@ import VolumeUp from '@mui/icons-material/VolumeUp';
 import MessageIcon from '@mui/icons-material/Message';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import GavelIcon from '@mui/icons-material/Gavel';
+import Settings from "@mui/icons-material/Settings"
 import { useState } from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -27,16 +28,16 @@ const theme = createTheme({
     MuiMenu: {
       styleOverrides: {
         root: {
-          borderRadius: '20px',
+          borderRadius: '10px',
           background: "none"
         },
         paper: {
-          borderRadius: '20px',
+          borderRadius: '10px',
           background: "none",
           boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)"
         },
         list: {
-          borderRadius: '20px',
+          borderRadius: '10px',
           boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)"
         }
       },
@@ -93,6 +94,8 @@ const theme = createTheme({
 });
 
 function OnlineUserIcon({ imgUrl, name, id, talking }) {
+  // console.log("OnlineUserIcon", imgUrl, name, id, talking)
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
   const open = Boolean(anchorEl);
@@ -110,6 +113,8 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
     ep.setUserVolume(newValue / 100, id)
   };
 
+  id = id.toString();
+
   return (
     <div className="onlineUserContainer">
       <div
@@ -121,7 +126,7 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
         aria-haspopup="true"
         aria-expanded={ open ? 'true' : undefined }
       >
-        <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right',}} showZero={true} invisible={!talking} color={"success"}>
+        <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} showZero={true} invisible={!talking} color={"success"}>
           <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
         </Badge>
         <p className='onlineUserNick'>{name}</p>
@@ -157,9 +162,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
             </div>
           </MenuItem>
           <Divider sx={{ my: 0.5 }} variant='middle' />
-          <MenuItem onClick={handleClose}><MessageIcon fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem>
-          <MenuItem onClick={handleClose}><DoDisturbIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem>
-          <MenuItem onClick={handleClose}><GavelIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem>
+          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><MessageIcon fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem> : null }
+          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><DoDisturbIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem> : null }
+          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><GavelIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem> : null }
+          {localStorage.getItem("id") === id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }}/> Settings</MenuItem> : null }
         </Menu>
       </ThemeProvider>
     </div>
