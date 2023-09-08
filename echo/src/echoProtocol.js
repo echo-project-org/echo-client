@@ -158,6 +158,13 @@ export function openConnection(id) {
         }
     });
 
+    socket.on("server.renegotiationNeeded", (data, cb) => {
+        console.log("got renegotiation request from server", data.data);
+        if(at){
+            at.renegotiate(data.data.sdp, cb);
+        }
+    });
+
     // socket.io.on("ping", () => { console.log("pong") });
 }
 
