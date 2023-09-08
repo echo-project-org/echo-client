@@ -8,7 +8,7 @@ var pingInterval;
 var at = null;
 var incomingAudio = [];
 
-const SERVER_URL = "ws://turn.kuricki.com:6982"
+const SERVER_URL = "https://echo.kuricki.com"
 
 async function startTransmitting(id = 5) {
     if (at) {
@@ -101,7 +101,10 @@ export function getMicrophoneDevices() {
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io(SERVER_URL, { query: { id } });
+    socket = io(SERVER_URL, { 
+        path: "/socket.io",
+        query: { id } 
+    });
     startTransmitting(id);
 
     pingInterval = setInterval(() => {
