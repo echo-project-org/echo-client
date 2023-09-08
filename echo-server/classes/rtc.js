@@ -16,7 +16,7 @@ class ServerRTC {
         this.peers = new Map();
     }
 
-    async broadcastAudio(data) {
+    async broadcastAudio(data, user) {
         /**
          * data has
          * sdp (rtc connection description)
@@ -30,7 +30,7 @@ class ServerRTC {
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             peer.ontrack = (e) => {
                 console.log("peer.ontrack called, populating peers")
-                this.peers.set(id, { peer, inStream: e.streams[0], audioSubscriptionsIds: [] });
+                this.peers.set(id, { peer, audioStream: e.streams[0], audioSubscriptionsIds: [] });
             };
 
             peer.onicecandidate = (e) => {
@@ -81,9 +81,9 @@ class ServerRTC {
             if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
             //get the peer and the stream
-            let outPeer = this.inPeers.get(receiverId).peer;
-            let stream = this.inPeers.get(senderId).audioStream;
-            let asid = this.inPeers.get(senderId).audioSubscriptionsIds;
+            let outPeer = this.peers.get(receiverId).peer;
+            let stream = this.peers.get(senderId).audioStream;
+            let asid = this.peers.get(senderId).audioSubscriptionsIds;
 
             //Check if the user is already subscribed
             if (asid.includes(receiverId)) return reject("ALREADY-SUBSCRIBED");
@@ -92,7 +92,7 @@ class ServerRTC {
             outPeer.addTrack(stream.getAudioTracks()[0], stream);
             asid.push(receiverId);
 
-            resolve(True);
+            resolve(true);
         });
     }
 

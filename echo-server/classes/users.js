@@ -111,7 +111,7 @@ class User {
 
     broadcastAudio(data, cb) {
         if (this.rtc) {
-            this.rtc.broadcastAudio(data, cb)
+            this.rtc.broadcastAudio(data, this)
                 .then((resp) => {
                     cb(resp);
                 })
@@ -123,6 +123,7 @@ class User {
 
     subscribeAudio(data, cb) {
         if (this.rtc) {
+            console.log("User ", data.senderId, "requested audio subscription to user", data.receiverId);
             data.socket = this.socket;
             this.rtc.subscribeAudio(data, this)
                 .then((resp) => {

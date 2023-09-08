@@ -180,7 +180,7 @@ class audioRtcTransmitter {
   }
   async subscribeToAudio(id) {
     ep.subscribeAudio({
-      senderId: this.senderId,
+      senderId: id,
       receiverId: this.id,
     }, (a) => {
       if (!a) {

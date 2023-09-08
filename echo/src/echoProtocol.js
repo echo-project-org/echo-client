@@ -25,7 +25,7 @@ function stopTransmitting() {
     }
 }
 
-function startReceiving(id = 5, remoteId = 5) {
+function startReceiving(remoteId ) {
     console.log("Starting input stream for", remoteId)
     at.subscribeToAudio(remoteId);
 }
@@ -136,7 +136,7 @@ export function openConnection(id) {
 
     socket.on("server.userJoinedChannel", (data) => {
         console.log("user", data.id, "joined your channel, starting listening audio");
-        startReceiving(id, data.id);
+        startReceiving(data.id);
     });
 
     socket.on("server.sendAudioState", (data) => {
@@ -165,7 +165,7 @@ export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
     socket.emit("client.join", { id, roomId });
-    //startReceiving(5, 5);
+    startReceiving(id);
 }
 
 export function getPing() {
