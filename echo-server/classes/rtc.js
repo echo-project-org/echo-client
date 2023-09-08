@@ -133,17 +133,13 @@ class ServerRTC {
     }
 
     async stopAudioSubscription(data) {
-
+ 
     }
 
     addCandidate(data) {
         if (this.peerConnection) {
             this.peerConnection.addIceCandidate(data.candidate);
         }
-    }
-
-    renegotiationAnswer(data) {
-
     }
 }
 
