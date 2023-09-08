@@ -173,6 +173,13 @@ class User {
             this.rtc.addCandidate(data);
         }
     }
+
+    renegotiationNeeded(offer, cb) {
+        this.socket.emit("server.renegotiationNeeded", {data: offer}, (description) => {
+            console.log("Got renegotiation answer from client");
+            cb(description)
+        });
+    } 
 }
 
 module.exports = User;
