@@ -125,69 +125,15 @@ class ServerRTC {
     }
 
     clearUserConnection(data) {
-        /**
-         * data has
-         * id (String)
-         */
-        let { id } = data;
-        if (!id) return "NO-ID";
-        if (typeof id !== "string") id = String(id);
 
-        if (this.inPeers.has(id)) {
-            this.inPeers.get(id).peer.close();
-            this.inPeers.delete(id);
-        }
-
-        this.outPeers = this.outPeers.filter((value, key) => {
-            if (value.sender === id || value.receiver === id) {
-                console.log("Closing all streams connected to user " + id);
-                value.peer.close();
-                return false;
-            }
-            return true;
-        });
     }
 
     async stopAudioBroadcast(data) {
-        /**
-         * data has
-         * id (String)
-        */
-        let { id } = data;
-        if (!id) return "NO-ID";
-        if (typeof id !== "string") id = String(id);
 
-        if (this.inPeers.has(id)) {
-            const { peer, audioStream } = this.inPeers.get(id);
-            audioStream.getTracks().forEach(track => track.stop());
-            peer.close();
-            this.inPeers.delete(id);
-        }
-
-        return "OK";
     }
 
     async stopAudioSubscription(data) {
-        /**
-         * data has
-         * senderId (String), receiverId (String)
-         */
-        let { senderId, receiverId } = data;
-        if (!senderId) return "NO-SENDER-ID";
-        if (!receiverId) return "NO-RECEIVER-ID";
-        if (typeof senderId !== "string") senderId = String(senderId);
-        if (typeof receiverId !== "string") receiverId = String(receiverId);
 
-        this.outPeers = this.outPeers.filter((value, key) => {
-            if (value.sender === senderId && value.receiver === receiverId) {
-                console.log("Closing user " + receiverId + "'s connection to user " + senderId + "'s audio stream");
-                value.peer.close();
-                return false;
-            }
-            return true;
-        });
-
-        return "OK";
     }
 
     addCandidate(data) {
