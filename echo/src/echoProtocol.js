@@ -196,6 +196,7 @@ export function closeConnection(id = null) {
     }
 
     stopReceiving();
+    stopTransmitting();
 
     if(socket){
         socket.close();

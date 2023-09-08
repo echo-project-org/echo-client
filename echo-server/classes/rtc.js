@@ -129,11 +129,19 @@ class ServerRTC {
     }
 
     async stopAudioBroadcast(data) {
-
+        let sender = data.id;
+        console.log("User"  + sender + " requested stop broadcast");
+        if (!sender) return "NO-ID";
+        if (this.peers.has(sender)) {
+            console.log("User " + sender + " stopped broadcasting audio, closing connection");
+            let peer = this.peers.get(sender).peer;
+            peer.close();
+            this.peers.delete(sender);
+        }
     }
 
     async stopAudioSubscription(data) {
- 
+        
     }
 
     addCandidate(data) {
