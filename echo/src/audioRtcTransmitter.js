@@ -180,7 +180,6 @@ class audioRtcTransmitter {
   }
   async subscribeToAudio(id) {
     ep.subscribeAudio({
-      sdp: this.peer.localDescription,
       senderId: this.senderId,
       receiverId: this.id,
     }, (a) => {

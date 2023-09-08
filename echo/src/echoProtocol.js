@@ -26,7 +26,7 @@ function stopTransmitting() {
 }
 
 function startReceiving(id = 5, remoteId = 5) {
-    console.log(id, remoteId)
+    console.log("Starting input stream for", remoteId)
     at.subscribeToAudio(remoteId);
 }
 
@@ -212,7 +212,7 @@ export function broadcastAudio(data, cb) {
 export function subscribeAudio(data, cb) {
     if (socket) {
         socket.emit("client.subscribeAudio", data, (description) => {
-            console.log("---> Got description 'subscribeAudio' from socket")
+            console.log("---> Got description 'subscribeAudio' from socket", description)
             cb(description);
         });
     }
