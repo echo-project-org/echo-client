@@ -216,6 +216,7 @@ export function broadcastAudio(data, cb) {
 }
 
 export function subscribeAudio(data, cb) {
+    console.log(data.senderId);
     if (socket) {
         socket.emit("client.subscribeAudio", data, (description) => {
             console.log("---> Got description 'subscribeAudio' from socket", description)
