@@ -89,7 +89,7 @@ class ServerRTC {
             if (asid.includes(receiverId)) return reject("ALREADY-SUBSCRIBED");
 
             //If not subscribed, subscribe
-            outPeer.addTrack(stream.getAudioTracks()[0], stream);
+            outPeer.addTransceiver(stream.getAudioTracks()[0], { direction: "sendrecv"});
             asid.push(receiverId);
 
             resolve(true);
