@@ -172,7 +172,6 @@ export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
     socket.emit("client.join", { id, roomId });
-    startReceiving(id);
 }
 
 export function getPing() {
