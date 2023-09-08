@@ -128,6 +128,7 @@ class audioRtcTransmitter {
     audioElement.pause();
 
     this.inputStreams.push({
+      stream: e.streams[0],
       source: source,
       context: context,
       gainNode: gainNode,
@@ -190,6 +191,23 @@ class audioRtcTransmitter {
       }
     });
   }
+
+  unsubscribeFromAudio(id = null) {
+    if(id){
+      //find the stream
+
+    } else {
+      //unsubscribe from all streams
+      this.inputStreams.forEach((stream) => {
+        stream.stream.getTracks().forEach(track => track.stop());
+        stream.context.close();
+        stream.audioElement.pause();
+        stream.audioElement = null;
+      });
+      this.inputStreams = [];
+    }
+  }
+
 
   /**
    * @function handleNegotiationNeededEvent - Handles the negotiation needed event
