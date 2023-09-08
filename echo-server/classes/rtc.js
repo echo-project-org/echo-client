@@ -1,6 +1,7 @@
 
 const webrtc = require("wrtc");
 const sdpTransform = require("sdp-transform");
+const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
 class ServerRTC {
     constructor() {
@@ -14,6 +15,31 @@ class ServerRTC {
 
         // inbound rtc connections (users)
         this.peers = new Map();
+    }
+
+
+    /**
+     * @function handleNegotiationNeededEvent - Handles the negotiation needed event
+     * @param {RTCPeerConnection} peer 
+     */
+    async handleNegotiationNeededEvent(peer, user) {
+        console.log("Negotiation needed");
+        const offer = await peer.createOffer();
+        let parsed = sdpTransform.parse(offer.sdp);
+
+        //Edit the sdp to make the audio sound better
+        parsed.media[0].fmtp[0].config = goodOpusSettings;
+        offer.sdp = sdpTransform.write(parsed);
+
+        await peer.setLocalDescription(offer);
+
+        user.renegotiationNeeded({
+            sdp: peer.localDescription,
+            id: this.id
+        }, (description) => {
+            const desc = new webrtc.RTCSessionDescription(description);
+            peer.setRemoteDescription(desc).catch(e => console.log(e));
+        })
     }
 
     async broadcastAudio(data, user) {
@@ -37,6 +63,8 @@ class ServerRTC {
                 user.iceCandidate(e.candidate);
             }
 
+            peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer, user) };
+
             const desc = new webrtc.RTCSessionDescription(sdp);
             peer.setRemoteDescription(desc)
                 .then(() => {
@@ -44,7 +72,7 @@ class ServerRTC {
                     peer.createAnswer()
                         .then((answer) => {
                             let parsed = sdpTransform.parse(answer.sdp);
-                            parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+                            parsed.media[0].fmtp[0].config = goodOpusSettings;
                             answer.sdp = sdpTransform.write(parsed);
 
                             peer.setLocalDescription(answer)
@@ -59,7 +87,7 @@ class ServerRTC {
                                 });
                         });
                 });
-            });
+        });
     }
 
     subscribeAudio(data, user) {
@@ -70,7 +98,7 @@ class ServerRTC {
          */
 
         return new Promise((resolve, reject) => {
-            let {senderId, receiverId } = data;
+            let { senderId, receiverId } = data;
             if (!senderId) return reject("NO-SENDER-ID");
             if (!receiverId) return reject("NO-RECEIVER-ID");
             if (typeof senderId !== "string") senderId = String(senderId);
@@ -83,14 +111,14 @@ class ServerRTC {
             //get the peer and the stream
             let outPeer = this.peers.get(receiverId).peer;
             let stream = this.peers.get(senderId).audioStream;
-            let asid = this.peers.get(senderId).audioSubscriptionsIds;
+            let asid = this.peers.get(receiverId).audioSubscriptionsIds;
 
             //Check if the user is already subscribed
-            if (asid.includes(receiverId)) return reject("ALREADY-SUBSCRIBED");
-
+            if (asid.includes(senderId)) return reject("ALREADY-SUBSCRIBED");
+            console.log("User " + receiverId + " subscribed to user " + senderId + "'s audio stream", stream);
             //If not subscribed, subscribe
-            outPeer.addTransceiver(stream.getAudioTracks()[0], { direction: "sendrecv"});
-            asid.push(receiverId);
+            stream.getAudioTracks().forEach(track => outPeer.addTrack(track, stream));
+            asid.push(senderId);
 
             resolve(true);
         });
@@ -166,6 +194,10 @@ class ServerRTC {
         if (this.peerConnection) {
             this.peerConnection.addIceCandidate(data.candidate);
         }
+    }
+
+    renegotiationAnswer(data) {
+
     }
 }
 

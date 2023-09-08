@@ -121,10 +121,11 @@ class audioRtcTransmitter {
     context.resume();
 
     //Chrome bug fix
+    
     let audioElement = new Audio();
     audioElement.srcObject = e.streams[0];
     audioElement.autoplay = true;
-    this.audioElement.pause();
+    audioElement.pause();
 
     this.inputStreams.push({
       source: source,
@@ -163,7 +164,7 @@ class audioRtcTransmitter {
       }
     }
 
-    peer.onTrack = (e) => { this.handleTrackEvent(e) };
+    peer.ontrack = (e) => { this.handleTrackEvent(e) };
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === 'failed') {
         peer.restartIce();
@@ -211,6 +212,22 @@ class audioRtcTransmitter {
       const desc = new RTCSessionDescription(description);
       peer.setRemoteDescription(desc).catch(e => console.log(e));
     })
+  }
+
+  async renegotiate(remoteOffer, cb) {
+    const remoteDesc = new RTCSessionDescription(remoteOffer);
+    this.peer.setRemoteDescription(remoteDesc).then(() => {
+      console.log("Setting remote description for renegotiation");
+      this.peer.createAnswer().then((answer) => {
+        let parsed = sdpTransform.parse(answer.sdp);
+        parsed.media[0].fmtp[0].config = goodOpusSettings;
+        answer.sdp = sdpTransform.write(parsed);
+
+        this.peer.setLocalDescription(answer).then(() => {
+          cb(this.peer.localDescription);
+        });
+      });
+    });
   }
 
   /**
