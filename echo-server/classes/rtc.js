@@ -8,16 +8,12 @@ class ServerRTC {
             {
                 username: 'echo',
                 credential: 'echo123',
-                urls: ["turn:kury.ddns.net:6984"]
+                urls: ["turn:turn.kuricki.com:6984"]
             }
         ]
 
         // inbound rtc connections (users)
-        this.inPeers = new Map();
-        // outbound rtc connections (users)
-        this.outPeers = new Array();
-        this.registeredEvents = new Map();
-        this.user = null;
+        this.peers = new Map();
     }
 
     async broadcastAudio(data) {
@@ -33,9 +29,14 @@ class ServerRTC {
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             peer.ontrack = (e) => {
-                console.log("peer.ontrack called, populating inPeers")
-                this.inPeers.set(id, { peer, audioStream: e.streams[0] });
+                console.log("peer.ontrack called, populating peers")
+                this.peers.set(id, { peer, inStream: e.streams[0], audioSubscriptionsIds: [] });
             };
+
+            peer.onicecandidate = (e) => {
+                user.iceCandidate(e.candidate);
+            }
+
             const desc = new webrtc.RTCSessionDescription(sdp);
             peer.setRemoteDescription(desc)
                 .then(() => {
@@ -49,16 +50,16 @@ class ServerRTC {
                             peer.setLocalDescription(answer)
                                 .then(() => {
                                     // if the audioStream and the peer is already populated, immediately return
-                                    if (this.inPeers.has(id)) return resolve(peer.localDescription);
+                                    if (this.peers.has(id)) return resolve(peer.localDescription);
 
-                                    console.log("populating inPeers, but audioStream is null")
-                                    this.inPeers.set(id, { peer, audioStream: null });
+                                    console.log("populating peers, but audioStream is null")
+                                    this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [] });
                                     // respond with the payload
                                     resolve(peer.localDescription);
                                 });
                         });
                 });
-        })
+            });
     }
 
     subscribeAudio(data, user) {
@@ -69,45 +70,29 @@ class ServerRTC {
          */
 
         return new Promise((resolve, reject) => {
-            let { sdp, senderId, receiverId } = data;
+            let {senderId, receiverId } = data;
             if (!senderId) return reject("NO-SENDER-ID");
             if (!receiverId) return reject("NO-RECEIVER-ID");
             if (typeof senderId !== "string") senderId = String(senderId);
             if (typeof receiverId !== "string") receiverId = String(receiverId);
 
             //if audioUsers is not in senders
-            if (!this.inPeers.has(senderId)) return reject("NO-SENDER-CONNECTION");
-            if (!this.inPeers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
+            if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
+            if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
+            //get the peer and the stream
             let outPeer = this.inPeers.get(receiverId).peer;
             let stream = this.inPeers.get(senderId).audioStream;
+            let asid = this.inPeers.get(senderId).audioSubscriptionsIds;
 
+            //Check if the user is already subscribed
+            if (asid.includes(receiverId)) return reject("ALREADY-SUBSCRIBED");
+
+            //If not subscribed, subscribe
             outPeer.addTrack(stream.getAudioTracks()[0], stream);
+            asid.push(receiverId);
 
             resolve(True);
-
-            /*
-            peer.onicecandidate = (e) => {
-                user.iceCandidate(e.candidate, senderId)
-            }
-
-            peer.setRemoteDescription(desc)
-                .then(() => {
-                    console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
-                    const stream = this.inPeers.get(senderId).audioStream;
-                    stream.getTracks().forEach(track => peer.addTrack(track, stream));
-                    peer.createAnswer()
-                        .then((answer) => {
-                            let parsed = sdpTransform.parse(answer.sdp);
-                            parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
-                            answer.sdp = sdpTransform.write(parsed);
-                            peer.setLocalDescription(answer)
-                                .then(() => {
-                                    resolve(peer.localDescription);
-                                    this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
-                                });
-                        });
-                });*/
         });
     }
 
@@ -149,7 +134,6 @@ class ServerRTC {
             audioStream.getTracks().forEach(track => track.stop());
             peer.close();
             this.inPeers.delete(id);
-            this.registeredEvents.delete(id);
         }
 
         return "OK";
@@ -174,9 +158,6 @@ class ServerRTC {
             }
             return true;
         });
-
-        // this.registeredEvents.delete(receiverId);
-        // this.registeredEvents.delete(senderId);
 
         return "OK";
     }
