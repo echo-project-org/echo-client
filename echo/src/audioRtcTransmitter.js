@@ -28,6 +28,7 @@ class audioRtcTransmitter {
     this.gainNode = null;
     this.context = null;
     this.inputStreams = [];
+    this.streamIds = new Map();
 
     //Audio only constraints
     this.constraints = {
@@ -185,7 +186,11 @@ class audioRtcTransmitter {
       senderId: id,
       receiverId: this.id,
     }, (a) => {
-      if (!a) {
+      if (a) {
+        //The socket returns the audio stream id
+        console.log("subscribed to audio stream", a)
+        this.streamIds.set(id, a);
+      } else {
         console.error("Failed to subscribe to audio");
         return;
       }
