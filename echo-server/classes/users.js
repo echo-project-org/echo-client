@@ -10,21 +10,28 @@ class User {
 
         // define rtc
         this.rtc = null;
+        this.videoRtc = null;
 
+        // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("client.ping", (callback) => { callback(); });
         this.socket.on("client.join", (data) => this.triggerEvent("join", data));
         this.socket.on("client.end", (data) => this.triggerEvent("end", data));
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
-        // first call when user join application ("hey i'm here, i'm sending audio packets")
+        // audioRtc stuff
         this.socket.on("client.broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
-        // when user join a room, we send the connected user streams to the new user ("hey, send me the requested stream")
         this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
         this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
         this.socket.on("client.unsubscribeAudio", (data) => this.unsubscribeAudio(data));
-        // receive ice candidate from user
         this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
+
+        // videoRtc stuff
+        this.socket.on("client.broadcastVideo", (data, cb) => this.broadcastVideo(data, cb));
+        this.socket.on("client.subscribeVideo", (data, cb) => this.subscribeVideo(data, cb));
+        this.socket.on("client.stopVideoBroadcast", (data) => this.stopVideoBroadcast(data));
+        this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
+        this.socket.on("client.videoIceCandidate", (data) => this.setVideoIceCandidate(data));
     }
 
     registerEvent(event, cb) {
@@ -109,6 +116,10 @@ class User {
         this.rtc = rtc;
     }
 
+    setVideoRtc(rtc) {
+        this.videoRtc = rtc;
+    }
+
     broadcastAudio(data, cb) {
         if (this.rtc) {
             this.rtc.broadcastAudio(data, this)
@@ -147,7 +158,7 @@ class User {
             }
         }
     }
-    
+
     unsubscribeAudio(data) {
         if (this.rtc) {
             const resp = this.rtc.unsubscribeAudio(data);
@@ -165,21 +176,94 @@ class User {
     }
 
     iceCandidate(candidate) {
-        this.socket.emit("server.iceCandidate", {data: candidate});
+        this.socket.emit("server.iceCandidate", { data: candidate });
     }
 
     setIceCandidate(data) {
-        if(this.rtc){
+        if (this.rtc) {
             this.rtc.addCandidate(data);
         }
     }
 
     renegotiationNeeded(offer, cb) {
-        this.socket.emit("server.renegotiationNeeded", {data: offer}, (description) => {
+        this.socket.emit("server.renegotiationNeeded", { data: offer }, (description) => {
             console.log("Got renegotiation answer from client");
             cb(description)
         });
-    } 
+    }
+
+    // video stuff
+    broadcastVideo(data, cb) {
+        if (this.videoRtc) {
+            this.videoRtc.broadcastVideo(data, this)
+                .then((resp) => {
+                    cb(resp);
+                })
+                .catch((err) => {
+                    console.log("broadcastVideo error", err);
+                });
+        }
+    }
+
+    subscribeVideo(data, cb) {
+        if (this.videoRtc) {
+            console.log("User ", data.senderId, "requested video subscription to user", data.receiverId);
+            data.socket = this.socket;
+            this.videoRtc.subscribeVideo(data, this)
+                .then((resp) => {
+                    cb(resp);
+                })
+                .catch((err) => {
+                    console.log("subscribeVideo error", err);
+                });
+        }
+    }
+
+    stopVideoBroadcast(data) {
+        if (this.videoRtc) {
+            const resp = this.videoRtc.stopVideoBroadcast(data);
+            switch (resp) {
+                case "NO-ID":
+                    console.log("NO-ID");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    unsubscribeVideo(data) {
+        if (this.videoRtc) {
+            const resp = this.videoRtc.unsubscribeVideo(data);
+            switch (resp) {
+                case "NO-SENDER-ID":
+                    console.log("NO-SENDER-ID");
+                    break;
+                case "NO-RECEIVER-ID":
+                    console.log("NO-RECEIVER-ID");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    videoIceCandidate(candidate) {
+        this.socket.emit("server.videoIceCandidate", { data: candidate });
+    }
+
+    setVideoIceCandidate(data) {
+        if (this.videoRtc) {
+            this.videoRtc.addCandidate(data);
+        }
+    }
+
+    videoRenegotiationNeeded(offer, cb) {
+        this.socket.emit("server.videoRenegotiationNeeded", { data: offer }, (description) => {
+            console.log("Got video renegotiation answer from client");
+            cb(description)
+        });
+    }
 }
 
 module.exports = User;
