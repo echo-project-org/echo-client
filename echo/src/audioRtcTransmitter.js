@@ -224,7 +224,7 @@ class audioRtcTransmitter {
     }, (a) => {
       if (a) {
         //The socket returns the audio stream id
-        console.log("subscribed to audio stream", a)
+        console.log(id, "subscribed to audio stream", a)
         this.streamIds.set(id, a);
       } else {
         console.error("Failed to subscribe to audio");
@@ -249,6 +249,7 @@ class audioRtcTransmitter {
           stream.audioElement = null;
         });
       }
+      ep.unsubscribeAudio({senderId: id, receiverId: this.id})
     } else {
       //unsubscribe from all streams
       this.inputStreams.forEach((stream) => {
@@ -258,6 +259,11 @@ class audioRtcTransmitter {
         stream.audioElement = null;
       });
       this.inputStreams = [];
+
+      for(const [key, value] of this.streamIds) {
+        console.log(key, "Unsubscribing from", key)
+        ep.unsubscribeAudio({senderId: key, receiverId: this.id})
+      }
     }
   }
 
