@@ -120,7 +120,7 @@ class ServerRTC {
             stream.getAudioTracks().forEach(track => outPeer.addTrack(track, stream));
             asid.push(senderId);
 
-            resolve(true);
+            resolve(stream.id);
         });
     }
 
