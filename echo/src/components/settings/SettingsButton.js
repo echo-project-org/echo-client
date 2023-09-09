@@ -17,6 +17,7 @@ const modalStyle = {
   width: '80%',
   bgcolor: '#4d3352',
   color: '#f5e8da',
+  overflow: 'auto',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
@@ -99,8 +100,6 @@ function SettingsButton() {
         <Modal
           open={modalOpen}
           onClose={handleModalClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
         >
           <Zoom in={modalOpen}>
             <Box sx={modalStyle}>
