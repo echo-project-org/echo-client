@@ -199,8 +199,20 @@ class audioRtcTransmitter {
 
   unsubscribeFromAudio(id = null) {
     if(id){
-      //find the stream
-
+      //find the stream id
+      let streamId = this.streamIds.get(id);
+      if(streamId){
+        this.inputStreams.filter((stream) => {
+          //find every stream that matches the id
+          return stream.stream.id === streamId;
+        }).forEach((stream) => {
+          //close it
+          stream.stream.getTracks().forEach(track => track.stop());
+          stream.context.close();
+          stream.audioElement.pause();
+          stream.audioElement = null;
+        });
+      }
     } else {
       //unsubscribe from all streams
       this.inputStreams.forEach((stream) => {
