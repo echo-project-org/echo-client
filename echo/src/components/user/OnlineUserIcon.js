@@ -94,7 +94,6 @@ const theme = createTheme({
 });
 
 function OnlineUserIcon({ imgUrl, name, id, talking }) {
-  // console.log("OnlineUserIcon", imgUrl, name, id, talking)
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);

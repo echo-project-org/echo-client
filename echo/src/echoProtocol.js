@@ -88,7 +88,6 @@ export function getMicrophoneDevices() {
 }
 
 export function openConnection(id) {
-    console.log("opening connection with socket")
     socket = io(SERVER_URL, {
         path: "/socket.io",
         query: { id }
@@ -115,7 +114,7 @@ export function openConnection(id) {
     })
 
     socket.io.on("error", (error) => {
-        console.log(error);
+        console.error(error);
         alert("The audio server connection has errored out")
         stopTransmitting();
         stopReceiving();
@@ -140,20 +139,16 @@ export function openConnection(id) {
     });
 
     socket.on("server.iceCandidate", (data) => {
-        console.log("got ice candidate from server", data);
         if (at) {
             at.addCandidate(data.candidate);
         }
     });
 
     socket.on("server.renegotiationNeeded", (data, cb) => {
-        console.log("got renegotiation request from server", data.data);
         if (at) {
             at.renegotiate(data.data.sdp, cb);
         }
     });
-
-    // socket.io.on("ping", () => { console.log("pong") });
 }
 
 export function joinRoom(id, roomId) {
@@ -166,7 +161,6 @@ export function joinRoom(id, roomId) {
 export function getPing() {
     if (at) {
         at.getConnectionStats().then(stats => {
-            console.log(stats);
             return stats.ping;
         });
     }
@@ -204,27 +198,22 @@ export function closeConnection(id = null) {
 export function broadcastAudio(data, cb) {
     if (socket) {
         socket.emit("client.broadcastAudio", data, (description) => {
-            console.log("---> Got description 'broadcastAudio' from socket")
             cb(description);
         });
     }
 }
 
 export function subscribeAudio(data, cb) {
-    console.log(data.senderId);
     if (socket) {
         socket.emit("client.subscribeAudio", data, (description) => {
-            console.log("---> Got description 'subscribeAudio' from socket", description)
             cb(description);
         });
     }
 }
 
 export function unsubscribeAudio(data, cb) {
-    console.log(data.senderId);
     if (socket) {
         socket.emit("client.unsubscribeAudio", data, (description) => {
-            console.log("---> Got description 'subscribeAudio' from socket", description)
             cb(description);
         });
     }

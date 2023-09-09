@@ -81,7 +81,6 @@ class audioRtcTransmitter {
 
     this.volume = volume;
     if (this.gainNode) {
-      console.log("changing volume to", volume)
       this.gainNode.gain.value = volume;
     }
   }
@@ -212,7 +211,6 @@ class audioRtcTransmitter {
     peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
 
     peer.onicecandidate = (e) => {
-      console.log("Got ice candidate from stun", e)
       if (e.candidate) {
         ep.sendIceCandidate({
           candidate: e.candidate,
@@ -306,14 +304,13 @@ class audioRtcTransmitter {
       id: this.id
     }, (description) => {
       const desc = new RTCSessionDescription(description);
-      peer.setRemoteDescription(desc).catch(e => console.log(e));
+      peer.setRemoteDescription(desc).catch(e => console.error(e));
     })
   }
 
   async renegotiate(remoteOffer, cb) {
     const remoteDesc = new RTCSessionDescription(remoteOffer);
     this.peer.setRemoteDescription(remoteDesc).then(() => {
-      console.log("Setting remote description for renegotiation");
       this.peer.createAnswer().then((answer) => {
         let parsed = sdpTransform.parse(answer.sdp);
         parsed.media[0].fmtp[0].config = goodOpusSettings;
