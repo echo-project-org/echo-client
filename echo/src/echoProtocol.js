@@ -1,10 +1,12 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
+import videoRtc from "./videoRtc";
 
 const io = require("socket.io-client");
 var socket;
 var ping = 0;
 var pingInterval;
 var at = null;
+var vrtc = null;
 
 const SERVER_URL = "https://echo.kuricki.com"
 
@@ -156,6 +158,7 @@ export function joinRoom(id, roomId) {
     // join the transmission on current room
     socket.emit("client.join", { id, roomId });
     //startReceiving(1);
+    videoRtc.getVideoSources();
 }
 
 export function getPing() {
@@ -230,5 +233,11 @@ export function stopAudioBroadcast(data) {
 export function sendIceCandidate(data) {
     if (socket) {
         socket.emit("client.iceCandidate", data);
+    }
+}
+
+export function sendVideoIceCandidate(data) {
+    if (socket) {
+        socket.emit("client.videoIceCandidate", data);
     }
 }
