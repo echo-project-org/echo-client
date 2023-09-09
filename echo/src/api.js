@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:6980/";
+const API_URL = "https://echo.kuricki.com/api/";
 
 export async function call(path, method = "GET", body = null) {
   return new Promise((resolve, reject) => {

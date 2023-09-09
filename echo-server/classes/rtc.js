@@ -1,6 +1,7 @@
 
 const webrtc = require("wrtc");
 const sdpTransform = require("sdp-transform");
+const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
 class ServerRTC {
     constructor() {
@@ -8,19 +9,40 @@ class ServerRTC {
             {
                 username: 'echo',
                 credential: 'echo123',
-                urls: ["turn:localhost:6984"]
+                urls: ["turn:turn.kuricki.com:6984"]
             }
         ]
 
         // inbound rtc connections (users)
-        this.inPeers = new Map();
-        // outbound rtc connections (users)
-        this.outPeers = new Array();
-        this.registeredEvents = new Map();
-        this.user = null;
+        this.peers = new Map();
     }
 
-    async broadcastAudio(data) {
+
+    /**
+     * @function handleNegotiationNeededEvent - Handles the negotiation needed event
+     * @param {RTCPeerConnection} peer 
+     */
+    async handleNegotiationNeededEvent(peer, user) {
+        console.log("Negotiation needed");
+        const offer = await peer.createOffer();
+        let parsed = sdpTransform.parse(offer.sdp);
+
+        //Edit the sdp to make the audio sound better
+        parsed.media[0].fmtp[0].config = goodOpusSettings;
+        offer.sdp = sdpTransform.write(parsed);
+
+        await peer.setLocalDescription(offer);
+
+        user.renegotiationNeeded({
+            sdp: peer.localDescription,
+            id: this.id
+        }, (description) => {
+            const desc = new webrtc.RTCSessionDescription(description);
+            peer.setRemoteDescription(desc).catch(e => console.log(e));
+        })
+    }
+
+    async broadcastAudio(data, user) {
         /**
          * data has
          * sdp (rtc connection description)
@@ -33,9 +55,16 @@ class ServerRTC {
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             peer.ontrack = (e) => {
-                console.log("peer.ontrack called, populating inPeers")
-                this.inPeers.set(id, { peer, audioStream: e.streams[0] });
+                console.log("peer.ontrack called, populating peers")
+                this.peers.set(id, { peer, audioStream: e.streams[0], audioSubscriptionsIds: [] });
             };
+
+            peer.onicecandidate = (e) => {
+                user.iceCandidate(e.candidate);
+            }
+
+            peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer, user) };
+
             const desc = new webrtc.RTCSessionDescription(sdp);
             peer.setRemoteDescription(desc)
                 .then(() => {
@@ -43,145 +72,92 @@ class ServerRTC {
                     peer.createAnswer()
                         .then((answer) => {
                             let parsed = sdpTransform.parse(answer.sdp);
-                            parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
+                            parsed.media[0].fmtp[0].config = goodOpusSettings;
                             answer.sdp = sdpTransform.write(parsed);
 
                             peer.setLocalDescription(answer)
                                 .then(() => {
                                     // if the audioStream and the peer is already populated, immediately return
-                                    if (this.inPeers.has(id)) return resolve(peer.localDescription);
+                                    if (this.peers.has(id)) return resolve(peer.localDescription);
 
-                                    console.log("populating inPeers, but audioStream is null")
-                                    this.inPeers.set(id, { peer, audioStream: null });
+                                    console.log("populating peers, but audioStream is null")
+                                    this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [] });
                                     // respond with the payload
                                     resolve(peer.localDescription);
                                 });
                         });
                 });
-        })
+        });
     }
 
     subscribeAudio(data, user) {
         /**
          * data has
-         * sdp (rtc connection description)
          * receiverId (String), senderId (String)
          */
 
         return new Promise((resolve, reject) => {
-            let { sdp, senderId, receiverId } = data;
+            let { senderId, receiverId } = data;
             if (!senderId) return reject("NO-SENDER-ID");
             if (!receiverId) return reject("NO-RECEIVER-ID");
             if (typeof senderId !== "string") senderId = String(senderId);
             if (typeof receiverId !== "string") receiverId = String(receiverId);
 
             //if audioUsers is not in senders
-            if (!this.inPeers.has(senderId)) return reject("NO-SENDER-CONNECTION");
+            if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
+            if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
-            this.outPeers = this.outPeers.filter((value, key) => {
-                if (value.receiver === receiverId) {
-                    console.log("User " + value.receiver + " is already connected to user " + senderId + "'s audio stream")
-                    value.peer.close();
-                    return false;
-                }
-                return true;
-            });
+            //get the peer and the stream
+            let outPeer = this.peers.get(receiverId).peer;
+            let stream = this.peers.get(senderId).audioStream.clone();
+            let asid = this.peers.get(receiverId).audioSubscriptionsIds;
 
-            const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
-            const desc = new webrtc.RTCSessionDescription(sdp);
+            //Check if the user is already subscribed
+            if (asid.includes(senderId)) return reject("ALREADY-SUBSCRIBED");
+            console.log("User " + receiverId + " subscribed to user " + senderId + "'s audio stream", stream);
+            //If not subscribed, subscribe
+            stream.getAudioTracks().forEach(track => outPeer.addTrack(track, stream));
+            asid.push(senderId);
 
-            peer.onicecandidate = (e) => {
-                user.iceCandidate(e.candidate, senderId)
-            }
-
-            peer.setRemoteDescription(desc)
-                .then(() => {
-                    console.log("User " + receiverId + " connected to user " + senderId + "'s audio stream");
-                    const stream = this.inPeers.get(senderId).audioStream;
-                    stream.getTracks().forEach(track => peer.addTrack(track, stream));
-                    peer.createAnswer()
-                        .then((answer) => {
-                            let parsed = sdpTransform.parse(answer.sdp);
-                            parsed.media[0].fmtp[0].config = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
-                            answer.sdp = sdpTransform.write(parsed);
-                            peer.setLocalDescription(answer)
-                                .then(() => {
-                                    resolve(peer.localDescription);
-                                    this.outPeers.push({ peer, sender: senderId, receiver: receiverId });
-                                });
-                        });
-                });
+            resolve(stream.id);
         });
     }
 
-    clearUserConnection(data) {
-        /**
-         * data has
-         * id (String)
-         */
-        let { id } = data;
-        if (!id) return "NO-ID";
-        if (typeof id !== "string") id = String(id);
-
-        if (this.inPeers.has(id)) {
-            this.inPeers.get(id).peer.close();
-            this.inPeers.delete(id);
-        }
-
-        this.outPeers = this.outPeers.filter((value, key) => {
-            if (value.sender === id || value.receiver === id) {
-                console.log("Closing all streams connected to user " + id);
-                value.peer.close();
-                return false;
-            }
-            return true;
-        });
-    }
-
-    async stopAudioBroadcast(data) {
-        /**
-         * data has
-         * id (String)
-        */
-        let { id } = data;
-        if (!id) return "NO-ID";
-        if (typeof id !== "string") id = String(id);
-
-        if (this.inPeers.has(id)) {
-            const { peer, audioStream } = this.inPeers.get(id);
-            audioStream.getTracks().forEach(track => track.stop());
-            peer.close();
-            this.inPeers.delete(id);
-            this.registeredEvents.delete(id);
-        }
-
-        return "OK";
-    }
-
-    async stopAudioSubscription(data) {
+    async unsubscribeAudio(data) {
         /**
          * data has
          * senderId (String), receiverId (String)
          */
-        let { senderId, receiverId } = data;
-        if (!senderId) return "NO-SENDER-ID";
-        if (!receiverId) return "NO-RECEIVER-ID";
-        if (typeof senderId !== "string") senderId = String(senderId);
-        if (typeof receiverId !== "string") receiverId = String(receiverId);
+        return new Promise((resolve, reject) => {
+            let { senderId, receiverId } = data;
+            if (!senderId) return reject("NO-SENDER-ID");
+            if (!receiverId) return reject("NO-RECEIVER-ID");
+            if (typeof senderId !== "string") senderId = String(senderId);
+            if (typeof receiverId !== "string") receiverId = String(receiverId);
+            if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
+            if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
-        this.outPeers = this.outPeers.filter((value, key) => {
-            if (value.sender === senderId && value.receiver === receiverId) {
-                console.log("Closing user " + receiverId + "'s connection to user " + senderId + "'s audio stream");
-                value.peer.close();
-                return false;
-            }
-            return true;
+            let asid = this.peers.get(receiverId).audioSubscriptionsIds;
+            this.peers.get(receiverId).audioSubscriptionsIds = asid.filter(id => id !== senderId);
+
+            console.log("User " + receiverId + " unsubscribed from user " + senderId + "'s audio stream");
         });
+    }
 
-        // this.registeredEvents.delete(receiverId);
-        // this.registeredEvents.delete(senderId);
+    clearUserConnection(data) {
 
-        return "OK";
+    }
+
+    async stopAudioBroadcast(data) {
+        let sender = data.id;
+        console.log("User" + sender + " requested stop broadcast");
+        if (!sender) return "NO-ID";
+        if (this.peers.has(sender)) {
+            console.log("User " + sender + " stopped broadcasting audio, closing connection");
+            let peer = this.peers.get(sender).peer;
+            peer.close();
+            this.peers.delete(sender);
+        }
     }
 
     addCandidate(data) {

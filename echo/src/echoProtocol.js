@@ -1,14 +1,12 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
-import audioRtcReceiver from "./audioRtcReceiver";
 
 const io = require("socket.io-client");
 var socket;
 var ping = 0;
 var pingInterval;
 var at = null;
-var incomingAudio = [];
 
-const SERVER_URL = "ws://localhost:6982"
+const SERVER_URL = "https://echo.kuricki.com"
 
 async function startTransmitting(id = 5) {
     if (at) {
@@ -25,38 +23,14 @@ function stopTransmitting() {
     }
 }
 
-function startReceiving(id = 5, remoteId = 5) {
-    console.log(id, remoteId)
-    incomingAudio = incomingAudio.filter(element => {
-        if (element.senderId === remoteId) {
-            element.close();
-            return false;
-        }
-
-        return true;
-    });
-
-    let r = new audioRtcReceiver(id, remoteId);
-    r.init();
-    incomingAudio.push(r);
+function startReceiving(remoteId) {
+    console.log("Starting input stream for", remoteId)
+    at.subscribeToAudio(remoteId);
 }
 
 function stopReceiving(remoteId) {
-    if (remoteId) {
-        incomingAudio = incomingAudio.filter(element => {
-            if (element.senderId === remoteId) {
-                element.close();
-                return false;
-            }
-
-            return true;
-        });
-    } else {
-        incomingAudio.forEach(element => {
-            element.close();
-        });
-
-        incomingAudio = [];
+    if (at) {
+        at.unsubscribeFromAudio(remoteId);
     }
 }
 
@@ -71,13 +45,11 @@ export function toggleMute(mutestate) {
 }
 
 export function setSpeakerDevice(deviceId) {
-    incomingAudio.forEach(element => {
-        element.setDevice(deviceId);
-    });
+    at.setOutputDevice(deviceId);
 }
 
 export function setSpeakerVolume(volume) {
-
+    at.setOutputVolume(volume);
 }
 
 export function setMicrophoneDevice(deviceId) {
@@ -94,25 +66,23 @@ export function setMicrophoneVolume(volume) {
 }
 
 export function setUserVolume(volume, remoteId) {
-    incomingAudio.forEach(element => {
-        if (element.senderId === remoteId) {
-            element.setVolume(volume);
-            return;
-        }
-    });
+    at.setPersonalVolume(volume, remoteId);
 }
 
 export function getSpeakerDevices() {
-    return audioRtcReceiver.getAudioDevices();
+    return audioRtcTransmitter.getOutputAudioDevices();
 }
 
 export function getMicrophoneDevices() {
-    return audioRtcTransmitter.getAudioDevices();
+    return audioRtcTransmitter.getInputAudioDevices();
 }
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io(SERVER_URL, { query: { id } });
+    socket = io(SERVER_URL, {
+        path: "/socket.io",
+        query: { id }
+    });
     startTransmitting(id);
 
     pingInterval = setInterval(() => {
@@ -144,7 +114,7 @@ export function openConnection(id) {
 
     socket.on("server.userJoinedChannel", (data) => {
         console.log("user", data.id, "joined your channel, starting listening audio");
-        startReceiving(id, data.id);
+        startReceiving(data.id);
     });
 
     socket.on("server.sendAudioState", (data) => {
@@ -161,11 +131,16 @@ export function openConnection(id) {
 
     socket.on("server.iceCandidate", (data) => {
         console.log("got ice candidate from server", data);
-        incomingAudio.forEach(element => {
-            if (element.senderId === data.id) {
-                element.addCandidate(data.data);
-            }
-        });
+        if (at) {
+            at.addCandidate(data.candidate);
+        }
+    });
+
+    socket.on("server.renegotiationNeeded", (data, cb) => {
+        console.log("got renegotiation request from server", data.data);
+        if (at) {
+            at.renegotiate(data.data.sdp, cb);
+        }
     });
 
     // socket.io.on("ping", () => { console.log("pong") });
@@ -175,11 +150,16 @@ export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
     socket.emit("client.join", { id, roomId });
-    //startReceiving(5, 5);
+    //startReceiving(1);
 }
 
 export function getPing() {
-    return ping;
+    if (at) {
+        at.getConnectionStats().then(stats => {
+            console.log(stats);
+            return stats.ping;
+        });
+    }
 }
 
 export function sendAudioState(id, data) {
@@ -200,6 +180,7 @@ export function closeConnection(id = null) {
     }
 
     stopReceiving();
+    stopTransmitting();
 
     if (socket) {
         socket.close();
@@ -220,9 +201,20 @@ export function broadcastAudio(data, cb) {
 }
 
 export function subscribeAudio(data, cb) {
+    console.log(data.senderId);
     if (socket) {
         socket.emit("client.subscribeAudio", data, (description) => {
-            console.log("---> Got description 'subscribeAudio' from socket")
+            console.log("---> Got description 'subscribeAudio' from socket", description)
+            cb(description);
+        });
+    }
+}
+
+export function unsubscribeAudio(data, cb) {
+    console.log(data.senderId);
+    if (socket) {
+        socket.emit("client.unsubscribeAudio", data, (description) => {
+            console.log("---> Got description 'subscribeAudio' from socket", description)
             cb(description);
         });
     }

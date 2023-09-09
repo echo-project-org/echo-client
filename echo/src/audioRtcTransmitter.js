@@ -5,7 +5,7 @@ const ep = require("./echoProtocol.js");
 const ICE_SERVERS = [{
   username: 'echo',
   credential: 'echo123',
-  urls: ["turn:localhost:6984"]
+  urls: ["turn:turn.kuricki.com:6984"]
 }];
 
 /**
@@ -16,15 +16,19 @@ const ICE_SERVERS = [{
  * @param {float} volume - The volume of the audio
  */
 class audioRtcTransmitter {
-  constructor(id, deviceId = 'default', volume = 1.0) {
+  constructor(id, deviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
     this.id = id;
     this.peer = null;
     this.stream = null;
     this.deviceId = deviceId;
+    this.outputDeviceId = outputDeviceId;
     this.isTransmitting = false;
     this.isMuted = false;
     this.volume = volume;
     this.gainNode = null;
+    this.context = null;
+    this.inputStreams = [];
+    this.streamIds = new Map();
 
     //Audio only constraints
     this.constraints = {
@@ -81,6 +85,42 @@ class audioRtcTransmitter {
     }
   }
 
+  setOutputDevice(deviceId) {
+    console.log("Setting output device", deviceId);
+    if (deviceId === 'default') {
+      return
+    }
+
+    this.outputDeviceId = deviceId;
+    this.inputStreams.forEach((stream) => {
+      stream.context.setSinkId(deviceId);
+    });
+  }
+
+  setOutputVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.inputStreams.forEach((stream) => {
+      stream.gainNode.gain.value = volume;
+    });
+  }
+
+  setPersonalVolume(volume, id) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.inputStreams.filter((stream) => {
+      return stream.stream.id === this.streamIds.get(id);
+    }).forEach((stream) => {
+      stream.personalGainNode.gain.value = volume;
+    });
+  }
+
   mute() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.enabled = false);
@@ -95,6 +135,52 @@ class audioRtcTransmitter {
     }
   }
 
+  handleTrackEvent(e) {
+    console.log("Got track event", e);
+    let context = new AudioContext();
+
+    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
+      context.setSinkId(this.outputDeviceId);
+    }
+
+    let source = context.createMediaStreamSource(e.streams[0]);
+    let destination = context.destination;
+
+    let personalGainNode = context.createGain();
+    let gainNode = context.createGain();
+    let muteNode = context.createGain();
+
+    source.connect(personalGainNode);
+    personalGainNode.connect(gainNode);
+    gainNode.connect(muteNode);
+    muteNode.connect(destination);
+
+    context.resume();
+
+    //Chrome bug fix
+
+    let audioElement = new Audio();
+    audioElement.srcObject = e.streams[0];
+    audioElement.autoplay = true;
+    audioElement.pause();
+
+    this.inputStreams.push({
+      stream: e.streams[0],
+      source: source,
+      context: context,
+      gainNode: gainNode,
+      muteNode: muteNode,
+      personalGainNode: personalGainNode,
+      audioElement: audioElement,
+    });
+  }
+
+  addCandidate(candidate) {
+    if (this.peer) {
+      this.peer.addIceCandidate(candidate);
+    }
+  }
+
   /**
    * @function createPeer - Creates the peer connection
    * @returns {RTCPeerConnection} peer - The peer connection
@@ -105,6 +191,18 @@ class audioRtcTransmitter {
     });
     //Handle the ice candidates
     peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
+
+    peer.onicecandidate = (e) => {
+      console.log("Got ice candidate from stun", e)
+      if (e.candidate) {
+        ep.sendIceCandidate({
+          candidate: e.candidate,
+          id: this.id,
+        });
+      }
+    }
+
+    peer.ontrack = (e) => { this.handleTrackEvent(e) };
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === 'failed') {
         peer.restartIce();
@@ -119,6 +217,56 @@ class audioRtcTransmitter {
 
     return peer;
   }
+  async subscribeToAudio(id) {
+    ep.subscribeAudio({
+      senderId: id,
+      receiverId: this.id,
+    }, (a) => {
+      if (a) {
+        //The socket returns the audio stream id
+        console.log(id, "subscribed to audio stream", a)
+        this.streamIds.set(id, a);
+      } else {
+        console.error("Failed to subscribe to audio");
+        return;
+      }
+    });
+  }
+
+  unsubscribeFromAudio(id = null) {
+    if (id) {
+      //find the stream id
+      let streamId = this.streamIds.get(id);
+      if (streamId) {
+        this.inputStreams.filter((stream) => {
+          //find every stream that matches the id
+          return stream.stream.id === streamId;
+        }).forEach((stream) => {
+          //close it
+          stream.stream.getTracks().forEach(track => track.stop());
+          stream.context.close();
+          stream.audioElement.pause();
+          stream.audioElement = null;
+        });
+      }
+      ep.unsubscribeAudio({ senderId: id, receiverId: this.id })
+    } else {
+      //unsubscribe from all streams
+      this.inputStreams.forEach((stream) => {
+        stream.stream.getTracks().forEach(track => track.stop());
+        stream.context.close();
+        stream.audioElement.pause();
+        stream.audioElement = null;
+      });
+      this.inputStreams = [];
+
+      for (const [key, value] of this.streamIds) {
+        console.log(key, "Unsubscribing from", key)
+        ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
+      }
+    }
+  }
+
 
   /**
    * @function handleNegotiationNeededEvent - Handles the negotiation needed event
@@ -141,6 +289,22 @@ class audioRtcTransmitter {
       const desc = new RTCSessionDescription(description);
       peer.setRemoteDescription(desc).catch(e => console.log(e));
     })
+  }
+
+  async renegotiate(remoteOffer, cb) {
+    const remoteDesc = new RTCSessionDescription(remoteOffer);
+    this.peer.setRemoteDescription(remoteDesc).then(() => {
+      console.log("Setting remote description for renegotiation");
+      this.peer.createAnswer().then((answer) => {
+        let parsed = sdpTransform.parse(answer.sdp);
+        parsed.media[0].fmtp[0].config = goodOpusSettings;
+        answer.sdp = sdpTransform.write(parsed);
+
+        this.peer.setLocalDescription(answer).then(() => {
+          cb(this.peer.localDescription);
+        });
+      });
+    });
   }
 
   /**
@@ -167,17 +331,74 @@ class audioRtcTransmitter {
     this.isTransmitting = false;
   }
 
+  async getConnectionStats() {
+    return new Promise((resolve, reject) => {
+      let ping = 0;
+      let bytesSent = 0;
+      let bytesReceived = 0;
+      let packetsSent = 0;
+      let packetsReceived = 0;
+      let jitterIn = 0;
+      let packetsLostIn = 0;
+
+      let stats = this.peer.getStats();
+      stats.then((res) => {
+        res.forEach((report) => {
+          if (report.type === "candidate-pair" && report.nominated) {
+            ping = report.currentRoundTripTime * 1000;
+            bytesSent = report.bytesSent;
+            bytesReceived = report.bytesReceived;
+            packetsSent = report.packetsSent;
+            packetsReceived = report.packetsReceived;
+          }
+
+          if (report.type === "remote-inbound.rtp" && report.kind === "audio") {
+            jitterIn = report.jitter * 1000;
+            packetsLostIn = report.packetsLost;
+          }
+        });
+        resolve({
+          ping: ping,
+          bytesSent: bytesSent,
+          bytesReceived: bytesReceived,
+          packetsSent: packetsSent,
+          packetsReceived: packetsReceived,
+          jitterIn: jitterIn,
+          packetsLostIn: packetsLostIn,
+        })
+      });
+    });
+  }
+
   /**
    * @function getAudioDevices - Gets the audio devices
    * @returns {Promise} - The promise that resolves when the audio devices are found
    */
-  static async getAudioDevices() {
+  static async getInputAudioDevices() {
     //Gets the audio devices
     return new Promise((resolve, reject) => {
       var out = [];
       navigator.mediaDevices.enumerateDevices().then((devices) => {
         devices.forEach((device, id) => {
           if (device.kind === "audioinput" && device.deviceId !== "communications" && device.deviceId !== "default") {
+            out.push({
+              "name": device.label,
+              "id": device.deviceId
+            })
+          }
+        })
+
+        resolve(out);
+      })
+    })
+  }
+
+  static async getOutputAudioDevices() {
+    return new Promise((resolve, reject) => {
+      var out = [];
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        devices.forEach((device, id) => {
+          if (device.kind === "audiooutput" && device.deviceId !== "communications" && device.deviceId !== "default") {
             out.push({
               "name": device.label,
               "id": device.deviceId
