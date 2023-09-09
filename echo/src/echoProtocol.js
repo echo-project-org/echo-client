@@ -44,6 +44,16 @@ export function toggleMute(mutestate) {
     }
 }
 
+export function toggleDeaf(deafstate) {
+    if (at) {
+        if (deafstate) {
+            at.deaf();
+        } else {
+            at.undeaf();
+        }
+    }
+}
+
 export function setSpeakerDevice(deviceId) {
     at.setOutputDevice(deviceId);
 }

@@ -66,7 +66,7 @@ function RoomControl({ state, setState, screenSharing }) {
   let navigate = useNavigate();
 
   useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
-  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); }, [deaf]);
+  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
 
   const muteAudio = new Audio(muteSound);
   muteAudio.volume = 0.6;

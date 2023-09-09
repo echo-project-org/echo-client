@@ -24,6 +24,7 @@ class audioRtcTransmitter {
     this.outputDeviceId = outputDeviceId;
     this.isTransmitting = false;
     this.isMuted = false;
+    this.isDeaf = false;
     this.volume = volume;
     this.gainNode = null;
     this.context = null;
@@ -132,6 +133,24 @@ class audioRtcTransmitter {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.enabled = true);
       this.isMuted = false;
+    }
+  }
+
+  deaf() {
+    if (this.inputStreams) {
+      this.inputStreams.forEach(inputStream => {
+        inputStream.stream.getTracks().forEach(track => track.enabled = false);
+      });
+      this.isDeaf = true;
+    }
+  }
+
+  undeaf() {
+    if (this.inputStreams) {
+      this.inputStreams.forEach(inputStream => {
+        inputStream.stream.getTracks().forEach(track => track.enabled = true);
+      });
+      this.isDeaf = false;
     }
   }
 
