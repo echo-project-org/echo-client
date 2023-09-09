@@ -122,7 +122,7 @@ class audioRtcTransmitter {
     context.resume();
 
     //Chrome bug fix
-    
+
     let audioElement = new Audio();
     audioElement.srcObject = e.streams[0];
     audioElement.autoplay = true;
@@ -198,10 +198,10 @@ class audioRtcTransmitter {
   }
 
   unsubscribeFromAudio(id = null) {
-    if(id){
+    if (id) {
       //find the stream id
       let streamId = this.streamIds.get(id);
-      if(streamId){
+      if (streamId) {
         this.inputStreams.filter((stream) => {
           //find every stream that matches the id
           return stream.stream.id === streamId;
@@ -293,13 +293,31 @@ class audioRtcTransmitter {
    * @function getAudioDevices - Gets the audio devices
    * @returns {Promise} - The promise that resolves when the audio devices are found
    */
-  static async getAudioDevices() {
+  static async getInputAudioDevices() {
     //Gets the audio devices
     return new Promise((resolve, reject) => {
       var out = [];
       navigator.mediaDevices.enumerateDevices().then((devices) => {
         devices.forEach((device, id) => {
           if (device.kind === "audioinput" && device.deviceId !== "communications" && device.deviceId !== "default") {
+            out.push({
+              "name": device.label,
+              "id": device.deviceId
+            })
+          }
+        })
+
+        resolve(out);
+      })
+    })
+  }
+
+  static async getOutputAudioDevices() {
+    return new Promise((resolve, reject) => {
+      var out = [];
+      navigator.mediaDevices.enumerateDevices().then((devices) => {
+        devices.forEach((device, id) => {
+          if (device.kind === "audiooutput" && device.deviceId !== "communications" && device.deviceId !== "default") {
             out.push({
               "name": device.label,
               "id": device.deviceId
