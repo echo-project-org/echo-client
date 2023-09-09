@@ -99,7 +99,7 @@ function ScreenShareSelector() {
                     <Zoom in={modalOpen}>
                         <Box sx={modalStyle}>
                             <div className='modalDiv'>
-                                <Typography id="modal-modal-title" variant="h3">
+                                <Typography id="modal-modal-title" variant="h3" className='noselect'>
                                     Share your screen
                                 </Typography>
 

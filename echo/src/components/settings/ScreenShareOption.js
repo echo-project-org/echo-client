@@ -6,8 +6,10 @@ import React from 'react'
 function ScreenShareOption({ device }) {
     return (
         <div className='screenShareOption'>
-            <img src={device.thumbnail.toDataURL()} alt={device.name} />
-            {device.name}
+            <img src={device.thumbnail.toDataURL()} alt={device.name} className='noselect'/>
+            <p className='noselect'>
+                {device.name}
+            </p>
         </div>
     )
 }
