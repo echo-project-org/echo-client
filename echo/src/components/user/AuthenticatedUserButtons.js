@@ -4,7 +4,8 @@ import React from 'react'
 import { useNavigate } from "react-router-dom";
 
 const ep = require('../../echoProtocol');
-var api = require('../../api')
+console.log(ep);
+var api = require('../../api');
 
 const theme = createTheme({
   palette: {

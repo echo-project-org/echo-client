@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Component } from 'react';
 import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 
 const api = require("../../api");
 
 function Room({ active, onClick, data }) {
-  const [onlineUsers, setOnlineUsers] = useState([])
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const _onClick = () => {
     if (active) return;

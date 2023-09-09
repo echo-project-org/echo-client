@@ -1,234 +1,250 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
+import Emitter from "wildemitter";
 
 const io = require("socket.io-client");
-var socket;
-var ping = 0;
-var pingInterval;
-var at = null;
 
-const SERVER_URL = "https://echo.kuricki.com"
+class EchoProtocol {
+    constructor() {
+        console.log("created echoProtocol")
 
-async function startTransmitting(id = 5) {
-    if (at) {
-        stopTransmitting();
+        this.socket = null;
+        this.ping = 0;
+        this.pingInterval = null;
+        this.at = null;
+
+        this.SERVER_URL = "https://echo.kuricki.com";
     }
-    at = new audioRtcTransmitter(id);
-    await at.init();
-}
 
-function stopTransmitting() {
-    if (at) {
-        at.close();
-        at = null;
-    }
-}
-
-function startReceiving(remoteId) {
-    console.log("Starting input stream for", remoteId)
-    at.subscribeToAudio(remoteId);
-}
-
-function stopReceiving(remoteId) {
-    if (at) {
-        at.unsubscribeFromAudio(remoteId);
-    }
-}
-
-export function toggleMute(mutestate) {
-    if (at) {
-        if (mutestate) {
-            at.mute();
-        } else {
-            at.unmute();
-        }
-    }
-}
-
-export function toggleDeaf(deafstate) {
-    if (at) {
-        if (deafstate) {
-            at.deaf();
-        } else {
-            at.undeaf();
-        }
-    }
-}
-
-export function setSpeakerDevice(deviceId) {
-    at.setOutputDevice(deviceId);
-}
-
-export function setSpeakerVolume(volume) {
-    at.setOutputVolume(volume);
-}
-
-export function setMicrophoneDevice(deviceId) {
-    if (at) {
-        at.close();
-        at = new audioRtcTransmitter(deviceId);
-    }
-}
-
-export function setMicrophoneVolume(volume) {
-    if (at) {
-        at.setVolume(volume);
-    }
-}
-
-export function setUserVolume(volume, remoteId) {
-    at.setPersonalVolume(volume, remoteId);
-}
-
-export function getSpeakerDevices() {
-    return audioRtcTransmitter.getOutputAudioDevices();
-}
-
-export function getMicrophoneDevices() {
-    return audioRtcTransmitter.getInputAudioDevices();
-}
-
-export function openConnection(id) {
-    socket = io(SERVER_URL, {
-        path: "/socket.io",
-        query: { id }
-    });
-    startTransmitting(id);
-
-    pingInterval = setInterval(() => {
-        const start = Date.now();
-
-        socket.emit("client.ping", () => {
-            const duration = Date.now() - start;
-            ping = duration;
+    _makeIO(id) {
+        this.socket = io(this.SERVER_URL, {
+            path: "/socket.io",
+            query: { id }
         });
-    }, 5000);
+    }
 
-    socket.on("server.ready", (remoteId) => {
-        console.log("opened", remoteId);
-    });
+    _startPing() {
+        this.pingInterval = setInterval(() => {
+            const start = Date.now();
+    
+            this.socket.emit("client.ping", () => {
+                const duration = Date.now() - start;
+                this.ping = duration;
+            });
+        }, 5000);
+    }
 
-    socket.io.on("close", () => {
-        console.log("connection closed");
-        stopTransmitting();
-        stopReceiving();
-    })
+    getPing() {
+        return new Promise((resolve, reject) => {
+            if (this.at) {
+                this.at.getConnectionStats().then(stats => {
+                    resolve(stats.ping);
+                });
+            }
+        });
+    }
 
-    socket.io.on("error", (error) => {
-        console.error(error);
-        alert("The audio server connection has errored out")
-        stopTransmitting();
-        stopReceiving();
-        socket.close();
-    });
+    openConnection(id) {
+        this._makeIO(id);
+        this.startTransmitting(id);
+    
+        this.socket.on("server.ready", (remoteId) => {
+            console.log("opened", remoteId);
+        });
+    
+        this.socket.io.on("close", () => {
+            console.log("connection closed");
+            this.stopTransmitting();
+            this.stopReceiving();
+        })
+    
+        this.socket.io.on("error", (error) => {
+            console.error(error);
+            alert("The audio server connection has errored out")
+            this.stopTransmitting();
+            this.stopReceiving();
+            this.socket.close();
+        });
+    
+        this.socket.on("server.userJoinedChannel", (data) => {
+            console.log("user", data.id, "joined your channel, starting listening audio");
+            this.startReceiving(data.id);
+            this.emit("userJoinedChannel", data);
+            // render the component Room with the new user
+    
+        });
+    
+        this.socket.on("server.sendAudioState", (data) => {
+            console.log("got user audio info from server", data);
+            if (!data.deaf || !data.mute) {
+                //startReceiving();
+            }
+        });
+    
+        this.socket.on("server.userLeftChannel", (data) => {
+            console.log("user", data.id, "left your channel, stopping listening audio");
+            this.stopReceiving(data.id);
+        });
+    
+        this.socket.on("server.iceCandidate", (data) => {
+            if (this.at) {
+                this.at.addCandidate(data.candidate);
+            }
+        });
+    
+        this.socket.on("server.renegotiationNeeded", (data, cb) => {
+            if (this.at) {
+                this.at.renegotiate(data.data.sdp, cb);
+            }
+        });
+    }
 
-    socket.on("server.userJoinedChannel", (data) => {
-        console.log("user", data.id, "joined your channel, starting listening audio");
-        startReceiving(data.id);
-    });
-
-    socket.on("server.sendAudioState", (data) => {
-        console.log("got user audio info from server", data);
-        if (!data.deaf || !data.mute) {
-            //startReceiving();
+    async startTransmitting(id = 5) {
+        if (this.at) {
+            this.stopTransmitting();
         }
-    });
+        this.at = new audioRtcTransmitter(id);
+        await this.at.init();
+    }
 
-    socket.on("server.userLeftChannel", (data) => {
-        console.log("user", data.id, "left your channel, stopping listening audio");
-        stopReceiving(data.id);
-    });
-
-    socket.on("server.iceCandidate", (data) => {
-        if (at) {
-            at.addCandidate(data.candidate);
+    stopTransmitting() {
+        if (this.at) {
+            this.at.close();
+            this.at = null;
         }
-    });
+    }
 
-    socket.on("server.renegotiationNeeded", (data, cb) => {
-        if (at) {
-            at.renegotiate(data.data.sdp, cb);
+    startReceiving(remoteId) {
+        console.log("Starting input stream for", remoteId)
+        this.at.subscribeToAudio(remoteId);
+    }
+
+    stopReceiving(remoteId) {
+        if (this.at) {
+            this.at.unsubscribeFromAudio(remoteId);
         }
-    });
-}
+    }
 
-export function joinRoom(id, roomId) {
-    console.log("joining event called", id, roomId)
-    // join the transmission on current room
-    socket.emit("client.join", { id, roomId });
-    //startReceiving(1);
-}
+    toggleMute(mutestate) {
+        if (this.at) {
+            if (mutestate) return this.at.mute();
+            this.at.unmute();
+        }
+    }
 
-export function getPing() {
-    return new Promise((resolve, reject) => {
-        if (at) {
-            at.getConnectionStats().then(stats => {
-                resolve(stats.ping);
+    toggleDeaf(deafstate) {
+        if (this.at) {
+            if (deafstate) return this.at.deaf();
+            this.at.undeaf();
+        }
+    }
+
+    setSpeakerDevice(deviceId) {
+        this.at.setOutputDevice(deviceId);
+    }
+
+    setSpeakerVolume(volume) {
+        this.at.setOutputVolume(volume);
+    }
+
+    setMicrophoneDevice(deviceId) {
+        if (this.at) {
+            this.at.close();
+            this.at = new audioRtcTransmitter(deviceId);
+        }
+    }
+
+    setMicrophoneVolume(volume) {
+        if (this.at) {
+            this.at.setVolume(volume);
+        }
+    }
+
+    setUserVolume(volume, remoteId) {
+        this.at.setPersonalVolume(volume, remoteId);
+    }
+
+    getSpeakerDevices() {
+        return audioRtcTransmitter.getOutputAudioDevices();
+    }
+
+    getMicrophoneDevices() {
+        return audioRtcTransmitter.getInputAudioDevices();
+    }
+
+    joinRoom(id, roomId) {
+        console.log("joining event called", id, roomId)
+        // join the transmission on current room
+        this.socket.emit("client.join", { id, roomId });
+        //startReceiving(1);
+    }
+
+    sendAudioState(id, data) {
+        if (this.socket) this.socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
+    }
+    
+    exitFromRoom(id) {
+        console.log("exit from room", id)
+        this.stopReceiving();
+        if (this.socket) this.socket.emit("client.exit", { id });
+    }
+
+    closeConnection(id = null) {
+        if (this.socket) {
+            if (!id) id = localStorage.getItem('id');
+            console.log("closing connection with socket")
+            this.socket.emit("client.end", { id });
+        }
+    
+        this.stopReceiving();
+        this.stopTransmitting();
+    
+        if (this.socket) {
+            this.socket.close();
+            this.socket = null;
+        }
+        clearInterval(this.pingInterval);
+        // if we let client handle disconnection, then recursive happens cause of the event "close"
+        // socket.close();
+    }
+
+    broadcastAudio(data, cb) {
+        if (this.socket) {
+            this.socket.emit("client.broadcastAudio", data, (description) => {
+                cb(description);
             });
         }
-    });
-}
-
-export function sendAudioState(id, data) {
-    if (socket) socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
-}
-
-export function exitFromRoom(id) {
-    console.log("exit from room", id)
-    stopReceiving();
-    if (socket) socket.emit("client.exit", { id });
-}
-
-export function closeConnection(id = null) {
-    if (socket) {
-        if (!id) id = localStorage.getItem('id');
-        console.log("closing connection with socket")
-        socket.emit("client.end", { id });
     }
 
-    stopReceiving();
-    stopTransmitting();
-
-    if (socket) {
-        socket.close();
-        socket = null;
+    subscribeAudio(data, cb) {
+        if (this.socket) {
+            this.socket.emit("client.subscribeAudio", data, (description) => {
+                cb(description);
+            });
+        }
     }
-    clearInterval(pingInterval);
-    // if we let client handle disconnection, then recursive happens cause of the event "close"
-    // socket.close();
-}
 
-export function broadcastAudio(data, cb) {
-    if (socket) {
-        socket.emit("client.broadcastAudio", data, (description) => {
-            cb(description);
-        });
+    unsubscribeAudio(data, cb) {
+        if (this.socket) {
+            this.socket.emit("client.unsubscribeAudio", data, (description) => {
+                cb(description);
+            });
+        }
+    }
+
+    stopAudioBroadcast(data) {
+        if (this.socket) {
+            this.socket.emit("client.stopAudioBroadcast", data);
+        }
+    }
+    
+    sendIceCandidate(data) {
+        if (this.socket) {
+            this.socket.emit("client.iceCandidate", data);
+        }
     }
 }
 
-export function subscribeAudio(data, cb) {
-    if (socket) {
-        socket.emit("client.subscribeAudio", data, (description) => {
-            cb(description);
-        });
-    }
-}
+Emitter.mixin(EchoProtocol);
 
-export function unsubscribeAudio(data, cb) {
-    if (socket) {
-        socket.emit("client.unsubscribeAudio", data, (description) => {
-            cb(description);
-        });
-    }
-}
-
-export function stopAudioBroadcast(data) {
-    if (socket) {
-        socket.emit("client.stopAudioBroadcast", data);
-    }
-}
-
-export function sendIceCandidate(data) {
-    if (socket) {
-        socket.emit("client.iceCandidate", data);
-    }
-}
+const ep = new EchoProtocol();
+export default ep;
