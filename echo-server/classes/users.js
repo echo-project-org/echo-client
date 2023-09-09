@@ -22,7 +22,7 @@ class User {
         // when user join a room, we send the connected user streams to the new user ("hey, send me the requested stream")
         this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
         this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
-        this.socket.on("client.stopAudioSubscription", (data) => this.stopAudioSubscription(data));
+        this.socket.on("client.unsubscribeAudio", (data) => this.unsubscribeAudio(data));
         // receive ice candidate from user
         this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
     }
@@ -148,9 +148,9 @@ class User {
         }
     }
     
-    stopAudioSubscription(data) {
+    unsubscribeAudio(data) {
         if (this.rtc) {
-            const resp = this.rtc.stopAudioSubscription(data);
+            const resp = this.rtc.unsubscribeAudio(data);
             switch (resp) {
                 case "NO-SENDER-ID":
                     console.log("NO-SENDER-ID");
