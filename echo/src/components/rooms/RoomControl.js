@@ -85,8 +85,8 @@ function RoomControl({ state, setState, screenSharing }) {
   var interval = null;
   const updatePing = () => {
     interval = setInterval(() => {
-      setPing(ep.getPing());
-    }, 1000);
+      ep.getPing().then(ping => setPing(ping));
+    }, 500);
   }
 
   const stopUpdatePing = () => {

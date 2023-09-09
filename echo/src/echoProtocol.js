@@ -159,11 +159,13 @@ export function joinRoom(id, roomId) {
 }
 
 export function getPing() {
-    if (at) {
-        at.getConnectionStats().then(stats => {
-            return stats.ping;
-        });
-    }
+    return new Promise((resolve, reject) => {
+        if (at) {
+            at.getConnectionStats().then(stats => {
+                resolve(stats.ping);
+            });
+        }
+    });
 }
 
 export function sendAudioState(id, data) {
