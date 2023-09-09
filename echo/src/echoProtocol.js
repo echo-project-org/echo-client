@@ -5,7 +5,6 @@ var socket;
 var ping = 0;
 var pingInterval;
 var at = null;
-var incomingAudio = [];
 
 const SERVER_URL = "https://echo.kuricki.com"
 
