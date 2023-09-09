@@ -240,174 +240,173 @@ class EchoProtocol {
     }
   }
 
-    startReceiving(remoteId) {
-        console.log("Starting input stream for", remoteId)
-        this.at.subscribeToAudio(remoteId);
+  startReceiving(remoteId) {
+    console.log("Starting input stream for", remoteId)
+    this.at.subscribeToAudio(remoteId);
+  }
+
+  stopReceiving(remoteId) {
+    if (this.at) {
+      this.at.unsubscribeFromAudio(remoteId);
+    }
+  }
+
+  toggleMute(mutestate) {
+    if (this.at) {
+      if (mutestate) return this.at.mute();
+      this.at.unmute();
+    }
+  }
+
+  toggleDeaf(deafstate) {
+    if (this.at) {
+      if (deafstate) return this.at.deaf();
+      this.at.undeaf();
+    }
+  }
+
+  setSpeakerDevice(deviceId) {
+    this.at.setOutputDevice(deviceId);
+  }
+
+  setSpeakerVolume(volume) {
+    this.at.setOutputVolume(volume);
+  }
+
+  setMicrophoneDevice(deviceId) {
+    if (this.at) {
+      this.at.close();
+      this.at = new audioRtcTransmitter(deviceId);
+    }
+  }
+
+  setMicrophoneVolume(volume) {
+    if (this.at) {
+      this.at.setVolume(volume);
+    }
+  }
+
+  setUserVolume(volume, remoteId) {
+    this.at.setPersonalVolume(volume, remoteId);
+  }
+
+  getSpeakerDevices() {
+    return audioRtcTransmitter.getOutputAudioDevices();
+  }
+
+  getMicrophoneDevices() {
+    return audioRtcTransmitter.getInputAudioDevices();
+  }
+
+  getVideoDevices() {
+    return videoRtc.getVideoSources();
+  }
+
+  joinRoom(id, roomId) {
+    console.log("joining event called", id, roomId)
+    // join the transmission on current room
+    this.socket.emit("client.join", { id, roomId });
+    //startReceiving(1);
+  }
+
+  sendAudioState(id, data) {
+    if (this.socket) this.socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
+  }
+
+  exitFromRoom(id) {
+    console.log("exit from room", id)
+    this.stopReceiving();
+    if (this.socket) this.socket.emit("client.exit", { id });
+  }
+
+  closeConnection(id = null) {
+    if (this.socket) {
+      if (!id) id = localStorage.getItem('id');
+      console.log("closing connection with socket")
+      this.socket.emit("client.end", { id });
     }
 
-    stopReceiving(remoteId) {
-        if (this.at) {
-            this.at.unsubscribeFromAudio(remoteId);
-        }
+    this.stopReceiving();
+    this.stopTransmitting();
+
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
     }
+    clearInterval(this.pingInterval);
+    // if we let client handle disconnection, then recursive happens cause of the event "close"
+    // socket.close();
+  }
 
-    toggleMute(mutestate) {
-        if (this.at) {
-            if (mutestate) return this.at.mute();
-            this.at.unmute();
-        }
+  broadcastAudio(data, cb) {
+    if (this.socket) {
+      this.socket.emit("client.broadcastAudio", data, (description) => {
+        cb(description);
+      });
     }
+  }
 
-    toggleDeaf(deafstate) {
-        if (this.at) {
-            if (deafstate) return this.at.deaf();
-            this.at.undeaf();
-        }
+  subscribeAudio(data, cb) {
+    if (this.socket) {
+      this.socket.emit("client.subscribeAudio", data, (description) => {
+        cb(description);
+      });
     }
+  }
 
-    setSpeakerDevice(deviceId) {
-        this.at.setOutputDevice(deviceId);
+  unsubscribeAudio(data, cb) {
+    if (this.socket) {
+      this.socket.emit("client.unsubscribeAudio", data, (description) => {
+        cb(description);
+      });
     }
+  }
 
-    setSpeakerVolume(volume) {
-        this.at.setOutputVolume(volume);
+  stopAudioBroadcast(data) {
+    if (this.socket) {
+      this.socket.emit("client.stopAudioBroadcast", data);
     }
+  }
 
-    setMicrophoneDevice(deviceId) {
-        if (this.at) {
-            this.at.close();
-            this.at = new audioRtcTransmitter(deviceId);
-        }
+  sendIceCandidate(data) {
+    if (this.socket) {
+      this.socket.emit("client.iceCandidate", data);
     }
+  }
 
-    setMicrophoneVolume(volume) {
-        if (this.at) {
-            this.at.setVolume(volume);
-        }
+  sendVideoIceCandidate(data) {
+    if (this.socket) {
+      this.socket.emit("client.videoIceCandidate", data);
     }
+  }
 
-    setUserVolume(volume, remoteId) {
-        this.at.setPersonalVolume(volume, remoteId);
+  broadcastVideo(data, cb) {
+    if (this.socket) {
+      this.socket.emit("client.broadcastVideo", data, (description) => {
+        cb(description);
+      });
     }
+  }
 
-    getSpeakerDevices() {
-        return audioRtcTransmitter.getOutputAudioDevices();
+  stopVideoBroadcast(data) {
+    if (this.socket) {
+      this.socket.emit("client.stopVideoBroadcast", data);
     }
+  }
 
-    getMicrophoneDevices() {
-        return audioRtcTransmitter.getInputAudioDevices();
+  subscribeVideo(data, cb) {
+    if (this.socket) {
+      this.socket.emit("client.subscribeVideo", data, (description) => {
+        cb(description);
+      });
     }
+  }
 
-    getVideoDevices() {
-        return videoRtc.getVideoSources();
-    }
-
-    joinRoom(id, roomId) {
-        console.log("joining event called", id, roomId)
-        // join the transmission on current room
-        this.socket.emit("client.join", { id, roomId });
-        //startReceiving(1);
-    }
-
-    sendAudioState(id, data) {
-        if (this.socket) this.socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
-    }
-
-    exitFromRoom(id) {
-        console.log("exit from room", id)
-        this.stopReceiving();
-        if (this.socket) this.socket.emit("client.exit", { id });
-    }
-
-    closeConnection(id = null) {
-        if (this.socket) {
-            if (!id) id = localStorage.getItem('id');
-            console.log("closing connection with socket")
-            this.socket.emit("client.end", { id });
-        }
-
-        this.stopReceiving();
-        this.stopTransmitting();
-
-        if (this.socket) {
-            this.socket.close();
-            this.socket = null;
-        }
-        clearInterval(this.pingInterval);
-        // if we let client handle disconnection, then recursive happens cause of the event "close"
-        // socket.close();
-    }
-
-    broadcastAudio(data, cb) {
-        if (this.socket) {
-            this.socket.emit("client.broadcastAudio", data, (description) => {
-                cb(description);
-            });
-        }
-    }
-
-    subscribeAudio(data, cb) {
-        if (this.socket) {
-            this.socket.emit("client.subscribeAudio", data, (description) => {
-                cb(description);
-            });
-        }
-    }
-
-    unsubscribeAudio(data, cb) {
-        if (this.socket) {
-            this.socket.emit("client.unsubscribeAudio", data, (description) => {
-                cb(description);
-            });
-        }
-    }
-
-    stopAudioBroadcast(data) {
-        if (this.socket) {
-            this.socket.emit("client.stopAudioBroadcast", data);
-        }
-    }
-
-    sendIceCandidate(data) {
-        if (this.socket) {
-            this.socket.emit("client.iceCandidate", data);
-        }
-    }
-
-    sendVideoIceCandidate(data) {
-        if (this.socket) {
-            this.socket.emit("client.videoIceCandidate", data);
-        }
-    }
-
-    broadcastVideo(data, cb) {
-        if (this.socket) {
-            this.socket.emit("client.broadcastVideo", data, (description) => {
-                cb(description);
-            });
-        }
-    }
-
-    stopVideoBroadcast(data) {
-        if (this.socket) {
-            this.socket.emit("client.stopVideoBroadcast", data);
-        }
-    }
-
-    subscribeVideo(data, cb) {
-        if (this.socket) {
-            this.socket.emit("client.subscribeVideo", data, (description) => {
-                cb(description);
-            });
-        }
-    }
-
-    unsubscribeVideo(data, cb) {
-        if (this.socket) {
-            this.socket.emit("client.unsubscribeVideo", data, (description) => {
-                cb(description);
-            });
-        }
+  unsubscribeVideo(data, cb) {
+    if (this.socket) {
+      this.socket.emit("client.unsubscribeVideo", data, (description) => {
+        cb(description);
+      });
     }
   }
 }
