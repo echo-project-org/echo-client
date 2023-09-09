@@ -1,5 +1,6 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
+import videoRtc from "./videoRtc";
 
 const io = require("socket.io-client");
 
@@ -169,6 +170,10 @@ class EchoProtocol {
 
     getMicrophoneDevices() {
         return audioRtcTransmitter.getInputAudioDevices();
+    }
+
+    getVideoDevices() {
+        return videoRtc.getVideoSources();
     }
 
     joinRoom(id, roomId) {
