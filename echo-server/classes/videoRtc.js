@@ -33,7 +33,7 @@ class VideoRTC {
         })
     }
 
-    async broadCastVideo(data, user) {
+    async broadcastVideo(data, user) {
         return new Promise((resolve, reject) => {
             let { sdp, id } = data;
             if (!id) return reject("NO-ID");
