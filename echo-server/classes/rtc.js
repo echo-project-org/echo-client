@@ -141,6 +141,7 @@ class ServerRTC {
             this.peers.get(receiverId).audioSubscriptionsIds = asid.filter(id => id !== senderId);
 
             console.log("User " + receiverId + " unsubscribed from user " + senderId + "'s audio stream");
+            resolve(true);
         });
     }
 
@@ -161,9 +162,11 @@ class ServerRTC {
     }
 
     addCandidate(data) {
-        if (this.peerConnection) {
-            this.peerConnection.addIceCandidate(data.candidate);
-        }
+        let sender = data.id;
+        if (!sender) return reject("NO-ID");
+        if (!this.peers.has(sender)) return reject("SENDER-NOT-FOUND");
+        let peer = this.peers.get(sender).peer;
+        peer.addIceCandidate(data.candidate);
     }
 }
 
