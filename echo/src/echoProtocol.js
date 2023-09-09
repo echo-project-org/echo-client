@@ -25,7 +25,7 @@ class EchoProtocol {
     _startPing() {
         this.pingInterval = setInterval(() => {
             const start = Date.now();
-    
+
             this.socket.emit("client.ping", () => {
                 const duration = Date.now() - start;
                 this.ping = duration;
@@ -46,17 +46,17 @@ class EchoProtocol {
     openConnection(id) {
         this._makeIO(id);
         this.startTransmitting(id);
-    
+
         this.socket.on("server.ready", (remoteId) => {
             console.log("opened", remoteId);
         });
-    
+
         this.socket.io.on("close", () => {
             console.log("connection closed");
             this.stopTransmitting();
             this.stopReceiving();
         })
-    
+
         this.socket.io.on("error", (error) => {
             console.error(error);
             alert("The audio server connection has errored out")
@@ -64,33 +64,33 @@ class EchoProtocol {
             this.stopReceiving();
             this.socket.close();
         });
-    
+
         this.socket.on("server.userJoinedChannel", (data) => {
             console.log("user", data.id, "joined your channel, starting listening audio");
             this.startReceiving(data.id);
             this.emit("userJoinedChannel", data);
             // render the component Room with the new user
-    
+
         });
-    
+
         this.socket.on("server.sendAudioState", (data) => {
             console.log("got user audio info from server", data);
             if (!data.deaf || !data.mute) {
                 //startReceiving();
             }
         });
-    
+
         this.socket.on("server.userLeftChannel", (data) => {
             console.log("user", data.id, "left your channel, stopping listening audio");
             this.stopReceiving(data.id);
         });
-    
+
         this.socket.on("server.iceCandidate", (data) => {
             if (this.at) {
                 this.at.addCandidate(data.candidate);
             }
         });
-    
+
         this.socket.on("server.renegotiationNeeded", (data, cb) => {
             if (this.at) {
                 this.at.renegotiate(data.data.sdp, cb);
@@ -181,7 +181,7 @@ class EchoProtocol {
     sendAudioState(id, data) {
         if (this.socket) this.socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
     }
-    
+
     exitFromRoom(id) {
         console.log("exit from room", id)
         this.stopReceiving();
@@ -194,10 +194,10 @@ class EchoProtocol {
             console.log("closing connection with socket")
             this.socket.emit("client.end", { id });
         }
-    
+
         this.stopReceiving();
         this.stopTransmitting();
-    
+
         if (this.socket) {
             this.socket.close();
             this.socket = null;
@@ -236,10 +236,46 @@ class EchoProtocol {
             this.socket.emit("client.stopAudioBroadcast", data);
         }
     }
-    
+
     sendIceCandidate(data) {
         if (this.socket) {
             this.socket.emit("client.iceCandidate", data);
+        }
+    }
+
+    sendVideoIceCandidate(data) {
+        if (this.socket) {
+            this.socket.emit("client.videoIceCandidate", data);
+        }
+    }
+
+    broadcastVideo(data, cb) {
+        if (this.socket) {
+            this.socket.emit("client.broadcastVideo", data, (description) => {
+                cb(description);
+            });
+        }
+    }
+
+    stopVideoBroadcast(data) {
+        if (this.socket) {
+            this.socket.emit("client.stopVideoBroadcast", data);
+        }
+    }
+
+    subscribeVideo(data, cb) {
+        if (this.socket) {
+            this.socket.emit("client.subscribeVideo", data, (description) => {
+                cb(description);
+            });
+        }
+    }
+
+    unsubscribeVideo(data, cb) {
+        if (this.socket) {
+            this.socket.emit("client.unsubscribeVideo", data, (description) => {
+                cb(description);
+            });
         }
     }
 }
