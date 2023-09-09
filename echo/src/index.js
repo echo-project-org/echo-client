@@ -4,6 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import EchoProtocol from './echoProtocol';
+const ep = new EchoProtocol();
+export { ep };
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <App />

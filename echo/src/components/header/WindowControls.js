@@ -9,8 +9,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 
+import { ep } from "../../index";
+
 const api = require('../../api');
-const ep = require('../../echoProtocol');
 const { ipcRenderer } = window.require('electron');
 
 const theme = createTheme({

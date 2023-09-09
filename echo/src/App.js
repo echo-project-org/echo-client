@@ -5,8 +5,7 @@ import AnimatedRoutes from './components/mainpage/AnimatedRoutes';
 import WindowControls from './components/header/WindowControls';
 
 function App() {
-  useEffect(() => {
-  }, [])
+  useEffect(() => { }, []);
   
   return (
     <div className="App">

@@ -8,7 +8,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 
-const ep = require('../../echoProtocol');
+import { ep } from "../../index";
 
 const theme = createTheme({
   components: {

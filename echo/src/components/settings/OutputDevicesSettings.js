@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 import React from 'react'
 
-const ep = require('../../echoProtocol');
+import { ep } from "../../index";
 
 const theme = createTheme({
   components: {

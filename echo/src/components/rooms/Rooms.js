@@ -2,7 +2,8 @@ import "../../css/rooms.css"
 import { useState, useEffect } from 'react';
 import Room from './Room';
 
-const ep = require("../../echoProtocol");
+import { ep } from "../../index";
+
 const api = require("../../api");
 
 const joinSound = require("../../audio/join.mp3");

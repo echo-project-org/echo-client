@@ -1,6 +1,7 @@
+import { ep } from "./index";
+
 const sdpTransform = require('sdp-transform');
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
-const ep = require("./echoProtocol.js");
 
 const ICE_SERVERS = [{
   username: 'echo',

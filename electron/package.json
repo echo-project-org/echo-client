@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
-    "wait-on": "^7.0.1",
-    "wildemitter": "^1.2.1"
+    "wait-on": "^7.0.1"
   }
 }
