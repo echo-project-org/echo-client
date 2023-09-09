@@ -102,9 +102,12 @@ class Rooms {
 
     removeUserFromRooms(id) {
         if (this.connectedClients.has(id)) {
-            this.rooms.forEach((room, id, arr) => {
+            this.rooms.forEach((room, _, arr) => {
+                console.log("checking room", room.id, "for user", id)
+                // console.log("room.users", room.users)
+                // console.log("room.users.has(id)", room.users.has(id))
                 if (room.users.has(id)) {
-                    console.log("removing id", id, "from room", id);
+                    console.log("removing id", id, "from room", room.id);
                     room.users.delete(id);
                 }
             });
