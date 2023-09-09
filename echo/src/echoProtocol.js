@@ -29,7 +29,9 @@ function startReceiving(remoteId ) {
 }
 
 function stopReceiving(remoteId) {
-    at.unsubscribeFromAudio(remoteId);
+    if(at){
+        at.unsubscribeFromAudio(remoteId);
+    }
 }
 
 export function toggleMute(mutestate) {
@@ -148,6 +150,7 @@ export function joinRoom(id, roomId) {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
     socket.emit("client.join", { id, roomId });
+    //startReceiving(1);
 }
 
 export function getPing() {
@@ -196,6 +199,16 @@ export function subscribeAudio(data, cb) {
     console.log(data.senderId);
     if (socket) {
         socket.emit("client.subscribeAudio", data, (description) => {
+            console.log("---> Got description 'subscribeAudio' from socket", description)
+            cb(description);
+        });
+    }
+}
+
+export function unsubscribeAudio(data, cb) {
+    console.log(data.senderId);
+    if (socket) {
+        socket.emit("client.unsubscribeAudio", data, (description) => {
             console.log("---> Got description 'subscribeAudio' from socket", description)
             cb(description);
         });
