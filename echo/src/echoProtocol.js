@@ -23,13 +23,13 @@ function stopTransmitting() {
     }
 }
 
-function startReceiving(remoteId ) {
+function startReceiving(remoteId) {
     console.log("Starting input stream for", remoteId)
     at.subscribeToAudio(remoteId);
 }
 
 function stopReceiving(remoteId) {
-    if(at){
+    if (at) {
         at.unsubscribeFromAudio(remoteId);
     }
 }
@@ -79,9 +79,9 @@ export function getMicrophoneDevices() {
 
 export function openConnection(id) {
     console.log("opening connection with socket")
-    socket = io(SERVER_URL, { 
+    socket = io(SERVER_URL, {
         path: "/socket.io",
-        query: { id } 
+        query: { id }
     });
     startTransmitting(id);
 
@@ -131,14 +131,14 @@ export function openConnection(id) {
 
     socket.on("server.iceCandidate", (data) => {
         console.log("got ice candidate from server", data);
-        if(at){
+        if (at) {
             at.addCandidate(data.candidate);
         }
     });
 
     socket.on("server.renegotiationNeeded", (data, cb) => {
         console.log("got renegotiation request from server", data.data);
-        if(at){
+        if (at) {
             at.renegotiate(data.data.sdp, cb);
         }
     });
@@ -154,7 +154,12 @@ export function joinRoom(id, roomId) {
 }
 
 export function getPing() {
-    return ping;
+    if (at) {
+        at.getConnectionStats().then(stats => {
+            console.log(stats);
+            return stats.ping;
+        });
+    }
 }
 
 export function sendAudioState(id, data) {
@@ -177,7 +182,7 @@ export function closeConnection(id = null) {
     stopReceiving();
     stopTransmitting();
 
-    if(socket){
+    if (socket) {
         socket.close();
         socket = null;
     }
