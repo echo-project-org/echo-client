@@ -5,7 +5,12 @@ import Room from './Room';
 const ep = require("../../echoProtocol");
 const api = require("../../api");
 
+const joinSound = require("../../audio/join.mp3");
+
 function Rooms({ setState, connected, updateCurrentRoom }) {
+  const joinAudio = new Audio(joinSound);
+  joinAudio.volume = 0.6;
+
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
@@ -26,6 +31,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
           setActiveRoomId(joiningId)
           // send roomid to chatcontent to fetch messages
           updateCurrentRoom(joiningId);
+          joinAudio.play();
           setState(true);
         }
       })
