@@ -136,5 +136,5 @@ ipcMain.on("toggleFullscreen", (event, arg) => {
 })
 
 ipcMain.handle("getVideoSources", async() => {
-  return await desktopCapturer.getSources({ types: ['window', 'screen'] })
+  return await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 320, height: 180 } })
 })
