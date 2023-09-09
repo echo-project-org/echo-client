@@ -31,22 +31,7 @@ function startReceiving(remoteId ) {
 }
 
 function stopReceiving(remoteId) {
-    if (remoteId) {
-        incomingAudio = incomingAudio.filter(element => {
-            if (element.senderId === remoteId) {
-                element.close();
-                return false;
-            }
-
-            return true;
-        });
-    } else {
-        incomingAudio.forEach(element => {
-            element.close();
-        });
-
-        incomingAudio = [];
-    }
+    at.unsubscribeFromAudio(remoteId);
 }
 
 export function toggleMute(mutestate) {
