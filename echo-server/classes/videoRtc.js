@@ -15,6 +15,24 @@ class VideoRTC {
         this.peers = new Map();
     }
 
+    async handleNegotiationNeededEvent(peer, user) {
+        console.log("Negotiation needed");
+        const offer = await peer.createOffer();
+        let parsed = sdpTransform.parse(offer.sdp);
+        //edit the sdp to make the video look better
+        parsed.media[0].fmtp[0].config = goodH264Settings;
+        offer.sdp = sdpTransform.write(parsed);
+        await peer.setLocalDescription(offer);
+
+        user.videoRenegotiationNeeded({
+            sdp: peer.localDescription,
+            id: this.id
+        }, (description) => {
+            const desc = new webrtc.RTCSessionDescription(description);
+            peer.setRemoteDescription(desc).catch(e => console.log(e));
+        })
+    }
+
     async broadCastVideo(data, user) {
         return new Promise((resolve, reject) => {
             let { sdp, id } = data;
