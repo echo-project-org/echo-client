@@ -249,7 +249,7 @@ class audioRtcTransmitter {
           stream.audioElement = null;
         });
       }
-      ep.unsubscribeAudio({senderId: id, receiverId: this.id})
+      ep.unsubscribeAudio({ senderId: id, receiverId: this.id })
     } else {
       //unsubscribe from all streams
       this.inputStreams.forEach((stream) => {
@@ -260,9 +260,9 @@ class audioRtcTransmitter {
       });
       this.inputStreams = [];
 
-      for(const [key, value] of this.streamIds) {
+      for (const [key, value] of this.streamIds) {
         console.log(key, "Unsubscribing from", key)
-        ep.unsubscribeAudio({senderId: key, receiverId: this.id})
+        ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
       }
     }
   }
@@ -329,6 +329,45 @@ class audioRtcTransmitter {
     ep.stopAudioBroadcast({ id: this.id });
 
     this.isTransmitting = false;
+  }
+
+  async getConnectionStats() {
+    return new Promise((resolve, reject) => {
+      let ping = 0;
+      let bytesSent = 0;
+      let bytesReceived = 0;
+      let packetsSent = 0;
+      let packetsReceived = 0;
+      let jitterIn = 0;
+      let packetsLostIn = 0;
+
+      let stats = this.peer.getStats();
+      stats.then((res) => {
+        res.forEach((report) => {
+          if (report.type === "candidate-pair" && report.nominated) {
+            ping = report.currentRoundTripTime * 1000;
+            bytesSent = report.bytesSent;
+            bytesReceived = report.bytesReceived;
+            packetsSent = report.packetsSent;
+            packetsReceived = report.packetsReceived;
+          }
+
+          if (report.type === "remote-inbound.rtp" && report.kind === "audio") {
+            jitterIn = report.jitter * 1000;
+            packetsLostIn = report.packetsLost;
+          }
+        });
+        resolve({
+          ping: ping,
+          bytesSent: bytesSent,
+          bytesReceived: bytesReceived,
+          packetsSent: packetsSent,
+          packetsReceived: packetsReceived,
+          jitterIn: jitterIn,
+          packetsLostIn: packetsLostIn,
+        })
+      });
+    });
   }
 
   /**
