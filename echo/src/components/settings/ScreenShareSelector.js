@@ -8,10 +8,10 @@ import ScreenShareOption from './ScreenShareOption';
 
 const modalStyle = {
   position: "relative",
-  top: "5%",
+  top: "15%",
   margin: "auto",
-  height: '80%',
-  width: '80%',
+  height: '50%',
+  width: '50%',
   bgcolor: '#4d3352',
   color: '#f5e8da',
   overflow: 'auto',
@@ -71,6 +71,7 @@ function ScreenShareSelector() {
   let [windowsDevices, setWindowsDevices] = useState([]);
   let [screenDevices, setScreenDevices] = useState([]);
   let [modalOpen, setModalOpen] = useState(false);
+
   const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => setModalOpen(false);
 
@@ -87,7 +88,7 @@ function ScreenShareSelector() {
       });
       setWindowsDevices(windows);
       setScreenDevices(screens);
-    })
+    });
 
     handleModalOpen();
   };
@@ -118,7 +119,7 @@ function ScreenShareSelector() {
                 <Grid container spacing={2}>
                   {
                     screenDevices.map((device, id) => (
-                      <Grid item key={id} xs={4} sx={{ alignContent: "center", textAlign: "center" }}>
+                      <Grid item key={id} xs={6} sx={{ alignContent: "center", textAlign: "center" }}>
                         <ScreenShareOption key={id} device={device} clickHandler={deviceSelected} />
                       </Grid>
                     ))
@@ -130,7 +131,7 @@ function ScreenShareSelector() {
                 <Grid container spacing={2}>
                   {
                     windowsDevices.map((device, id) => (
-                      <Grid item key={id} xs={4} sx={{ alignContent: "center", textAlign: "center" }}>
+                      <Grid item key={id} xs={6} sx={{ alignContent: "center", textAlign: "center" }}>
                         <ScreenShareOption key={id} device={device} clickHandler={deviceSelected} />
                       </Grid>
                     ))
