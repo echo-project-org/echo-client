@@ -245,6 +245,4 @@ class EchoProtocol {
 }
 
 Emitter.mixin(EchoProtocol);
-
-const ep = new EchoProtocol();
-export default ep;
+export default EchoProtocol;

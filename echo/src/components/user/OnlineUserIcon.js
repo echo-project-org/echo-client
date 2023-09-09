@@ -14,7 +14,8 @@ import Settings from "@mui/icons-material/Settings"
 import { useState } from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-const ep = require('../../echoProtocol');
+
+import { ep } from "../../index";
 
 const decodeUrl = (url) => {
   if (url.includes("/")) {

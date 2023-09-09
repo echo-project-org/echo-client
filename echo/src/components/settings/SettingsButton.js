@@ -7,7 +7,7 @@ import UserSettings from "./UserSettings";
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 
-const ep = require('../../echoProtocol');
+import { ep } from "../../index";
 
 const modalStyle = {
   position: "relative",

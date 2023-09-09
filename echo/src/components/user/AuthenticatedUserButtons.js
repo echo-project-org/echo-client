@@ -3,8 +3,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React from 'react'
 import { useNavigate } from "react-router-dom";
 
-const ep = require('../../echoProtocol');
-console.log(ep);
+import { ep } from "../../index";
+
 var api = require('../../api');
 
 const theme = createTheme({

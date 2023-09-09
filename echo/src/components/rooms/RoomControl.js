@@ -20,15 +20,15 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 import SettingsButton from '../settings/SettingsButton';
 
+import { ep } from "../../index";
+
 const muteSound = require("../../audio/mute.mp3");
 const unmuteSound = require("../../audio/unmute.mp3");
 const deafSound = require("../../audio/deaf.mp3");
 const undeafSound = require("../../audio/undeaf.mp3");
 const leaveSound = require("../../audio/leave.mp3");
 
-
 const api = require('../../api')
-const ep = require('../../echoProtocol')
 
 const theme = createTheme({
   palette: {
