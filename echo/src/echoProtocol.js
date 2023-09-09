@@ -44,13 +44,11 @@ export function toggleMute(mutestate) {
 }
 
 export function setSpeakerDevice(deviceId) {
-    incomingAudio.forEach(element => {
-        element.setDevice(deviceId);
-    });
+    at.setOutputDevice(deviceId);
 }
 
 export function setSpeakerVolume(volume) {
-
+    at.setOutputVolume(volume);
 }
 
 export function setMicrophoneDevice(deviceId) {
@@ -67,12 +65,7 @@ export function setMicrophoneVolume(volume) {
 }
 
 export function setUserVolume(volume, remoteId) {
-    incomingAudio.forEach(element => {
-        if (element.senderId === remoteId) {
-            element.setVolume(volume);
-            return;
-        }
-    });
+    at.setPersonalVolume(volume, remoteId);
 }
 
 export function getSpeakerDevices() {

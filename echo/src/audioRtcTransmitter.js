@@ -85,6 +85,42 @@ class audioRtcTransmitter {
     }
   }
 
+  setOutputDevice(deviceId) {
+    console.log("Setting output device", deviceId);
+    if (deviceId === 'default') {
+      return
+    }
+
+    this.outputDeviceId = deviceId;
+    this.inputStreams.forEach((stream) => {
+      stream.context.setSinkId(deviceId);
+    });
+  }
+
+  setOutputVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.inputStreams.forEach((stream) => {
+      stream.gainNode.gain.value = volume;
+    });
+  }
+
+  setPersonalVolume(volume, id) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.inputStreams.filter((stream) => {
+      return stream.stream.id === this.streamIds.get(id);
+    }).forEach((stream) => {
+      stream.personalGainNode.gain.value = volume;
+    });
+  }
+
   mute() {
     if (this.stream) {
       this.stream.getTracks().forEach(track => track.enabled = false);
