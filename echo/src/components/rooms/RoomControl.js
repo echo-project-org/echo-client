@@ -19,6 +19,7 @@ import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import SettingsButton from '../settings/SettingsButton';
+import ScreenShareSelector from '../settings/ScreenShareSelector';
 
 import { ep } from "../../index";
 
@@ -138,7 +139,7 @@ function RoomControl({ state, setState, screenSharing }) {
       }
   }
 
-  const undeafOnMute = () => { setDeaf(false);}
+  const undeafOnMute = () => { setDeaf(false); }
   const muteOnDeaf = () => { setMuted(true); computeAudio(false); }
   const unmuteOnDeaf = () => { setMuted(false); computeAudio(false); }
   const muteAndDeaf = () => { setMuted(true); setDeaf(true); computeAudio(false); }
@@ -154,7 +155,7 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   const deafHeadphones = () => {
-    
+
     if (!muted) muteOnDeaf()
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();
@@ -165,29 +166,25 @@ function RoomControl({ state, setState, screenSharing }) {
   return (
     <div className='roomControl'>
       <ThemeProvider theme={theme}>
-        <Tooltip title={ ping + " ms" } onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-          <div className="voiceConnected"><p>{state ? "Connected" : "Not connected" }</p> <p><SignalCellularAltIcon /></p></div>
+        <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
+          <div className="voiceConnected"><p>{state ? "Connected" : "Not connected"}</p> <p><SignalCellularAltIcon /></p></div>
         </Tooltip>
         <ButtonGroup variant='text' className='buttonGroup'>
-          <Tooltip title={ !muted ? "Mute" : "Unmute" } placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={muteMic}>
-              { !muted ? <MicIcon /> : <MicOffRoundedIcon /> }
+              {!muted ? <MicIcon /> : <MicOffRoundedIcon />}
             </Button>
           </Tooltip>
-          <Tooltip title={ !deaf ? "Deafen" : "Undeafen" } placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={deafHeadphones}>
-              { !deaf ? <VolumeUpIcon /> : <VolumeOffIcon /> }
+              {!deaf ? <VolumeUpIcon /> : <VolumeOffIcon />}
             </Button>
           </Tooltip>
-          <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Button>
-              { !screenSharing ? <ScreenShareIcon /> : <StopScreenShareIcon /> }
-            </Button>
-          </Tooltip>
-            <SettingsButton />
+          <ScreenShareSelector />
+          <SettingsButton />
           <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button onClick={closeConnection}>
-              { state ? <PhoneDisabledIcon /> : <LogoutIcon /> }
+              {state ? <PhoneDisabledIcon /> : <LogoutIcon />}
             </Button>
           </Tooltip>
         </ButtonGroup>

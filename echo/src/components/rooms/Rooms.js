@@ -51,7 +51,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   useEffect(() => {
     updateRooms();
   }, []);
-  
+
   useEffect(() => {
     if (!connected) {
       setActiveRoomId(0)
