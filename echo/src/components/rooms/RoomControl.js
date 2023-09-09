@@ -18,11 +18,14 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-import muteSound from "../../audio/mute.mp3";
-import unmuteSound from "../../audio/unmute.mp3";
-import deafSound from "../../audio/deaf.mp3";
-import undeafSound from "../../audio/undeaf.mp3";
 import SettingsButton from '../settings/SettingsButton';
+
+const muteSound = require("../../audio/mute.mp3");
+const unmuteSound = require("../../audio/unmute.mp3");
+const deafSound = require("../../audio/deaf.mp3");
+const undeafSound = require("../../audio/undeaf.mp3");
+const leaveSound = require("../../audio/leave.mp3");
+
 
 const api = require('../../api')
 const ep = require('../../echoProtocol')
@@ -76,6 +79,8 @@ function RoomControl({ state, setState, screenSharing }) {
   deafAudio.volume = 0.6;
   const undeafAudio = new Audio(undeafSound);
   undeafAudio.volume = 0.6;
+  const leaveAudio = new Audio(leaveSound);
+  leaveAudio.volume = 0.6;
 
   var interval = null;
   const updatePing = () => {
@@ -110,6 +115,7 @@ function RoomControl({ state, setState, screenSharing }) {
         .then(res => {
           console.log("got response, left room")
           ep.exitFromRoom(localStorage.getItem('id'));
+          leaveAudio.play();
         })
         .catch(err => {
           console.error(err);
