@@ -1,5 +1,4 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
-import audioRtcReceiver from "./audioRtcReceiver";
 
 const io = require("socket.io-client");
 var socket;
@@ -77,11 +76,11 @@ export function setUserVolume(volume, remoteId) {
 }
 
 export function getSpeakerDevices() {
-    return audioRtcReceiver.getAudioDevices();
+    return audioRtcTransmitter.getOutputAudioDevices();
 }
 
 export function getMicrophoneDevices() {
-    return audioRtcTransmitter.getAudioDevices();
+    return audioRtcTransmitter.getInputAudioDevices();
 }
 
 export function openConnection(id) {
