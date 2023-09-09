@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer } = require('electron')
 const path = require('path')
 
 var mainWindow;
@@ -13,6 +13,7 @@ const createMainWindow = () => {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      enableRemoteModule: true,
       devTools: true
     }
   })
@@ -132,4 +133,8 @@ ipcMain.on("toggleFullscreen", (event, arg) => {
   } else {
     mainWindow.maximize();
   }
+})
+
+ipcMain.handle("getVideoSources", async() => {
+  return await desktopCapturer.getSources({ types: ['window', 'screen'] })
 })
