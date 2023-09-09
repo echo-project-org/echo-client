@@ -53,6 +53,12 @@ class videoRtc {
         this.isTransmitting = true;
     }
 
+    addCandidate(candidate) {
+        if (this.peer) {
+            this.peer.addIceCandidate(candidate);
+        }
+    }
+
     createPeer() {
         const peer = new RTCPeerConnection({
             iceServers: ICE_SERVERS
