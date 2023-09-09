@@ -202,10 +202,9 @@ class videoRtc {
 
     static async getVideoSources() {
         const srcs = await ipcRenderer.invoke("getVideoSources");
-        srcs.forEach((src) => {
-            console.log("Got source", src);
+        return srcs.filter((src) => {
+            return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
         });
-        return srcs;
     }
 }
 
