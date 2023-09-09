@@ -93,7 +93,6 @@ class ServerRTC {
     subscribeAudio(data, user) {
         /**
          * data has
-         * sdp (rtc connection description)
          * receiverId (String), senderId (String)
          */
 
@@ -110,7 +109,7 @@ class ServerRTC {
 
             //get the peer and the stream
             let outPeer = this.peers.get(receiverId).peer;
-            let stream = this.peers.get(senderId).audioStream;
+            let stream = this.peers.get(senderId).audioStream.clone();
             let asid = this.peers.get(receiverId).audioSubscriptionsIds;
 
             //Check if the user is already subscribed
@@ -124,13 +123,34 @@ class ServerRTC {
         });
     }
 
+    async unsubscribeAudio(data) {
+        /**
+         * data has
+         * senderId (String), receiverId (String)
+         */
+        return new Promise((resolve, reject) => {
+            let { senderId, receiverId } = data;
+            if (!senderId) return reject("NO-SENDER-ID");
+            if (!receiverId) return reject("NO-RECEIVER-ID");
+            if (typeof senderId !== "string") senderId = String(senderId);
+            if (typeof receiverId !== "string") receiverId = String(receiverId);
+            if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
+            if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
+
+            let asid = this.peers.get(receiverId).audioSubscriptionsIds;
+            this.peers.get(receiverId).audioSubscriptionsIds = asid.filter(id => id !== senderId);
+
+            console.log("User " + receiverId + " unsubscribed from user " + senderId + "'s audio stream");
+        });
+    }
+
     clearUserConnection(data) {
 
     }
 
     async stopAudioBroadcast(data) {
         let sender = data.id;
-        console.log("User"  + sender + " requested stop broadcast");
+        console.log("User" + sender + " requested stop broadcast");
         if (!sender) return "NO-ID";
         if (this.peers.has(sender)) {
             console.log("User " + sender + " stopped broadcasting audio, closing connection");
@@ -138,10 +158,6 @@ class ServerRTC {
             peer.close();
             this.peers.delete(sender);
         }
-    }
-
-    async stopAudioSubscription(data) {
-        
     }
 
     addCandidate(data) {
