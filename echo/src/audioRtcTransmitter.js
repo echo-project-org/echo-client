@@ -234,6 +234,7 @@ class audioRtcTransmitter {
 
     return peer;
   }
+
   async subscribeToAudio(id) {
     ep.subscribeAudio({
       senderId: id,
@@ -261,6 +262,7 @@ class audioRtcTransmitter {
         }).forEach((stream) => {
           //close it
           stream.stream.getTracks().forEach(track => track.stop());
+          stream.stream = null;
           stream.context.close();
           stream.audioElement.pause();
           stream.audioElement = null;
@@ -271,6 +273,7 @@ class audioRtcTransmitter {
       //unsubscribe from all streams
       this.inputStreams.forEach((stream) => {
         stream.stream.getTracks().forEach(track => track.stop());
+        stream.stream = null;
         stream.context.close();
         stream.audioElement.pause();
         stream.audioElement = null;
@@ -278,7 +281,7 @@ class audioRtcTransmitter {
       this.inputStreams = [];
 
       for (const [key, value] of this.streamIds) {
-        console.log(key, "Unsubscribing from", key)
+        console.log(key, "Unsubscribing from", this.id)
         ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
       }
     }
