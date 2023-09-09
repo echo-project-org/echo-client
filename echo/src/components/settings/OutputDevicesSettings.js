@@ -1,12 +1,7 @@
-
-import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Slider from '@mui/material/Slider';
+import { Slider, Typography, MenuItem, Stack, Select } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import Typography from '@mui/material/Typography';
-import Select from '@mui/material/Select';
 import React from 'react'
 
 import { ep } from "../../index";
