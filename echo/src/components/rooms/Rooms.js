@@ -17,6 +17,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   ])
 
   const onRoomClick = (joiningId) => {
+    if (activeRoomId !== 0) ep.exitFromRoom(localStorage.getItem("id"));
     ep.joinRoom(localStorage.getItem("id"), joiningId);
     api.call("rooms/join", "POST", { userId: localStorage.getItem("id"), roomId: joiningId })
       .then((res) => {
