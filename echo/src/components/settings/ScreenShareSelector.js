@@ -82,7 +82,10 @@ function ScreenShareSelector() {
 
         handleModalOpen();
     };
-
+    
+    const deviceSelected = (deviceId) => {
+        console.log("device selected", deviceId)
+    }
     return (
         <div>
             <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -107,7 +110,7 @@ function ScreenShareSelector() {
                                     {
                                         videoDevices.map((device) => (
                                             <Grid item xs>
-                                                <ScreenShareOption key={device.id} device={device} />
+                                                <ScreenShareOption key={device.id} device={device} clickHandler={deviceSelected}/>
                                             </Grid>
                                         ))
                                     }
