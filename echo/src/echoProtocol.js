@@ -241,3 +241,33 @@ export function sendVideoIceCandidate(data) {
         socket.emit("client.videoIceCandidate", data);
     }
 }
+
+export function broadcastVideo(data, cb) {
+    if (socket) {
+        socket.emit("client.broadcastVideo", data, (description) => {
+            cb(description);
+        });
+    }
+}
+
+export function stopVideoBroadcast(data) {
+    if (socket) {
+        socket.emit("client.stopVideoBroadcast", data);
+    }
+}
+
+export function subscribeVideo(data, cb) {
+    if (socket) {
+        socket.emit("client.subscribeVideo", data, (description) => {
+            cb(description);
+        });
+    }
+}
+
+export function unsubscribeVideo(data, cb) {
+    if (socket) {
+        socket.emit("client.unsubscribeVideo", data, (description) => {
+            cb(description);
+        });
+    }
+}
