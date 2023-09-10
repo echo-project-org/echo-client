@@ -9,11 +9,6 @@ function ActiveRoom({ users, onClick, data }) {
   }
 
   useEffect(() => {
-    ep.off('updatedAudioState');
-    ep.on("updatedAudioState", (data) => {
-      console.log("updatedAudioState in ActiveRoom", data)
-    });
-
     ep.off('userJoinedChannel');
     ep.on("userJoinedChannel", (data) => {
       console.log("userJoinedChannel in ActiveRoom", data)

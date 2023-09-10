@@ -1,17 +1,8 @@
 import '../../css/onlineusers.css'
 
-import { Badge, Avatar, Divider } from '@mui/material'
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
-import Slider from '@mui/material/Slider';
-// import VolumeDown from '@mui/icons-material/VolumeDown';
-import VolumeUp from '@mui/icons-material/VolumeUp';
-import MessageIcon from '@mui/icons-material/Message';
-import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import GavelIcon from '@mui/icons-material/Gavel';
-import Settings from "@mui/icons-material/Settings"
-import { useState } from 'react'
+import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid } from '@mui/material'
+import { VolumeUp, Message, DoDisturb, Gavel, Settings, MicOffRounded, VolumeOff } from '@mui/icons-material';
+import { useState, useEffect } from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -24,6 +15,7 @@ const decodeUrl = (url) => {
     return decodeURIComponent(url);
   }
 }
+
 const theme = createTheme({
   components: {
     MuiMenu: {
@@ -95,10 +87,26 @@ const theme = createTheme({
 });
 
 function OnlineUserIcon({ imgUrl, name, id, talking }) {
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
+  const [deaf, setDeaf] = useState(false);
+  const [muted, setMuted] = useState(false);
+
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    ep.off('updatedAudioState');
+    ep.on("updatedAudioState", (data) => {
+      if (data.id === id) {
+        setDeaf(data.deaf);
+        setMuted(data.muted);
+      }
+    });
+
+    const audioState = ep.getAudioState(id);
+    setDeaf(audioState.isDeaf);
+    setMuted(audioState.isMuted);
+  }, []);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -130,6 +138,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
           <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
         </Badge>
         <p className='onlineUserNick'>{name}</p>
+        <Grid container direction="row" justifyContent="right" alignItems="center" sx={{ color: "white" }}>
+          {deaf ? <VolumeOff fontSize="small" /> : null}
+          {muted ? <MicOffRounded fontSize="small" /> : null}
+        </Grid>
       </div>
 
       <ThemeProvider theme={theme}>
@@ -162,9 +174,9 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
             </div>
           </MenuItem>
           <Divider sx={{ my: 0.5 }} variant='middle' />
-          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><MessageIcon fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem> : null }
-          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><DoDisturbIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem> : null }
-          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><GavelIcon fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem> : null }
+          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem> : null }
+          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem> : null }
+          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem> : null }
           {localStorage.getItem("id") === id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }}/> Settings</MenuItem> : null }
         </Menu>
       </ThemeProvider>

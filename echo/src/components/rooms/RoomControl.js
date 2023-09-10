@@ -155,7 +155,6 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   const deafHeadphones = () => {
-
     if (!muted) muteOnDeaf()
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();

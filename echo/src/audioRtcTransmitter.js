@@ -430,6 +430,17 @@ class audioRtcTransmitter {
       })
     })
   }
+
+  getAudioState() {
+    return {
+      isTransmitting: this.isTransmitting,
+      isMuted: this.isMuted,
+      isDeaf: this.isDeaf,
+      volume: this.volume,
+      deviceId: this.deviceId,
+      outputDeviceId: this.outputDeviceId,
+    }
+  }
 }
 
 export default audioRtcTransmitter;

@@ -245,7 +245,7 @@ body {
   animation-delay: 0.6s;
 }
 
-.wave:nth-child(8) {}
+/* .wave:nth-child(8) {} */
 
 .wave:nth-child(9) {
   animation-delay: 0.7s;
@@ -263,7 +263,7 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  user-drag: none;
+  /* user-drag: none; */
   -webkit-user-drag: none;
   user-select: none;
   -moz-user-select: none;
@@ -380,5 +380,5 @@ body {
 }
 
 .screenShareThumbnail {
-  max-width: 15rem;
+  max-width: 100%;
 }

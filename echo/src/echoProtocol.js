@@ -285,6 +285,10 @@ class EchoProtocol {
   getVideoDevices() {
     return videoRtc.getVideoSources();
   }
+
+  getAudioState() {
+    return this.at.getAudioState();
+  }
 }
 
 Emitter.mixin(EchoProtocol);
