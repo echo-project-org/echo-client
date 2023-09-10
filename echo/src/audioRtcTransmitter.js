@@ -273,11 +273,13 @@ class audioRtcTransmitter {
     } else {
       //unsubscribe from all streams
       this.inputStreams.forEach((stream) => {
-        stream.stream.getTracks().forEach(track => track.stop());
-        stream.stream = null;
-        stream.context.close();
-        stream.audioElement.pause();
-        stream.audioElement = null;
+        if(stream.stream){
+          stream.stream.getTracks().forEach(track => track.stop());
+          stream.stream = null;
+          stream.context.close();
+          stream.audioElement.pause();
+          stream.audioElement = null;
+        }
       });
       this.inputStreams = [];
 
