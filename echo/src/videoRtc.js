@@ -72,6 +72,20 @@ class videoRtc {
         this.isTransmitting = true;
     }
 
+    stopSharing() {
+        if (!this.isTransmitting) {
+            console.error("Not transmitting");
+            return;
+        }
+
+        this.stream.getTracks().forEach((track) => {
+            track.stop();
+        });
+        this.stream = null;
+
+        this.isTransmitting = false;
+    }
+
     addCandidate(candidate) {
         if (this.peer) {
             this.peer.addIceCandidate(candidate);
