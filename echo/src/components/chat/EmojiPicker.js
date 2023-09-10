@@ -10,6 +10,7 @@ function EmojiPicker({ show, style }) {
   function handleSelectEmoji(emojiData, event) {
     setSelectEmoji(emojiData.unified);
     console.log(selectEmoji, "this is the selected emoji");
+    console.log(emojiData);
   }
 
   // function for showing the actual emoji

@@ -1,6 +1,6 @@
 import '../../css/onlineusers.css'
 
-import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid } from '@mui/material'
+import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, Container } from '@mui/material'
 import { VolumeUp, Message, DoDisturb, Gavel, Settings, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import { useState, useEffect } from 'react'
 
@@ -87,6 +87,8 @@ const theme = createTheme({
 });
 
 function OnlineUserIcon({ imgUrl, name, id, talking }) {
+  console.log("creted user in room", name, id)
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
   const [deaf, setDeaf] = useState(false);
@@ -95,8 +97,11 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    ep.off('updatedAudioState');
+    // ep.off('updatedAudioState');
     ep.on("updatedAudioState", (data) => {
+      console.log("got audio state in OnlineUserIcon")
+      console.log(data)
+      console.log(id)
       if (data.id === id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
@@ -106,6 +111,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
     const audioState = ep.getAudioState(id);
     setDeaf(audioState.isDeaf);
     setMuted(audioState.isMuted);
+
+    return () => {
+      ep.off('updatedAudioState');
+    };
   }, []);
 
   const handleClick = (event) => {
@@ -138,7 +147,7 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
           <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
         </Badge>
         <p className='onlineUserNick'>{name}</p>
-        <Grid container direction="row" justifyContent="right" alignItems="center" sx={{ color: "white" }}>
+        <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
           {deaf ? <VolumeOff fontSize="small" /> : null}
           {muted ? <MicOffRounded fontSize="small" /> : null}
         </Grid>
