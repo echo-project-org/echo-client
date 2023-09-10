@@ -189,6 +189,7 @@ class EchoProtocol {
   }
 
   sendAudioState(id, data) {
+    this.updatedAudioState({ id, deaf: data.deaf, muted: data.muted });
     if (this.socket) this.socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
   }
 
