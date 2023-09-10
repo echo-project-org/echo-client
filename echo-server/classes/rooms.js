@@ -124,32 +124,61 @@ class Rooms {
             const user = this.connectedClients.get(data.id);
             const roomId = user.getCurrentRoom();
             if (this.rooms.has(roomId)) {
-                const room = this.rooms.get(roomId);
-                room.users.delete(data.id);
                 console.log("deleted user", data.id, "from room", roomId)
-                room.users.forEach((remoteUser, id) => {
-                    if (id !== user.id) {
-                        console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
-                        remoteUser.userLeftCurrentChannel(user.id);
+                // room.users.forEach((remoteUser, id) => {
+                // this.rooms.forEach((room, _, arr) => {
+                //     room.users.forEach((remoteUser, id) => {
+                //         if (id !== user.id) {
+                //             console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
+                //             remoteUser.userLeftCurrentChannel({ id: user.id, roomId: room.id });
+                //         }
+                //     })
+                // })
+                this.connectedClients.forEach((user, _) => {
+                    // console.log("in exitRoom", user)
+                    if (data.id !== user.id) {
+                        console.log("sending message porcoddio uscito to", user.id, "about", data.id)
+                        const userRoom = user.getCurrentRoom();
+                        const isConnected = userRoom === roomId;
+                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
                     }
                 })
+                const room = this.rooms.get(roomId);
+                room.users.delete(data.id);
             }
         }
     }
 
+    /**
+     * 
+     * @param {*} id User joining the room
+     * @param {*} roomId 
+     */
     addUserToRoom(id, roomId) {
         if (this.connectedClients.has(id)) {
             if (this.rooms.has(roomId)) {
                 const user = this.connectedClients.get(id);
                 user.setCurrentRoom(roomId);
                 this.rooms.get(roomId).users.set(user.id, user);
-                this.rooms.get(roomId).users.forEach((remoteUser, id) => {
-                    console.log("loopig", id)
+                // this.rooms.get(roomId).users.forEach((remoteUser, id) => {
+                // this.rooms.forEach((room, _, arr) => {
+                //     room.users.forEach((remoteUser, id) => {
+                //         console.log("loopig", id)
+                //         if (id !== user.id) {
+                //             console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
+                //             remoteUser.userJoinedCurrentChannel({ id: user.id, roomId: room.id });
+                //             console.log("sending message porcoddio to", user.id, "about", id)
+                //             user.userJoinedCurrentChannel({ id, roomId: room.id });
+                //         }
+                //     })
+                // })
+                this.connectedClients.forEach((user, _) => {
+                    // console.log("in addUserToRoom", user)
                     if (id !== user.id) {
-                        console.log("sending message porcoddio to", remoteUser.id, "about", user.id)
-                        remoteUser.userJoinedCurrentChannel(user.id);
                         console.log("sending message porcoddio to", user.id, "about", id)
-                        user.userJoinedCurrentChannel(id);
+                        const userRoom = user.getCurrentRoom();
+                        const isConnected = userRoom === roomId;
+                        user.userJoinedCurrentChannel({ id, roomId, isConnected });
                     }
                 })
             }

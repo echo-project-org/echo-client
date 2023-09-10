@@ -1,21 +1,29 @@
 import "../../css/chat.css";
 
-import React from 'react'
+import { useState, useEffect } from 'react'
 import Chat from '../chat/Chat'
 import ChatControls from '../chat/ChatControls'
-
 import EmojiPicker from "../chat/EmojiPicker";
 
+import { ep } from "../../index";
+
 function RoomContent({ roomId }) {
-  const [emojiPicker, setEmojiPicker] = React.useState(false);
+  const [emojiPicker, setEmojiPicker] = useState(false);
 
   const handleEmojiPicker = () => {
     console.log("sto cambianto emojipicker", emojiPicker)
     setEmojiPicker(!emojiPicker);
   };
 
+  useEffect(() => {
+    
+  });
+
   return (
     <div className='roomContent'>
+      {
+
+      }
       
       <EmojiPicker show={emojiPicker} style={{
           position: "absolute",

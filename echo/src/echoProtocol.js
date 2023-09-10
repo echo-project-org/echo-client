@@ -72,9 +72,15 @@ class EchoProtocol {
 
     this.socket.on("server.userJoinedChannel", (data) => {
       console.log("user", data.id, "joined your channel, starting listening audio");
-      this.startReceiving(data.id);
-      this.emit("server.userJoinedChannel", data);
+      if (data.isConnected) this.startReceiving(data.id);
+      this.userJoinedChannel(data);
       // render the component Room with the new user
+    });
+
+    this.socket.on("server.userLeftChannel", (data) => {
+      console.log("user", data.id, "left your channel, stopping listening audio");
+      if (data.isConnected) this.stopReceiving(data.id);
+      this.userLeftChannel(data);
     });
 
     this.socket.on("server.sendAudioState", (data) => {
@@ -83,11 +89,6 @@ class EchoProtocol {
         this.updatedAudioState(data);
         //startReceiving();
       }
-    });
-
-    this.socket.on("server.userLeftChannel", (data) => {
-      console.log("user", data.id, "left your channel, stopping listening audio");
-      this.stopReceiving(data.id);
     });
 
     this.socket.on("server.iceCandidate", (data) => {
@@ -341,6 +342,10 @@ EchoProtocol.prototype.updatedAudioState = function (data) {
 
 EchoProtocol.prototype.userJoinedChannel = function (data) {
   this.emit("userJoinedChannel", data);
+}
+
+EchoProtocol.prototype.userLeftChannel = function (data) {
+  this.emit("userLeftChannel", data);
 }
 
 export default EchoProtocol;

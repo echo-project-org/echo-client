@@ -53,10 +53,10 @@ class User {
      */
 
     // called when remote user join the current room
-    userJoinedCurrentChannel(id) {
-        if (this.currentRoom !== 0) {
-            this.socket.emit("server.userJoinedChannel", { id: id })
-        }
+    userJoinedCurrentChannel(data) {
+        // if (this.currentRoom !== 0) {
+            this.socket.emit("server.userJoinedChannel", data)
+        // }
     }
 
     // send the audio state of the sender user to the non-sender users
@@ -96,10 +96,10 @@ class User {
         this.currentRoom = roomId;
     }
 
-    userLeftCurrentChannel(id) {
-        if (this.currentRoom !== 0) {
-            this.socket.emit("server.userLeftChannel", { id: id })
-        }
+    userLeftCurrentChannel(data) {
+        // if (this.currentRoom !== 0) {
+            this.socket.emit("server.userLeftChannel", data)
+        // }
     }
 
     getCurrentRoom() {
