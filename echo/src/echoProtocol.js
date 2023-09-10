@@ -101,6 +101,12 @@ class EchoProtocol {
         this.at.renegotiate(data.data.sdp, cb);
       }
     });
+
+    this.socket.on("server.videoRenegotiationNeeded", (data, cb) => {
+      if (this.vt) {
+        this.vt.renegotiate(data.data.sdp, cb);
+      }
+    });
   }
 
   async startTransmitting(id = 5) {
@@ -185,7 +191,7 @@ class EchoProtocol {
     console.log("joining event called", id, roomId)
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId });
-    //startReceiving(1);
+    this.startReceivingVideo(1);
   }
 
   sendAudioState(id, data) {
@@ -274,8 +280,18 @@ class EchoProtocol {
     this.vt.stopSharing();
   }
 
-  getVideo(remoteId){
+  startReceivingVideo(remoteId){
     this.vt.subscribeToVideo(remoteId);
+  }
+
+  /**
+   * @param {string} remoteId Id from the user to get the video stream from
+   * @returns {MediaStream} Screen share stream
+   */
+  getVideo(remoteId){
+    let stream = this.vt.getVideo(remoteId);
+    console.log("got video stream", stream);
+    return stream;
   }
 
   negotiateVideoRtc(data, cb) {

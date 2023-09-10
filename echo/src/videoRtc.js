@@ -92,6 +92,17 @@ class videoRtc {
         }
     }
 
+    getVideo(remoteId) {
+        if(this.streamIds.has(remoteId)) {
+            return this.inputstreams.filter((stream) => {
+                return stream.stream.id === this.streamIds.get(remoteId);
+            })[0].stream;
+        } else {
+            console.error("No stream id for", remoteId);
+            return null;
+        }
+    }
+
     createPeer() {
         const peer = new RTCPeerConnection({
             iceServers: ICE_SERVERS
@@ -130,6 +141,7 @@ class videoRtc {
             receiverId: this.id
         }, (a) => {
             if (a) {
+                console.log("Video id = ", a);
                 this.streamIds.set(id, a);
             } else {
                 console.error("Failed to subscribe to video from", id);
@@ -204,9 +216,9 @@ class videoRtc {
     }
 
     handleTrackEvent(e) {
-        console.log("Got track event", e);
+        console.log("video handleTrackEvent called", e)
         if (e.track.kind === "video") {
-            console.log("Got video track");
+            console.log("Got video track", e);
             //Play video stream
 
             this.inputstreams.push({
