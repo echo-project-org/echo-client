@@ -1,6 +1,7 @@
 const User = require("./users");
 const Chat = require("./chat");
 const ServerRTC = require("./rtc");
+const VideoRTC = require("./videoRtc");
 
 const Colors = require("./colors");
 const colors = new Colors();
@@ -14,6 +15,7 @@ class Rooms {
         this.socket = null;
 
         const rtc = new ServerRTC();
+        const videoRtc = new VideoRTC();
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
         
@@ -25,6 +27,7 @@ class Rooms {
 
             const newUser = new User(socket, id);
             newUser.setRtc(rtc);
+            newUser.setVideoRtc(videoRtc);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
             this.registerClientEvents(newUser);
