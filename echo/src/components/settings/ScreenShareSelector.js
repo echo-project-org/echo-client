@@ -95,7 +95,11 @@ function ScreenShareSelector() {
 
   const deviceSelected = (deviceId) => {
     console.log("device selected", deviceId)
+    ep.startScreenSharing(deviceId);
+    setScreenSharing(true);
+    handleModalClose();
   }
+  
   return (
     <div>
       <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
