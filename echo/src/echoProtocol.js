@@ -12,6 +12,7 @@ class EchoProtocol {
     this.ping = 0;
     this.pingInterval = null;
     this.at = null;
+    this.vt = null;
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }
@@ -47,6 +48,7 @@ class EchoProtocol {
   openConnection(id) {
     this._makeIO(id);
     this.startTransmitting(id);
+    this.setupVideoRtc(id);
 
     this._startPing();
 
@@ -252,9 +254,23 @@ class EchoProtocol {
     }
   }
 
-  broadcastVideo(data, cb) {
+  setupVideoRtc(id) {
+    console.log("setting up video rtc")
+    this.vt = new videoRtc(id);
+  }
+
+  startScreenSharing(deviceId) {
+    this.vt.setDevice(deviceId);
+    this.vt.startSharing();
+  }
+
+  getVideo(remoteId){
+    this.vt.subscribeToVideo(remoteId);
+  }
+
+  negotiateVideoRtc(data, cb) {
     if (this.socket) {
-      this.socket.emit("client.broadcastVideo", data, (description) => {
+      this.socket.emit("client.negotiateVideoRtc", data, (description) => {
         cb(description);
       });
     }
