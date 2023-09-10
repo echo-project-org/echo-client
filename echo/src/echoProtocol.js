@@ -116,6 +116,11 @@ class EchoProtocol {
       this.at.close();
       this.at = null;
     }
+
+    if(this.vt){
+      this.vt.close();
+      this.vt = null;
+    }
   }
 
   startReceiving(remoteId) {
@@ -262,6 +267,10 @@ class EchoProtocol {
   startScreenSharing(deviceId) {
     this.vt.setDevice(deviceId);
     this.vt.startSharing();
+  }
+
+  stopScreenSharing() {
+    this.vt.stopSharing();
   }
 
   getVideo(remoteId){
