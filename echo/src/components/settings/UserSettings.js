@@ -11,6 +11,11 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
     width:'12rem',
     margin: "auto",
   },
+  [theme.breakpoints.up('md')]: {
+    height: '10rem',
+    width:'10rem',
+    margin: "auto",
+  },
   [theme.breakpoints.up('lg')]: {
     height: '8rem',
     width:'8rem',
