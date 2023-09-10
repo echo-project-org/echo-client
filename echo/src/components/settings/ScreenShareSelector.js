@@ -85,6 +85,7 @@ function ScreenShareSelector() {
     
     const deviceSelected = (deviceId) => {
         console.log("device selected", deviceId)
+        handleModalClose();
     }
     return (
         <div>
