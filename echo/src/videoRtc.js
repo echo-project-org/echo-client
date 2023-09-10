@@ -1,6 +1,8 @@
+import { ep } from "./index";
+
 const { ipcRenderer } = window.require('electron');
 const sdpTransform = require('sdp-transform');
-const ep = require("./echoProtocol.js");
+const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
 
 const ICE_SERVERS = [{
     username: 'echo',
@@ -9,7 +11,7 @@ const ICE_SERVERS = [{
 }];
 
 class videoRtc {
-    constructor(id, videoSourceId, outputDeviceId = 'default', volume = 1.0) {
+    constructor(id, videoSourceId = null, outputDeviceId = 'default', volume = 1.0) {
         this.id = id;
         this.videoSourceId = videoSourceId;
         this.outputDeviceId = outputDeviceId;
@@ -42,15 +44,46 @@ class videoRtc {
         };
     }
 
-    async init() {
+    setDevice(deviceId) {
+        this.videoSourceId = deviceId;
+        this.constraints.video.mandatory.chromeMediaSourceId = deviceId;
+    }
+
+    async startSharing() {
+        if (this.isTransmitting) {
+            console.error("Already transmitting");
+            return;
+        }
+
+        if (!this.videoSourceId) {
+            console.error("No video source id");
+            return;
+        }
+
         this.stream = await navigator.mediaDevices.getUserMedia(this.constraints);
-        this.peer = this.createPeer();
+        if (!this.peer) {
+            this.peer = this.createPeer();
+        }
 
         this.stream.getTracks().forEach((track) => {
             this.peer.addTrack(track, this.stream);
         });
 
         this.isTransmitting = true;
+    }
+
+    stopSharing() {
+        if (!this.isTransmitting) {
+            console.error("Not transmitting");
+            return;
+        }
+
+        this.stream.getTracks().forEach((track) => {
+            track.stop();
+        });
+        this.stream = null;
+
+        this.isTransmitting = false;
     }
 
     addCandidate(candidate) {
@@ -67,6 +100,7 @@ class videoRtc {
         peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
         peer.onicecandidate = (e) => {
             if (e.candidate) {
+                console.log("Sending ice candidate", e.candidate)
                 ep.sendVideoIceCandidate({
                     candidate: e.candidate,
                     id: this.id
@@ -140,11 +174,12 @@ class videoRtc {
         const offer = await peer.createOffer();
         let parsed = sdpTransform.parse(offer.sdp);
         //edit sdp to make video look better
+        parsed.media[0].fmtp[0].config = goodH264Settings;
         offer.sdp = sdpTransform.write(parsed);
 
         await peer.setLocalDescription(offer);
 
-        ep.broadcastVideo({
+        ep.negotiateVideoRtc({
             sdp: peer.localDescription,
             id: this.id
         }, (description) => {

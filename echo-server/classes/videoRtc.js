@@ -1,6 +1,8 @@
 const webrtc = require("wrtc");
 const sdpTransform = require("sdp-transform");
 
+const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
+
 class VideoRTC {
     constructor() {
         this.iceServers = [
@@ -40,6 +42,7 @@ class VideoRTC {
             if (typeof id !== "string") id = String(id);
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
+            this.peers.set(id, { peer, videoStream: null, videoSubscriptionsIds: [] });
             peer.ontrack = (e) => {
                 console.log("peer.ontrack called, populating peers")
                 this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [] });
@@ -127,7 +130,7 @@ class VideoRTC {
         let sender = data.id;
         console.log("User " + sender + " stopped broadcasting video");
         if (!sender) return reject("NO-ID");
-        if(this.peers.has(sender)) {
+        if (this.peers.has(sender)) {
             this.peers.get(sender).peer.close();
             this.peers.delete(sender);
         }
@@ -135,10 +138,18 @@ class VideoRTC {
 
     addCandidate(data) {
         let sender = data.id;
-        if (!sender) return reject("NO-ID");
-        if (!this.peers.has(sender)) return reject("SENDER-NOT-FOUND");
+        if (!sender) {
+            console.error("NO-ID");
+            return;
+        }
+        if (!this.peers.has(sender)) {
+            console.error("SENDER-NOT-FOUND");
+            return;
+        }
+
         let peer = this.peers.get(sender).peer;
         peer.addIceCandidate(data.candidate);
+        console.log("User " + sender + " sent video ice candidate");
     }
 }
 

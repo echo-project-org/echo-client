@@ -54,6 +54,8 @@ class ServerRTC {
             if (typeof id !== "string") id = String(id);
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
+            this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [] });
+
             peer.ontrack = (e) => {
                 console.log("peer.ontrack called, populating peers")
                 this.peers.set(id, { peer, audioStream: e.streams[0], audioSubscriptionsIds: [] });
@@ -163,8 +165,15 @@ class ServerRTC {
 
     addCandidate(data) {
         let sender = data.id;
-        if (!sender) return reject("NO-ID");
-        if (!this.peers.has(sender)) return reject("SENDER-NOT-FOUND");
+        console.log("User " + sender + " sent ice candidate")
+        if (!sender) {
+            console.error("NO-ID");
+            return;
+        };
+        if (!this.peers.has(sender)) {
+            console.error("SENDER-NOT-FOUND");
+            return;
+        };
         let peer = this.peers.get(sender).peer;
         peer.addIceCandidate(data.candidate);
     }

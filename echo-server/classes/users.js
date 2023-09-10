@@ -27,7 +27,7 @@ class User {
         this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
 
         // videoRtc stuff
-        this.socket.on("client.broadcastVideo", (data, cb) => this.broadcastVideo(data, cb));
+        this.socket.on("client.negotiateVideoRtc", (data, cb) => this.negotiateVideoRtc(data, cb));
         this.socket.on("client.subscribeVideo", (data, cb) => this.subscribeVideo(data, cb));
         this.socket.on("client.stopVideoBroadcast", (data) => this.stopVideoBroadcast(data));
         this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
@@ -193,7 +193,7 @@ class User {
     }
 
     // video stuff
-    broadcastVideo(data, cb) {
+    negotiateVideoRtc(data, cb) {
         if (this.videoRtc) {
             this.videoRtc.broadcastVideo(data, this)
                 .then((resp) => {

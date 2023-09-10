@@ -76,26 +76,36 @@ function ScreenShareSelector() {
   const handleModalClose = () => setModalOpen(false);
 
   const handleClick = (event) => {
-    ep.getVideoDevices().then((devices) => {
-      const screens = [];
-      const windows = [];
-      devices.forEach(device => {
-        if (device.id.includes("screen")) {
-          screens.push(device);
-        } else {
-          windows.push(device);
-        }
+    if(screenSharing) {
+      ep.stopScreenSharing();
+      setScreenSharing(false);
+    } else {
+      ep.getVideoDevices().then((devices) => {
+        const screens = [];
+        const windows = [];
+        devices.forEach(device => {
+          if (device.id.includes("screen")) {
+            screens.push(device);
+          } else {
+            windows.push(device);
+          }
+        });
+        setWindowsDevices(windows);
+        setScreenDevices(screens);
       });
-      setWindowsDevices(windows);
-      setScreenDevices(screens);
-    });
-
-    handleModalOpen();
+  
+      handleModalOpen();
+    }
+    
   };
 
   const deviceSelected = (deviceId) => {
     console.log("device selected", deviceId)
+    ep.startScreenSharing(deviceId);
+    setScreenSharing(true);
+    handleModalClose();
   }
+  
   return (
     <div>
       <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>

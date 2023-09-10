@@ -368,7 +368,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  max-width: min-content;
+  max-width: 15rem;
   margin: auto;
   padding: 1rem;
   border-radius: .5rem;
