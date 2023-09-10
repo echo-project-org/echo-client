@@ -281,6 +281,10 @@ class EchoProtocol {
       });
     }
   }
+
+  getVideoDevices() {
+    return videoRtc.getVideoSources();
+  }
 }
 
 Emitter.mixin(EchoProtocol);

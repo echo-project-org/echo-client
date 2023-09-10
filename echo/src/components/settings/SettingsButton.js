@@ -104,7 +104,7 @@ function SettingsButton() {
           <Zoom in={modalOpen}>
             <Box sx={modalStyle}>
               <div className='modalDiv'>
-                <Typography id="modal-modal-title" variant="h3">
+                <Typography variant="h3">
                   Echo settings
                 </Typography>
 

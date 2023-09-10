@@ -1,12 +1,8 @@
 import React from 'react'
-import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
-import Slider from '@mui/material/Slider';
+import { MenuItem, Stack, Slider, Typography, Select } from '@mui/material';
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import MicIcon from '@mui/icons-material/Mic';
-import Typography from '@mui/material/Typography';
-import Select from '@mui/material/Select';
+import { Mic } from '@mui/icons-material';
 
 import { ep } from "../../index";
 
@@ -111,7 +107,7 @@ function InputDevicesSettings({ inputDevices }) {
       </Select>
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
-          <MicIcon fontSize="medium" />
+          <Mic fontSize="medium" />
           <ThemeProvider theme={theme} >
             <Slider
               sx={{ width: "95%" }}
