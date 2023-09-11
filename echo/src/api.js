@@ -1,7 +1,7 @@
 
 const API_URL = "https://echo.kuricki.com/api/";
 
-export async function call(path, method = "GET", body = null) {
+export async function call(path, method = "GET", body = null, forceString = true, forceContentType = false) {
   return new Promise((resolve, reject) => {
     // if method is not GET, then add the body to the request
     if (method !== "GET" && body === null) reject("Body is null");
@@ -11,10 +11,10 @@ export async function call(path, method = "GET", body = null) {
       method: method,
       cache: 'no-cache',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': forceContentType ? null : 'application/json',
         "Authorization": "Bearer " + localStorage.getItem("token")
       },
-      body: body ? typeof body === "string" ? body : JSON.stringify(body) : null
+      body: body ? (forceString ? JSON.stringify(body) : body) : null
     };
 
     fetch(API_URL + path, options)

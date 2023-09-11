@@ -15,15 +15,15 @@ const SQL = require("./classes/mysql");
 const database = new SQL(config);
 
 // add body parser middleware for api requests
-server.use(bodyParser.urlencoded({ extended: true }));
-server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+server.use(bodyParser.json({ limit: '50mb' }));
 
 server.use((req, res, next) => {
     console.log('Got api request:', Date.now(), "Query:", req.url, "Method:", req.method);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
-    res.header("Access-Control-Expose-Headers", "Authorization")
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "POST, GET");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
+    res.setHeader("Access-Control-Expose-Headers", "Authorization")
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
     if (!req.authenticator) req.authenticator = authenticator;
     if (!req.utils) req.utils = require("./classes/utils");
     if (!req.database) req.database = database.getConnection();

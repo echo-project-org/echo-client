@@ -6,34 +6,44 @@ router.get("/image/:id", (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 
     var { id } = req.params;
-    // check if reqeust has .png at the end, if it does remove it
-    if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
-    // check if file contains png, if not check if the one without png exists then send it
-    if (fs.existsSync("./images/" + id + ".png")) {
-        res.sendFile("./images/" + id + ".png", { root: __dirname + "/../" });
-        return;
-    }
-    if (fs.existsSync("./images/" + id)) {
-        res.sendFile("./images/" + id, { root: __dirname + "/../" });
-        return;
-    }
+    
+    // if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
+    // if (fs.existsSync("./images/" + id + ".png")) {
+    //     res.sendFile("./images/" + id + ".png", { root: __dirname + "/../" });
+    //     return;
+    // }
+    // if (fs.existsSync("./images/" + id)) {
+    //     res.sendFile("./images/" + id, { root: __dirname + "/../" });
+    //     return;
+    // }
+
+
     res.status(404).send("File not found");
 });
 
 router.post("/image", (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 
-    var { id, img } = req.body;
-    if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
-    var base64Data = img.replace(/^data:image\/png;base64,/, "");
-    fs.writeFile("./images/" + id + ".png", base64Data, "base64", function (err) {
-        if (err) {
-            console.log(err);
-            res.status(400).send("Error saving image");
-        } else {
-            res.status(200).send("Image saved");
-        }
+    const { id, image } = req.body;
+    if (!id || !image) return res.status(400).send({ message: "You messed up the request." });
+
+    req.database.query("UPDATE users SET img = ? WHERE id = ?", [image, id], (err, result, fields) => {
+        // console.log(err);
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+        res.status(200).send({ message: "Image updated!" });
     });
+
+    // var { id, img } = req.body;
+    // if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
+    // var base64Data = img.replace(/^data:image\/png;base64,/, "");
+    // fs.writeFile("./images/" + id + ".png", base64Data, "base64", function (err) {
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(400).send("Error saving image");
+    //     } else {
+    //         res.status(200).send({ message: "Image saved!", image: "https://echo.kuricki.com/api/images/" + id });
+    //     }
+    // });
 });
 
 router.get("/rooms", (req, res) => {

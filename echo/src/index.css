@@ -382,3 +382,21 @@ body {
 .screenShareThumbnail {
   max-width: 100%;
 }
+
+.rotating {
+  animation: rotating 2s ease-in-out infinite;
+}
+
+@keyframes rotating {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  60% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

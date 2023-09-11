@@ -8,14 +8,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { ep } from "../../index";
 
-const decodeUrl = (url) => {
-  if (url.includes("/")) {
-    return url;
-  } else {
-    return decodeURIComponent(url);
-  }
-}
-
 const theme = createTheme({
   components: {
     MuiMenu: {
@@ -156,7 +148,7 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
         aria-expanded={ open ? 'true' : undefined }
       >
         <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} showZero={true} invisible={!talking} color={"success"}>
-          <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{height: '1.25rem', width:'1.25rem'}}/>
+          <Avatar alt={name} src={imgUrl} sx={{height: '1.25rem', width:'1.25rem'}}/>
         </Badge>
         <p className='onlineUserNick'>{name}</p>
         <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
@@ -179,7 +171,7 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant="dot"
             >
-              <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
+              <Avatar alt={name} src={imgUrl} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
             </StyledBadge>
             <p style={{ marginTop: ".8rem" }}>{name}</p>
           </div>

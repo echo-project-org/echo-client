@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Divider } from '@mui/material'
-import { CameraAlt } from '@mui/icons-material';
+import { CameraAlt, Loop } from '@mui/icons-material';
+
+import { ep } from "../../index";
 
 var api = require('../../api');
 
@@ -34,15 +36,6 @@ const StyledGridContainer = styled(Grid)(({ theme }) => ({
     // columnGap: ".1rem"
   },
 }));
-
-// const StyledGridItem = styled(Grid)(({ theme }) => ({
-//   [theme.breakpoints.up('xs')]: {
-//     textAlign: "center",
-//   },
-//   [theme.breakpoints.up('lg')]: {
-//     textAlign: "center",
-//   },
-// }));
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -85,6 +78,7 @@ const StyledTextField = styled(TextField)({
 
 function UserSettings() {
   const [hover, setHover] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onAvatarHover = (e) => {
     if (e.type === "mouseleave") {
@@ -94,12 +88,82 @@ function UserSettings() {
     }
   }
 
+  const uploadPicture = () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // compress image
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = () => {
+          const elem = document.createElement('canvas');
+          const width = 512;
+          const scaleFactor = width / img.width;
+          elem.width = width;
+          elem.height = img.height * scaleFactor;
+          const ctx = elem.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, img.height * scaleFactor);
+          const base64 = ctx.canvas.toDataURL();
+
+          setLoading(true);
+          
+          api.call("users/image", "POST", { id: localStorage.getItem("id"), image: base64 })
+            .then((res) => {
+              localStorage.setItem("userImage", base64);
+              ep.updateUser(localStorage.getItem("id"), "userImage", base64);
+              setLoading(false);
+            })
+            .catch(err => {
+              console.error(err);
+            });
+        }
+      };
+    };
+    fileInput.click();
+  }
+
   const computeDiv = () => {
     if (hover) {
       return (
         <Fade in={hover} timeout={200}>
-          <div style={{ backgroundColor: "rgba(0,0,0,.3)", width: "100%", height: "100%", position: "absolute", zIndex: "1", borderRadius: "50%", cursor: "pointer" }} onMouseLeave={onAvatarHover} >
+          <div
+            style={{
+              backgroundColor: "rgba(0,0,0,.3)",
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              zIndex: "1",
+              borderRadius:
+              "50%",
+              cursor: "pointer"
+            }}
+            onMouseDown={uploadPicture}
+            onMouseLeave={onAvatarHover} >
             <CameraAlt style={{ fontSize: "4rem", position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
+          </div>
+        </Fade>
+      )
+    }
+    if (loading) {
+      return (
+        <Fade in={loading} timeout={200}>
+          <div
+            style={{
+              backgroundColor: "rgba(0,0,0,.5)",
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              zIndex: "1",
+              borderRadius: "50%",
+              cursor: "pointer"
+            }}
+          >            
+            <Loop style={{ fontSize: "4rem", position: "absolute", top: "25%", left: "25%" }} className='rotating' />
           </div>
         </Fade>
       )
