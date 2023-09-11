@@ -14,8 +14,7 @@ router.get('/', (req, res) => {
                     id: plate.id,
                     name: plate.name,
                     description: plate.description,
-                    img: plate.img,
-                    maxUser: plate.maxUsers
+                    maxUsers: plate.maxUsers
                 });
             });
         }
