@@ -1,21 +1,10 @@
 import { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import Zoom from '@mui/material/Zoom';
-import Tooltip from "@mui/material/Tooltip";
-import { ButtonGroup } from '@mui/material';
+import { ButtonGroup, Button, Zoom, Tooltip } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
-import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
-import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
-import ScreenShareIcon from '@mui/icons-material/ScreenShare';
-import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
-import MicIcon from '@mui/icons-material/Mic';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import PhoneDisabledIcon from '@mui/icons-material/PhoneDisabled';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabled, Logout } from '@mui/icons-material';
 
 import SettingsButton from '../settings/SettingsButton';
 import ScreenShareSelector from '../settings/ScreenShareSelector';
