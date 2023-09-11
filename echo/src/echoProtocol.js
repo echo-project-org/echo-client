@@ -2,7 +2,8 @@ import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
 import videoRtc from "./videoRtc";
 
-import User from "./user";
+import User from "./cache/user";
+import Room from "./cache/room";
 
 const io = require("socket.io-client");
 
@@ -17,6 +18,7 @@ class EchoProtocol {
     this.vt = null;
 
     this.cachedUsers = new Map();
+    this.cachedRooms = new Map();
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }
@@ -197,6 +199,7 @@ class EchoProtocol {
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId });
     this.startReceivingVideo(1);
+    this.roomClicked({ roomId });
   }
 
   sendAudioState(id, data) {
@@ -337,6 +340,20 @@ class EchoProtocol {
     return this.at.getAudioState();
   }
 
+  // cache rooms functions
+  addRoom(room) {
+    if (typeof room.id !== "string") room.id = room.id.toString();
+    this.cachedRooms.set(room.id, new Room(room));
+  }
+
+  updateRoom(id, field, value) {
+    const room = this.cachedRooms.get(id);
+    if (room)
+      if (room["update" + field]) room["update" + field](value);
+      else console.error("Room does not have field " + field + " or field function update" + field);
+    else console.error("Room not found in cache");
+  }
+
   // cache users functions
   addUser(user, self = false) {
     if (typeof user.id !== "string") user.id = user.id.toString();
@@ -374,6 +391,11 @@ class EchoProtocol {
 }
 
 Emitter.mixin(EchoProtocol);
+
+
+EchoProtocol.prototype.roomClicked = function (data) {
+  this.emit("roomClicked", data);
+}
 
 EchoProtocol.prototype.usersCacheUpdated = function (data) {
   this.emit("usersCacheUpdated", data);
