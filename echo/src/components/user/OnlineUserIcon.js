@@ -101,7 +101,6 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    // ep.off('updatedAudioState');
     ep.on("updatedAudioState", (data) => {
       console.log("got audio state in OnlineUserIcon")
       console.log(data)
@@ -112,9 +111,11 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
       }
     });
 
-    const audioState = ep.getAudioState(id);
-    setDeaf(audioState.isDeaf);
-    setMuted(audioState.isMuted);
+    if (localStorage.getItem("id") === id) {
+      const audioState = ep.getAudioState(id);
+      setDeaf(audioState.isDeaf);
+      setMuted(audioState.isMuted);
+    }
 
     return () => {
       ep.off('updatedAudioState');
