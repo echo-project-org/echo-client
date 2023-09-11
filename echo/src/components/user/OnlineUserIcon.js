@@ -1,6 +1,6 @@
 import '../../css/onlineusers.css'
 
-import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, Container } from '@mui/material'
+import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, styled } from '@mui/material'
 import { VolumeUp, Message, DoDisturb, Gavel, Settings, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import { useState, useEffect } from 'react'
 
@@ -86,6 +86,18 @@ const theme = createTheme({
   },
 });
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    right: "15%",
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    width: "20%",
+    height: "20%",
+    borderRadius: "50%",
+    // boxShadow: "0 0 0 8px #44b700",
+  }
+}));
+
 function OnlineUserIcon({ imgUrl, name, id, talking }) {
   console.log("creted user in room", name, id)
 
@@ -162,7 +174,13 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
           MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
         >
           <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
-            <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              variant="dot"
+            >
+              <Avatar alt={name} src={decodeUrl(imgUrl)} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
+            </StyledBadge>
             <p style={{ marginTop: ".8rem" }}>{name}</p>
           </div>
 
