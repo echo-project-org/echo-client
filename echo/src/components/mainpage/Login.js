@@ -1,4 +1,3 @@
-import '../../index.css'
 import "../../css/login.css"
 
 import { useState, useEffect, forwardRef } from 'react'

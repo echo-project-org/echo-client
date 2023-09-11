@@ -1,4 +1,3 @@
-import '../../index.css'
 import { useState, useEffect } from 'react'
 import imgLogo from "../../img/headphones.svg"
 import { motion } from 'framer-motion'

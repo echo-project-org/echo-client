@@ -1,4 +1,3 @@
-import '../../index.css';
 import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Zoom from '@mui/material/Zoom';

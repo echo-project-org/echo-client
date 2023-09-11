@@ -1,4 +1,6 @@
 import './App.css';
+import './index.css';
+
 import { useEffect } from 'react'
 import { HashRouter } from "react-router-dom";
 import AnimatedRoutes from './components/mainpage/AnimatedRoutes';

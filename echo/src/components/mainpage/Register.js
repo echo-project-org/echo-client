@@ -1,4 +1,3 @@
-import '../../index.css'
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, createTheme, Snackbar } from '@mui/material'

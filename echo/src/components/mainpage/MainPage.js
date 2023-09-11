@@ -1,4 +1,3 @@
-import '../../index.css'
 import { motion } from 'framer-motion'
 import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
