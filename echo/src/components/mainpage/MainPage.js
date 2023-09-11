@@ -3,6 +3,8 @@ import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
 
+import { ep } from "../../index";
+
 var api = require('../../api')
 
 function MainPage() {
@@ -13,7 +15,32 @@ function MainPage() {
     setRoomId(joiningId);
   }
 
-  useEffect(() => { }, []);
+  useEffect(() => {
+    api.call("rooms")
+      .then((result) => {
+        if (result.json.length > 0) {
+          result.json.forEach((room) => {
+            api.call("rooms/" + room.id + "/users")
+              .then((res) => {
+                if (res.ok && res.json.length > 0) {
+                  res.json.forEach((user) => {
+                    ep.addUser({
+                      id: user.id,
+                      name: user.name,
+                      img: user.img,
+                      online: user.online,
+                      roomId: room.id
+                    });
+                  });
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          });
+        }
+      });
+  }, []);
 
   return (
     <motion.div

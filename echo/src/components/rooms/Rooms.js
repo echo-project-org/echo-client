@@ -25,6 +25,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   const onRoomClick = (joiningId) => {
     if (activeRoomId !== 0) ep.exitFromRoom(localStorage.getItem("id"));
     ep.joinRoom(localStorage.getItem("id"), joiningId);
+    ep.updateUser(localStorage.getItem("id"), "currentRoom", joiningId);
     api.call("rooms/join", "POST", { userId: localStorage.getItem("id"), roomId: joiningId })
       .then((res) => {
         if (res.ok) {
@@ -53,11 +54,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   }, []);
 
   useEffect(() => {
-    if (!connected) {
-      setActiveRoomId(0)
-
-      updateRooms();
-    }
+    if (!connected) setActiveRoomId(0)
   }, [connected]);
 
 

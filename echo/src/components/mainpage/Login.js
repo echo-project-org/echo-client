@@ -6,6 +6,8 @@ import { Alert, Button, createTheme, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import BackButton from '../settings/BackButton';
 
+import { ep } from "../../index";
+
 import imgLogo from "../../img/headphones.svg"
 
 var api = require('../../api')
@@ -65,8 +67,10 @@ const Login = () => {
               localStorage.setItem("name", data.json.name);
               localStorage.setItem("email", data.json.email);
               localStorage.setItem("userImage", data.json.img);
+              localStorage.setItem("online", data.json.online);
               localStorage.setItem("token", data.json.token);
               localStorage.setItem("refreshToken", data.json.refreshToken);
+
               navigate("/");
             })
             .catch((err) => {

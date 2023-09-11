@@ -102,7 +102,7 @@ router.get('/:id/users', (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
 
-    req.database.query("SELECT users.id, users.name, users.img FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ?", [id], (err, result, fields) => {
+    req.database.query("SELECT users.id, users.name, users.img, users.online FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ?", [id], (err, result, fields) => {
         if (err) return console.error(err);
 
         var jsonOut = [];
@@ -111,7 +111,8 @@ router.get('/:id/users', (req, res) => {
                 jsonOut.push({
                     id: plate.id,
                     name: plate.name,
-                    img: plate.img
+                    img: plate.img,
+                    online: plate.online,
                 });
             });
         }

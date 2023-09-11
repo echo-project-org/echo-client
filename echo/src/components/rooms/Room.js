@@ -16,30 +16,37 @@ function Room({ active, onClick, data }) {
   }
 
   useEffect(() => {
-    ep.off('userJoinedChannel');
     ep.on("userJoinedChannel", (data) => {
       console.log("userJoinedChannel in Room", data)
+      ep.updateUser(data.id, "currentRoom", data.roomId);
       updateUsersInRoom(data.roomId);
     });
 
-    ep.off('userLeftChannel');
     ep.on("userLeftChannel", (data) => {
       console.log("userLeftChannel in Room", data)
-      updateUsersInRoom(data.roomId);
+      ep.updateUser(data.id, "currentRoom", "0");
+      updateUsersInRoom();
     });
+
+    ep.on("usersCacheUpdated", (data) => {
+      console.log("usersCacheUpdated in Room", data)
+      updateUsersInRoom();
+    });
+
+    return () => {
+      ep.off('userJoinedChannel');
+      ep.off('userLeftChannel');
+      ep.off('usersCacheUpdated');
+    }
   }, []);
 
   const updateUsersInRoom = (roomId = false) => {
+    console.log("-------------- updateUsersInRoom --------------")
     // get online users in room using data.id
-    console.log("rooms/" + (roomId ? roomId : data.id) + "/users")
-    api.call("rooms/" + (roomId ? roomId : data.id) + "/users")
-      .then((result) => {
-        console.log("got users in room: ", result.json)
-        setOnlineUsers(result.json);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    const users = ep.getUsersInRoom(data.id);
+    console.log(users, data.id)
+    console.log("users in Room route", users)
+    setOnlineUsers(users);
   }
 
   useEffect(() => {

@@ -21,11 +21,14 @@ const AuthenticatedUserButtons = ({ visibility }) => {
     localStorage.removeItem("id");
     localStorage.removeItem("name");
     localStorage.removeItem("email");
+    localStorage.removeItem("userImage");
     localStorage.removeItem("token");
+    localStorage.removeItem("online");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("userImage");
 
     // EEEEEEEEWWWWWWWWWWWWWWW
+    // but why??
     window.location.reload();
   }
 
@@ -36,6 +39,14 @@ const AuthenticatedUserButtons = ({ visibility }) => {
       .then((res) => {
         ep.openConnection(localStorage.getItem('id'));
         navigate("/main");
+
+        ep.addUser({
+          id: localStorage.getItem('id'),
+          name: localStorage.getItem('name'),
+          img: localStorage.getItem('userImage'),
+          online: localStorage.getItem('online'),
+          roomId: 0
+        }, true);
       })
       .catch((err) => {
         console.log(err.message);

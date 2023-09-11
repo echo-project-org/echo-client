@@ -104,6 +104,7 @@ function RoomControl({ state, setState, screenSharing }) {
         .then(res => {
           console.log("got response, left room")
           ep.exitFromRoom(localStorage.getItem('id'));
+          ep.updateUser(localStorage.getItem('id'), "currentRoom", 0);
           leaveAudio.play();
         })
         .catch(err => {
@@ -154,24 +155,24 @@ function RoomControl({ state, setState, screenSharing }) {
     <div className='roomControl'>
       <ThemeProvider theme={theme}>
         <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-          <div className="voiceConnected"><p>{state ? "Connected" : "Not connected"}</p> <p><SignalCellularAltIcon /></p></div>
+          <div className="voiceConnected"><p>{state ? "Connected" : "Not connected"}</p> <p><SignalCellularAlt /></p></div>
         </Tooltip>
         <ButtonGroup variant='text' className='buttonGroup'>
           <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={muteMic}>
-              {!muted ? <MicIcon /> : <MicOffRoundedIcon />}
+              {!muted ? <Mic /> : <MicOffRounded />}
             </Button>
           </Tooltip>
           <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button disableRipple onClick={deafHeadphones}>
-              {!deaf ? <VolumeUpIcon /> : <VolumeOffIcon />}
+              {!deaf ? <VolumeUp /> : <VolumeOff />}
             </Button>
           </Tooltip>
           <ScreenShareSelector />
           <SettingsButton />
           <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
             <Button onClick={closeConnection}>
-              {state ? <PhoneDisabledIcon /> : <LogoutIcon />}
+              {state ? <PhoneDisabled /> : <Logout />}
             </Button>
           </Tooltip>
         </ButtonGroup>

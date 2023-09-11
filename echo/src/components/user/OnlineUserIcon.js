@@ -212,7 +212,6 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
 }
 
 OnlineUserIcon.defaultProps = {
-  imgUrl: "http://localhost:6980/users/image/default",
   name: "None",
   talking: false,
 }

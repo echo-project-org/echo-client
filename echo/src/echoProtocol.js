@@ -2,6 +2,8 @@ import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
 import videoRtc from "./videoRtc";
 
+import User from "./user";
+
 const io = require("socket.io-client");
 
 class EchoProtocol {
@@ -13,6 +15,8 @@ class EchoProtocol {
     this.pingInterval = null;
     this.at = null;
     this.vt = null;
+
+    this.cachedUsers = new Map();
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }
@@ -332,9 +336,48 @@ class EchoProtocol {
   getAudioState() {
     return this.at.getAudioState();
   }
+
+  // cache users functions
+  addUser(user, self = false) {
+    if (typeof user.id !== "string") user.id = user.id.toString();
+    this.cachedUsers.set(user.id, new User(user, self));
+    // call event because cache has been updated
+    const newUser = this.cachedUsers.get(user.id);
+    this.usersCacheUpdated(newUser.getData());
+  }
+
+  updateUser(id, field, value) {
+    const user = this.cachedUsers.get(id);
+    if (user)
+      if (user["update" + field]) user["update" + field](value);
+      else console.error("User does not have field " + field + " or field function update" + field);
+    else console.error("User not found in cache");
+    console.log("updateUser", user);
+    this.usersCacheUpdated(user.getData());
+  }
+
+  getUser(id) {
+    return this.cachedUsers.get(id);
+  }
+
+  getUsersInRoom(roomId) {
+    if (typeof roomId !== "string") roomId = roomId.toString();
+    console.log("retriving users in room", roomId)
+    const users = [];
+    this.cachedUsers.forEach((user) => {
+      console.log("looping users in getUsersInRoom", user)
+      if (user.currentRoom === roomId) users.push(user);
+    });
+    console.log("users in room", users)
+    return users;
+  }
 }
 
 Emitter.mixin(EchoProtocol);
+
+EchoProtocol.prototype.usersCacheUpdated = function (data) {
+  this.emit("usersCacheUpdated", data);
+}
 
 EchoProtocol.prototype.updatedAudioState = function (data) {
   this.emit("updatedAudioState", data);
