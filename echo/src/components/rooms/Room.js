@@ -6,14 +6,8 @@ import { ep } from "../../index";
 
 const api = require("../../api");
 
-function Room({ active, onClick, data }) {
+function Room({ active, data }) {
   const [onlineUsers, setOnlineUsers] = useState([]);
-
-  const _onClick = () => {
-    if (active) return;
-    onClick(data.id);
-    updateUsersInRoom();
-  }
 
   useEffect(() => {
     ep.on("userJoinedChannel", (data) => {
@@ -61,7 +55,7 @@ function Room({ active, onClick, data }) {
 
   return (
     <div>
-      { active ? <ActiveRoom users={onlineUsers} data={data} onClick={_onClick} /> : <InactiveRoom users={onlineUsers} data={data} onClick={_onClick} /> }
+      { active ? <ActiveRoom users={onlineUsers} data={data} /> : <InactiveRoom users={onlineUsers} data={data} /> }
     </div>
   )
 }

@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 
 import { ep } from "../../index";
 
-function ActiveRoom({ users, onClick, data }) {
+function ActiveRoom({ users, data }) {
   const handleClick = () => {
-    onClick(data.id);
+    ep.joinRoom(localStorage.getItem("id"), data.id);
   }
 
   return (
