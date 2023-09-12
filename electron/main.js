@@ -46,7 +46,7 @@ let tray = null
 app.whenReady().then(() => {
   mainWindow = createMainWindow()
   tray = new Tray(path.join(__dirname, 'images','echoIcon.png'))
-  const contextMenu = Menu.buildFromTemplate([
+  const TrayMenu = [
     {
       label: "Echo",
       enabled: false
@@ -75,7 +75,26 @@ app.whenReady().then(() => {
         app.quit();
       }
     },
-  ])
+  ]
+
+  if (!app.isPackaged) {
+    TrayMenu.splice(2, 0, {
+      label: "Open rtc-internals",
+      click: function () {
+        rtcInternals.show();
+      }
+    })
+
+    TrayMenu.splice(3, 0, {
+      label: "Open dev tools",
+      click: function () {
+        mainWindow.webContents.openDevTools();
+      }
+    })
+  }
+
+
+  const contextMenu = Menu.buildFromTemplate(TrayMenu);
   tray.setToolTip('Echo')
   tray.on('double-click', function(e){
     mainWindow.show();
@@ -84,23 +103,25 @@ app.whenReady().then(() => {
 
   //WebRTC internals window
   
-  var rtcInternals = new BrowserWindow({
-    width: 1000,
-    height: 700,
-    title: "Echo",
-    icon: 'images/echoIcon',
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      devTools: true
-    }
-  })
+  if (!app.isPackaged) {
+    var rtcInternals = new BrowserWindow({
+      width: 1000,
+      height: 700,
+      title: "Echo",
+      icon: 'images/echoIcon',
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        devTools: true
+      }
+    })
 
-  // open dev tools
-  mainWindow.webContents.openDevTools();
-  // open rtc internals for degugging
-  rtcInternals.loadURL("chrome://webrtc-internals");
-  rtcInternals.show();
+    // open dev tools
+    mainWindow.webContents.openDevTools();
+    // open rtc internals for degugging
+    rtcInternals.loadURL("chrome://webrtc-internals");
+    rtcInternals.show();
+  }
 })
 
 // app.on('window-all-closed', () => {
