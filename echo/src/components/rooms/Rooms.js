@@ -70,7 +70,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     return () => {
       ep.releaseGroup("Rooms.roomClicked");
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (!connected) {

@@ -44,7 +44,7 @@ const theme = createTheme({
       }
     },
   },
-});
+}, []);
 
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
