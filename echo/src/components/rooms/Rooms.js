@@ -40,7 +40,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       console.log("roomClicked in Rooms", typeof joiningId, typeof currentRoom)
       if (String(joiningId) === currentRoom) return;
       if (currentRoom !== 0) ep.exitFromRoom(localStorage.getItem("id"));
-      // ep.joinRoom(localStorage.getItem("id"), joiningId);
+      ep.joinRoom(localStorage.getItem("id"), joiningId);
       ep.updateUser(localStorage.getItem("id"), "currentRoom", String(joiningId));
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
