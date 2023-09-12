@@ -17,7 +17,7 @@
 }
 
 .topBar {
-  position: fixed;
+  /* position: fixed; */
   width: 100%;
   min-height: 1.7rem;
   background-color: var(--main-bg-color);
