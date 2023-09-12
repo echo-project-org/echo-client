@@ -330,7 +330,17 @@ class EchoProtocol {
     return videoRtc.getVideoSources();
   }
 
-  getAudioState() {
+  getAudioState(id = false) {
+    if (id) {
+      const cachedUser = this.cachedUsers.get(id);
+      if (cachedUser && !cachedUser.self) {
+        return {
+          // TODO: implement user volume in cache
+          isMuted: cachedUser.mute,
+          isDeaf: cachedUser.deaf
+        }
+      }
+    }
     return this.at.getAudioState();
   }
 

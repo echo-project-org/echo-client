@@ -70,7 +70,6 @@ function ChatControls({ onEmojiOn }) {
               style: { color: "#f5e8da" }
             }}
           />
-
         </div>
       </ThemeProvider>
     </div>

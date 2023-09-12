@@ -111,11 +111,28 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
       }
     });
 
-    if (localStorage.getItem("id") === id) {
-      const audioState = ep.getAudioState(id);
-      setDeaf(audioState.isDeaf);
-      setMuted(audioState.isMuted);
-    }
+    console.log("---------------------------- in OnlineUserIcon", id)
+    const audioState = ep.getAudioState(id);
+    console.log("--------------------------------- audioState in OnlineUserIcon", audioState, id)
+    setDeaf(audioState.isDeaf);
+    setMuted(audioState.isMuted);
+
+    // TODO: fix user join not retreiving remote user's audio state
+    // if (localStorage.getItem("id") === id) {
+    //   const audioState = ep.getAudioState(id);
+    //   setDeaf(audioState.isDeaf);
+    //   setMuted(audioState.isMuted);
+    // }
+
+    // ep.on("userJoinedChannel", "OnlineUserIcon.userJoinedChannel", (data) => {
+    //   console.log("userJoinedChannel in OnlineUserIcon", data)
+    //   if (data.id === id) {
+    //     const audioState = ep.getAudioState(id);
+    //     console.log("---------------------------------", audioState);
+    //     setDeaf(audioState.isDeaf);
+    //     setMuted(audioState.isMuted);
+    //   }
+    // });
 
     return () => {
       ep.off('updatedAudioState');
