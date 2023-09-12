@@ -38,7 +38,7 @@ class ServerRTC {
             id: this.id
         }, (description) => {
             const desc = new webrtc.RTCSessionDescription(description);
-            peer.setRemoteDescription(desc).catch(e => console.log(e));
+            peer.setRemoteDescription(desc).catch(e => console.error(e));
         })
     }
 
@@ -57,7 +57,7 @@ class ServerRTC {
             this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [] });
 
             peer.ontrack = (e) => {
-                console.log("peer.ontrack called, populating peers")
+                console.log("Got augio track from user " + id );
                 this.peers.set(id, { peer, audioStream: e.streams[0], audioSubscriptionsIds: [] });
             };
 
@@ -81,8 +81,6 @@ class ServerRTC {
                                 .then(() => {
                                     // if the audioStream and the peer is already populated, immediately return
                                     if (this.peers.has(id)) return resolve(peer.localDescription);
-
-                                    console.log("populating peers, but audioStream is null")
                                     this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [] });
                                     // respond with the payload
                                     resolve(peer.localDescription);

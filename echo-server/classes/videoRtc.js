@@ -31,7 +31,7 @@ class VideoRTC {
             id: this.id
         }, (description) => {
             const desc = new webrtc.RTCSessionDescription(description);
-            peer.setRemoteDescription(desc).catch(e => console.log(e));
+            peer.setRemoteDescription(desc).catch(e => console.error(e));
         })
     }
 
@@ -44,7 +44,7 @@ class VideoRTC {
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
             this.peers.set(id, { peer, videoStream: null, videoSubscriptionsIds: [] });
             peer.ontrack = (e) => {
-                console.log("peer.ontrack called, populating peers")
+                console.log("Got video track from user " + id);
                 this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [] });
             };
 

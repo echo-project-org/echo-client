@@ -87,7 +87,6 @@ class audioRtcTransmitter {
   }
 
   setOutputDevice(deviceId) {
-    console.log("Setting output device", deviceId);
     if (deviceId === 'default') {
       return
     }
@@ -155,7 +154,7 @@ class audioRtcTransmitter {
   }
 
   handleTrackEvent(e) {
-    console.log("Got track event", e);
+    console.log("Got audio track event", e);
     let context = new AudioContext();
 
     if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
@@ -243,7 +242,6 @@ class audioRtcTransmitter {
     }, (a) => {
       if (a) {
         //The socket returns the audio stream id
-        console.log(id, "subscribed to audio stream", a)
         this.streamIds.set(id, a);
       } else {
         console.error("Failed to subscribe to audio");
@@ -284,7 +282,6 @@ class audioRtcTransmitter {
       this.inputStreams = [];
 
       for (const [key, value] of this.streamIds) {
-        console.log(key, "Unsubscribing from", this.id)
         ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
       }
     }
@@ -338,14 +335,14 @@ class audioRtcTransmitter {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     } else {
-      console.log("Stream is null")
+      console.warn("Stream is null")
     }
 
     if (this.peer) {
       this.peer.close();
       this.peer = null;
     } else {
-      console.log("Peer is null")
+      console.warn("Peer is null")
     }
 
     ep.stopAudioBroadcast({ id: this.id });

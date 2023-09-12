@@ -9,8 +9,6 @@ const io = require("socket.io-client");
 
 class EchoProtocol {
   constructor() {
-    console.log("created echoProtocol")
-
     this.socket = null;
     this.ping = 0;
     this.pingInterval = null;
@@ -59,11 +57,11 @@ class EchoProtocol {
     this._startPing();
 
     this.socket.on("server.ready", (remoteId) => {
-      console.log("opened", remoteId);
+      console.log("Websocker connection opened", remoteId);
     });
 
     this.socket.io.on("close", () => {
-      console.log("connection closed");
+      console.log("Websocket connection closed");
       this.stopTransmitting();
       this.stopReceiving();
     })
@@ -77,20 +75,20 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
-      console.log("user", data.id, "joined your channel, starting listening audio");
+      console.log("User", data.id, "joined your channel, starting listening audio");
       if (data.isConnected) this.startReceiving(data.id);
       this.userJoinedChannel(data);
       // render the component Room with the new user
     });
 
     this.socket.on("server.userLeftChannel", (data) => {
-      console.log("user", data.id, "left your channel, stopping listening audio");
+      console.log("User", data.id, "left your channel, stopping listening audio");
       if (data.isConnected) this.stopReceiving(data.id);
       this.userLeftChannel(data);
     });
 
     this.socket.on("server.sendAudioState", (data) => {
-      console.log("got user audio info from server", data);
+      console.log("Got user audio state from server", data);
       if (!data.deaf || !data.mute) {
         this.updatedAudioState(data);
         //startReceiving();
@@ -195,7 +193,6 @@ class EchoProtocol {
   }
 
   joinRoom(id, roomId) {
-    console.log("joining event called", id, roomId)
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId });
     this.startReceivingVideo(1);
@@ -207,7 +204,6 @@ class EchoProtocol {
   }
 
   exitFromRoom(id) {
-    console.log("exit from room", id)
     this.stopReceiving();
     if (this.socket) this.socket.emit("client.exit", { id });
   }
@@ -274,7 +270,6 @@ class EchoProtocol {
   }
 
   setupVideoRtc(id) {
-    console.log("setting up video rtc")
     this.vt = new videoRtc(id);
   }
 
@@ -297,7 +292,7 @@ class EchoProtocol {
    */
   getVideo(remoteId){
     let stream = this.vt.getVideo(remoteId);
-    console.log("got video stream", stream);
+    console.log("Got video stream", stream);
     return stream;
   }
 
@@ -368,7 +363,6 @@ class EchoProtocol {
       if (user["update" + field]) user["update" + field](value);
       else console.error("User does not have field " + field + " or field function update" + field);
     else console.error("User not found in cache");
-    console.log("updateUser", user);
     this.usersCacheUpdated(user.getData());
   }
 
@@ -393,7 +387,6 @@ Emitter.mixin(EchoProtocol);
 
 
 EchoProtocol.prototype.roomClicked = function (data) {
-  console.log("roomClicked in echoProtocol", data)
   this.emit("roomClicked", data);
 }
 

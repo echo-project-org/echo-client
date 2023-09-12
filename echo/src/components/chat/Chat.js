@@ -16,7 +16,6 @@ function Chat({ currentRoomId }) {
     // get messages from api
     api.call("rooms/" + currentRoomId + "/messages")
       .then((res) => {
-        console.log("messages got from api: ", res.json);
         setLoadingVisibility(false);
         setMessages(res.json);
       })

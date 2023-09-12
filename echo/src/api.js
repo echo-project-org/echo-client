@@ -41,33 +41,32 @@ export async function call(path, method = "GET", body = null, forceString = true
 const handleErrors = (status, response) => {
   if (status !== 200) {
     if (response.message) {
-      console.log(status + ": " + response.message);
       return false;
     }
     else
       switch (status) {
         case 400:
           // Bad request
-          console.log(status + ": Bad request");
+          console.warn(status + ": Bad request");
           break;
         case 401:
           // Unauthorized
-          console.log(status + ": Unauthorized");
+          console.warn(status + ": Unauthorized");
           break;
         case 403:
           // Forbidden
-          console.log(status + ": Forbidden");
+          console.warn(status + ": Forbidden");
           break;
         case 404:
           // Not found
-          console.log(status + ": Not found");
+          console.warn(status + ": Not found");
           break;
         case 500:
           // Internal server error
-          console.log(status + ": Internal server error");
+          console.warn(status + ": Internal server error");
           break;
         default:
-          console.log(status + ": Unknown error");
+          console.warn(status + ": Unknown error");
           break;
       }
   }

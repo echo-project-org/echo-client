@@ -55,7 +55,6 @@ function ChatControls({ onEmojiOn }) {
               // check if enter is pressed
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                console.log('Enter key pressed, Send message.');
               }
             }}
             fullWidth

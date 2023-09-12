@@ -24,7 +24,7 @@ class User {
 
     updatecurrentRoom(roomId) {
         console.log("updatecurrentRoom in user cache", roomId, this.id)
-        if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setCurrentRoom")
+        if (isNaN(roomId)) return console.error("NOT A VALID ROOM NUMBER IN setCurrentRoom")
         this.currentRoom = String(roomId);
     }
 
