@@ -12,7 +12,7 @@ const StyledAvatarGroup = styled(AvatarGroup)({
 
 function InactiveRoom({ users, data }) {
   const handleClick = () => {
-    ep.joinRoom(localStorage.getItem("id"), data.id);
+    ep.roomClicked({ roomId: data.id });
   }
 
   return (

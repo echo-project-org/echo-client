@@ -199,7 +199,6 @@ class EchoProtocol {
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId });
     this.startReceivingVideo(1);
-    this.roomClicked({ roomId });
   }
 
   sendAudioState(id, data) {
@@ -394,6 +393,7 @@ Emitter.mixin(EchoProtocol);
 
 
 EchoProtocol.prototype.roomClicked = function (data) {
+  console.log("roomClicked in echoProtocol", data)
   this.emit("roomClicked", data);
 }
 

@@ -6,7 +6,7 @@ import { ep } from "../../index";
 
 function ActiveRoom({ users, data }) {
   const handleClick = () => {
-    ep.joinRoom(localStorage.getItem("id"), data.id);
+    ep.roomClicked({ roomId: data.id });
   }
 
   return (
