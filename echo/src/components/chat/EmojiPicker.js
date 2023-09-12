@@ -24,7 +24,7 @@ function EmojiPicker({ show, style }) {
 
   return (
     <div style={style}>
-      <EmojiPickerReact onEmojiClick={handleSelectEmoji} emojiStyle="twitter" lazyLoadEmojis />
+      <EmojiPickerReact onEmojiClick={handleSelectEmoji} emojiStyle="twitter" lazyLoadEmojis searchDisabled skinTonesDisabled />
     </div>
   );
 }

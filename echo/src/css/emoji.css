@@ -3,14 +3,14 @@
   --epr-category-label-bg-color: #2b192e !important;
 
   --epr-highlight-color: #ff6bf8 !important;
-  --epr-hover-bg-color: #fa85ea !important;
-  --epr-focus-bg-color: #fa85ea !important;
+  --epr-hover-bg-color: #4f2e55 !important;
+  --epr-focus-bg-color: #4f2e55 !important;
   --epr-text-color: #fa85ea !important;
   --epr-search-input-bg-color: #2b192e !important;
   --epr-picker-border-color: #fa85ea !important;
   --epr-category-icon-active-color: #fa85ea !important;
   --epr-skin-tone-picker-menu-color: #fa85ea !important;
-  --epr-horizontal-padding: 10px;
+  --epr-horizontal-padding: .5rem !important;
   --epr-picker-border-radius: 8px;
   --epr-search-border-color: var(--epr-highlight-color);
   --epr-header-padding: 15px var(--epr-horizontal-padding);
@@ -26,9 +26,9 @@
   --epr-category-navigation-button-size: 30px;
   --epr-emoji-variation-picker-height: 45px;
   --epr-emoji-variation-picker-bg-color: var(--epr-bg-color);
-  --epr-preview-height: 70px;
-  --epr-preview-text-size: 14px;
-  --epr-preview-text-padding: 0 var(--epr-horizontal-padding);
+  --epr-preview-height: 35px !important;
+  --epr-preview-text-size: 10px !important;
+  --epr-preview-text-padding: 15px var(--epr-horizontal-padding) !important;
   --epr-preview-border-color: var(--epr-picker-border-color);
   --epr-preview-text-color: var(--epr-text-color);
   --epr-category-padding: 0 var(--epr-horizontal-padding);
@@ -53,4 +53,10 @@
   height: 100%;
   overflow: auto;
   transition: .1s all ease-in-out;
+}
+
+.epr-preview img {
+  margin-top: 0.6rem !important;
+  width: 1.5rem !important;
+  height: 1.5rem !important;
 }
