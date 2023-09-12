@@ -53,7 +53,7 @@ class User {
      */
 
     // called when remote user join the current room
-    userJoinedCurrentChannel(data) {
+    userJoinedChannel(data) {
         // if (this.currentRoom !== 0) {
             this.socket.emit("server.userJoinedChannel", data)
         // }
