@@ -1,7 +1,5 @@
 import OnlineUserIcon from '../user/OnlineUserIcon';
 
-import { useEffect } from 'react';
-
 import { ep } from "../../index";
 
 function ActiveRoom({ users, data }) {
@@ -14,7 +12,7 @@ function ActiveRoom({ users, data }) {
       <p className='roomName noselect'>{data.name}</p>
       <div className="roomUsers">
         {
-          users.map(user => (
+          users.sort().map(user => (
             <OnlineUserIcon key={user.name} imgUrl={user.userImage} name={user.name} id={user.id} />
           ))
         }

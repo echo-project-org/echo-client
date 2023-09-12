@@ -29,6 +29,7 @@ function Chat({ currentRoomId }) {
   return (
     <div className='chat'>
       <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
+      {/* <LoadingAnimation visibility={Boolean(true)} className='loadingAnimation'/> */}
 
       {messages.length > 0 ? messages.map((message) => {
         if (String(message.userId) === String(localStorage.getItem("id"))) {
@@ -36,7 +37,7 @@ function Chat({ currentRoomId }) {
         } else {
           return <MessageRight key={message.id} message={message} />
         }
-      }) : <div className='noMessages'>No messages yet</div>}
+      }) : <div className='noMessages'>{ Boolean(loadingVisibility) ? "" : "No messages yet" }</div>}
       
     </div>
   )

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Button, ButtonGroup, InputAdornment } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import { Send, EmojiEmotions } from '@mui/icons-material';
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
 
@@ -18,10 +17,10 @@ function MessageBoxButtons({ onEmojiOn }) {
       <ThemeProvider theme={theme}>
         <ButtonGroup variant='text'>
           <Button onClick={onEmojiOn}>
-            <EmojiEmotionsIcon />
+            <EmojiEmotions />
           </Button>
           <Button >
-            <SendIcon />
+            <Send />
           </Button>
         </ButtonGroup>
       </ThemeProvider>

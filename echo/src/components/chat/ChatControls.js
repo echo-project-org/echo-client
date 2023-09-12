@@ -1,8 +1,7 @@
 import React from 'react'
-import { createTheme } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
+import { createTheme, styled } from '@mui/material/styles';
+import { TextField } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-import { styled } from "@mui/material/styles";
 import MessageBoxButtons from './MessageBoxButtons';
 
 const StyledTextField = styled(TextField)({

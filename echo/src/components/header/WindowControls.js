@@ -1,7 +1,7 @@
 import '../../css/header.css'
 
 import React from 'react'
-import { createTheme, styled } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 import { ButtonGroup, Button } from '@mui/material'
 import { Close, Fullscreen, Minimize } from '@mui/icons-material';

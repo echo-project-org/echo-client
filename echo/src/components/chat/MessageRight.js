@@ -1,6 +1,5 @@
 import React from 'react'
-import Avatar from '@mui/material/Avatar';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Avatar } from '@mui/material';
 
 function MessageRight({ message }) {
   return (

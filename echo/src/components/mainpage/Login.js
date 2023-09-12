@@ -6,8 +6,6 @@ import { Alert, Button, createTheme, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import BackButton from '../settings/BackButton';
 
-import { ep } from "../../index";
-
 import imgLogo from "../../img/headphones.svg"
 
 var api = require('../../api')

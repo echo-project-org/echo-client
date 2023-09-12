@@ -7,8 +7,6 @@ import Chat from '../chat/Chat'
 import ChatControls from '../chat/ChatControls'
 import EmojiPicker from "../chat/EmojiPicker";
 
-import { ep } from "../../index";
-
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     margin: "0 0 0 1rem",

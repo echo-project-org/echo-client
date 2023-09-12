@@ -1,11 +1,11 @@
 import React from 'react'
 import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from 'framer-motion'
+
 import MainLogo from './MainLogo'
 import MainPage from './MainPage'
 import Login from './Login';
 import Register from './Register'
-import { AnimatePresence } from 'framer-motion'
-
 
 function AnimatedRoutes() {
   const location = useLocation();

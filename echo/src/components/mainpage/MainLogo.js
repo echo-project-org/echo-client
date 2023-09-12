@@ -6,8 +6,6 @@ import LoadingAnimation from './LoadingAnimation';
 import AuthenticatedUserButtons from '../user/AuthenticatedUserButtons';
 import LoginButtons from './LoginButtons';
 
-var api = require('../../api')
-
 const MainLogo = () => {
   let navigate = useNavigate();
   const [loadingVisibility, setLoadingVisibility] = useState(true);
