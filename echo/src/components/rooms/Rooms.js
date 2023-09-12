@@ -60,7 +60,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     return () => {
       ep.off("roomClicked");
     }
-  }, []);
+  });
 
   useEffect(() => {
     if (!connected) {

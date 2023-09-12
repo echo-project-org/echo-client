@@ -32,7 +32,7 @@ function Room({ active, data }) {
       ep.releaseGroup('Room.userLeftChannel');
       ep.releaseGroup('Room.usersCacheUpdated');
     }
-  }, []);
+  });
 
   const updateUsersInRoom = (roomId = false) => {
     // console.log("-------------- updateUsersInRoom --------------")

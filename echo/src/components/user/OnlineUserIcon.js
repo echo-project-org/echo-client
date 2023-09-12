@@ -138,7 +138,7 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
       ep.releaseGroup('OnlineUserIcon.updatedAudioState');
       // ep.releaseGroup('OnlineUserIcon.userJoinedChannel');
     };
-  }, []);
+  });
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

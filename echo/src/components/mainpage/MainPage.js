@@ -40,7 +40,7 @@ function MainPage() {
           });
         }
       });
-  }, []);
+  });
 
   return (
     <motion.div
