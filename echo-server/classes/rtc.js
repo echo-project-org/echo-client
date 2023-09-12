@@ -140,7 +140,7 @@ class ServerRTC {
             if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
             let asid = this.peers.get(receiverId).audioSubscriptionsIds;
-            this.peers.get(receiverId).audioSubscriptionsIds = asid.filter(id => id !== senderId);
+            asid = asid.filter(id => id !== senderId);
 
             console.log("User " + receiverId + " unsubscribed from user " + senderId + "'s audio stream");
             resolve(true);
@@ -148,7 +148,14 @@ class ServerRTC {
     }
 
     clearUserConnection(data) {
-
+        let sender = data.id;
+        console.log("User " + sender + " disconnected, clearing connection");
+        if (!sender) return "NO-ID";
+        if (this.peers.has(sender)) {
+            let peer = this.peers.get(sender).peer;
+            peer.close();
+            this.peers.delete(sender);
+        }
     }
 
     async stopAudioBroadcast(data) {
