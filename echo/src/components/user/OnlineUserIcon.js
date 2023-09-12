@@ -101,10 +101,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    ep.on("updatedAudioState", (data) => {
-      console.log("got audio state in OnlineUserIcon")
-      console.log(data)
-      console.log(id)
+    ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
+      ep.updateUser(data.id, "deaf", data.deaf);
+      ep.updateUser(data.id, "muted", data.muted);
+      console.log("OnlineUserIcon.updatedAudioState", data, id)
       if (data.id === id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
@@ -135,7 +135,8 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
     // });
 
     return () => {
-      ep.off('updatedAudioState');
+      ep.releaseGroup('OnlineUserIcon.updatedAudioState');
+      // ep.releaseGroup('OnlineUserIcon.userJoinedChannel');
     };
   }, []);
 
