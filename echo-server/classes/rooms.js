@@ -106,14 +106,11 @@ class Rooms {
         if (this.connectedClients.has(id)) {
             this.rooms.forEach((room, _, arr) => {
                 console.log("checking room", room.id, "for user", id)
-                // console.log("room.users", room.users)
-                // console.log("room.users.has(id)", room.users.has(id))
                 if (room.users.has(id)) {
                     console.log("removing id", id, "from room", room.id);
                     room.users.delete(id);
                 }
             });
-            console.log(this.rooms);
         }
     }
 
@@ -126,9 +123,8 @@ class Rooms {
                 console.log("deleted user", data.id, "from room", roomId)
 
                 this.connectedClients.forEach((user, _) => {
-                    // console.log("in exitRoom", user)
                     if (data.id !== user.id) {
-                        console.log("sending message porcoddio uscito to", user.id, "about", data.id)
+                        console.log("Notifing", user.id, "about", data.id)
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
                         user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
@@ -154,9 +150,8 @@ class Rooms {
 
                 //Notify all users
                 this.connectedClients.forEach((user, _) => {
-                    // console.log("in addUserToRoom", user)
                     if (id !== user.id) {
-                        console.log("sending message porcoddio to", user.id, "about", id)
+                        console.log("Notifing", user.id, "about", id)
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
                         user.userJoinedChannel({ id, roomId, isConnected });

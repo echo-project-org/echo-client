@@ -11,7 +11,6 @@ const io = new Server(config.port, {
 io.use((socket, next) => {
     // middleware to do whatever we want
     // const request = socket.request;
-    // console.log("request param: ", request._query);
     next();
 });
 

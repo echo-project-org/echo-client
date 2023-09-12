@@ -43,7 +43,7 @@ class User {
     triggerEvent(event, data) {
         // register event and save the reference function to be called
         if (this.events[event]) this.events[event].cb(data)
-        else console.log("can't trigger event", event, "NOT FOUND", this.id);
+        else console.error("can't trigger event", event, "NOT FOUND", this.id);
         // call same function if it exists
         if (this[event]) this[event](data);
     }
@@ -92,7 +92,7 @@ class User {
     // (like reconnecting to the last room)
     setCurrentRoom(roomId) {
         if (typeof roomId !== "number") roomId = Number(roomId);
-        if (isNaN(roomId)) return console.log("NOT A VALID ROOM NUMBER IN setCurrentRoom")
+        if (isNaN(roomId)) return console.error("NOT A VALID ROOM NUMBER IN setCurrentRoom")
         this.currentRoom = roomId;
     }
 
@@ -127,7 +127,7 @@ class User {
                     cb(resp);
                 })
                 .catch((err) => {
-                    console.log("broadcastAudio error", err);
+                    console.error("broadcastAudio error", err);
                 });
         }
     }
@@ -141,7 +141,7 @@ class User {
                     cb(resp);
                 })
                 .catch((err) => {
-                    console.log("subscribeAudio error", err);
+                    console.error("subscribeAudio error", err);
                 });
         }
     }
@@ -151,7 +151,7 @@ class User {
             const resp = this.rtc.stopAudioBroadcast(data);
             switch (resp) {
                 case "NO-ID":
-                    console.log("NO-ID");
+                    console.error("NO-ID");
                     break;
                 default:
                     break;
@@ -164,10 +164,10 @@ class User {
             const resp = this.rtc.unsubscribeAudio(data);
             switch (resp) {
                 case "NO-SENDER-ID":
-                    console.log("NO-SENDER-ID");
+                    console.error("NO-SENDER-ID");
                     break;
                 case "NO-RECEIVER-ID":
-                    console.log("NO-RECEIVER-ID");
+                    console.error("NO-RECEIVER-ID");
                     break;
                 default:
                     break;
@@ -200,7 +200,7 @@ class User {
                     cb(resp);
                 })
                 .catch((err) => {
-                    console.log("broadcastVideo error", err);
+                    console.error("broadcastVideo error", err);
                 });
         }
     }
@@ -214,7 +214,7 @@ class User {
                     cb(resp);
                 })
                 .catch((err) => {
-                    console.log("subscribeVideo error", err);
+                    console.error("subscribeVideo error", err);
                 });
         }
     }
@@ -224,7 +224,7 @@ class User {
             const resp = this.videoRtc.stopVideoBroadcast(data);
             switch (resp) {
                 case "NO-ID":
-                    console.log("NO-ID");
+                    console.error("NO-ID");
                     break;
                 default:
                     break;
@@ -237,10 +237,10 @@ class User {
             const resp = this.videoRtc.unsubscribeVideo(data);
             switch (resp) {
                 case "NO-SENDER-ID":
-                    console.log("NO-SENDER-ID");
+                    console.error("NO-SENDER-ID");
                     break;
                 case "NO-RECEIVER-ID":
-                    console.log("NO-RECEIVER-ID");
+                    console.error("NO-RECEIVER-ID");
                     break;
                 default:
                     break;
