@@ -27,7 +27,6 @@ const StyledTextField = styled(TextField)({
     },
     "&.Mui-focused fieldset": {
       borderColor: "#f5e8da",
-
     }
   }
 });
@@ -60,7 +59,7 @@ function ChatControls({ onEmojiOn }) {
             fullWidth
             multiline
             maxRows={2}
-            label="Send a message."
+            placeholder='Send a message...'
             InputProps={{
               endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} />,
               style: { color: "#f5e8da" }
