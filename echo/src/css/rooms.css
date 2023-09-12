@@ -1,20 +1,17 @@
 .roomContent {
   flex: 1 1 auto;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  height: 0;
   width: 100%;
   height: 100%;
-  /* overflow-y: show; */
-  /* overflow-x: hidden; */
+  max-height: 90%;
 }
 
 .roomsContainer {
   width: 100%;
   height: 0;
   margin: 0 auto;
-  flex: 1 1 auto;
+  flex: .98 1 auto;
   display: flex;
   flex-direction: column;
   overflow-y: show;
@@ -72,9 +69,11 @@
 }
 
 .roomControl {
+  /* position: fixed; */
   justify-content: center;
   text-align: center;
   align-items: center;
+  z-index: 1;
 }
 
 .roomBtn {

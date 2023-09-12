@@ -287,8 +287,8 @@ body {
 }
 
 .sidebar {
-  padding-bottom: 0.5rem;
-  width: 15rem;
+  width: 18rem;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1rem;
