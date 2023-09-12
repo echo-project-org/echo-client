@@ -27,6 +27,12 @@ const StyledTextField = styled(TextField)({
     },
     "&.Mui-focused fieldset": {
       borderColor: "#f5e8da",
+    },
+    "& .MuiInputAdornment-root": {
+      color: "#f5e8da",
+      alignSelf: "flex-start",
+      fixAlign: "flex-start",
+      marginTop: "0.6rem"
     }
   }
 });
@@ -45,8 +51,7 @@ function ChatControls({ onEmojiOn }) {
   return (
     <div className='chatControls'>
       <ThemeProvider theme={theme}>
-        <form className='chatForm' noValidate autoComplete="off">
-
+        <div className="chatInputContainer">
           <StyledTextField
             id="messageBox"
             autoFocus
@@ -58,7 +63,7 @@ function ChatControls({ onEmojiOn }) {
             }}
             fullWidth
             multiline
-            maxRows={2}
+            maxRows={20}
             placeholder='Send a message...'
             InputProps={{
               endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} />,
@@ -66,7 +71,7 @@ function ChatControls({ onEmojiOn }) {
             }}
           />
 
-        </form>
+        </div>
       </ThemeProvider>
     </div>
   )

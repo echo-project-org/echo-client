@@ -1,0 +1,19 @@
+:root {
+  --chat-box-background-color: #c573d1;
+}
+
+.chatControls {
+  width: 99%;
+  min-height: 3rem;
+  margin: 0.5rem;
+}
+
+.chatBoxContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background-color: var(--chat-box-background-color);
+  line-break: anywhere;
+  position: relative;
+}

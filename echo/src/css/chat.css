@@ -7,8 +7,8 @@
   display: flex;
   flex-direction: row;
   flex: 1 1 auto;
-  height: 97vh;
-  min-height: 1vh;
+  /* height: 97vh;
+  min-height: 1vh; */
 }
 
 .chat {
@@ -16,67 +16,45 @@
   display: flex;
   flex-direction: column-reverse;
   flex: 1 1 auto;
-  height: 88vh;
+  height: 100%;
+  width: 100%;
   background-color: var(--chat-background-color);
   border-bottom-left-radius: 1rem;
-  margin-left: 0.6rem;
+  line-break: anywhere;
+  position: relative;
 }
 
-.chatControls {
-  width: 99%;
-  min-height: 3rem;
-  margin: 0.5rem;
-}
-
-.chatForm {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  margin-right: 2rem;
+.chatInputContainer {
+  margin-top: .6rem;
 }
 
 .rightMessage {
-  max-width: 66%;
-  min-height: 1.7rem;
+  max-width: 68%;
+  min-height: fit-content;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
   background-color: var(--color4);
   border-radius: 1rem 1rem 0 1rem;
   width: fit-content;
-  margin: 1rem 1rem 1rem auto;
-  display: flex;
-  flex-direction: row;
+  margin: 1rem 1rem .4rem auto;
   gap: 0.5rem;
-}
-
-.rightMessageText {
-  margin: auto;
-  color: black;
-  text-align: left;
-  vertical-align: middle;
   display: inline-block;
 }
 
 .leftMessage {
-  max-width: 66%;
-  min-height: 1.7rem;
+  max-width: 68%;
+  min-height: fit-content;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
   background-color: var(--color3);
   border-radius: 1rem 1rem 1rem 0;
   width: fit-content;
-  margin: 1rem;
-  display: flex;
-  flex-direction: row;
+  margin: 1rem auto .4rem 1rem;
   gap: 0.5rem;
+  display: inline-block;
 }
 
-.leftMessageText {
-  margin: auto;
+.messageText {
   color: black;
   text-align: left;
-  vertical-align: middle;
-  display: inline-block;
 }
 
 .noMessages {
