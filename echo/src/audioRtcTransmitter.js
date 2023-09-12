@@ -256,6 +256,8 @@ class audioRtcTransmitter {
       let streamId = this.streamIds.get(id);
       if (streamId) {
         this.inputStreams.filter((stream) => {
+          // if (!stream) return false;
+          // if (!stream.stream) return false;
           //find every stream that matches the id
           return stream.stream.id === streamId;
         }).forEach((stream) => {
