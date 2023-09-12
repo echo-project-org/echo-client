@@ -1,13 +1,10 @@
 import '../../css/header.css'
 
 import React from 'react'
-import Button from '@mui/material/Button'
-import { ButtonGroup } from '@mui/material'
-import { createTheme } from '@mui/material/styles';
+import { createTheme, styled } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
-import CloseIcon from '@mui/icons-material/Close';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import MinimizeIcon from '@mui/icons-material/Minimize';
+import { ButtonGroup, Button } from '@mui/material'
+import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 
 import { ep } from "../../index";
 
@@ -43,14 +40,21 @@ function WindowControls({ muted, audioMuted }) {
     <div className='noDrag'>
       <ThemeProvider theme={theme}>
         <ButtonGroup variant='text' size="small" className='windowControls'>
-          <Button onClick={minimize}>
-            <MinimizeIcon fontSize="small" />
+          <Button onClick={minimize} disableRipple>
+            <Minimize fontSize="small" />
           </Button>
-          <Button onClick={toggleFullscreen}>
-            <FullscreenIcon fontSize="small" />
+          <Button onClick={toggleFullscreen} disableRipple>
+            <Fullscreen fontSize="small" />
           </Button>
-          <Button onClick={closeApp}>
-            <CloseIcon fontSize="small" />
+          <Button
+            onClick={closeApp}
+            disableRipple
+            onMouseEnter={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
+            onMouseLeave={(e) => e.target.style.backgroundColor = null}
+            onMouseDown={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
+            onMouseUp={(e) => e.target.style.backgroundColor = null}
+          >
+            <Close fontSize="small" />
           </Button>
         </ButtonGroup>
       </ThemeProvider>
