@@ -1,0 +1,56 @@
+.EmojiPickerReact {
+  --epr-bg-color: #2b192e !important;
+  --epr-category-label-bg-color: #2b192e !important;
+
+  --epr-highlight-color: #ff6bf8 !important;
+  --epr-hover-bg-color: #fa85ea !important;
+  --epr-focus-bg-color: #fa85ea !important;
+  --epr-text-color: #fa85ea !important;
+  --epr-search-input-bg-color: #2b192e !important;
+  --epr-picker-border-color: #fa85ea !important;
+  --epr-category-icon-active-color: #fa85ea !important;
+  --epr-skin-tone-picker-menu-color: #fa85ea !important;
+  --epr-horizontal-padding: 10px;
+  --epr-picker-border-radius: 8px;
+  --epr-search-border-color: var(--epr-highlight-color);
+  --epr-header-padding: 15px var(--epr-horizontal-padding);
+  --epr-active-skin-tone-indicator-border-color: var(--epr-highlight-color);
+  --epr-active-skin-hover-color: var(--epr-hover-bg-color);
+  --epr-search-input-bg-color-active: var(--epr-search-input-bg-color);
+  --epr-search-input-padding: 0 30px;
+  --epr-search-input-border-radius: 8px;
+  --epr-search-input-height: 40px;
+  --epr-search-input-text-color: var(--epr-text-color);
+  --epr-search-input-placeholder-color: var(--epr-text-color);
+  --epr-search-bar-inner-padding: var(--epr-horizontal-padding);
+  --epr-category-navigation-button-size: 30px;
+  --epr-emoji-variation-picker-height: 45px;
+  --epr-emoji-variation-picker-bg-color: var(--epr-bg-color);
+  --epr-preview-height: 70px;
+  --epr-preview-text-size: 14px;
+  --epr-preview-text-padding: 0 var(--epr-horizontal-padding);
+  --epr-preview-border-color: var(--epr-picker-border-color);
+  --epr-preview-text-color: var(--epr-text-color);
+  --epr-category-padding: 0 var(--epr-horizontal-padding);
+  --epr-category-label-text-color: var(--epr-text-color);
+  --epr-category-label-padding: 0 var(--epr-horizontal-padding);
+  --epr-category-label-height: 40px;
+  --epr-emoji-size: 30px;
+  --epr-emoji-padding: 5px;
+  --epr-emoji-fullsize: calc(var(--epr-emoji-size) + var(--epr-emoji-padding)*2);
+  --epr-emoji-hover-color: var(--epr-hover-bg-color);
+  --epr-emoji-variation-indicator-color: var(--epr-picker-border-color);
+  --epr-emoji-variation-indicator-color-hover: var(--epr-text-color);
+  --epr-header-overlay-z-index: 3;
+  --epr-emoji-variations-indictator-z-index: 1;
+  --epr-category-label-z-index: 2;
+  --epr-skin-variation-picker-z-index: 5;
+  --epr-preview-z-index: 6;
+
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  transition: .1s all ease-in-out;
+}
