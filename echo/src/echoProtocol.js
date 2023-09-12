@@ -336,7 +336,7 @@ class EchoProtocol {
       if (cachedUser && !cachedUser.self) {
         return {
           // TODO: implement user volume in cache
-          isMuted: cachedUser.mute,
+          isMuted: cachedUser.muted,
           isDeaf: cachedUser.deaf
         }
       }

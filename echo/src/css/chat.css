@@ -67,11 +67,10 @@
   font-size: 2rem;
 }
 
+/* put this in middle of container */
 .loadingAnimation {
-  top: 45%;
-  left: 50%;
+  width: fit-content;
   position: absolute;
-  margin: auto;
-  text-align: center;
-  vertical-align: middle;
+  top: calc(50% - 1.5rem);
+  left: calc(50% - 8rem);
 }

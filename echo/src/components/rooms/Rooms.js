@@ -33,7 +33,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   useEffect(() => {
     updateRooms();
 
-    ep.on("roomClicked", (data) => {
+    ep.on("roomClicked", "Rooms.roomClicked", (data) => {
       const joiningId = data.roomId;
       const currentRoom = ep.getUser(localStorage.getItem("id")).currentRoom;
       console.log("roomClicked in Rooms", joiningId, currentRoom, String(joiningId) === currentRoom)
@@ -42,6 +42,11 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       if (currentRoom !== 0) ep.exitFromRoom(localStorage.getItem("id"));
       ep.joinRoom(localStorage.getItem("id"), joiningId);
       ep.updateUser(localStorage.getItem("id"), "currentRoom", String(joiningId));
+      // update audio state of the user
+      const userAudioState = ep.getAudioState();
+      ep.updateUser(localStorage.getItem("id"), "muted", userAudioState.isMuted);
+      ep.updateUser(localStorage.getItem("id"), "deaf", userAudioState.isDeaf);
+      // update active room id
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
@@ -58,7 +63,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     });
 
     return () => {
-      ep.off("roomClicked");
+      ep.releaseGroup("Rooms.roomClicked");
     }
   });
 

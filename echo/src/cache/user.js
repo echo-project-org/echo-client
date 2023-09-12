@@ -7,7 +7,7 @@ class User {
         this.online = data.online;
         this.currentRoom = String(data.roomId);
 
-        this.mute = false;
+        this.muted = false;
         this.deaf = false;
         this.self = self;
     }
@@ -40,11 +40,13 @@ class User {
         this.online = online;
     }
 
-    updatemute(mute) {
-        this.mute = mute;
+    updatemuted(muted) {
+        console.log("updatemute in user cache", muted, this.id)
+        this.muted = muted;
     }
 
     updatedeaf(deaf) {
+        console.log("updatedeaf in user cache", deaf, this.id)
         this.deaf = deaf;
     }
 }
