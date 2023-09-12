@@ -141,7 +141,6 @@ class videoRtc {
             receiverId: this.id
         }, (a) => {
             if (a) {
-                console.log("Video id = ", a);
                 this.streamIds.set(id, a);
             } else {
                 console.error("Failed to subscribe to video from", id);
@@ -216,7 +215,6 @@ class videoRtc {
     }
 
     handleTrackEvent(e) {
-        console.log("video handleTrackEvent called", e)
         if (e.track.kind === "video") {
             console.log("Got video track", e);
             //Play video stream
@@ -234,14 +232,14 @@ class videoRtc {
             });
             this.stream = null
         } else {
-            console.log("Stream already closed");
+            console.warn("Stream already closed");
         }
 
         if (this.peer) {
             this.peer.close();
             this.peer = null;
         } else {
-            console.log("Peer already closed");
+            console.warn("Peer already closed");
         }
 
         ep.stopVideoBroadcast({ id: this.id });
