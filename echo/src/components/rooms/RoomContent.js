@@ -50,7 +50,7 @@ function RoomContent({ roomId }) {
   const [emojiPicker, setEmojiPicker] = useState(false);
 
   const handleEmojiPicker = () => {
-    console.log("sto cambianto emojipicker", emojiPicker)
+    // console.log("sto cambianto emojipicker", emojiPicker)
     setEmojiPicker(!emojiPicker);
   };
 

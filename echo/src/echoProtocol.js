@@ -382,13 +382,13 @@ class EchoProtocol {
 
   getUsersInRoom(roomId) {
     if (typeof roomId !== "string") roomId = roomId.toString();
-    console.log("retriving users in room", roomId)
+    // console.log("retriving users in room", roomId)
     const users = [];
     this.cachedUsers.forEach((user) => {
-      console.log("looping users in getUsersInRoom", user)
+      // console.log("looping users in getUsersInRoom", user)
       if (user.currentRoom === roomId) users.push(user);
     });
-    console.log("users in room", users)
+    // console.log("users in room", users)
     return users;
   }
 }
