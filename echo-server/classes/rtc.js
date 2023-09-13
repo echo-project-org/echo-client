@@ -137,8 +137,7 @@ class ServerRTC {
             if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
             if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
-            let asid = this.peers.get(receiverId).audioSubscriptionsIds;
-            asid = asid.filter(id => id !== senderId);
+            this.peers.get(receiverId).audioSubscriptionsIds = this.peers.get(receiverId).audioSubscriptionsIds.filter(id => id !== senderId);
 
             console.log("User " + receiverId + " unsubscribed from user " + senderId + "'s audio stream");
             resolve(true);
