@@ -255,6 +255,7 @@ class audioRtcTransmitter {
       //find the stream id
       let streamId = this.streamIds.get(id);
       if (streamId) {
+        ep.unsubscribeAudio({ senderId: id, receiverId: this.id })
         this.inputStreams.filter((stream) => {
           // if (!stream) return false;
           // if (!stream.stream) return false;
@@ -270,9 +271,11 @@ class audioRtcTransmitter {
           this.inputStreams.splice(this.inputStreams.indexOf(stream), 1);
         });
       }
-      ep.unsubscribeAudio({ senderId: id, receiverId: this.id })
     } else {
       //unsubscribe from all streams
+      for (const [key, value] of this.streamIds) {
+        ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
+      }
       this.inputStreams.forEach((stream) => {
         if(stream.stream){
           stream.stream.getTracks().forEach(track => track.stop());
@@ -284,9 +287,6 @@ class audioRtcTransmitter {
       });
       this.inputStreams = [];
 
-      for (const [key, value] of this.streamIds) {
-        ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
-      }
     }
   }
 
