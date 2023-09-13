@@ -267,6 +267,7 @@ class audioRtcTransmitter {
           stream.context.close();
           stream.audioElement.pause();
           stream.audioElement = null;
+          this.inputStreams.splice(this.inputStreams.indexOf(stream), 1);
         });
       }
       ep.unsubscribeAudio({ senderId: id, receiverId: this.id })
