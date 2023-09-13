@@ -34,6 +34,11 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     updateRooms();
 
     ep.on("roomClicked", "Rooms.roomClicked", (data) => {
+      if(!ep.isAudioFullyConnected()) {
+        console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
+        return;
+      }
+
       const joiningId = data.roomId;
       const currentRoom = ep.getUser(localStorage.getItem("id")).currentRoom;
       console.log("roomClicked in Rooms", joiningId, currentRoom, String(joiningId) === currentRoom)

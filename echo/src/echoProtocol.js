@@ -391,6 +391,10 @@ class EchoProtocol {
     // console.log("users in room", users)
     return users;
   }
+
+  isAudioFullyConnected() { 
+    return this.at.isFullyConnected();
+  }
 }
 
 Emitter.mixin(EchoProtocol);

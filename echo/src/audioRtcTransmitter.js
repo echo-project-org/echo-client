@@ -68,6 +68,7 @@ class audioRtcTransmitter {
     //Add the tracks
     destination.stream.getTracks().forEach(track => this.peer.addTrack(track, destination.stream));
     this.isTransmitting = true;
+    this.subscribedUsers = 0;
   }
 
   /**
@@ -193,6 +194,10 @@ class audioRtcTransmitter {
     });
   }
 
+  isFullyConnected() {
+    return(this.subscribedUsers === this.inputStreams.length);
+  }
+
   addCandidate(candidate) {
     if (this.peer) {
       this.peer.addIceCandidate(candidate);
@@ -243,6 +248,7 @@ class audioRtcTransmitter {
       if (a) {
         //The socket returns the audio stream id
         this.streamIds.set(id, a);
+        this.subscribedUsers++;
       } else {
         console.error("Failed to subscribe to audio");
         return;
@@ -269,6 +275,7 @@ class audioRtcTransmitter {
           stream.audioElement.pause();
           stream.audioElement = null;
           this.inputStreams.splice(this.inputStreams.indexOf(stream), 1);
+          this.subscribedUsers--;
         });
       }
     } else {
@@ -286,6 +293,7 @@ class audioRtcTransmitter {
         }
       });
       this.inputStreams = [];
+      this.subscribedUsers = 0;
 
     }
   }
@@ -330,7 +338,7 @@ class audioRtcTransmitter {
   }
 
   /**
-   * @function close - Closes the transmission
+   * @function close - Closes the transmissionroomCli
    */
   close() {
     //Closes the transmission
