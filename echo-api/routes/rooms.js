@@ -138,7 +138,7 @@ router.get('/:id/messages', (req, res) => {
         FROM room_messages
         INNER JOIN users ON room_messages.userId = users.id
         WHERE room_messages.roomId = ?
-        ORDER BY room_messages.insertDate DESC
+        ORDER BY room_messages.insertDate ASC
     `, [id], (err, result, fields) => {
         if (err) return console.error(err);
 

@@ -429,6 +429,9 @@ class EchoProtocol {
   setMessagesCache(messages, roomId) {
     console.log("caching messages in room", roomId, typeof roomId)
     const messagesCache = [];
+    messages = messages.sort((a, b) => {
+      return new Date(b.insertDate) - new Date(a.insertDate);
+    });
     messages.forEach((message) => {
       if (typeof message.userId !== "string") message.userId = message.userId.toString();
       if (typeof roomId !== "string") roomId = roomId.toString();
