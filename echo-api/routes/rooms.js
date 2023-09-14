@@ -126,6 +126,7 @@ router.get('/:id/messages', (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
 
+    // TODO: request previous 50 messages if scrolling up
     req.database.query(`
         SELECT LIMIT(50)
             room_messages.id,
