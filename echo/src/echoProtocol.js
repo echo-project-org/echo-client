@@ -393,8 +393,15 @@ class EchoProtocol {
     const user = this.cachedUsers.get(id);
     if (user)
       if (user["update" + field]) user["update" + field](value);
-      else console.error("User does not have field " + field + " or field function update" + field);
-    else console.error("User not found in cache");
+      else {
+        console.error("User does not have field " + field + " or field function update" + field);
+        return;
+      }
+    else {
+      console.error("User not found in cache");
+      return;
+    }
+    
     this.usersCacheUpdated(user.getData());
   }
 
