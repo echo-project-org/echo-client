@@ -433,13 +433,10 @@ class EchoProtocol {
 
   getUsersInRoom(roomId) {
     if (typeof roomId !== "string") roomId = roomId.toString();
-    // console.log("retriving users in room", roomId)
     const users = [];
     this.cachedUsers.forEach((user) => {
-      // console.log("looping users in getUsersInRoom", user)
       if (user.currentRoom === roomId) users.push(user);
     });
-    // console.log("users in room", users)
     return users;
   }
 
@@ -488,6 +485,7 @@ class EchoProtocol {
       userIds.push(message.userId);
     });
     const uniqueUserIds = [...new Set(userIds)];
+    if (uniqueUserIds.length === 0) return this.messagesCacheUpdated([]);
     uniqueUserIds.forEach(async (userId) => {
       this.checkUserCache(userId)
         .then((user) => {
@@ -497,7 +495,6 @@ class EchoProtocol {
             messages.forEach((message) => {
               if (typeof message.userId !== "string") message.userId = message.userId.toString();
               if (message.userId === user.id) {
-                console.log(user);
                 message.img = user.img;
                 message.name = user.name;
               }
