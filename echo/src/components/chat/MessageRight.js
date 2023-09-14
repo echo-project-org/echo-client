@@ -19,6 +19,11 @@ function MessageRight({ message }) {
               {message.message}
             </div>
           </Grid>
+          <Grid item>
+            <div className="messageDate">
+              {message.dateDisplay}
+            </div>
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
