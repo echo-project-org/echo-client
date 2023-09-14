@@ -8,6 +8,9 @@ import { ep } from "../../index";
 
 const api = require("../../api");
 
+const newMessageSound = require("../../audio/newmessage.mp3");
+const newSelfMessageSound = require("../../audio/newmessageself.mp3");
+
 const StyledTextField = styled(TextField)({
   "& label": {
     color: "#f5e8da",
@@ -51,6 +54,12 @@ const theme = createTheme({
 });
 
 function ChatControls({ onEmojiOn, roomId }) {
+
+  const newMessageAudio = new Audio(newMessageSound);
+  newMessageAudio.volume = 0.6;
+  const newSelfMessageAudio = new Audio(newSelfMessageSound);
+  newSelfMessageAudio.volume = 0.6;
+
   const sendChatMessage = () => {
     if (document.getElementById("messageBox").value === "") return;
     const message = document.getElementById("messageBox").value;
@@ -62,10 +71,13 @@ function ChatControls({ onEmojiOn, roomId }) {
   useEffect(() => {
     ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
       if (String(data.userId) === localStorage.getItem("id")) {
+        newSelfMessageAudio.play();
         data.userId = Number(data.id);
         console.log("ChatControls.receiveChatMessage", data)
         // make api call after the server received it
         api.call("rooms/messages", "POST", data).then((res) => { }).catch((err) => { console.log(err); });
+      } else {
+        newMessageAudio.play();
       };
     });
 
