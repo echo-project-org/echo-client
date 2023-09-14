@@ -127,7 +127,7 @@ router.get('/:id/messages', (req, res) => {
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
 
     req.database.query(`
-        SELECT
+        SELECT LIMIT(50)
             room_messages.id,
             room_messages.message,
             room_messages.userId,
