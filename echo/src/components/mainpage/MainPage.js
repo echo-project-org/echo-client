@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 
 import { ep } from "../../index";
 
-var api = require('../../api')
+const api = require('../../api')
 
 function MainPage() {
   const [roomId, setRoomId] = useState(0);
@@ -16,30 +16,22 @@ function MainPage() {
   }
 
   useEffect(() => {
-    api.call("rooms")
-      .then((result) => {
-        if (result.json.length > 0) {
-          result.json.forEach((room) => {
-            api.call("rooms/" + room.id + "/users")
-              .then((res) => {
-                if (res.ok && res.json.length > 0) {
-                  res.json.forEach((user) => {
-                    ep.addUser({
-                      id: user.id,
-                      name: user.name,
-                      img: user.img,
-                      online: user.online,
-                      roomId: room.id
-                    });
-                  });
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-          });
-        }
-      });
+    ep.on("updateUserCache", "MainPage.updateUserCache", (data) => {
+      api.call("users/" + data.id)
+        .then((res) => {
+          if (res.ok && res.json.length > 0) {
+            const user = res.json;
+            ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+
+    return () => {
+      ep.releaseGroup("MainPage.updateUserCache");
+    }
   }, []);
 
   return (

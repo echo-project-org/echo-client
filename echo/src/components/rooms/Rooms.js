@@ -25,8 +25,30 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   const updateRooms = () => {
     api.call("rooms")
       .then((result) => {
-        result.json.forEach((room) => { ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers }); });
-        setRemoteRooms(result.json);
+        if (result.json.length > 0) {
+          setRemoteRooms(result.json);
+          result.json.forEach((room) => {
+            ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
+          
+            api.call("rooms/" + room.id + "/users")
+              .then((res) => {
+                if (res.ok && res.json.length > 0) {
+                  res.json.forEach((user) => {
+                    ep.addUser({
+                      id: user.id,
+                      name: user.name,
+                      img: user.img,
+                      online: user.online,
+                      roomId: room.id
+                    });
+                  });
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          });
+        }
       });
   }
 
