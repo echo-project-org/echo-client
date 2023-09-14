@@ -23,7 +23,6 @@ function Chat({ currentRoomId }) {
       })
       .catch((err) => {
         console.error(err);
-        setLoadingVisibility(false);
         setMessages([]);
 
         // get messages from api
@@ -34,6 +33,7 @@ function Chat({ currentRoomId }) {
             const messages = ep.setMessagesCache(res.json, currentRoomId);
             setMessages(messages);
             console.log("messages", res.json)
+            setLoadingVisibility(false);
           })
           .catch((err) => {
             console.error(err);
