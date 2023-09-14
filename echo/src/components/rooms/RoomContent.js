@@ -52,14 +52,10 @@ function RoomContent({ roomId }) {
     setEmojiPicker(!emojiPicker);
   };
 
-  useEffect(() => {
-    
-  });
-
   return (
     <StyledContainer>
       <Chat currentRoomId={roomId}/>
-      <ChatControls onEmojiOn={handleEmojiPicker} />
+      <ChatControls onEmojiOn={handleEmojiPicker} roomId={roomId} />
       <EmojiPicker show={emojiPicker} style={{
           position: "absolute",
           bottom: "5rem",

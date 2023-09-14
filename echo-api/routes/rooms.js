@@ -126,7 +126,20 @@ router.get('/:id/messages', (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
 
-    req.database.query("SELECT room_messages.id, room_messages.message, room_messages.userId, users.name, users.img FROM room_messages INNER JOIN users ON room_messages.userId = users.id WHERE room_messages.roomId = ? ORDER BY room_messages.id DESC", [id], (err, result, fields) => {
+    req.database.query(`
+        SELECT
+            room_messages.id,
+            room_messages.message,
+            room_messages.userId,
+            room_messages.date,
+            room_messages.insertDate,
+            users.name,
+            users.img
+        FROM room_messages
+        INNER JOIN users ON room_messages.userId = users.id
+        WHERE room_messages.roomId = ?
+        ORDER BY room_messages.insertDate DESC
+    `, [id], (err, result, fields) => {
         if (err) return console.error(err);
 
         var jsonOut = [];
@@ -137,7 +150,9 @@ router.get('/:id/messages', (req, res) => {
                     message: plate.message,
                     userId: plate.userId,
                     name: plate.name,
-                    img: plate.img
+                    img: plate.img,
+                    date: plate.date,
+                    insertDate: plate.insertDate
                 });
             });
         }
@@ -149,7 +164,13 @@ router.post('/messages', (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 
     const { roomId, userId, message } = req.body;
-    if (!roomId || !userId || !message) return res.status(400).json({ message: "Provide a valid room id" });
+    if (!roomId) return res.status(400).json({ message: "Provide a valid room id" });
+    if (!userId) return res.status(400).json({ message: "Provide a valid user id" });
+    if (!message) return res.status(400).json({ message: "Provide a valid message" });
+
+    // transform js date to mysql date
+    // const jsDate = new Date(date);
+    // const mysqlDate = jsDate.toISOString().slice(0, 19).replace('T', ' ');
 
     req.database.query("INSERT INTO room_messages (roomId, userId, message) VALUES (?, ?, ?)", [roomId, userId, message], (err, result, fields) => {
         if (err) return console.error(err);

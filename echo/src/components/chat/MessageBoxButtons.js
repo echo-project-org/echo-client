@@ -4,7 +4,7 @@ import { Send, EmojiEmotions } from '@mui/icons-material';
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
 
-function MessageBoxButtons({ onEmojiOn }) {
+function MessageBoxButtons({ onEmojiOn, onClick }) {
   const theme = createTheme({
     palette: {
       primary: { main: '#f5e8da', },
@@ -20,7 +20,7 @@ function MessageBoxButtons({ onEmojiOn }) {
             <EmojiEmotions />
           </Button>
           <Button >
-            <Send />
+            <Send onClick={onClick} />
           </Button>
         </ButtonGroup>
       </ThemeProvider>

@@ -112,6 +112,23 @@ class EchoProtocol {
         this.vt.renegotiate(data.data.sdp, cb);
       }
     });
+
+    this.socket.on("server.receiveChatMessage", (data) => {
+      if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
+      if (typeof data.id !== "string") data.id = data.id.toString();
+      console.log("got message from server", data)
+      const room = this.cachedRooms.get(data.roomId);
+      if (room) {
+        const user = this.cachedUsers.get(data.id);
+        if (user) {
+          const newMessage = room.chat.add(data);
+          data.img = user.userImage;
+          data.name = user.name;
+          this.receiveChatMessage(newMessage);
+        }
+        else console.error("User not found in cache");
+      } else console.error("Room not found in cache");
+    });
   }
 
   async startTransmitting(id = 5) {
@@ -346,6 +363,7 @@ class EchoProtocol {
 
   // cache rooms functions
   addRoom(room) {
+    console.log("creating room in cache", room)
     if (typeof room.id !== "string") room.id = room.id.toString();
     this.cachedRooms.set(room.id, new Room(room));
   }
@@ -395,6 +413,50 @@ class EchoProtocol {
   isAudioFullyConnected() { 
     return this.at.isFullyConnected();
   }
+
+  // chat messages function
+  sendChatMessage(data) {
+    if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
+    if (typeof data.userId !== "string") data.userId = data.userId.toString();
+    const room = this.cachedRooms.get(data.roomId);
+    if (room) {
+      if (this.socket) this.socket.emit("client.sendChatMessage", { ...data, id: data.userId });
+      else console.error("Socket not found");
+    }
+    else console.error("Room not found in cache");
+  }
+
+  setMessagesCache(messages, roomId) {
+    console.log("caching messages in room", roomId, typeof roomId)
+    const messagesCache = [];
+    messages.forEach((message) => {
+      if (typeof message.userId !== "string") message.userId = message.userId.toString();
+      if (typeof roomId !== "string") roomId = roomId.toString();
+      const room = this.cachedRooms.get(roomId);
+      if (room) {
+        const user = this.cachedUsers.get(message.userId);
+        if (user) {
+          message.img = user.userImage;
+          message.name = user.name;
+          messagesCache.push(room.chat.add(message));
+        }
+        else console.error("User not found in cache");
+      } else console.error("Room not found in cache");
+    });
+    return messagesCache;
+  }
+
+  checkMessagesCache(roomId) {
+    return new Promise((resolve, reject) => {
+      if (typeof roomId !== "string") roomId = roomId.toString();
+      const room = this.cachedRooms.get(roomId);
+      if (room) {
+        if (!room.chat.cached) return reject("Room chat not cached");
+        resolve(room.chat.get());
+      }
+      else reject("Room not found in cache");
+    });
+  }
 }
 
 Emitter.mixin(EchoProtocol);
@@ -418,6 +480,10 @@ EchoProtocol.prototype.userJoinedChannel = function (data) {
 
 EchoProtocol.prototype.userLeftChannel = function (data) {
   this.emit("userLeftChannel", data);
+}
+
+EchoProtocol.prototype.receiveChatMessage = function (data) {
+  this.emit("receiveChatMessage", data);
 }
 
 export default EchoProtocol;

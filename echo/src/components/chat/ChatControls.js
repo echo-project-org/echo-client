@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { createTheme, styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import MessageBoxButtons from './MessageBoxButtons';
+
+import { ep } from "../../index";
+
+const api = require("../../api");
 
 const StyledTextField = styled(TextField)({
   "& label": {
@@ -46,7 +50,32 @@ const theme = createTheme({
   },
 });
 
-function ChatControls({ onEmojiOn }) {
+function ChatControls({ onEmojiOn, roomId }) {
+  const sendChatMessage = () => {
+    if (document.getElementById("messageBox").value === "") return;
+    const message = document.getElementById("messageBox").value;
+    document.getElementById("messageBox").value = "";
+    const userId = localStorage.getItem("id");
+    ep.sendChatMessage({ roomId, userId, message, self: true, date: new Date().toUTCString() });
+  }
+
+  useEffect(() => {
+    ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
+      data.userId = Number(data.id);
+      console.log("ChatControls.receiveChatMessage", data)
+      // make api call after the server received it
+      api.call("rooms/messages", "POST", data).then((res) => {
+          
+        }).catch((err) => {
+          console.log(err);
+        });
+    });
+
+    return () => {
+      ep.releaseGroup("ChatControls.receiveChatMessage");
+    }
+  }, [])
+
   return (
     <div className='chatControls'>
       <ThemeProvider theme={theme}>
@@ -58,6 +87,7 @@ function ChatControls({ onEmojiOn }) {
               // check if enter is pressed
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
+                sendChatMessage();
               }
             }}
             fullWidth
@@ -65,7 +95,7 @@ function ChatControls({ onEmojiOn }) {
             maxRows={20}
             placeholder='Send a message...'
             InputProps={{
-              endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} />,
+              endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />,
               style: { color: "#f5e8da" }
             }}
           />

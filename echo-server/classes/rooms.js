@@ -1,5 +1,4 @@
 const User = require("./users");
-const Chat = require("./chat");
 const ServerRTC = require("./rtc");
 const VideoRTC = require("./videoRtc");
 
@@ -55,13 +54,14 @@ class Rooms {
     }
 
     sendChatMessage(data) {
+        console.log("got sendChatMessage event from user", data)
         if (this.connectedClients.has(data.id)) {
+            data.roomId = Number(data.roomId);
             const room = this.rooms.get(data.roomId);
             if (room) {
-                room.chat.addMessage(data);
                 room.users.forEach((user, id) => {
-                    if (String(id) !== String(data.id))
-                        user.receiveChatMessage(data);
+                    console.log("sending message to connected clients in room", user.id)
+                    user.receiveChatMessage(data);
                 });
             }
         }
@@ -90,14 +90,13 @@ class Rooms {
 
     addRoom(id) {
         if (!this.rooms.has(id)) {
-            console.log("creating room", id)
+            console.log("creating room", id, typeof id)
             this.rooms.set(id, {
                 id,
                 private: false,
                 users: new Map(),
                 password: null,
-                display: "New room",
-                chat: new Chat(id)
+                display: "New room"
             });
         }
     }
