@@ -439,22 +439,21 @@ class EchoProtocol {
 
   setMessagesCache(messages, roomId) {
     console.log("caching messages in room", roomId, typeof roomId)
-    const messagesCache = [];
-    messages.forEach((message) => {
-      if (typeof message.userId !== "string") message.userId = message.userId.toString();
-      if (typeof roomId !== "string") roomId = roomId.toString();
-      const room = this.cachedRooms.get(roomId);
-      if (room) {
+    if (typeof roomId !== "string") roomId = roomId.toString();
+    const room = this.cachedRooms.get(roomId);
+    if (room) {
+      messages.forEach((message) => {
+        if (typeof message.userId !== "string") message.userId = message.userId.toString();
         const user = this.cachedUsers.get(message.userId);
         if (user) {
           message.img = user.userImage;
           message.name = user.name;
-          messagesCache.push(room.chat.add(message));
+          room.chat.add(message)
         }
         else console.error("User not found in cache");
-      } else console.error("Room not found in cache");
-    });
-    return messagesCache;
+      });
+    } else console.error("Room not found in cache");
+    return room.chat.get();
   }
 
   checkMessagesCache(roomId) {
