@@ -16,22 +16,6 @@ function MainPage() {
   }
 
   useEffect(() => {
-    ep.on("updateUserCache", "MainPage.updateUserCache", (data) => {
-      api.call("users/" + data.id)
-        .then((res) => {
-          if (res.ok && res.json.length > 0) {
-            const user = res.json;
-            ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    });
-
-    return () => {
-      ep.releaseGroup("MainPage.updateUserCache");
-    }
   }, []);
 
   return (

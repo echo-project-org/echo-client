@@ -5,6 +5,8 @@ import videoRtc from "./videoRtc";
 import User from "./cache/user";
 import Room from "./cache/room";
 
+const api = require("./api");
+
 const io = require("socket.io-client");
 
 class EchoProtocol {
@@ -389,8 +391,39 @@ class EchoProtocol {
     const user = this.cachedUsers.get(id);
     if (user)
       if (user["update" + field]) user["update" + field](value);
-      else return;
-    else this.updateUserCache({ id });
+      else {
+        console.error("User does not have field " + field + " or field function update" + field);
+        return;
+      }
+    else {
+      console.log("Cache miss, updating cache");
+      //TODO maybe add user to cache?
+      return api.call("rooms")
+        .then((result) => {
+          if (result.json.length > 0) {
+            result.json.forEach((room) => {
+              api.call("rooms/" + room.id + "/users")
+                .then((res) => {
+                  if (res.ok && res.json.length > 0) {
+                    res.json.forEach((user) => {
+                      this.addUser({
+                        id: user.id,
+                        name: user.name,
+                        img: user.img,
+                        online: user.online,
+                        roomId: room.id
+                      });
+                      this.usersCacheUpdated(this.cachedUsers.get(user.id).getData());
+                    });
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                });
+            });
+          }
+        });
+    }
     this.usersCacheUpdated(user.getData()); 
   }
 
@@ -410,6 +443,27 @@ class EchoProtocol {
     return users;
   }
 
+  checkUserCache(id) {
+    return new Promise((resolve, reject) => {
+      if (typeof id !== "string") id = id.toString();
+      const cacheUser = this.cachedUsers.get(id);
+      if (cacheUser) {
+        resolve(cacheUser.getData());
+      } else {
+        console.error("User not found in cache");
+        api.call("users/" + id)
+          .then((res) => {
+            if (res.ok) {
+              const user = res.json;
+              if (typeof user.id !== "string") user.id = user.id.toString();
+              this.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: 0 });
+              resolve(this.cachedUsers.get(user.id).getData());
+            }
+          });
+      }
+    });
+  }
+
   isAudioFullyConnected() {
     return this.at.isFullyConnected();
   }
@@ -427,22 +481,36 @@ class EchoProtocol {
   }
 
   setMessagesCache(messages, roomId) {
-    console.log("caching messages in room", roomId, typeof roomId)
-    if (typeof roomId !== "string") roomId = roomId.toString();
-    const room = this.cachedRooms.get(roomId);
-    if (room) {
-      messages.forEach((message) => {
-        if (typeof message.userId !== "string") message.userId = message.userId.toString();
-        const user = this.cachedUsers.get(message.userId);
-        if (user) {
-          message.img = user.userImage;
-          message.name = user.name;
-          room.chat.add(message)
-        }
-        else console.error("User not found in cache");
-      });
-    } else console.error("Room not found in cache");
-    return room.chat.get();
+    // extract all userId from the messages array and remove duplicates
+    const userIds = [];
+    messages.forEach((message) => {
+      if (typeof message.userId !== "string") message.userId = message.userId.toString();
+      userIds.push(message.userId);
+    });
+    const uniqueUserIds = [...new Set(userIds)];
+    uniqueUserIds.forEach(async (userId) => {
+      this.checkUserCache(userId)
+        .then((user) => {
+          if (typeof roomId !== "string") roomId = roomId.toString();
+          const room = this.cachedRooms.get(roomId);
+          if (room) {
+            messages.forEach((message) => {
+              if (typeof message.userId !== "string") message.userId = message.userId.toString();
+              if (message.userId === user.id) {
+                console.log(user);
+                message.img = user.img;
+                message.name = user.name;
+              }
+              room.chat.add(message)
+            });
+            console.log("sending", room.chat.get())
+            this.messagesCacheUpdated(room.chat.get());
+          } else {
+            console.error("Room not found in cache");
+            this.messagesCacheUpdated([]);
+          }
+        });
+    });
   }
 
   checkMessagesCache(roomId) {
@@ -484,8 +552,8 @@ EchoProtocol.prototype.userLeftChannel = function (data) {
 EchoProtocol.prototype.receiveChatMessage = function (data) {
   this.emit("receiveChatMessage", data);
 }
-EchoProtocol.prototype.updateUserCache = function (data) {
-  this.emit("updateUserCache", data);
+EchoProtocol.prototype.messagesCacheUpdated = function (data) {
+  this.emit("messagesCacheUpdated", data);
 }
 
 export default EchoProtocol;

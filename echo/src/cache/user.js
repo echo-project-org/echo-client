@@ -1,10 +1,10 @@
 class User {
     constructor(data, self = false) {
         console.log("created user to cache", data, self)
-        this.id = data.id;
-        this.name = data.name;
+        this.id = String(data.id);
+        this.name = String(data.name);
         this.userImage = data.img;
-        this.online = data.online;
+        this.online = String(data.online);
         this.currentRoom = String(data.roomId);
 
         this.muted = false;

@@ -12,9 +12,7 @@ function Chat({ currentRoomId }) {
   const [loadingVisibility, setLoadingVisibility] = useState(false);
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    setLoadingVisibility(true);
-
+  const updateMessages = () => {
     ep.checkMessagesCache(currentRoomId)
       .then((res) => {
         console.log("got messages from cache", res)
@@ -28,12 +26,8 @@ function Chat({ currentRoomId }) {
         // get messages from api
         api.call("rooms/" + currentRoomId + "/messages")
           .then((res) => {
-            setLoadingVisibility(false);
             console.log("got messages from api", res.json)
-            const messages = ep.setMessagesCache(res.json, currentRoomId);
-            setMessages(messages);
-            console.log("messages", res.json)
-            setLoadingVisibility(false);
+            ep.setMessagesCache(res.json, currentRoomId);
           })
           .catch((err) => {
             console.error(err);
@@ -41,26 +35,44 @@ function Chat({ currentRoomId }) {
             setMessages([]);
           });
       });
-  }, [currentRoomId])
-
-  console.log("created room chat with id", currentRoomId)
-
-  const addMessage = (message) => {
-    console.log("Chat.receiveChatMessage", message)
-    setMessages((messages) => [message, ...messages]);
   }
 
   useEffect(() => {
-    ep.on("receiveChatMessage", "Chat.receiveChatMessage", addMessage);
+    setLoadingVisibility(true);
+    updateMessages();
+    if (currentRoomId === 0) {
+      setLoadingVisibility(false);
+    }
+  }, [currentRoomId]);
+
+  useEffect(() => {
+    ep.on("receiveChatMessage", "Chat.receiveChatMessage", (message) => {
+      console.log("Chat.receiveChatMessage", message)
+      setMessages((messages) => [message, ...messages]);
+    });
+    ep.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
+      console.log("Chat.messagesCacheUpdated", messages)
+      setMessages(messages);
+      setLoadingVisibility(false);
+    });
     return () => {
       ep.releaseGroup("Chat.receiveChatMessage");
+      ep.releaseGroup("Chat.messagesCacheUpdated");
     }
-  }, [])
+  }, []);
+
+  if (currentRoomId === 0) {
+    return (
+      <div className='chat'>
+        <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
+        <div className='noMessages'>Join a room to open the chat</div>
+      </div>
+    )
+  }
   
   return (
     <div className='chat'>
       <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
-      {/* <LoadingAnimation visibility={Boolean(true)} className='loadingAnimation'/> */}
 
       {messages.length > 0 ? messages.map((message, id) => {
         if (String(message.userId) === String(localStorage.getItem("id"))) {
@@ -69,7 +81,6 @@ function Chat({ currentRoomId }) {
           return <MessageRight key={id} message={message} />
         }
       }) : <div className='noMessages'>{ Boolean(loadingVisibility) ? "" : "No messages yet" }</div>}
-      
     </div>
   )
 }
