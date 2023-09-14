@@ -3,15 +3,19 @@ class Chat {
         this.messages = [];
         this.cached = false;
     }
-    
+
     add(message) {
         message.dateDisplay = this.convertDate(message.date);
         this.messages.push(message);
         this.cached = true;
         return message;
     }
-    
+
     get() {
+        // sort messages by insertDate and most recent last
+        this.messages = this.messages.sort((a, b) => {
+            return new Date(b.insertDate) - new Date(a.insertDate);
+        });
         return this.messages;
     }
 
@@ -31,5 +35,30 @@ class Chat {
         return days[dateObj.getDay()] + ", " + monthNames[dateObj.getMonth()] + " " + dateObj.getDate() + ", " + dateObj.getFullYear() + " " + hours + ':' + minutes + ' ' + timeZone;
     }
 }
+
+// https://en.wikipedia.org/wiki/Schwartzian_transform
+(function () {
+    if (typeof Object.defineProperty === 'function') {
+        try { Object.defineProperty(Array.prototype, 'sortBy', { value: sb }); } catch (e) { }
+    }
+    if (!Array.prototype.sortBy) Array.prototype.sortBy = sb;
+
+    function sb(f) {
+        for (var i = this.length; i;) {
+            var o = this[--i];
+            this[i] = [].concat(f.call(o, o, i), o);
+        }
+        this.sort(function (a, b) {
+            for (var i = 0, len = a.length; i < len; ++i) {
+                if (a[i] != b[i]) return a[i] < b[i] ? -1 : 1;
+            }
+            return 0;
+        });
+        for (var i = this.length; i;) {
+            this[--i] = this[i][this[i].length - 1];
+        }
+        return this;
+    }
+})();
 
 export default Chat;

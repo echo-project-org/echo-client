@@ -128,7 +128,7 @@ router.get('/:id/messages', (req, res) => {
 
     // TODO: request previous 50 messages if scrolling up
     req.database.query(`
-        SELECT LIMIT(50)
+        SELECT
             room_messages.id,
             room_messages.message,
             room_messages.userId,
@@ -140,6 +140,7 @@ router.get('/:id/messages', (req, res) => {
         INNER JOIN users ON room_messages.userId = users.id
         WHERE room_messages.roomId = ?
         ORDER BY room_messages.id DESC
+        LIMIT 50
     `, [id], (err, result, fields) => {
         if (err) return console.error(err);
 

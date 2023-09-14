@@ -47,22 +47,11 @@ function Chat({ currentRoomId }) {
 
   const addMessage = (message) => {
     console.log("Chat.receiveChatMessage", message)
-
-    // sort messages by insertDate
-    // messages = messages.sort((a, b) => {
-    //   return new Date(a.insertDate) - new Date(b.insertDate);
-    // });
-
     setMessages((messages) => [message, ...messages]);
   }
 
   useEffect(() => {
-    // ep.on("roomClicked", "Chat.roomClicked", (data) => {
-    //   console.log("roomClicked", data)
-    // });
-
     ep.on("receiveChatMessage", "Chat.receiveChatMessage", addMessage);
-
     return () => {
       ep.releaseGroup("Chat.receiveChatMessage");
     }
