@@ -1,6 +1,7 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
 import videoRtc from "./videoRtc";
+import api from "../api";
 
 import User from "./cache/user";
 import Room from "./cache/room";
@@ -145,7 +146,7 @@ class EchoProtocol {
       this.at = null;
     }
 
-    if(this.vt){
+    if (this.vt) {
       this.vt.close();
       this.vt = null;
     }
@@ -299,7 +300,7 @@ class EchoProtocol {
     this.vt.stopSharing();
   }
 
-  startReceivingVideo(remoteId){
+  startReceivingVideo(remoteId) {
     this.vt.subscribeToVideo(remoteId);
   }
 
@@ -307,7 +308,7 @@ class EchoProtocol {
    * @param {string} remoteId Id from the user to get the video stream from
    * @returns {MediaStream} Screen share stream
    */
-  getVideo(remoteId){
+  getVideo(remoteId) {
     let stream = this.vt.getVideo(remoteId);
     console.log("Got video stream", stream);
     return stream;
@@ -382,11 +383,7 @@ class EchoProtocol {
     this.cachedUsers.set(user.id, new User(user, self));
     // call event because cache has been updated
     const newUser = this.cachedUsers.get(user.id);
-    if(newUser){
-      this.usersCacheUpdated(newUser.getData());
-    } else {
-      console.error("User not found in cache");
-    }
+    this.usersCacheUpdated(newUser.getData());
   }
 
   updateUser(id, field, value) {
@@ -398,10 +395,35 @@ class EchoProtocol {
         return;
       }
     else {
-      console.error("User not found in cache");
-      return;
+      console.log("Cache miss, updating cache");
+      //TODO maybe add user to cache?
+      api.call("rooms")
+      .then((result) => {
+        if (result.json.length > 0) {
+          result.json.forEach((room) => {
+            api.call("rooms/" + room.id + "/users")
+              .then((res) => {
+                if (res.ok && res.json.length > 0) {
+                  res.json.forEach((user) => {
+                    this.addUser({
+                      id: user.id,
+                      name: user.name,
+                      img: user.img,
+                      online: user.online,
+                      roomId: room.id
+                    });
+                  });
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          });
+        }
+      });
+      
     }
-    
+
     this.usersCacheUpdated(user.getData());
   }
 
@@ -421,7 +443,7 @@ class EchoProtocol {
     return users;
   }
 
-  isAudioFullyConnected() { 
+  isAudioFullyConnected() {
     return this.at.isFullyConnected();
   }
 
