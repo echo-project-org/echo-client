@@ -412,6 +412,7 @@ class EchoProtocol {
                       online: user.online,
                       roomId: room.id
                     });
+                    this.usersCacheUpdated(this.cachedUsers.get(user.id).getData());
                   });
                 }
               })
@@ -421,10 +422,11 @@ class EchoProtocol {
           });
         }
       });
-      
+
+      return;
     }
 
-    this.usersCacheUpdated(user.getData());
+    this.usersCacheUpdated(user.getData()); 
   }
 
   getUser(id) {
