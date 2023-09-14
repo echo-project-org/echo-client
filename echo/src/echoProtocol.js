@@ -382,7 +382,11 @@ class EchoProtocol {
     this.cachedUsers.set(user.id, new User(user, self));
     // call event because cache has been updated
     const newUser = this.cachedUsers.get(user.id);
-    this.usersCacheUpdated(newUser.getData());
+    if(newUser){
+      this.usersCacheUpdated(newUser.getData());
+    } else {
+      console.error("User not found in cache");
+    }
   }
 
   updateUser(id, field, value) {
