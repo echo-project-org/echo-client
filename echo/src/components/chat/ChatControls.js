@@ -61,14 +61,12 @@ function ChatControls({ onEmojiOn, roomId }) {
 
   useEffect(() => {
     ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
-      data.userId = Number(data.id);
-      console.log("ChatControls.receiveChatMessage", data)
-      // make api call after the server received it
-      api.call("rooms/messages", "POST", data).then((res) => {
-          
-        }).catch((err) => {
-          console.log(err);
-        });
+      if (String(data.userId) === localStorage.getItem("id")) {
+        data.userId = Number(data.id);
+        console.log("ChatControls.receiveChatMessage", data)
+        // make api call after the server received it
+        api.call("rooms/messages", "POST", data).then((res) => { }).catch((err) => { console.log(err); });
+      };
     });
 
     return () => {
