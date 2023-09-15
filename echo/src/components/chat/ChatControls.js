@@ -54,7 +54,6 @@ const theme = createTheme({
 });
 
 function ChatControls({ onEmojiOn, roomId }) {
-
   const newMessageAudio = new Audio(newMessageSound);
   newMessageAudio.volume = 0.6;
   const newSelfMessageAudio = new Audio(newSelfMessageSound);
@@ -64,8 +63,8 @@ function ChatControls({ onEmojiOn, roomId }) {
     if (document.getElementById("messageBox").value === "") return;
     const message = document.getElementById("messageBox").value;
     document.getElementById("messageBox").value = "";
-    const userId = localStorage.getItem("id");
-    ep.sendChatMessage({ roomId, userId, message, self: true, date: new Date().toUTCString() });
+    console.log("sending message", message);
+    ep.sendChatMessage({ roomId, userId: localStorage.getItem("id"), message, self: true, date: new Date().toUTCString() });
   }
 
   useEffect(() => {
