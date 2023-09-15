@@ -2,10 +2,8 @@ import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
 import videoRtc from "./videoRtc";
 
-import User from "./cache/user";
+import Users from "./cache/user";
 import Room from "./cache/room";
-
-const api = require("./api");
 
 const io = require("socket.io-client");
 
@@ -17,7 +15,7 @@ class EchoProtocol {
     this.at = null;
     this.vt = null;
 
-    this.cachedUsers = new Map();
+    this.cachedUsers = new Users();
     this.cachedRooms = new Map();
 
     this.SERVER_URL = "https://echo.kuricki.com";
@@ -117,15 +115,17 @@ class EchoProtocol {
 
     this.socket.on("server.receiveChatMessage", (data) => {
       if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
+      if (typeof data.userId !== "string") data.userId = data.id.toString();
       if (typeof data.id !== "string") data.id = data.id.toString();
-      console.log("got message from server", data)
+      // check if the room is cached
       const room = this.cachedRooms.get(data.roomId);
       if (room) {
         const user = this.cachedUsers.get(data.id);
         if (user) {
-          const newMessage = room.chat.add(data);
+          console.log("got message chat from socket", data)
           data.img = user.userImage;
           data.name = user.name;
+          const newMessage = room.chat.add(data);
           this.receiveChatMessage(newMessage);
         }
         else console.error("User not found in cache");
@@ -365,7 +365,6 @@ class EchoProtocol {
 
   // cache rooms functions
   addRoom(room) {
-    console.log("creating room in cache", room)
     if (typeof room.id !== "string") room.id = room.id.toString();
     this.cachedRooms.set(room.id, new Room(room));
   }
@@ -380,51 +379,17 @@ class EchoProtocol {
 
   // cache users functions
   addUser(user, self = false) {
-    if (typeof user.id !== "string") user.id = user.id.toString();
-    this.cachedUsers.set(user.id, new User(user, self));
-    // call event because cache has been updated
-    const newUser = this.cachedUsers.get(user.id);
-    this.usersCacheUpdated(newUser.getData());
+    this.cachedUsers.add(user, self);
+    this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
 
   updateUser(id, field, value) {
-    const user = this.cachedUsers.get(id);
-    if (user)
-      if (user["update" + field]) user["update" + field](value);
-      else {
-        console.error("User does not have field " + field + " or field function update" + field);
-        return;
-      }
-    else {
-      console.log("Cache miss, updating cache");
-      //TODO maybe add user to cache?
-      return api.call("rooms")
-        .then((result) => {
-          if (result.json.length > 0) {
-            result.json.forEach((room) => {
-              api.call("rooms/" + room.id + "/users")
-                .then((res) => {
-                  if (res.ok && res.json.length > 0) {
-                    res.json.forEach((user) => {
-                      this.addUser({
-                        id: user.id,
-                        name: user.name,
-                        img: user.img,
-                        online: user.online,
-                        roomId: room.id
-                      });
-                      this.usersCacheUpdated(this.cachedUsers.get(user.id).getData());
-                    });
-                  }
-                })
-                .catch((err) => {
-                  console.error(err);
-                });
-            });
-          }
-        });
+    if (this.cachedUsers.get(id)) {
+      this.cachedUsers.update(id, field, value);
+      this.usersCacheUpdated(this.cachedUsers.get(id));
     }
-    this.usersCacheUpdated(user.getData()); 
+    else console.error("User not found in cache");
+
   }
 
   getUser(id) {
@@ -432,33 +397,12 @@ class EchoProtocol {
   }
 
   getUsersInRoom(roomId) {
-    if (typeof roomId !== "string") roomId = roomId.toString();
-    const users = [];
-    this.cachedUsers.forEach((user) => {
-      if (user.currentRoom === roomId) users.push(user);
-    });
-    return users;
+    return this.cachedUsers.getInRoom(roomId);
   }
 
   checkUserCache(id) {
-    return new Promise((resolve, reject) => {
-      if (typeof id !== "string") id = id.toString();
-      const cacheUser = this.cachedUsers.get(id);
-      if (cacheUser) {
-        resolve(cacheUser.getData());
-      } else {
-        console.error("User not found in cache");
-        api.call("users/" + id)
-          .then((res) => {
-            if (res.ok) {
-              const user = res.json;
-              if (typeof user.id !== "string") user.id = user.id.toString();
-              this.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: 0 });
-              resolve(this.cachedUsers.get(user.id).getData());
-            }
-          });
-      }
-    });
+    if (this.cachedUsers.get(id)) return Promise.resolve(this.cachedUsers.get(id));
+    else return Promise.reject("User not found in cache");
   }
 
   isAudioFullyConnected() {
@@ -487,26 +431,23 @@ class EchoProtocol {
     const uniqueUserIds = [...new Set(userIds)];
     if (uniqueUserIds.length === 0) return this.messagesCacheUpdated([]);
     uniqueUserIds.forEach(async (userId) => {
-      this.checkUserCache(userId)
-        .then((user) => {
-          if (typeof roomId !== "string") roomId = roomId.toString();
-          const room = this.cachedRooms.get(roomId);
-          if (room) {
-            messages.forEach((message) => {
-              if (typeof message.userId !== "string") message.userId = message.userId.toString();
-              if (message.userId === user.id) {
-                message.img = user.img;
-                message.name = user.name;
-              }
-              room.chat.add(message)
-            });
-            console.log("sending", room.chat.get())
-            this.messagesCacheUpdated(room.chat.get());
-          } else {
-            console.error("Room not found in cache");
-            this.messagesCacheUpdated([]);
+      const user = this.checkUserCache(userId)
+      if (typeof roomId !== "string") roomId = roomId.toString();
+      const room = this.cachedRooms.get(roomId);
+      if (room) {
+        messages.forEach((message) => {
+          if (typeof message.userId !== "string") message.userId = message.userId.toString();
+          if (message.userId === user.id) {
+            message.img = user.img;
+            message.name = user.name;
           }
+          room.chat.add(message)
         });
+        this.messagesCacheUpdated(room.chat.get());
+      } else {
+        console.error("Room not found in cache");
+        this.messagesCacheUpdated([]);
+      }
     });
   }
 

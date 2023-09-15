@@ -1,54 +1,83 @@
-class User {
-    constructor(data, self = false) {
-        console.log("created user to cache", data, self)
-        this.id = String(data.id);
-        this.name = String(data.name);
-        this.userImage = data.img;
-        this.online = String(data.online);
-        this.currentRoom = String(data.roomId);
-
-        this.muted = false;
-        this.deaf = false;
-        this.self = self;
+class Users {
+    constructor() {
+        this.users = {};
     }
 
-    getData() {
-        return {
-            id: this.id,
-            name: this.name,
-            img: this.userImage,
-            online: this.online,
-            currentRoom: this.currentRoom
+    typeCheck(data) {
+        if (typeof data !== "object") {
+            return data = String(data);
         }
+        if (data.img) data.userImage = data.img;
+        if (data.roomId) data.currentRoom = data.roomId;
+        if (data.id && typeof data.id !== "string") data.id = String(data.id);
+        if (data.name && typeof data.name !== "string") data.name = String(data.name);
+        if (data.online && typeof data.online !== "string") data.online = String(data.online);
+        if (data.currentRoom && typeof data.currentRoom !== "string") data.currentRoom = String(data.currentRoom);
+        if (data.muted && typeof data.muted !== "boolean") data.muted = Boolean(data.muted);
+        if (data.deaf && typeof data.deaf !== "boolean") data.deaf = Boolean(data.deaf);
+        return data;
     }
 
-    updatecurrentRoom(roomId) {
-        console.log("updatecurrentRoom in user cache", roomId, this.id)
-        if (isNaN(roomId)) return console.error("NOT A VALID ROOM NUMBER IN setCurrentRoom")
-        this.currentRoom = String(roomId);
+    add(data, self = false) {
+        // data type check
+        data = this.typeCheck(data);
+        console.log("[CACHE] Added user in cache", data)
+
+        if (self) {
+            localStorage.setItem("id", data.id);
+            localStorage.setItem("name", data.name);
+            localStorage.setItem("userImage", data.userImage);
+            localStorage.setItem("online", data.online);
+        }
+
+        if (!data.id) return console.error("ID is required to add a user to the cache");
+        if (!data.name) return console.error("Name is required to add a user to the cache");
+        if (!data.online) return console.error("Online is required to add a user to the cache");
+        
+        this.users[data.id] = {
+            id: data.id,
+            name: data.name,
+            userImage: data.userImage || "",
+            online: data.online,
+            currentRoom: data.currentRoom || "0",
+            muted: data.muted || false,
+            deaf: data.deaf || false,
+            self
+        };
+
+        return this.users[data.id];
     }
 
-    updatename(name) {
-        this.name = name;
+    getAll() {
+        return this.users;
     }
 
-    updateuserImage(img) {
-        this.userImage = img;
+    get(id) {
+        // data type check
+        id = this.typeCheck(id);
+        return this.users[id];
     }
 
-    updateonline(online) {
-        this.online = online;
+    getInRoom(roomId) {
+        // data type check
+        roomId = this.typeCheck(roomId);
+        const users = [];
+        for (const user in this.users) {
+            if (this.users[user].currentRoom === roomId) {
+                users.push(this.users[user]);
+            }
+        }
+        console.log("getInRoom", users)
+        return users;
     }
 
-    updatemuted(muted) {
-        console.log("updatemute in user cache", muted, this.id)
-        this.muted = muted;
-    }
-
-    updatedeaf(deaf) {
-        console.log("updatedeaf in user cache", deaf, this.id)
-        this.deaf = deaf;
+    update(id, field, value) {
+        // data type check
+        id = this.typeCheck(id);
+        field = this.typeCheck(field);
+        value = this.typeCheck(value);
+        this.users[id][field] = value;
     }
 }
 
-export default User;
+export default Users;

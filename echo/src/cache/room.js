@@ -2,7 +2,7 @@ import Chat from "./chat.js";
 
 class Room {
     constructor(data) {
-        console.log("created room to cache", data)
+        console.log("[CACHE] Created room in cache", data)
 
         this.id = data.id;
         this.name = data.name;

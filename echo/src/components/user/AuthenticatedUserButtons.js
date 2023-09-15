@@ -43,7 +43,7 @@ const AuthenticatedUserButtons = ({ visibility }) => {
         ep.addUser({
           id: localStorage.getItem('id'),
           name: localStorage.getItem('name'),
-          img: localStorage.getItem('userImage'),
+          userImage: localStorage.getItem('userImage'),
           online: localStorage.getItem('online'),
           roomId: 0
         }, true);
