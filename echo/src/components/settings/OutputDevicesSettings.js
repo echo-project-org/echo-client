@@ -53,23 +53,6 @@ const theme = createTheme({
           border: "1px solid #4b2b50",
           margin: "0",
         },
-        selected: {
-          backgroundColor: "#2f1c32",
-          color: "white",
-          fontWeight: "bold",
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:active": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
       }
     },
     MuiList: {
@@ -84,23 +67,6 @@ const theme = createTheme({
           border: "1px solid #4b2b50",
           margin: "0"
         },
-        selected: {
-          backgroundColor: "#2f1c32",
-          color: "white",
-          fontWeight: "bold",
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:active": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
       }
     },
     MuiMenuItem: {
@@ -114,23 +80,6 @@ const theme = createTheme({
             color: "white"
           },
           "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
-        selected: {
-          backgroundColor: "#000000",
-          color: "white",
-          fontWeight: "bold",
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:active": {
             backgroundColor: "#2f1c32",
             color: "white"
           }
