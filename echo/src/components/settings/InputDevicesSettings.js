@@ -1,7 +1,6 @@
-import React from 'react'
-import { MenuItem, Stack, Slider, Typography, Select } from '@mui/material';
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { MenuItem, Stack, Slider, Typography, Select } from '@mui/material';
 import { Mic } from '@mui/icons-material';
 
 import { ep } from "../../index";
@@ -43,8 +42,127 @@ const theme = createTheme({
         }
       }
     },
-  },
-}, []);
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          transition: "none",
+          backgroundColor: "#3a223e",
+          color: "white",
+          borderRadius: '0px 0px 5px 5px',
+          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
+          border: "1px solid #4b2b50",
+          margin: "0",
+        },
+        selected: {
+          backgroundColor: "#2f1c32",
+          color: "white",
+          fontWeight: "bold",
+          "&:hover": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:focus": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:active": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          }
+        },
+      }
+    },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          transition: "none",
+          padding: "0",
+          width: "100%",
+          color: "white",
+          borderRadius: '0px 0px 5px 5px',
+          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
+          border: "1px solid #4b2b50",
+          margin: "0"
+        },
+        selected: {
+          backgroundColor: "#2f1c32",
+          color: "white",
+          fontWeight: "bold",
+          "&:hover": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:focus": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:active": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          }
+        },
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          color: "white",
+          borderBottom: "1px solid #4b2b50",
+          padding: "0.5rem 1rem",
+          "&:hover": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:focus": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          }
+        },
+        selected: {
+          backgroundColor: "#000000",
+          color: "white",
+          fontWeight: "bold",
+          "&:hover": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:focus": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:active": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          }
+        },
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          width: "95%",
+          border: "1px solid #f5e8da",
+          color: "#f5e8da",
+          "&:focus": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:hover": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          },
+          "&:active": {
+            backgroundColor: "#2f1c32",
+            color: "white"
+          }
+        },
+        icon: {
+          color: "white"
+        }
+      }
+    },
+  }
+});
 
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
@@ -69,8 +187,8 @@ function InputDevicesSettings({ inputDevices }) {
   });
 
   const renderDeviceList = () => {
-    let a = inputDevices.map(device => (
-      <MenuItem key={device.id} value={device.id} >
+    let a = inputDevices.map((device, id) => (
+      <MenuItem key={id} value={device.id}>
         {device.name}
       </MenuItem>
     ))
@@ -88,26 +206,21 @@ function InputDevicesSettings({ inputDevices }) {
 
   return (
     <div className="settingsModalSubDiv">
-      <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
-        Input device
-      </Typography>
-      <Select
-        value={inputDevice}
-        onChange={handleInputDeviceChange}
-        autoWidth
-        size='small'
-        sx={{
-          width: "95%",
-          border: "1px solid #f5e8da",
-          color: "#f5e8da"
-        }}
-      >
-        {renderDeviceList()}
-      </Select>
-      <div style={{ paddingRight: "2%", width: "95%" }}>
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Mic fontSize="medium" />
-          <ThemeProvider theme={theme} >
+      <ThemeProvider theme={theme} >
+        <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
+          Input device
+        </Typography>
+        <Select
+          value={inputDevice}
+          onChange={handleInputDeviceChange}
+          autoWidth
+          size='small'
+        >
+          {renderDeviceList()}
+        </Select>
+        <div style={{ paddingRight: "2%", width: "95%" }}>
+          <Stack spacing={2} direction="row" alignItems="center">
+            <Mic fontSize="medium" />
             <Slider
               sx={{ width: "95%" }}
               valueLabelDisplay="auto"
@@ -117,9 +230,9 @@ function InputDevicesSettings({ inputDevices }) {
               onChange={handleMicVolumeChange}
               size='medium'
             />
-          </ThemeProvider>
-        </Stack>
-      </div>
+          </Stack>
+        </div>
+      </ThemeProvider>
     </div>
   )
 }
