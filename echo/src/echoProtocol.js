@@ -17,6 +17,7 @@ class EchoProtocol {
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
+    this.roomClickedTimeout = false;
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }
@@ -468,7 +469,15 @@ Emitter.mixin(EchoProtocol);
 
 
 EchoProtocol.prototype.roomClicked = function (data) {
-  this.emit("roomClicked", data);
+  if (!this.roomClickedTimeout) {
+    this.emit("roomClicked", data);
+    this.roomClickedTimeout = true;
+    setTimeout(function () {
+      this.roomClickedTimeout = false;
+    }, 2000);
+  } else {
+    console.warn("Room clicked too fast, ignoring event");
+  }
 }
 
 EchoProtocol.prototype.usersCacheUpdated = function (data) {
