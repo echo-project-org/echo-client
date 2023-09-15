@@ -15,8 +15,8 @@ function Chat({ currentRoomId }) {
   const updateMessages = () => {
     ep.checkMessagesCache(currentRoomId)
       .then((res) => {
-        console.log("got messages from cache", res)
-        setMessages(res);
+        // duplicate array
+        setMessages([...res]);
         setLoadingVisibility(false);
       })
       .catch((err) => {
@@ -46,13 +46,13 @@ function Chat({ currentRoomId }) {
   }, [currentRoomId]);
 
   useEffect(() => {
-    ep.on("receiveChatMessage", "Chat.receiveChatMessage", (message) => {
-      console.log("Chat.receiveChatMessage", message)
-      setMessages((messages) => [message, ...messages]);
+    ep.on("receiveChatMessage", "Chat.receiveChatMessage", (newMessage) => {
+      // console.log("Chat.receiveChatMessage", newMessage)
+      setMessages((routeMessages) => [newMessage, ...routeMessages]);
     });
     ep.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
-      console.log("Chat.messagesCacheUpdated", messages)
-      setMessages(messages);
+      // console.log("Chat.messagesCacheUpdated", messages)
+      setMessages([...messages]);
       setLoadingVisibility(false);
     });
     return () => {
