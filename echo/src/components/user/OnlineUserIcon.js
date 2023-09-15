@@ -104,35 +104,15 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
       ep.updateUser(data.id, "deaf", data.deaf);
       ep.updateUser(data.id, "muted", data.muted);
-      console.log("OnlineUserIcon.updatedAudioState", data, id)
       if (data.id === id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
       }
     });
 
-    console.log("---------------------------- in OnlineUserIcon", id)
     const audioState = ep.getAudioState(id);
-    console.log("--------------------------------- audioState in OnlineUserIcon", audioState, id)
     setDeaf(audioState.isDeaf);
     setMuted(audioState.isMuted);
-
-    // TODO: fix user join not retreiving remote user's audio state
-    // if (localStorage.getItem("id") === id) {
-    //   const audioState = ep.getAudioState(id);
-    //   setDeaf(audioState.isDeaf);
-    //   setMuted(audioState.isMuted);
-    // }
-
-    // ep.on("userJoinedChannel", "OnlineUserIcon.userJoinedChannel", (data) => {
-    //   console.log("userJoinedChannel in OnlineUserIcon", data)
-    //   if (data.id === id) {
-    //     const audioState = ep.getAudioState(id);
-    //     console.log("---------------------------------", audioState);
-    //     setDeaf(audioState.isDeaf);
-    //     setMuted(audioState.isMuted);
-    //   }
-    // });
 
     return () => {
       ep.releaseGroup('OnlineUserIcon.updatedAudioState');
