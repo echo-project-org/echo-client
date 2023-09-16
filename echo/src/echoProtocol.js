@@ -483,6 +483,10 @@ EchoProtocol.prototype.usersCacheUpdated = function (data) {
   this.emit("usersCacheUpdated", data);
 }
 
+EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
+  this.emit("rtcConnectionStateChange", data);
+}
+
 EchoProtocol.prototype.updatedAudioState = function (data) {
   this.emit("updatedAudioState", data);
 }

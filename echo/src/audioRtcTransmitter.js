@@ -240,6 +240,9 @@ class audioRtcTransmitter {
 
     peer.ontrack = (e) => { this.handleTrackEvent(e) };
     peer.onconnectionstatechange = () => {
+      ep.rtcConnectionStateChange({
+        state: peer.connectionState,
+      });
       if (peer.connectionState === 'failed') {
         peer.restartIce();
       }
