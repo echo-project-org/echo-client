@@ -115,7 +115,7 @@ function UserSettings() {
           api.call("users/image", "POST", { id: localStorage.getItem("id"), image: base64 })
             .then((res) => {
               localStorage.setItem("userImage", base64);
-              ep.updateUser(localStorage.getItem("id"), "userImage", base64);
+              ep.updateUser({ id: localStorage.getItem("id"), field: "userImage", value: base64 });
               setLoading(false);
             })
             .catch(err => {

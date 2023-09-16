@@ -76,8 +76,11 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
-      console.log("User", data.id, "joined your channel, starting listening audio");
+      console.log("User", data.id, "joined your channel, starting listening audio", data);
       if (data.isConnected) this.startReceiving(data.id);
+      this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
+      this.updateUser({ id: data.id, field: "muted", value: data.muted });
+      this.updateUser({ id: data.id, field: "deaf", value: data.deaf });
       this.userJoinedChannel(data);
       // render the component Room with the new user
     });
@@ -115,23 +118,27 @@ class EchoProtocol {
     });
 
     this.socket.on("server.receiveChatMessage", (data) => {
-      if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
-      if (typeof data.userId !== "string") data.userId = data.id.toString();
-      if (typeof data.id !== "string") data.id = data.id.toString();
-      // check if the room is cached
-      const room = this.cachedRooms.get(data.roomId);
-      if (room) {
-        const user = this.cachedUsers.get(data.id);
-        if (user) {
-          console.log("got message chat from socket", data)
-          data.img = user.userImage;
-          data.name = user.name;
-          const newMessage = room.chat.add(data);
-          this.receiveChatMessage(newMessage);
-        }
-        else this.needUserCacheUpdate(data.id);
-      } else console.error("Room not found in cache");
+      this.receiveChatMessage(data);
     });
+  }
+
+  receiveChatMessage(data) {
+    if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
+    if (typeof data.userId !== "string") data.userId = data.id.toString();
+    if (typeof data.id !== "string") data.id = data.id.toString();
+    // check if the room is cached
+    const room = this.cachedRooms.get(data.roomId);
+    if (room) {
+      const user = this.cachedUsers.get(data.id);
+      if (user) {
+        console.log("got message chat from socket", data)
+        data.img = user.userImage;
+        data.name = user.name;
+        const newMessage = room.chat.add(data);
+        this.receiveChatMessage(newMessage);
+      }
+      else this.needUserCacheUpdate({ id: data.id, call: { function: "receiveChatMessage", args: data } });
+    } else console.error("Room not found in cache");
   }
 
   async startTransmitting(id = 5) {
@@ -212,8 +219,9 @@ class EchoProtocol {
   }
 
   joinRoom(id, roomId) {
+    const audioState = this.getAudioState();
     // join the transmission on current room
-    this.socket.emit("client.join", { id, roomId });
+    this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
     this.startReceivingVideo(1);
   }
 
@@ -383,12 +391,12 @@ class EchoProtocol {
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
 
-  updateUser(id, field, value) {
+  updateUser({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
       this.cachedUsers.update(id, field, value);
       this.usersCacheUpdated(this.cachedUsers.get(id));
     }
-    else this.needUserCacheUpdate(id);
+    else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
 
   }
 
@@ -402,7 +410,7 @@ class EchoProtocol {
 
   checkUserCache(id) {
     if (this.cachedUsers.get(id)) return Promise.resolve(this.cachedUsers.get(id));
-    else return this.needUserCacheUpdate(id);
+    else return this.needUserCacheUpdate({ id, call: { function: "checkUserCache", args: { id } } });
   }
 
   isAudioFullyConnected() {

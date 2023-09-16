@@ -90,8 +90,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
   }
 }));
 
-function OnlineUserIcon({ imgUrl, name, id, talking }) {
-  console.log("creted user in room", name, id)
+function OnlineUserIcon({ user }) {
+  console.log(">>> [OnlineUserIcon] creted user in room", user)
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
@@ -102,23 +102,23 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
 
   useEffect(() => {
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
-      ep.updateUser(data.id, "deaf", data.deaf);
-      ep.updateUser(data.id, "muted", data.muted);
-      if (data.id === id) {
+      ep.updateUser({ id: data.id, field: "muted", value: data.muted });
+      ep.updateUser({ id: data.id, field: "deaf", value: data.deaf });
+      if (data.id === user.id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
       }
     });
 
-    const audioState = ep.getAudioState(id);
-    setDeaf(audioState.isDeaf);
-    setMuted(audioState.isMuted);
+    // const audioState = ep.getAudioState(id);
+    setDeaf(user.deaf);
+    setMuted(user.muted);
 
     return () => {
       ep.releaseGroup('OnlineUserIcon.updatedAudioState');
       // ep.releaseGroup('OnlineUserIcon.userJoinedChannel');
     };
-  });
+  }, []);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -130,10 +130,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
   const handleVolumeChange = (event, newValue) => {
     //set user volume
     setUserVolulme(newValue);
-    ep.setUserVolume(newValue / 100, id)
+    ep.setUserVolume(newValue / 100, user.id)
   };
 
-  id = id.toString();
+  user.id = user.id.toString();
 
   return (
     <div className="onlineUserContainer">
@@ -146,10 +146,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
         aria-haspopup="true"
         aria-expanded={ open ? 'true' : undefined }
       >
-        <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} showZero={true} invisible={!talking} color={"success"}>
-          <Avatar alt={name} src={imgUrl} sx={{height: '1.25rem', width:'1.25rem'}}/>
+        <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} showZero={true} invisible={true} color={"success"}>
+          <Avatar alt={user.name} src={user.userImage} sx={{height: '1.25rem', width:'1.25rem'}}/>
         </Badge>
-        <p className='onlineUserNick'>{name}</p>
+        <p className='onlineUserNick'>{user.name}</p>
         <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
           {deaf ? <VolumeOff fontSize="small" /> : null}
           {muted ? <MicOffRounded fontSize="small" /> : null}
@@ -170,9 +170,9 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant="dot"
             >
-              <Avatar alt={name} src={imgUrl} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
+              <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
             </StyledBadge>
-            <p style={{ marginTop: ".8rem" }}>{name}</p>
+            <p style={{ marginTop: ".8rem" }}>{user.name}</p>
           </div>
 
           <MenuItem>
@@ -192,10 +192,10 @@ function OnlineUserIcon({ imgUrl, name, id, talking }) {
             </div>
           </MenuItem>
           <Divider sx={{ my: 0.5 }} variant='middle' />
-          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem> : null }
-          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem> : null }
-          {localStorage.getItem("id") !== id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem> : null }
-          {localStorage.getItem("id") === id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }}/> Settings</MenuItem> : null }
+          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem> : null }
+          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem> : null }
+          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem> : null }
+          {localStorage.getItem("id") === user.id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }}/> Settings</MenuItem> : null }
         </Menu>
       </ThemeProvider>
     </div>

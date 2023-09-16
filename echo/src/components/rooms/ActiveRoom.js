@@ -12,8 +12,8 @@ function ActiveRoom({ users, data }) {
       <p className='roomName noselect'>{data.name}</p>
       <div className="roomUsers">
         {
-          users.sort().map(user => (
-            <OnlineUserIcon key={user.name} imgUrl={user.userImage} name={user.name} id={user.id} />
+          users.sort().map((user, id) => (
+            <OnlineUserIcon key={id} user={user} />
           ))
         }
       </div>

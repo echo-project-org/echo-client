@@ -61,12 +61,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       console.log("roomClicked in Rooms", typeof joiningId, typeof currentRoom)
       if (String(joiningId) === currentRoom) return;
       if (currentRoom !== 0) ep.exitFromRoom(localStorage.getItem("id"));
-      ep.joinRoom(localStorage.getItem("id"), joiningId);
-      ep.updateUser(localStorage.getItem("id"), "currentRoom", String(joiningId));
       // update audio state of the user
       const userAudioState = ep.getAudioState();
-      ep.updateUser(localStorage.getItem("id"), "muted", userAudioState.isMuted);
-      ep.updateUser(localStorage.getItem("id"), "deaf", userAudioState.isDeaf);
+      ep.updateUser({ id: localStorage.getItem("id"), field: "muted", value: userAudioState.isMuted });
+      ep.updateUser({ id: localStorage.getItem("id"), field: "deaf", value: userAudioState.isDeaf });
+      // join room
+      ep.joinRoom(localStorage.getItem("id"), joiningId);
+      ep.updateUser({ id: localStorage.getItem("id"), field: "currentRoom", value: String(joiningId) });
       // update active room id
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
@@ -83,13 +84,19 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         });
     });
 
-    ep.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (id) => {
-      console.log("needUserCacheUpdate in Rooms", id)
+    ep.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (data) => {
+      console.log("Rooms.needUserCacheUpdate", data)
+      const id = data.id;
+      const func = data.call;
+      
       api.call("users/" + id, "GET")
         .then((res) => {
           if (res.ok) {
             const data = res.json;
             ep.addUser({ id: data.id, name: data.name, img: data.img, online: data.online, roomId: data.roomId });
+
+            console.log("Rooms.needUserCacheUpdate in Rooms, calling function again", func)
+            if (func) ep[func.function](func.args);
           }
         })
         .catch((err) => {

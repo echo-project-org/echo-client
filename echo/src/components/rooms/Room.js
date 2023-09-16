@@ -12,13 +12,12 @@ function Room({ active, data }) {
   useEffect(() => {
     ep.on("userJoinedChannel", "Room.userJoinedChannel", (data) => {
       // console.log("Room.userJoinedChannel", data);
-      ep.updateUser(data.id, "currentRoom", data.roomId);
       updateUsersInRoom(data.roomId);
     });
 
     ep.on("userLeftChannel", "Room.userLeftChannel", (data) => {
       // console.log("Room.userLeftChannel", data);
-      ep.updateUser(data.id, "currentRoom", "0");
+      ep.updateUser({ id: data.id, field: "currentRoom", value: "0" })
       updateUsersInRoom();
     });
 

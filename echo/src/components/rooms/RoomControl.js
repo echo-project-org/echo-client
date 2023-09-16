@@ -117,7 +117,7 @@ function RoomControl({ state, setState, screenSharing }) {
       api.call("rooms/join", "POST", { userId: localStorage.getItem('id'), roomId: "0" })
         .then(res => {
           ep.exitFromRoom(localStorage.getItem('id'));
-          ep.updateUser(localStorage.getItem('id'), "currentRoom", 0);
+          ep.updateUser({ id: localStorage.getItem('id'), field: "currentRoom", value: 0 });
           leaveAudio.play();
         })
         .catch(err => {
