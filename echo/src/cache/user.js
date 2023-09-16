@@ -55,6 +55,14 @@ class Users {
     get(id) {
         // data type check
         id = this.typeCheck(id);
+        // if (!this.users[id]) {
+        //     this.add((async () => {
+        //         const data = await api.call("users/" + id, "GET");
+        //         if (data.error) return console.error(data.error);
+        //         console.warn(`[CACHE] Added user ${id} in cache from get function`);
+        //         return data.json;
+        //     })())
+        // }
         return this.users[id];
     }
 
