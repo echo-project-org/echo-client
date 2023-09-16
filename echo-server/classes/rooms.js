@@ -79,7 +79,7 @@ class Rooms {
     joinRoom(data) {
         console.log("got join message", data)
         this.addRoom(data.roomId);
-        this.addUserToRoom(data.id, data.roomId);
+        this.addUserToRoom(data);
     }
 
     endConnection(data) {
@@ -140,7 +140,9 @@ class Rooms {
      * @param {*} id User joining the room
      * @param {*} roomId 
      */
-    addUserToRoom(id, roomId) {
+    addUserToRoom(data) {
+        const id = data.id;
+        const roomId = data.roomId;
         if (this.connectedClients.has(id)) {
             if (this.rooms.has(roomId)) {
                 const user = this.connectedClients.get(id);
@@ -152,8 +154,8 @@ class Rooms {
                     if (id !== user.id) {
                         console.log("Notifing", user.id, "about", id)
                         const userRoom = user.getCurrentRoom();
-                        const isConnected = userRoom === roomId;
-                        user.userJoinedChannel({ id, roomId, isConnected });
+                        data.isConnected = userRoom === roomId;
+                        user.userJoinedChannel(data);
                     }
                 })
             }
