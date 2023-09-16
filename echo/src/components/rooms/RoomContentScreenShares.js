@@ -3,6 +3,7 @@ import ReactPlayer from 'react-player';
 import { useState, useEffect } from 'react'
 import { Container, styled } from '@mui/material'
 import ScreenShareControlIcons from './ScreenShareControlIcons';
+import { ep } from '../..';
 
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -56,9 +57,11 @@ const screenShareWrapperStyle = {
 
 function RoomContentScreenShares({ roomId }) {
     const [muted, setMuted] = useState(true);
+    const [screenShareStream, setScreenShareStream] = useState(`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`);
 
     const toggleMuteStream = () => {
         setMuted(!muted);
+        setScreenShareStream(ep.getScreenShareStream(1));
     }
 
     return (
@@ -66,7 +69,7 @@ function RoomContentScreenShares({ roomId }) {
             <div style={screenShareWrapperStyle}>
                 <div style={screenShareContainerStyle}>
                     <ReactPlayer
-                        url={`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`}
+                        url={screenShareStream}
                         playing={true}
                         muted={muted}
                         width="100%"

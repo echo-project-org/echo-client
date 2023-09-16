@@ -149,6 +149,10 @@ class videoRtc {
         })
     }
 
+    getScreenShareStream(id){
+        return this.stream;
+    }
+
     unsubscribeFromVideo(id = null) {
         if (id) {
             let streamId = this.streamIds.get(id);
