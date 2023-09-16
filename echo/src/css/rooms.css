@@ -95,6 +95,35 @@
   border: 1px var(--color3) solid;
 }
 
+.roomTitleContainer {
+  padding: 0 !important;
+  margin: auto !important;
+  width: fit-content;
+  flex-direction: row;
+  justify-content: left;
+  text-align: left;
+  align-items: left;
+  margin-top: 1rem;
+  display: flex !important;
+  color: white;
+  max-width: 15% !important;
+  font-size: 1.2rem;
+}
+
+.roomDescriptionContainer {
+  margin: auto !important;
+  width: fit-content;
+  flex-direction: row;
+  justify-content: left;
+  text-align: left;
+  align-items: left;
+  margin-top: 1rem;
+  display: flex !important;
+  color: white;
+  max-width: 100% !important;
+  font-size: .8rem;
+}
+
 .iconsContainer {
   padding: 0 !important;
   margin: auto !important;

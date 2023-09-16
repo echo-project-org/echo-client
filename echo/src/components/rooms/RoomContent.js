@@ -1,7 +1,7 @@
 import "../../css/chat.css";
 
 import { useState, useEffect } from 'react'
-import { Grid, Container, styled } from '@mui/material';
+import { Grid, Container, styled, Divider } from '@mui/material';
 import { ChatBubble, PeopleAlt } from '@mui/icons-material';
 
 import RoomContentChat from "./RoomContentChat";
@@ -57,11 +57,19 @@ function RoomContent({ roomId }) {
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
         <StyledContainer>
           <Grid container>
-            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-              sono il titolo
-              e io la descrizione della stanza
+            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{
+              display: "flex",
+              flexDirection: "row",
+            }} >
+              <Container className="roomTitleContainer">
+                Room name
+              </Container>
+              <Divider orientation="vertical" sx={{ backgroundColor: "#2e2030" }} />
+              <Container className="roomDescriptionContainer">
+                Room description Room description Room description Room description Room description Room description Room description Room description Room description 
+              </Container>
             </Grid>
-            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+            <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
               <Container className="iconsContainer">
                 {
                   contentSelected === "chat" ?
