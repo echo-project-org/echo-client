@@ -54,11 +54,11 @@ class ServerRTC {
             if (typeof id !== "string") id = String(id);
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
-            this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [] });
+            this.peers.set(id, { peer, audioStream: null, audioSubscriptionsIds: [], outStreams: [] });
 
             peer.ontrack = (e) => {
-                console.log("Got augio track from user " + id );
-                this.peers.set(id, { peer, audioStream: e.streams[0], audioSubscriptionsIds: [] });
+                console.log("Got augio track from user " + id);
+                this.peers.set(id, { peer, audioStream: e.streams[0], audioSubscriptionsIds: [], outStreams: [] });
             };
 
             peer.onicecandidate = (e) => {
@@ -74,7 +74,9 @@ class ServerRTC {
                     peer.createAnswer()
                         .then((answer) => {
                             let parsed = sdpTransform.parse(answer.sdp);
-                            parsed.media[0].fmtp[0].config = goodOpusSettings;
+                            parsed.media.forEach((media) => {
+                                media.fmtp[0].config = goodOpusSettings;
+                            });
                             answer.sdp = sdpTransform.write(parsed);
 
                             peer.setLocalDescription(answer)
@@ -116,8 +118,20 @@ class ServerRTC {
             if (asid.includes(senderId)) return reject("ALREADY-SUBSCRIBED");
             console.log("User " + receiverId + " subscribed to user " + senderId + "'s audio stream", stream);
             //If not subscribed, subscribe
-            stream.getAudioTracks().forEach(track => outPeer.addTrack(track, stream));
+            let senders = [];
+            stream.getAudioTracks().forEach(track => {
+                let sender = outPeer.addTrack(track, stream);
+                let params = sender.getParameters();
+
+                params.encodings.forEach(encoding => {
+                    encoding.maxBitrate = 510000;
+                });
+                sender.setParameters(params);
+                senders.push(sender);
+            });
+
             asid.push(senderId);
+            this.peers.get(receiverId).outStreams.push({ id: senderId, stream, senders });
 
             resolve(stream.id);
         });
@@ -137,7 +151,23 @@ class ServerRTC {
             if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
             if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
+            //Remove aside from the audioSubscriptionsIds
             this.peers.get(receiverId).audioSubscriptionsIds = this.peers.get(receiverId).audioSubscriptionsIds.filter(id => id !== senderId);
+
+            //Remove stop tracks from the peer
+            let peer = this.peers.get(receiverId).peer;
+            this.peers.get(receiverId).outStreams.forEach(stream => {
+                if (stream.id === senderId) {
+                    stream.senders.forEach(sender => {
+                        peer.removeTrack(sender);
+                    });
+
+                    stream = null;
+                }
+            });
+
+            //Remove the stream from the outStreams
+            this.peers.get(receiverId).outStreams = this.peers.get(receiverId).outStreams.filter(stream => stream.id !== senderId);
 
             console.log("User " + receiverId + " unsubscribed from user " + senderId + "'s audio stream");
             resolve(true);
