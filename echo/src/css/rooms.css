@@ -94,3 +94,23 @@
 .roomBtn:hover {
   border: 1px var(--color3) solid;
 }
+
+.iconsContainer {
+  padding: 0 !important;
+  margin: auto !important;
+  width: 100%;
+  flex-direction: row;
+  justify-content: right;
+  align-items: right;
+  margin-top: 1rem;
+  display: flex !important;
+  color: white;
+  max-width: 100% !important;
+}
+
+.iconsContainer svg {
+  margin: 0 0 0 0.4rem;
+  cursor: pointer;
+  font-size: 1.8rem;
+  padding: calc(0.5rem - 1px);
+}
