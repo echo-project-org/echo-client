@@ -27,11 +27,8 @@ class Chat {
     }
 
     updateUser(data) {
-        console.log("[CACHE] Updating user of room chat", data);
         this.messages.forEach((message) => {
-            console.log("[CACHE] Updating user of room chat", message.userId, data.id, message.userId === data.id)
             if (String(message.userId) === String(data.id)) {
-                console.log("[CACHE] Updating user of room chat", data.field, data.value)
                 if (data.field === "userImage") message.img = data.value;
                 if (data.field === "name") message.name = data.value;
             }
