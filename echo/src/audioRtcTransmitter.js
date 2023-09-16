@@ -1,7 +1,6 @@
 import { ep } from "./index";
 
 const sdpTransform = require('sdp-transform');
-const noiseGateNode = require('noise-gate');
 const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 
 const ICE_SERVERS = [{
@@ -29,7 +28,6 @@ class audioRtcTransmitter {
     this.isDeaf = false;
     this.volume = volume;
     this.gainNode = null;
-    this.noiseGate = null;
     this.context = null;
     this.inputStreams = [];
     this.streamIds = new Map();
@@ -62,10 +60,8 @@ class audioRtcTransmitter {
     const source = context.createMediaStreamSource(this.stream);
     const destination = context.createMediaStreamDestination();
     this.gainNode = context.createGain();
-    this.noiseGate = new noiseGateNode(context);
     source.connect(this.gainNode);
-    this.gainNode.connect(this.noiseGate);
-    this.noiseGate.connect(destination);
+    this.gainNode.connect(destination);
     //Set the volume
     this.setVolume(this.volume);
     //Create the peer
