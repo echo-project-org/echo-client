@@ -25,7 +25,7 @@ class Users {
     }
 
     add(data, self = false) {
-        if (!data) return console.error("Data is required to add a user to the cache");
+        if (!data) return console.error("[CACHE] Data is required to add a user to the cache");
         // data type check
         data = this.typeCheck(data);
         console.log("[CACHE] Added user in cache", data)
@@ -37,9 +37,9 @@ class Users {
             localStorage.setItem("online", data.online);
         }
 
-        if (!data.id) return console.error("ID is required to add a user to the cache");
-        if (!data.name) return console.error("Name is required to add a user to the cache");
-        if (!data.online) return console.error("Online is required to add a user to the cache");
+        if (!data.id) return console.error("[CACHE] ID is required to add a user to the cache");
+        if (!data.name) return console.error("[CACHE] Name is required to add a user to the cache");
+        if (!data.online) return console.error("[CACHE] Online is required to add a user to the cache");
 
         if (this.users[data.id]) return console.warn(`[CACHE] User ${data.id} already exists in cache`);
         
@@ -94,7 +94,7 @@ class Users {
         field = this.typeCheck(field);
         value = this.typeCheck(value);
         console.log("[CACHE] Updated user in cache", id, field, value)
-        if (!this.users[id]) return console.error(`User ${id} not found in cache`);
+        if (!this.users[id]) return console.error(`[CACHE] User ${id} not found in cache`);
         this.users[id][field] = value;
     }
 }
