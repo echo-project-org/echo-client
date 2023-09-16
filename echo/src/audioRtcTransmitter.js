@@ -87,6 +87,14 @@ class audioRtcTransmitter {
     }
   }
 
+  async setInputDevice(deviceId) {
+    this.deviceId = deviceId;
+    this.constraints.audio.deviceId = deviceId;
+
+    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => {console.error(err); return;});
+    this.stream.replaceTrack(newStream.getAudioTracks()[0]);
+  }
+
   setOutputDevice(deviceId) {
     if (deviceId === 'default') {
       return
