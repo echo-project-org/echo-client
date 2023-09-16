@@ -285,7 +285,7 @@ class EchoProtocol {
   }
 
   streamChanged(data) {
-    if(this.socket){
+    if (this.socket) {
       this.socket.emit("client.streamChanged", data);
     }
   }
@@ -329,16 +329,26 @@ class EchoProtocol {
   }
 
   startScreenSharing(deviceId) {
-    this.vt.setDevice(deviceId);
-    this.vt.startSharing();
+    if (this.vt) {
+      this.vt.setDevice(deviceId);
+      this.vt.startSharing();
+    }
   }
 
   stopScreenSharing() {
-    this.vt.stopSharing();
+    if (this.vt) {
+      this.vt.stopSharing();
+    }
   }
 
   startReceivingVideo(remoteId) {
-    this.vt.subscribeToVideo(remoteId);
+    if (this.vt) {
+      this.vt.subscribeToVideo(remoteId);
+    }
+  }
+
+  getScreenShareStream(remoteId) {
+    if (this.vt) return this.vt.getScreenShareStream(remoteId);
   }
 
   /**
