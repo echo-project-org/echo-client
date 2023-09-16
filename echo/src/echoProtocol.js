@@ -146,14 +146,15 @@ class EchoProtocol {
 
   reciveChatMessageFromSocket(data) {
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
-    if (typeof data.userId !== "string") data.userId = data.id.toString();
     if (typeof data.id !== "string") data.id = data.id.toString();
+    if (typeof data.userId !== "string") data.userId = data.id;
     // check if the room is cached
     const room = this.cachedRooms.get(data.roomId);
     if (room) {
       const user = this.cachedUsers.get(data.id);
       if (user) {
         console.log("got message chat from socket", data)
+        data.userId = user.id;
         data.img = user.userImage;
         data.name = user.name;
         const newMessage = room.chat.add(data);
