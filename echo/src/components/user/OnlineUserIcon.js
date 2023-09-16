@@ -92,6 +92,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 function OnlineUserIcon({ user }) {
   console.log(">>> [OnlineUserIcon] creted user in room", user)
+  user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
@@ -132,8 +133,6 @@ function OnlineUserIcon({ user }) {
     setUserVolulme(newValue);
     ep.setUserVolume(newValue / 100, user.id)
   };
-
-  user.id = user.id.toString();
 
   return (
     <div className="onlineUserContainer">
