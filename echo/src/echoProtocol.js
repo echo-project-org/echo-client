@@ -435,6 +435,7 @@ class EchoProtocol {
   }
 
   setMessagesCache(messages, roomId) {
+    if (typeof roomId !== "string") roomId = roomId.toString();
     // extract all userId from the messages array and remove duplicates
     const userIds = [];
     messages.forEach((message) => {
@@ -444,27 +445,29 @@ class EchoProtocol {
     const uniqueUserIds = [...new Set(userIds)];
     if (uniqueUserIds.length === 0) return this.messagesCacheUpdated([]);
     uniqueUserIds.forEach((userId) => {
-      const user = this.cachedUsers.get(userId);
-      if (user) {
-        if (typeof roomId !== "string") roomId = roomId.toString();
-        const room = this.cachedRooms.get(roomId);
-        if (room) {
+      const room = this.cachedRooms.get(roomId);
+      if (room) {
+        const user = this.cachedUsers.get(userId);
+        if (user) {
           messages.forEach((message) => {
             if (typeof message.userId !== "string") message.userId = message.userId.toString();
             if (message.userId === user.id) {
-              message.img = user.img;
+              console.log("found user in cache", user)
+              message.img = user.img || user.userImage;
               message.name = user.name;
             }
             room.chat.add(message)
           });
           this.messagesCacheUpdated(room.chat.get());
         } else {
-          console.error("Room not found in cache");
+          console.error("User not found in cache");
+          this.needUserCacheUpdate({ id: userId, call: { function: "setMessagesCache", args: { messages, roomId } } });
           this.messagesCacheUpdated([]);
+          return room.chat.clear();
         }
       } else {
-        console.error("User not found in cache");
-        this.needUserCacheUpdate({ id: userId, call: { function: "setMessagesCache", args: { messages, roomId } } });
+        console.error("Room not found in cache");
+        this.messagesCacheUpdated([]);
       }
     });
   }

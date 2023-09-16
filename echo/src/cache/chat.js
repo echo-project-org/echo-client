@@ -21,6 +21,11 @@ class Chat {
         return this.messages;
     }
 
+    clear() {
+        this.messages = [];
+        this.cached = false;
+    }
+
     // convert date to current timezone and display format
     convertDate(date) {
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
