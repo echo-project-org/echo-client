@@ -54,7 +54,7 @@ class audioRtcTransmitter {
    */
   async init() {
     //Create stream
-    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints, err => {console.error(err); return;});
+    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
     //Setup the volume stuff
     const context = new AudioContext();
     const source = context.createMediaStreamSource(this.stream);
@@ -92,13 +92,13 @@ class audioRtcTransmitter {
     this.deviceId = deviceId;
     this.constraints.audio.deviceId = deviceId;
 
-    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => {console.error(err); return;});
+    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
     this.peer.getSenders().forEach((sender) => {
       if (sender.track.kind === 'audio') {
         sender.replaceTrack(newStream.getAudioTracks()[0]);
       }
     });
-    
+
     this.stream = newStream;
   }
 
@@ -210,7 +210,7 @@ class audioRtcTransmitter {
   }
 
   isFullyConnected() {
-    return(this.subscribedUsers === this.inputStreams.length);
+    return (this.subscribedUsers === this.inputStreams.length);
   }
 
   addCandidate(candidate) {
@@ -302,7 +302,7 @@ class audioRtcTransmitter {
         ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
       }
       this.inputStreams.forEach((stream) => {
-        if(stream.stream){
+        if (stream.stream) {
           stream.stream.getTracks().forEach(track => track.stop());
           stream.stream = null;
           stream.context.close();
@@ -342,13 +342,17 @@ class audioRtcTransmitter {
 
   async renegotiate(remoteOffer, cb) {
     const remoteDesc = new RTCSessionDescription(remoteOffer);
+    console.log("remote description", sdpTransform.parse(remoteDesc.sdp));
     this.peer.setRemoteDescription(remoteDesc).then(() => {
       this.peer.createAnswer().then((answer) => {
         let parsed = sdpTransform.parse(answer.sdp);
-        parsed.media[0].fmtp[0].config = goodOpusSettings;
+        parsed.media.forEach((media) => {
+          media.fmtp[0].config = goodOpusSettings;
+        });
         answer.sdp = sdpTransform.write(parsed);
 
         this.peer.setLocalDescription(answer).then(() => {
+          console.log("local description", parsed)
           cb(this.peer.localDescription);
         });
       });
