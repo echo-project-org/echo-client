@@ -45,13 +45,16 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 function RoomContentChat({ roomId }) {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const handleEmojiPicker = () => {
-    // console.log("sto cambianto emojipicker", emojiPicker)
     setEmojiPicker(!emojiPicker);
+  };
+
+  const closeEmojiPicker = () => {
+    setEmojiPicker(false);
   };
 
   return (
     <StyledContainer>
-      <Chat currentRoomId={roomId} />
+      <Chat currentRoomId={roomId} onMouseDown={closeEmojiPicker} />
       <ChatControls onEmojiOn={handleEmojiPicker} roomId={roomId} />
       <EmojiPicker show={emojiPicker} style={{
         position: "absolute",
