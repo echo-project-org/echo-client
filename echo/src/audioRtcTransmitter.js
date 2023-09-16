@@ -237,6 +237,11 @@ class audioRtcTransmitter {
       }
     }
 
+    // maybe useful for the future? IDK
+    peer.onconnectionstatechange = (ev) => {
+      console.log("Connection state changed", peer.connectionState);
+    };
+
     return peer;
   }
 
