@@ -8,9 +8,13 @@ import RoomContentChat from "./RoomContentChat";
 
 function RoomContent({ roomId }) {
   const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
+  const [contentSelected, setContentSelected] = useState("chat");
 
   return (
-    RoomContentChat({ roomId })
+    contentSelected === "chat" ?
+      <RoomContentChat roomId={roomId} />
+      :
+      <></>
   )
 }
 
