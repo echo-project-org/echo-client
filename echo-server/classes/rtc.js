@@ -92,6 +92,27 @@ class ServerRTC {
         });
     }
 
+    handleStreamChanged(data) {
+        let { id, streamId } = data;
+        if (!id) return console.error("NO-ID");
+        if (!streamId) return console.error("NO-STREAM-ID");
+        if (typeof id !== "string") id = String(id);
+        if (typeof streamId !== "string") streamId = String(streamId);
+        if (!this.peers.has(id)) return console.error("NO-CONNECTION");
+        //get the new stream
+        let newStream = this.peers.get(id).audioStream.clone();
+
+        this.peers.forEach((peer, userId) => {
+            peer.outStreams.forEach(stream => {
+                if (stream.id === id) {
+                    stream.senders.forEach(sender => {
+                        sender.replaceTrack(newStream.getAudioTracks()[0]);
+                    });
+                }
+            });
+        }); 
+    }
+
     subscribeAudio(data, user) {
         /**
          * data has

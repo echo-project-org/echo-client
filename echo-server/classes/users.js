@@ -26,6 +26,7 @@ class User {
         this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
         this.socket.on("client.unsubscribeAudio", (data) => this.unsubscribeAudio(data));
         this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
+        this.socket.on("client.client.streamChanged", (data) => this.handleStreamChanged(data));
 
         // videoRtc stuff
         this.socket.on("client.negotiateVideoRtc", (data, cb) => this.negotiateVideoRtc(data, cb));
@@ -143,6 +144,12 @@ class User {
                 .catch((err) => {
                     console.error("broadcastAudio error", err);
                 });
+        }
+    }
+
+    handleStreamChanged(data) {
+        if (this.rtc) {
+            this.rtc.handleStreamChanged(data);
         }
     }
 
