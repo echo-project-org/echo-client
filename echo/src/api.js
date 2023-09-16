@@ -57,6 +57,10 @@ const handleErrors = (status, response) => {
           // Forbidden
           console.warn(status + ": Forbidden");
           break;
+        case 413:
+          // Payload too large
+          console.warn(status + ": Payload too large");
+          break;
         case 404:
           // Not found
           console.warn(status + ": Not found");
