@@ -97,6 +97,8 @@ class audioRtcTransmitter {
         sender.replaceTrack(newStream.getAudioTracks()[0]);
       }
     });
+    
+    this.stream = newStream;
   }
 
   setOutputDevice(deviceId) {
