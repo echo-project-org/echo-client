@@ -10,7 +10,7 @@ import RoomContentScreenShares from "./RoomContentScreenShares";
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     margin: "0 0 0 1rem",
-    height: "calc(12vh - 5rem)",
+    height: "90%",
     width: "100%",
     position: "relative",
     display: "inline-flex",
@@ -19,7 +19,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   },
   [theme.breakpoints.up('lg')]: {
     margin: "0 0 0 1rem",
-    height: "calc(12vh - 5rem)",
+    height: "90%",
     width: "100%",
     position: "relative",
     display: "inline-flex",
@@ -28,7 +28,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   },
   [theme.breakpoints.up('xl')]: {
     margin: "0 0 0 1rem",
-    height: "calc(12vh - 5rem)",
+    height: "90%",
     width: "100%",
     position: "relative",
     display: "inline-flex",
