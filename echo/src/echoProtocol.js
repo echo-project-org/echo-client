@@ -434,7 +434,7 @@ class EchoProtocol {
     else console.error("Room not found in cache");
   }
 
-  setMessagesCache(messages, roomId) {
+  setMessagesCache({ messages, roomId }) {
     if (typeof roomId !== "string") roomId = roomId.toString();
     // extract all userId from the messages array and remove duplicates
     const userIds = [];
@@ -449,10 +449,10 @@ class EchoProtocol {
       if (room) {
         const user = this.cachedUsers.get(userId);
         if (user) {
+          room.chat.clear();
           messages.forEach((message) => {
             if (typeof message.userId !== "string") message.userId = message.userId.toString();
             if (message.userId === user.id) {
-              console.log("found user in cache", user)
               message.img = user.img || user.userImage;
               message.name = user.name;
             }
@@ -463,7 +463,7 @@ class EchoProtocol {
           console.error("User not found in cache");
           this.needUserCacheUpdate({ id: userId, call: { function: "setMessagesCache", args: { messages, roomId } } });
           this.messagesCacheUpdated([]);
-          return room.chat.clear();
+          return;
         }
       } else {
         console.error("Room not found in cache");
