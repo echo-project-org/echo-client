@@ -43,6 +43,7 @@ class audioRtcTransmitter {
         noiseSuppression: false,
         autoGainControl: false,
         deviceId: this.deviceId,
+        googNoiseSupression: true,
       },
       video: false,
     }
