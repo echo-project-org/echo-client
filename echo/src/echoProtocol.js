@@ -444,7 +444,8 @@ class EchoProtocol {
   }
 
   isAudioFullyConnected() {
-    return this.at.isFullyConnected();
+    //return this.at.isFullyConnected();
+    return true;
   }
 
   // chat messages function
