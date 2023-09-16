@@ -107,7 +107,7 @@
   display: flex !important;
   color: white;
   max-width: 15% !important;
-  font-size: 1.2rem;
+  font-size: .8rem;
 }
 
 .roomDescriptionContainer {
@@ -121,7 +121,7 @@
   display: flex !important;
   color: white;
   max-width: 100% !important;
-  font-size: .8rem;
+  font-size: .7rem;
 }
 
 .iconsContainer {

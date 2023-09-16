@@ -8,7 +8,7 @@ import { ep } from "../../index";
 
 const api = require('../../api');
 
-function Chat({ currentRoomId }) {
+function Chat({ currentRoomId, onMouseDown }) {
   const [loadingVisibility, setLoadingVisibility] = useState(false);
   const [messages, setMessages] = useState([]);
 
@@ -63,7 +63,7 @@ function Chat({ currentRoomId }) {
 
   if (currentRoomId === 0) {
     return (
-      <div className='chat'>
+      <div className='chat' onMouseDown={onMouseDown}>
         <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
         <div className='noMessages'>Join a room to open the chat</div>
       </div>
@@ -71,7 +71,7 @@ function Chat({ currentRoomId }) {
   }
   
   return (
-    <div className='chat'>
+    <div className='chat' onMouseDown={onMouseDown}>
       <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
 
       {messages.length > 0 ? messages.map((message, id) => {

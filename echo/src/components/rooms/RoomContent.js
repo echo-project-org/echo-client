@@ -15,7 +15,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     position: "relative",
     display: "inline-flex",
     maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: "#3e2542"
+    backgroundColor: "#3e2542",
+    padding: "0 0 0 .6rem",
   },
   [theme.breakpoints.up('lg')]: {
     margin: "0 0 0 1rem",
@@ -24,7 +25,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     position: "relative",
     display: "inline-flex",
     maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: "#3e2542"
+    backgroundColor: "#3e2542",
+    padding: "0 0 0 .6rem",
   },
   [theme.breakpoints.up('xl')]: {
     margin: "0 0 0 1rem",
@@ -33,7 +35,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     position: "relative",
     display: "inline-flex",
     maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: "#3e2542"
+    backgroundColor: "#3e2542",
+    padding: "0 0 0 .6rem",
   },
 }));
 
@@ -57,19 +60,19 @@ function RoomContent({ roomId }) {
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
         <StyledContainer>
           <Grid container>
-            <Grid item xs={10} sm={10} md={10} lg={10} xl={10} sx={{
+            <Grid item xs={11} sm={11} md={10} lg={10} xl={10} sx={{
               display: "flex",
               flexDirection: "row",
             }} >
               <Container className="roomTitleContainer">
-                Room name
+                MAX (20)
               </Container>
               <Divider orientation="vertical" sx={{ backgroundColor: "#2e2030" }} />
               <Container className="roomDescriptionContainer">
-                Room description Room description Room description Room description Room description Room description Room description Room description Room description 
+                MAX (150)
               </Container>
             </Grid>
-            <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
+            <Grid item xs={1} sm={1} md={2} lg={2} xl={2}>
               <Container className="iconsContainer">
                 {
                   contentSelected === "chat" ?
