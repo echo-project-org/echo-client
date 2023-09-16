@@ -27,7 +27,7 @@ function Chat({ currentRoomId }) {
         api.call("rooms/" + currentRoomId + "/messages")
           .then((res) => {
             console.log("got messages from api", res.json)
-            ep.setMessagesCache(res.json, currentRoomId);
+            ep.setMessagesCache({ messages: res.json, roomId: currentRoomId });
           })
           .catch((err) => {
             console.error(err);
