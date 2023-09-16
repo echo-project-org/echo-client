@@ -172,10 +172,13 @@ class Rooms {
                         console.log("Notifing", newUser.id, "about", user.id)
                         const userRoom = user.getCurrentRoom();
                         let isConnected = userRoom === roomId;
+                        let audioState = user.getAudioState();
                         newUser.userJoinedChannel({
                             id: user.id,
                             roomId: roomId,
-                            isConnected
+                            isConnected: isConnected,
+                            deaf: audioState.deaf,
+                            muted: audioState.muted
                         });
                     }
                 });

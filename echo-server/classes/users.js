@@ -76,6 +76,10 @@ class User {
         this.isMuted = data.muted;
     }
 
+    getAudioState() {
+        return { deaf: this.isDeaf, muted: this.isMuted };
+    }
+
     // you know what this does
     end(id) {
         this.currentRoom = 0;
