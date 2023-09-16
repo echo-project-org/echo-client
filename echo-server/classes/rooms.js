@@ -156,23 +156,27 @@ class Rooms {
                 this.rooms.get(roomId).users.set(user.id, user);
 
                 //Notify all users
-                let newUser = this.connectedClients.get(id);
                 this.connectedClients.forEach((user, _) => {
                     if (id !== user.id) {
-                        console.log("Notifing", newUser.id, "about", id)
+                        console.log("Notifing", user.id, "about", id)
                         const userRoom = user.getCurrentRoom();
                         data.isConnected = userRoom === roomId;
-                        newUser.userJoinedChannel(data);
+                        user.userJoinedChannel(data);
                     }
                 })
 
                 //Notify the user about all other users
+                let newUser = this.connectedClients.get(id);
                 this.getUsersInRoom(roomId).forEach((user, id) => {
-                    if (id !== user.id) {
-                        console.log("Notifing", id, "about", user.id)
+                    if (newUser.id !== user.id) {
+                        console.log("Notifing", newUser.id, "about", user.id)
                         const userRoom = user.getCurrentRoom();
-                        data.isConnected = userRoom === roomId;
-                        user.userJoinedChannel(data);
+                        let isConnected = userRoom === roomId;
+                        newUser.userJoinedChannel({
+                            id: user.id,
+                            roomId: roomId,
+                            isConnected
+                        });
                     }
                 });
             }
