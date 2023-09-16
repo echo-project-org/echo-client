@@ -189,8 +189,7 @@ class EchoProtocol {
 
   setMicrophoneDevice(deviceId) {
     if (this.at) {
-      this.at.close();
-      this.at = new audioRtcTransmitter(deviceId);
+      this.at.setInputDevice(deviceId);
     }
   }
 
