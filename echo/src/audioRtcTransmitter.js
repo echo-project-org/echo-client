@@ -53,7 +53,7 @@ class audioRtcTransmitter {
    */
   async init() {
     //Create stream
-    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints);
+    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints, err => {console.error(err); return;});
     //Setup the volume stuff
     const context = new AudioContext();
     const source = context.createMediaStreamSource(this.stream);
