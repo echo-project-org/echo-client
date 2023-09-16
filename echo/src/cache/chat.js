@@ -26,6 +26,14 @@ class Chat {
         this.cached = false;
     }
 
+    updateUser(data) {
+        this.messages.forEach((message) => {
+            if (data.name) message.name = data.name;
+            if (data.img) message.img = data.img;
+            if (data.userImage) message.img = data.userImage;
+        });
+    }
+
     // convert date to current timezone and display format
     convertDate(date) {
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

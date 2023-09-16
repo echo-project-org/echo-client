@@ -125,6 +125,16 @@ class EchoProtocol {
       console.log("User", data.id, "closed the connection");
       this.endConnection(data);
     });
+
+    this.socket.on("server.userUpdated", (data) => {
+      console.log("User", data.id, "updated his data", data);
+      this.updateUser(data);
+      // update rooms cache chat with new user data
+      const rooms = this.cachedRooms.values();
+      for (const room of rooms) {
+        room.chat.updateUser(data);
+      }
+    });
   }
 
   endConnection(data) {
@@ -404,10 +414,14 @@ class EchoProtocol {
   updateUser({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
       this.cachedUsers.update(id, field, value);
+      this.socket.emit("client.updateUser", { id, field, value });
+      const rooms = this.cachedRooms.values();
+      for (const room of rooms) {
+        room.chat.updateUser({ id, field, value });
+      }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     }
     else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
-
   }
 
   getUser(id) {

@@ -19,6 +19,7 @@ class User {
         this.socket.on("client.end", (data) => this.triggerEvent("end", data));
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
+        this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
         // audioRtc stuff
         this.socket.on("client.broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
         this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
@@ -46,6 +47,10 @@ class User {
         else console.error("can't trigger event", event, "NOT FOUND", this.id);
         // call same function if it exists
         if (this[event]) this[event](data);
+    }
+
+    userUpdated(data) {
+        this.socket.emit("server.userUpdated", data);
     }
 
     // tell other clients that a user has closed the connection

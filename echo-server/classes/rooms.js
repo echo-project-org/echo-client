@@ -51,6 +51,19 @@ class Rooms {
         user.registerEvent("exit", (data) => {
             this.exitRoom(data);
         });
+        user.registerEvent("updateUser", (data) => {
+            this.updateUser(data);
+        });
+    }
+
+    updateUser(data) {
+        if (this.connectedClients.has(data.id)) {
+            this.connectedClients.forEach((user, _) => {
+                if (data.id !== user.id) {
+                    user.userUpdated(data);
+                }
+            });
+        }
     }
 
     sendChatMessage(data) {

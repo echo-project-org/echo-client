@@ -47,11 +47,11 @@ function Chat({ currentRoomId }) {
 
   useEffect(() => {
     ep.on("receiveChatMessage", "Chat.receiveChatMessage", (newMessage) => {
-      // console.log("Chat.receiveChatMessage", newMessage)
+      console.log("Chat.receiveChatMessage", newMessage)
       setMessages((routeMessages) => [newMessage, ...routeMessages]);
     });
     ep.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
-      // console.log("Chat.messagesCacheUpdated", messages)
+      console.log("Chat.messagesCacheUpdated", messages)
       setMessages([...messages]);
       setLoadingVisibility(false);
     });
