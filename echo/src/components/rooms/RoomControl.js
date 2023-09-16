@@ -54,12 +54,26 @@ function RoomControl({ state, setState, screenSharing }) {
   const [deaf, setDeaf] = useState(false);
   const [wasMuted, setWasMuted] = useState(false);
   const [ping, setPing] = useState(0);
+  const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
 
   let navigate = useNavigate();
 
   useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
   useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
-
+  useEffect(() => {
+    ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
+      console.log("Event rtcConnectionStateChange", data)
+      switch (data.state) {
+        case 'new': setRtcConnectionState("Not connected"); break;
+        case 'disconnected': setRtcConnectionState("Not connected"); break;
+        case 'connecting': setRtcConnectionState("Connecting"); break;
+        case 'connected': setRtcConnectionState("Connected"); break;
+        case 'failed': setRtcConnectionState("Failed"); break;
+        case 'closed': setRtcConnectionState("Not connected"); break;
+        default: setRtcConnectionState("Not connected"); break;
+      }
+    });
+  }, []);
   const muteAudio = new Audio(muteSound);
   muteAudio.volume = 0.6;
   const unmuteAudio = new Audio(unmuteSound);
@@ -154,7 +168,7 @@ function RoomControl({ state, setState, screenSharing }) {
     <div className='roomControl'>
       <ThemeProvider theme={theme}>
         <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-          <div className="voiceConnected"><p>{state ? "Connected" : "Not connected"}</p> <p><SignalCellularAlt /></p></div>
+          <div className="voiceConnected"><p>{rtcConnectionState}</p> <p><SignalCellularAlt /></p></div>
         </Tooltip>
         <ButtonGroup variant='text' className='buttonGroup'>
           <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>

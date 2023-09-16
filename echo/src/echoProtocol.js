@@ -63,6 +63,7 @@ class EchoProtocol {
 
     this.socket.io.on("close", () => {
       console.log("Websocket connection closed");
+      this.rtcConnectionStateChange({ state: "disconnected" });
       this.stopTransmitting();
       this.stopReceiving();
     })
