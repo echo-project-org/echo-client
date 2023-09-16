@@ -418,11 +418,6 @@ class EchoProtocol {
     return this.cachedUsers.getInRoom(roomId);
   }
 
-  checkUserCache(id) {
-    if (this.cachedUsers.get(id)) return Promise.resolve(this.cachedUsers.get(id));
-    else return this.needUserCacheUpdate({ id, call: { function: "checkUserCache", args: { id } } });
-  }
-
   isAudioFullyConnected() {
     return this.at.isFullyConnected();
   }
@@ -448,23 +443,28 @@ class EchoProtocol {
     });
     const uniqueUserIds = [...new Set(userIds)];
     if (uniqueUserIds.length === 0) return this.messagesCacheUpdated([]);
-    uniqueUserIds.forEach(async (userId) => {
-      const user = this.checkUserCache(userId)
-      if (typeof roomId !== "string") roomId = roomId.toString();
-      const room = this.cachedRooms.get(roomId);
-      if (room) {
-        messages.forEach((message) => {
-          if (typeof message.userId !== "string") message.userId = message.userId.toString();
-          if (message.userId === user.id) {
-            message.img = user.img;
-            message.name = user.name;
-          }
-          room.chat.add(message)
-        });
-        this.messagesCacheUpdated(room.chat.get());
+    uniqueUserIds.forEach((userId) => {
+      const user = this.cachedUsers.get(userId);
+      if (user) {
+        if (typeof roomId !== "string") roomId = roomId.toString();
+        const room = this.cachedRooms.get(roomId);
+        if (room) {
+          messages.forEach((message) => {
+            if (typeof message.userId !== "string") message.userId = message.userId.toString();
+            if (message.userId === user.id) {
+              message.img = user.img;
+              message.name = user.name;
+            }
+            room.chat.add(message)
+          });
+          this.messagesCacheUpdated(room.chat.get());
+        } else {
+          console.error("Room not found in cache");
+          this.messagesCacheUpdated([]);
+        }
       } else {
-        console.error("Room not found in cache");
-        this.messagesCacheUpdated([]);
+        console.error("User not found in cache");
+        this.needUserCacheUpdate({ id: userId, call: { function: "setMessagesCache", args: { messages, roomId } } });
       }
     });
   }
