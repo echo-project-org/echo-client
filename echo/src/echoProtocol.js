@@ -133,7 +133,9 @@ class EchoProtocol {
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
         room.chat.updateUser(data);
+        if (room.id === this.cachedUsers.get(localStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
+      this.usersCacheUpdated(this.cachedUsers.get(id));
     });
   }
 
@@ -411,16 +413,22 @@ class EchoProtocol {
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
 
-  updateUser({ id, field, value }) {
-    const user = this.cachedUsers.get(id);
-    if (user) {
-      this.cachedUsers.update(id, field, value);
+  updatePersonalSettings({ id, field, value }) {
+    if (this.cachedUsers.get(id)) {
       this.socket.emit("client.updateUser", { id, field, value });
+      this.updateUser({ id, field, value });
+    }
+  }
+
+
+  updateUser({ id, field, value }) {
+    if (this.cachedUsers.get(id)) {
+      this.cachedUsers.update(id, field, value);
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
         console.log("updating chat of", room.id)
         room.chat.updateUser({ id, field, value });
-        if (room.id === user.currentRoom) this.messagesCacheUpdated(room.chat.get());
+        if (room.id === this.cachedUsers.get(localStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     }
