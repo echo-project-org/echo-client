@@ -86,7 +86,7 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userLeftChannel", (data) => {
-      console.log("User", data.id, "left your channel, stopping listening audio");
+      console.log("User", data.id, "left your channel, stopping listening audio", data);
       if (data.isConnected) this.stopReceiving(data.id);
       this.userLeftChannel(data);
     });

@@ -164,6 +164,16 @@ class Rooms {
                         user.userJoinedChannel(data);
                     }
                 })
+
+                //Notify the user about all other users
+                this.getUsersInRoom(roomId).forEach((user, id) => {
+                    if (id !== user.id) {
+                        console.log("Notifing", id, "about", user.id)
+                        const userRoom = user.getCurrentRoom();
+                        data.isConnected = userRoom === roomId;
+                        user.userJoinedChannel(data);
+                    }
+                });
             }
         } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + roomId + ", user is not connected to socket"));
     }
