@@ -245,7 +245,6 @@ class EchoProtocol {
     const audioState = this.getAudioState();
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
-    this.startReceivingVideo(1);
   }
 
   sendAudioState(id, data) {
