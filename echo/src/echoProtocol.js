@@ -120,6 +120,16 @@ class EchoProtocol {
     this.socket.on("server.receiveChatMessage", (data) => {
       this.receiveChatMessage(data);
     });
+
+    this.socket.on("server.endConnection", (data) => {
+      console.log("User", data.id, "closed the connection");
+      this.endConnection(data);
+    });
+  }
+
+  endConnection(data) {
+    // this.cachedUsers.delete(data.id);
+    this.userLeftChannel(data);
   }
 
   receiveChatMessage(data) {

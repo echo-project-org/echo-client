@@ -25,6 +25,7 @@ class Users {
     }
 
     add(data, self = false) {
+        if (!data) return console.error("Data is required to add a user to the cache");
         // data type check
         data = this.typeCheck(data);
         console.log("[CACHE] Added user in cache", data)
@@ -39,6 +40,8 @@ class Users {
         if (!data.id) return console.error("ID is required to add a user to the cache");
         if (!data.name) return console.error("Name is required to add a user to the cache");
         if (!data.online) return console.error("Online is required to add a user to the cache");
+
+        if (this.users[data.id]) return console.warn(`[CACHE] User ${data.id} already exists in cache`);
         
         this.users[data.id] = {
             id: data.id,

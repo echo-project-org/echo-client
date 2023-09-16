@@ -48,6 +48,11 @@ class User {
         if (this[event]) this[event](data);
     }
 
+    // tell other clients that a user has closed the connection
+    endConnection(data) {
+        this.socket.emit("server.endConnection", data);
+    }
+
     /**
      * Section dedicated to send socket messages to non-sender clients
      */

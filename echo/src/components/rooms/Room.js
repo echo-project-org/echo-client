@@ -17,7 +17,7 @@ function Room({ active, data }) {
 
     ep.on("userLeftChannel", "Room.userLeftChannel", (data) => {
       // console.log("Room.userLeftChannel", data);
-      ep.updateUser({ id: data.id, field: "currentRoom", value: "0" })
+      ep.updateUser({ id: data.id, field: "currentRoom", value: "0" });
       updateUsersInRoom();
     });
 
