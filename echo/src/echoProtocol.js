@@ -17,7 +17,6 @@ class EchoProtocol {
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
-    this.roomClickedTimeout = false;
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }
@@ -129,7 +128,7 @@ class EchoProtocol {
           const newMessage = room.chat.add(data);
           this.receiveChatMessage(newMessage);
         }
-        else console.error("User not found in cache");
+        else this.needUserCacheUpdate(data.id);
       } else console.error("Room not found in cache");
     });
   }
@@ -389,7 +388,7 @@ class EchoProtocol {
       this.cachedUsers.update(id, field, value);
       this.usersCacheUpdated(this.cachedUsers.get(id));
     }
-    else console.error("User not found in cache");
+    else this.needUserCacheUpdate(id);
 
   }
 
@@ -403,7 +402,7 @@ class EchoProtocol {
 
   checkUserCache(id) {
     if (this.cachedUsers.get(id)) return Promise.resolve(this.cachedUsers.get(id));
-    else return Promise.reject("User not found in cache");
+    else return this.needUserCacheUpdate(id);
   }
 
   isAudioFullyConnected() {
@@ -469,15 +468,7 @@ Emitter.mixin(EchoProtocol);
 
 
 EchoProtocol.prototype.roomClicked = function (data) {
-  if (!this.roomClickedTimeout) {
-    this.emit("roomClicked", data);
-    this.roomClickedTimeout = true;
-    setTimeout(function () {
-      this.roomClickedTimeout = false;
-    }, 2000);
-  } else {
-    console.warn("Room clicked too fast, ignoring event");
-  }
+  this.emit("roomClicked", data);
 }
 
 EchoProtocol.prototype.usersCacheUpdated = function (data) {
@@ -499,8 +490,13 @@ EchoProtocol.prototype.userLeftChannel = function (data) {
 EchoProtocol.prototype.receiveChatMessage = function (data) {
   this.emit("receiveChatMessage", data);
 }
+
 EchoProtocol.prototype.messagesCacheUpdated = function (data) {
   this.emit("messagesCacheUpdated", data);
+}
+
+EchoProtocol.prototype.needUserCacheUpdate = function (data) {
+  this.emit("needUserCacheUpdate", data);
 }
 
 export default EchoProtocol;

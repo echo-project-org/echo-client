@@ -34,13 +34,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
                   res.json.forEach((user) => {
-                    ep.addUser({
-                      id: user.id,
-                      name: user.name,
-                      img: user.img,
-                      online: user.online,
-                      roomId: room.id
-                    });
+                    ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id });
                   });
                 }
               })
@@ -89,8 +83,23 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         });
     });
 
+    ep.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (id) => {
+      console.log("needUserCacheUpdate in Rooms", id)
+      api.call("users/" + id, "GET")
+        .then((res) => {
+          if (res.ok) {
+            const data = res.json;
+            ep.addUser({ id: data.id, name: data.name, img: data.img, online: data.online, roomId: data.roomId });
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
+
     return () => {
       ep.releaseGroup("Rooms.roomClicked");
+      ep.releaseGroup("Rooms.needUserCacheUpdate");
     }
   }, []);
 
