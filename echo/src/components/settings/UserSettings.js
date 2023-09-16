@@ -1,7 +1,8 @@
-import React from 'react'
+import "../../css/settings.css";
+
 import { useState, useEffect } from 'react'
-import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Divider } from '@mui/material'
-import { CameraAlt, Loop } from '@mui/icons-material';
+import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Divider } from '@mui/material'
+import { CameraAlt, Circle, DoNotDisturbOn, Loop, ModeNight } from '@mui/icons-material';
 
 import { ep } from "../../index";
 
@@ -79,6 +80,7 @@ const StyledTextField = styled(TextField)({
 function UserSettings() {
   const [hover, setHover] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [statusHover, setStatusHover] = useState(false);
 
   const onAvatarHover = (e) => {
     if (e.type === "mouseleave") {
@@ -127,6 +129,78 @@ function UserSettings() {
     fileInput.click();
   }
 
+  const computeOnline = () => {
+    const online = localStorage.getItem("online");
+    switch (online) {
+      case "0":
+        return (
+          <Container className="statusText">
+            <Circle style={{ color: "#f5e8da" }} />
+            <p>Offline</p>
+          </Container>
+        );
+      case "1":
+        return (
+          <Container className="statusText">
+            <Circle style={{ color: "#44b700" }} />
+            <p>Online</p>
+          </Container>
+        );
+      case "2":
+        return (
+          <Container className="statusText">
+            <ModeNight style={{ color: "#ff8800" }} />
+            <p>Away</p>
+          </Container>
+        );
+      case "3":
+        return (
+          <Container className="statusText">
+            <DoNotDisturbOn style={{ color: "#fd4949" }} />
+            <p>Do not disturb</p>
+          </Container>
+        );
+      case "4":
+        return (
+          <Container className="statusText">
+            <Circle style={{ color: "#f5e8da" }} />
+            <p>Invisible</p>
+          </Container>
+        );
+      default:
+        return (
+          <Container className="statusText">
+            <Circle style={{ color: "#f5e8da" }} />
+            <p>Offline</p>
+          </Container>
+        );
+    }
+  }
+  
+  const computeSelectList = () => {
+    if (statusHover)
+      return (
+        <Grid container className="selectContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
+          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+            <Circle style={{ color: "#44b700" }} />
+            Online
+          </Grid>
+          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+            <ModeNight style={{ color: "#ff8800" }} />
+            Away
+          </Grid>
+          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+            <DoNotDisturbOn style={{ color: "#fd4949" }} />
+            Do not disturb
+          </Grid>
+          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+            <Circle style={{ color: "#f5e8da" }} />
+            Invisible
+          </Grid>
+        </Grid>
+      )
+  }
+
   const computeDiv = () => {
     if (hover) {
       return (
@@ -171,6 +245,37 @@ function UserSettings() {
     return null;
   }
 
+  const statusSelectOn = () => {
+    setStatusHover(true);
+  }
+  const statusSelectOff = () => {
+    setStatusHover(false);
+  }
+  const changeStatus = (e) => {
+    const status = e.target.innerText;
+    let statusId = 0;
+    switch (status) {
+      case "Online":
+        statusId = 1;
+        break;
+      case "Away":
+        statusId = 2;
+        break;
+      case "Do not disturb":
+        statusId = 3;
+        break;
+      case "Invisible":
+        statusId = 4;
+        break;
+      default:
+        statusId = 0;
+        break;
+    }
+    localStorage.setItem("online", statusId);
+    ep.updatePersonalSettings({ id: localStorage.getItem("id"), field: "online", value: statusId });
+    setStatusHover(false);
+  }
+
   return (
     <div className="settingsModalSubDiv">
       <StyledGridContainer container direction={"row"} alignItems={"center"}>
@@ -179,11 +284,19 @@ function UserSettings() {
             overlap="circular"
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             variant="dot"
+            invisible
           >
             {computeDiv()}
             <StyledAvatar src={localStorage.getItem("userImage")} onMouseEnter={onAvatarHover} />
           </StyledBadge>
-          <Divider style={{ background: '#f5e8da' }} orientation="vertical" variant="middle" flexItem />
+          <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
+            <div className="statusContainer">
+              {computeOnline()}
+            </div>
+            <div className="selectContainer">
+              {computeSelectList()}
+            </div>
+          </div>
         </Grid>
         <Grid item lg={10} md={9} xs={6}>
           <StyledGridContainer container direction={"row"} spacing={3}>
