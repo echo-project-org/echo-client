@@ -188,8 +188,7 @@ class EchoProtocol {
 
   setMicrophoneDevice(deviceId) {
     if (this.at) {
-      this.at.close();
-      this.at = new audioRtcTransmitter(deviceId);
+      this.at.setInputDevice(deviceId);
     }
   }
 
@@ -473,6 +472,10 @@ EchoProtocol.prototype.roomClicked = function (data) {
 
 EchoProtocol.prototype.usersCacheUpdated = function (data) {
   this.emit("usersCacheUpdated", data);
+}
+
+EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
+  this.emit("rtcConnectionStateChange", data);
 }
 
 EchoProtocol.prototype.updatedAudioState = function (data) {

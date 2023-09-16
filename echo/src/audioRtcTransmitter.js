@@ -53,7 +53,7 @@ class audioRtcTransmitter {
    */
   async init() {
     //Create stream
-    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints);
+    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints, err => {console.error(err); return;});
     //Setup the volume stuff
     const context = new AudioContext();
     const source = context.createMediaStreamSource(this.stream);
@@ -85,6 +85,20 @@ class audioRtcTransmitter {
     if (this.gainNode) {
       this.gainNode.gain.value = volume;
     }
+  }
+
+  async setInputDevice(deviceId) {
+    this.deviceId = deviceId;
+    this.constraints.audio.deviceId = deviceId;
+
+    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => {console.error(err); return;});
+    this.peer.getSenders().forEach((sender) => {
+      if (sender.track.kind === 'audio') {
+        sender.replaceTrack(newStream.getAudioTracks()[0]);
+      }
+    });
+    
+    this.stream = newStream;
   }
 
   setOutputDevice(deviceId) {
@@ -226,6 +240,9 @@ class audioRtcTransmitter {
 
     peer.ontrack = (e) => { this.handleTrackEvent(e) };
     peer.onconnectionstatechange = () => {
+      ep.rtcConnectionStateChange({
+        state: peer.connectionState,
+      });
       if (peer.connectionState === 'failed') {
         peer.restartIce();
       }
