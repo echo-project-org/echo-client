@@ -412,12 +412,15 @@ class EchoProtocol {
   }
 
   updateUser({ id, field, value }) {
-    if (this.cachedUsers.get(id)) {
+    const user = this.cachedUsers.get(id);
+    if (user) {
       this.cachedUsers.update(id, field, value);
       this.socket.emit("client.updateUser", { id, field, value });
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
+        console.log("updating chat of", room.id)
         room.chat.updateUser({ id, field, value });
+        if (room.id === user.currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     }

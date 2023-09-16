@@ -27,10 +27,12 @@ class Chat {
     }
 
     updateUser(data) {
+        console.log("[CACHE] Updating user of room chat", data);
         this.messages.forEach((message) => {
-            if (data.name) message.name = data.name;
-            if (data.img) message.img = data.img;
-            if (data.userImage) message.img = data.userImage;
+            if (message.userId === data.id) {
+                if (data.field === "userImage") message.img = data.value;
+                if (data.field === "name") message.name = data.value;
+            }
         });
     }
 
