@@ -118,7 +118,7 @@ class EchoProtocol {
     });
 
     this.socket.on("server.receiveChatMessage", (data) => {
-      this.receiveChatMessage(data);
+      this.reciveChatMessageFromSocket(data);
     });
 
     this.socket.on("server.endConnection", (data) => {
@@ -132,7 +132,7 @@ class EchoProtocol {
     this.userLeftChannel(data);
   }
 
-  receiveChatMessage(data) {
+  reciveChatMessageFromSocket(data) {
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
     if (typeof data.userId !== "string") data.userId = data.id.toString();
     if (typeof data.id !== "string") data.id = data.id.toString();
@@ -147,7 +147,7 @@ class EchoProtocol {
         const newMessage = room.chat.add(data);
         this.receiveChatMessage(newMessage);
       }
-      else this.needUserCacheUpdate({ id: data.id, call: { function: "receiveChatMessage", args: data } });
+      else this.needUserCacheUpdate({ id: data.id, call: { function: "reciveChatMessageFromSocket", args: data } });
     } else console.error("Room not found in cache");
   }
 
