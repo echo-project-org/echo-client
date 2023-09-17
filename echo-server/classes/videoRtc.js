@@ -22,8 +22,10 @@ class VideoRTC {
         const offer = await peer.createOffer();
         let parsed = sdpTransform.parse(offer.sdp);
         //edit the sdp to make the video look better
-        parsed.media[0].forEach((media) => {
-            media.fmtp[0].config = goodH264Settings;
+        parsed.media.forEach((media) => {
+            if (media.type === "video") {
+                //media.fmtp[0].config = goodH264Settings;
+            }
         });
         offer.sdp = sdpTransform.write(parsed);
         await peer.setLocalDescription(offer);
@@ -49,7 +51,7 @@ class VideoRTC {
                 console.log("Got video track from user " + id);
                 this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [], outStreams: [] });
                 //Notify users that the stream has started
-                user.notifyUsersAboutBroadcast({id, streamId: e.streams[0].id});
+                user.notifyUsersAboutBroadcast({ id, streamId: e.streams[0].id });
             };
 
             peer.onicecandidate = (e) => {
@@ -67,9 +69,11 @@ class VideoRTC {
                             let parsed = sdpTransform.parse(answer.sdp);
                             //edit the sdp to make the video look better
                             parsed.media.forEach((media) => {
-                                media.fmtp[0].config = goodH264Settings;
+                                if(media.type === "video"){
+                                    //media.fmtp[0].config = goodH264Settings;
+                                }
                             });
-                            
+
                             answer.sdp = sdpTransform.write(parsed);
 
                             peer.setLocalDescription(answer)
@@ -104,7 +108,7 @@ class VideoRTC {
             });
 
             stream.stream = newStream;
-        }); 
+        });
     }
 
     subscribeVideo(data, user) {
@@ -156,13 +160,13 @@ class VideoRTC {
             let vsid = this.peers.get(receiverId).videoSubscriptionsIds.filter(id => id !== senderId);
             let peer = this.peers.get(receiverId).peer;
             this.peers.get(receiverId).outStreams.forEach((stream) => {
-                if(stream.id === senderId){
+                if (stream.id === senderId) {
                     stream.senders.forEach((sender) => {
                         peer.removeTrack(sender);
                     });
 
                     stream = null;
-                }   
+                }
             });
 
             this.peers.get(receiverId).outStreams = this.peers.get(receiverId).outStreams.filter(stream => stream.id !== senderId);

@@ -189,10 +189,13 @@ class videoRtc {
         const offer = await peer.createOffer();
         let parsed = sdpTransform.parse(offer.sdp);
         //edit sdp to make video look better
-        parsed.media[0].forEach((media) => {
-            media.fmtp[0].config = goodH264Settings;
+        parsed.media.forEach((media) => {
+            if(media.type === "video"){
+                //media.fmtp[0].config = goodH264Settings;
+            }
         });
         offer.sdp = sdpTransform.write(parsed);
+        console.log(parsed)
 
         await peer.setLocalDescription(offer);
 
