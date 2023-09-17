@@ -26,7 +26,7 @@ class User {
         this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
         this.socket.on("client.unsubscribeAudio", (data) => this.unsubscribeAudio(data));
         this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
-        this.socket.on("client.client.streamChanged", (data) => this.handleStreamChanged(data));
+        this.socket.on("client.streamChanged", (data) => this.handleStreamChanged(data));
 
         // videoRtc stuff
         this.socket.on("client.negotiateVideoRtc", (data, cb) => this.negotiateVideoRtc(data, cb));
@@ -34,6 +34,7 @@ class User {
         this.socket.on("client.stopVideoBroadcast", (data) => this.stopVideoBroadcast(data));
         this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
         this.socket.on("client.videoIceCandidate", (data) => this.setVideoIceCandidate(data));
+        this.socket.on("client.videoStreamChanged", (data) => this.handleVideoStreamChanged(data));
     }
 
     registerEvent(event, cb) {
@@ -223,6 +224,12 @@ class User {
                 .catch((err) => {
                     console.error("broadcastVideo error", err);
                 });
+        }
+    }
+
+    handleVideoStreamChanged(data) {
+        if (this.videoRtc) {
+            this.videoRtc.handleStreamChanged(data);
         }
     }
 
