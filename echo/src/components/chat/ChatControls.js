@@ -90,6 +90,7 @@ function ChatControls({ onEmojiOn, roomId }) {
       <ThemeProvider theme={theme}>
         <div className="chatInputContainer">
           <StyledTextField
+            
             id="messageBox"
             autoFocus
             onKeyDown={(e) => {
@@ -105,7 +106,11 @@ function ChatControls({ onEmojiOn, roomId }) {
             placeholder='Send a message...'
             InputProps={{
               endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />,
-              style: { color: "#f5e8da" }
+              style: { color: "#f5e8da" },
+              maxLength: 3000,
+            }}
+            onInput = {(e) =>{
+              e.target.value = e.target.value.slice(0, 3000)
             }}
           />
         </div>

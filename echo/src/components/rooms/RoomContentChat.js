@@ -16,7 +16,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     display: "inline-flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    maxWidth: "calc(100vw - 20rem)"
+    maxWidth: "calc(100vw - 20rem)",
+    maxHeight: "calc(100vh - 6rem)"
   },
   [theme.breakpoints.up('lg')]: {
     margin: "0 0 0 1rem",
@@ -27,7 +28,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     display: "inline-flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    maxWidth: "calc(100vw - 20rem)"
+    maxWidth: "calc(100vw - 20rem)",
+    maxHeight: "calc(100vh - 6rem)"
   },
   [theme.breakpoints.up('xl')]: {
     margin: "0 0 0 1rem",
@@ -38,7 +40,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     display: "inline-flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    maxWidth: "calc(100vw - 20rem)"
+    maxWidth: "calc(100vw - 20rem)",
+    maxHeight: "calc(100vh - 6rem)"
   },
 }));
 

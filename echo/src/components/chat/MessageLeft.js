@@ -27,7 +27,9 @@ function MessageLeft({ message }) {
             </Typography>
           </Grid>
           <Grid item>
-            <div className="messageText" dangerouslySetInnerHTML={{ __html: sanitize(message.message) }}></div>
+            <div className="messageText">
+              {message.message}
+            </div>
           </Grid>
           <Grid item>
             <div className="messageDate">

@@ -13,6 +13,7 @@ class Users {
         if (data.name && typeof data.name !== "string") data.name = String(data.name);
         if (data.online && typeof data.online !== "string") data.online = String(data.online);
         if (data.currentRoom && typeof data.currentRoom !== "string") data.currentRoom = String(data.currentRoom);
+        if (!data.userId && data.id) data.userId = data.id;
         if (data.muted && typeof data.muted !== "boolean") {
             if (data.muted === "true") data.muted = true;
             else if (data.muted === "false") data.muted = false;
