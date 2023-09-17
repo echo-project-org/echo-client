@@ -60,6 +60,14 @@ class User {
         this.socket.emit("server.endConnection", data);
     }
 
+    notifyUsersAboutBroadcast(data) {
+        this.triggerEvent("videoBroadcastStarted", data)
+    }
+
+    videoBroadcastStarted(data) {
+        this.socket.emit("server.videoBroadcastStarted", data);
+    }
+
     /**
      * Section dedicated to send socket messages to non-sender clients
      */
@@ -67,7 +75,7 @@ class User {
     // called when remote user join the current room
     userJoinedChannel(data) {
         // if (this.currentRoom !== 0) {
-            this.socket.emit("server.userJoinedChannel", data)
+        this.socket.emit("server.userJoinedChannel", data)
         // }
     }
 
@@ -114,7 +122,7 @@ class User {
 
     userLeftCurrentChannel(data) {
         // if (this.currentRoom !== 0) {
-            this.socket.emit("server.userLeftChannel", data)
+        this.socket.emit("server.userLeftChannel", data)
         // }
     }
 
