@@ -137,6 +137,11 @@ class EchoProtocol {
       }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     });
+
+    this.socket.on("server.videoBroadcastStarted", (data) => {
+      console.log("User", data.id, "started broadcasting video", data.streamId);
+      //this.videoBroadcastStarted(data);
+    });
   }
 
   endConnection(data) {
