@@ -42,10 +42,10 @@ class VideoRTC {
             if (typeof id !== "string") id = String(id);
 
             const peer = new webrtc.RTCPeerConnection({ iceServers: this.iceServers });
-            this.peers.set(id, { peer, videoStream: null, videoSubscriptionsIds: [] });
+            this.peers.set(id, { peer, videoStream: null, videoSubscriptionsIds: [], outStreams: [] });
             peer.ontrack = (e) => {
                 console.log("Got video track from user " + id);
-                this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [] });
+                this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [], outStreams: [] });
             };
 
             peer.onicecandidate = (e) => {
@@ -77,6 +77,27 @@ class VideoRTC {
         });
     }
 
+    handleStreamChanged(data) {
+        let { id, streamId } = data;
+        if (!id) return console.error("NO-ID");
+        if (!streamId) return console.error("NO-STREAM-ID");
+        if (typeof id !== "string") id = String(id);
+        if (typeof streamId !== "string") streamId = String(streamId);
+        if (!this.peers.has(id)) return console.error("NO-CONNECTION");
+        //get the new stream
+        let newStream = this.peers.get(id).videoStream.clone();
+
+        this.peers.forEach((peer, _) => {
+            peer.outStreams.forEach(stream => {
+                if (stream.id === id) {
+                    stream.senders.forEach(sender => {
+                        sender.replaceTrack(newStream.getTracks()[0]);
+                    });
+                }
+            });
+        }); 
+    }
+
     subscribeVideo(data, user) {
         return new Promise((resolve, reject) => {
             let { senderId, receiverId } = data;
@@ -95,10 +116,18 @@ class VideoRTC {
             if (vsid.includes(senderId)) return reject("ALREADY-SUBSCRIBED");
             console.log("User " + receiverId + " subscribed to " + senderId + "'s video");
             //if not subscribed, subscribe
+            let senders = [];
             stream.getTracks().forEach((track) => {
-                outPeer.addTrack(track, stream);
+                let sender = outPeer.addTrack(track, stream);
+                senders.push(sender);
             });
             vsid.push(senderId);
+
+            this.peers.get(receiverId).outStreams.push({
+                id: senderId,
+                stream,
+                senders
+            });
 
             resolve(stream.id);
         });
@@ -115,7 +144,19 @@ class VideoRTC {
             if (!this.peers.has(senderId)) return reject("SENDER-NOT-FOUND");
             if (!this.peers.has(receiverId)) return reject("RECEIVER-NOT-FOUND");
 
-            let vsid = this.peers.get(receiverId).videoSubscriptionsIds;
+            let vsid = this.peers.get(receiverId).videoSubscriptionsIds.filter(id => id !== senderId);
+            let peer = this.peers.get(receiverId).peer;
+            this.peers.get(receiverId).outStreams.forEach((stream) => {
+                if(stream.id === senderId){
+                    stream.senders.forEach((sender) => {
+                        peer.removeTrack(sender);
+                    });
+
+                    stream = null;
+                }   
+            });
+
+            this.peers.get(receiverId).outStreams = this.peers.get(receiverId).outStreams.filter(stream => stream.id !== senderId);
 
             if (!vsid.includes(senderId)) return reject("NOT-SUBSCRIBED");
             console.log("User " + receiverId + " unsubscribed from " + senderId + "'s video");
