@@ -95,6 +95,8 @@ class VideoRTC {
                     });
                 }
             });
+
+            stream.stream = newStream;
         }); 
     }
 

@@ -109,6 +109,8 @@ class ServerRTC {
                         sender.replaceTrack(newStream.getAudioTracks()[0]);
                     });
                 }
+                
+                stream.stream = newStream;
             });
         }); 
     }
