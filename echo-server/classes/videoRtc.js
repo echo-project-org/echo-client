@@ -1,7 +1,7 @@
 const webrtc = require("wrtc");
 const sdpTransform = require("sdp-transform");
 
-const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
+const goodH264Settings = "x-google-max-bitrate=20000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
 
 class VideoRTC {
     constructor() {
@@ -22,7 +22,9 @@ class VideoRTC {
         const offer = await peer.createOffer();
         let parsed = sdpTransform.parse(offer.sdp);
         //edit the sdp to make the video look better
-        parsed.media[0].fmtp[0].config = goodH264Settings;
+        parsed.media[0].forEach((media) => {
+            media.fmtp[0].config = goodH264Settings;
+        });
         offer.sdp = sdpTransform.write(parsed);
         await peer.setLocalDescription(offer);
 
@@ -64,7 +66,10 @@ class VideoRTC {
                         .then((answer) => {
                             let parsed = sdpTransform.parse(answer.sdp);
                             //edit the sdp to make the video look better
-                            parsed.media[0].fmtp[0].config = goodH264Settings;
+                            parsed.media.forEach((media) => {
+                                media.fmtp[0].config = goodH264Settings;
+                            });
+                            
                             answer.sdp = sdpTransform.write(parsed);
 
                             peer.setLocalDescription(answer)

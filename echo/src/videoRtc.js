@@ -2,7 +2,7 @@ import { ep } from "./index";
 
 const { ipcRenderer } = window.require('electron');
 const sdpTransform = require('sdp-transform');
-const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
+const goodH264Settings = "x-google-max-bitrate=20000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
 
 const ICE_SERVERS = [{
     username: 'echo',
@@ -93,7 +93,7 @@ class videoRtc {
     }
 
     getVideo(remoteId) {
-        if(this.streamIds.has(remoteId)) {
+        if (this.streamIds.has(remoteId)) {
             return this.inputstreams.filter((stream) => {
                 return stream.stream.id === this.streamIds.get(remoteId);
             })[0].stream;
@@ -149,7 +149,7 @@ class videoRtc {
         })
     }
 
-    getScreenShareStream(id){
+    getScreenShareStream(id) {
         return this.stream;
     }
 
@@ -189,7 +189,9 @@ class videoRtc {
         const offer = await peer.createOffer();
         let parsed = sdpTransform.parse(offer.sdp);
         //edit sdp to make video look better
-        parsed.media[0].fmtp[0].config = goodH264Settings;
+        parsed.media[0].forEach((media) => {
+            media.fmtp[0].config = goodH264Settings;
+        });
         offer.sdp = sdpTransform.write(parsed);
 
         await peer.setLocalDescription(offer);
