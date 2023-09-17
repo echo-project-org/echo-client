@@ -290,6 +290,12 @@ class EchoProtocol {
     }
   }
 
+  videoStreamChanged(data) {
+    if (this.socket) {
+      this.socket.emit("client.videoStreamChanged", data);
+    }
+  }
+
   subscribeAudio(data, cb) {
     if (this.socket) {
       this.socket.emit("client.subscribeAudio", data, (description) => {
