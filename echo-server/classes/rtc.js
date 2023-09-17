@@ -102,7 +102,7 @@ class ServerRTC {
         //get the new stream
         let newStream = this.peers.get(id).audioStream.clone();
 
-        this.peers.forEach((peer, userId) => {
+        this.peers.forEach((peer, _) => {
             peer.outStreams.forEach(stream => {
                 if (stream.id === id) {
                     stream.senders.forEach(sender => {
@@ -172,7 +172,7 @@ class ServerRTC {
             if (!this.peers.has(senderId)) return reject("NO-SENDER-CONNECTION");
             if (!this.peers.has(receiverId)) return reject("NO-RECEIVER-CONNECTION");
 
-            //Remove aside from the audioSubscriptionsIds
+            //Remove asids from the audioSubscriptionsIds
             this.peers.get(receiverId).audioSubscriptionsIds = this.peers.get(receiverId).audioSubscriptionsIds.filter(id => id !== senderId);
 
             //Remove stop tracks from the peer
