@@ -169,7 +169,7 @@ class EchoProtocol {
     } else console.error("Room not found in cache");
   }
 
-  async startTransmitting(id = 5) {
+  async startTransmitting(id) {
     if (this.at) {
       this.stopTransmitting();
     }
@@ -246,8 +246,27 @@ class EchoProtocol {
     return audioRtcTransmitter.getInputAudioDevices();
   }
 
+  startAudioInterval() {
+    if (this.audioInterval) {
+      clearInterval(this.audioInterval);
+      this.audioInterval = null;
+    }
+    this.audioInterval = setInterval(() => {
+      if (this.at) {
+        const audio = this.at.getAudioStats();
+        audio.id = localStorage.getItem("id");
+        console.log("audio stats", audio);
+        this.audioStatsUpdate(audio);
+      } else {
+        clearInterval(this.audioInterval);
+        this.audioInterval = null;
+      }
+    }, 100);
+  }
+
   joinRoom(id, roomId) {
     const audioState = this.getAudioState();
+    this.startAudioInterval();
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
   }
@@ -575,6 +594,10 @@ EchoProtocol.prototype.messagesCacheUpdated = function (data) {
 
 EchoProtocol.prototype.needUserCacheUpdate = function (data) {
   this.emit("needUserCacheUpdate", data);
+}
+
+EchoProtocol.prototype.audioStatsUpdate = function (data) {
+  this.emit("audioStatsUpdate", data);
 }
 
 export default EchoProtocol;

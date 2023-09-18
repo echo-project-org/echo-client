@@ -98,6 +98,7 @@ function OnlineUserIcon({ user }) {
   const [userVolume, setUserVolulme] = useState(100);
   const [deaf, setDeaf] = useState(false);
   const [muted, setMuted] = useState(false);
+  const [talking, setTalking] = useState(false);
 
   const open = Boolean(anchorEl);
 
@@ -111,13 +112,27 @@ function OnlineUserIcon({ user }) {
       }
     });
 
-    // const audioState = ep.getAudioState(id);
+    const talkingThreashold = 0.05;
+
+    ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
+      // console.log(">>> [OnlineUserIcon] audioStatsUpdate", audioData)
+      if (audioData.id === user.id) {
+        console.log(">>> [OnlineUserIcon] audioStatsUpdate 2", audioData)
+        if (audioData.inputLevel >= talkingThreashold) {
+          console.log(">>> [OnlineUserIcon] audioStatsUpdate", audioData)
+          setTalking(true);
+        } else {
+          setTalking(false);
+        }
+      }
+    });
+
     setDeaf(user.deaf);
     setMuted(user.muted);
 
     return () => {
       ep.releaseGroup('OnlineUserIcon.updatedAudioState');
-      // ep.releaseGroup('OnlineUserIcon.userJoinedChannel');
+      ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
     };
   }, []);
 
@@ -146,7 +161,7 @@ function OnlineUserIcon({ user }) {
         aria-expanded={ open ? 'true' : undefined }
       >
         <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} showZero={true} invisible={true} color={"success"}>
-          <Avatar alt={user.name} src={user.userImage} sx={{height: '1.25rem', width:'1.25rem'}}/>
+          <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{height: '1.8rem', width:'1.8rem'}}/>
         </Badge>
         <p className='onlineUserNick'>{user.name}</p>
         <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>

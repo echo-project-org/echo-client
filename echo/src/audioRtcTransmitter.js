@@ -31,6 +31,10 @@ class audioRtcTransmitter {
     this.context = null;
     this.inputStreams = [];
     this.streamIds = new Map();
+    this.statsInterval = null;
+
+    this.inputLevel = 0;
+    this.outputLevel = 0;
 
     //Audio only constraints
     this.constraints = {
@@ -70,6 +74,8 @@ class audioRtcTransmitter {
     destination.stream.getTracks().forEach(track => this.peer.addTrack(track, destination.stream));
     this.isTransmitting = true;
     this.subscribedUsers = 0;
+    // start stats interval
+    this.startStatsInterval();
   }
 
   /**
@@ -264,6 +270,36 @@ class audioRtcTransmitter {
     return peer;
   }
 
+  getAudioStats() {
+    return {
+      inputLevel: this.inputLevel,
+      outputLevel: this.outputLevel,
+    }
+  }
+
+  startStatsInterval() {
+    this.statsInterval = setInterval(() => {
+      if (this.peer) {
+        this.peer.getStats().then((stats) => {
+          stats.forEach((report) => {
+            // get audioOutputLevel
+            // console.log(report)
+            // check inbout audio level (from remote user)
+            if (report.type === 'outbound-rtp' && report.mediaType === 'audio') {
+              // console.log("Audio output level", report.audioOutputLevel);
+              this.outputLevel = report.audioOutputLevel;
+            }
+            // check outbound level (from local user)
+            if (report.type === 'media-source' && report.kind === 'audio') {
+              // console.log("Audio input level", report.audioLevel);
+              this.inputLevel = report.audioLevel;
+            }
+          });
+        });
+      }
+    }, 100);
+  }
+
   async subscribeToAudio(id) {
     ep.subscribeAudio({
       senderId: id,
@@ -382,6 +418,11 @@ class audioRtcTransmitter {
       this.peer = null;
     } else {
       console.warn("Peer is null")
+    }
+
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval);
+      this.statsInterval = null;
     }
 
     ep.stopAudioBroadcast({ id: this.id });

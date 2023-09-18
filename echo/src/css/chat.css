@@ -82,3 +82,8 @@
   top: calc(50% - 1.5rem);
   left: calc(50% - 8rem);
 }
+
+.talking {
+  outline: 3px solid rgba(0, 128, 0, 0.8);
+  outline-offset: -3px;
+}
