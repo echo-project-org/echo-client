@@ -369,13 +369,13 @@ class audioRtcTransmitter {
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          if (!this.hasSpoken && this._rount(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
+          if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
             this.hasSpoken = true;
             ep.audioStatsUpdate({
               id: this._findUserId(stream),
               talking: this.hasSpoken,
             });
-          } else if (this.hasSpoken && this._rount(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
+          } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
             this.hasSpoken = false;
             ep.audioStatsUpdate({
               id: this._findUserId(stream),
