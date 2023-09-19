@@ -31,8 +31,8 @@ class audioRtcTransmitter {
     this.context = null;
     this.inputStreams = [];
     this.streamIds = new Map();
-    this.statsInterval = null;
 
+    this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
 
@@ -61,11 +61,20 @@ class audioRtcTransmitter {
     this.stream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
     //Setup the volume stuff
     const context = new AudioContext();
+
     const source = context.createMediaStreamSource(this.stream);
     const destination = context.createMediaStreamDestination();
+    this.outputChannelCount = source.channelCount;
+
     this.gainNode = context.createGain();
+    this.channelSplitter = context.createChannelSplitter(this.outputChannelCount);
+
     source.connect(this.gainNode);
+    this.gainNode.connect(this.channelSplitter);
     this.gainNode.connect(destination);
+
+    this.analyser = this.createAudioAnalyser(context, this.channelSplitter, this.outputChannelCount);
+
     //Set the volume
     this.setVolume(this.volume);
     //Create the peer
@@ -181,6 +190,38 @@ class audioRtcTransmitter {
     }
   }
 
+  createAudioAnalyser(context, splitter, channelCount) {
+    const analyser = {};
+    const freqs = {};
+    for (let i = 0; i < channelCount; i++) {
+      analyser[i] = context.createAnalyser();
+      analyser[i].minDecibels = -100;
+      analyser[i].maxDecibels = 0;
+      analyser[i].smoothingTimeConstant = 0.8;
+      analyser[i].fftSize = 32;
+      freqs[i] = new Uint8Array(analyser[i].frequencyBinCount);
+      splitter.connect(analyser[i], i, 0);
+    }
+
+    return {
+      analyser: analyser,
+      freqs: freqs,
+    }
+  }
+
+  calculateAudioLevels(analyser, freqs, channelCount) {
+    const audioLevels = [];
+    for (let channelI = 0; channelI < channelCount; channelI++) {
+      analyser[channelI].getByteFrequencyData(freqs[channelI]);
+      let value = 0;
+      for (let freqBinI = 0; freqBinI < analyser[channelI].frequencyBinCount; freqBinI++) {
+        value = Math.max(value, freqs[channelI][freqBinI]);
+      }
+      audioLevels[channelI] = value / 256;
+    }
+    return audioLevels;
+  }
+
   handleTrackEvent(e) {
     console.log("Got audio track event", e);
     let context = new AudioContext();
@@ -195,10 +236,12 @@ class audioRtcTransmitter {
     let personalGainNode = context.createGain();
     let gainNode = context.createGain();
     let muteNode = context.createGain();
+    let channelSplitter = context.createChannelSplitter(source.channelCount);
 
     source.connect(personalGainNode);
     personalGainNode.connect(gainNode);
     gainNode.connect(muteNode);
+    gainNode.connect(channelSplitter);
     muteNode.connect(destination);
 
     context.resume();
@@ -218,6 +261,7 @@ class audioRtcTransmitter {
       muteNode: muteNode,
       personalGainNode: personalGainNode,
       audioElement: audioElement,
+      analyser: this.createAudioAnalyser(context, channelSplitter, source.channelCount)
     });
   }
 
@@ -270,30 +314,15 @@ class audioRtcTransmitter {
     return peer;
   }
 
-  getAudioStats() {
-    return {
-      inputLevel: this.inputLevel,
-      outputLevel: this.outputLevel,
-    }
-  }
-
   startStatsInterval() {
     this.statsInterval = setInterval(() => {
-      if (this.peer) {
-        this.peer.getStats().then((stats) => {
-          stats.forEach((report) => {
-            // get audioOutputLevel
-            // console.log(report)
-            // check inbout audio level (from remote user)
-            if (report.type === 'outbound-rtp' && report.mediaType === 'audio') {
-              // console.log("Audio output level", report.audioOutputLevel);
-              this.outputLevel = report.audioOutputLevel;
-            }
-            // check outbound level (from local user)
-            if (report.type === 'media-source' && report.kind === 'audio') {
-              // console.log("Audio input level", report.audioLevel);
-              this.inputLevel = report.audioLevel;
-            }
+      if (this.inputStreams) {
+        this.inputStreams.forEach((stream) => {
+          let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
+          // let audioOutputLevel = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
+          ep.audioStatsUpdate({
+            id: "8",
+            audioLevel: audioInputLevels.reduce((a, b) => a + b, 0) / 2,
           });
         });
       }
@@ -354,7 +383,6 @@ class audioRtcTransmitter {
       });
       this.inputStreams = [];
       this.subscribedUsers = 0;
-
     }
   }
 

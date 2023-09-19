@@ -115,11 +115,9 @@ function OnlineUserIcon({ user }) {
     const talkingThreashold = 0.05;
 
     ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
-      // console.log(">>> [OnlineUserIcon] audioStatsUpdate", audioData)
       if (audioData.id === user.id) {
-        console.log(">>> [OnlineUserIcon] audioStatsUpdate 2", audioData)
+        // TODO: move this to backend to not overload events
         if (audioData.inputLevel >= talkingThreashold) {
-          console.log(">>> [OnlineUserIcon] audioStatsUpdate", audioData)
           setTalking(true);
         } else {
           setTalking(false);
