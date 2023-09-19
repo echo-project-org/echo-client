@@ -113,10 +113,7 @@ class audioRtcTransmitter {
       volume = 1.0;
     }
 
-    //cancel previous time change
-    this.voiceActivityDetectionVolumeNode.cancelAndHoldAtTime(0);
-    //ramp volume to new value in 1 second
-    this.voiceActivityDetectionVolumeNode.linearRampToValueAtTime(volume, 1);
+    this.voiceActivityDetectionVolumeNode.gain.value = volume;
   }
 
   async setInputDevice(deviceId) {
