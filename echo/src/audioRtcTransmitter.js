@@ -85,7 +85,7 @@ class audioRtcTransmitter {
     this.isTransmitting = true;
     this.subscribedUsers = 0;
     // start stats interval
-    this.startStatsInterval();
+    // this.startStatsInterval();
   }
 
   /**

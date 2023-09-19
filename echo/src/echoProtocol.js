@@ -248,6 +248,7 @@ class EchoProtocol {
 
   joinRoom(id, roomId) {
     const audioState = this.getAudioState();
+    this.at.startStatsInterval();
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
   }
