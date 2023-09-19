@@ -32,7 +32,7 @@ class audioRtcTransmitter {
     this.inputStreams = [];
     this.streamIds = new Map();
 
-    this.talkingThreashold = 0.05;
+    this.talkingThreashold = 0.1;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
@@ -315,22 +315,36 @@ class audioRtcTransmitter {
     return peer;
   }
 
+  _findUserId(stream) {
+    // find the userId from the streamId using streamIds
+    let userId = null;
+    for (const [key, value] of this.streamIds) {
+      if (value === stream.stream.id) {
+        userId = key;
+        break;
+      }
+    }
+    console.log("found userId", userId, "for streamId", stream.stream.id)
+    return userId;
+  }
+
   startStatsInterval() {
+    console.log(this.id, "starting stats interval")
     this.statsInterval = setInterval(() => {
+      // remote user's audio levels
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          // TODO: to smart toggle to not overload the events
           if (!this.hasSpoken && audioInputLevels.reduce((a, b) => a + b, 0) / 2 >= this.talkingThreashold) {
             this.hasSpoken = true;
             ep.audioStatsUpdate({
-              id: "8",
+              id: this._findUserId(stream),
               talking: this.hasSpoken,
             });
           } else if (this.hasSpoken && audioInputLevels.reduce((a, b) => a + b, 0) / 2 < this.talkingThreashold) {
             this.hasSpoken = false;
             ep.audioStatsUpdate({
-              id: "8",
+              id: this._findUserId(stream),
               talking: this.hasSpoken,
             });
           }
@@ -414,7 +428,6 @@ class audioRtcTransmitter {
       this.subscribedUsers = 0;
     }
   }
-
 
   /**
    * @function handleNegotiationNeededEvent - Handles the negotiation needed event
