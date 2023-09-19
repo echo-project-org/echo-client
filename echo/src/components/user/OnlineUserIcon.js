@@ -112,16 +112,10 @@ function OnlineUserIcon({ user }) {
       }
     });
 
-    const talkingThreashold = 0.05;
-
     ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
       if (audioData.id === user.id) {
-        // TODO: move this to backend to not overload events
-        if (audioData.inputLevel >= talkingThreashold) {
-          setTalking(true);
-        } else {
-          setTalking(false);
-        }
+        console.log("got talking", audioData.talking, "for", audioData.id)
+        setTalking(audioData.talking);
       }
     });
 

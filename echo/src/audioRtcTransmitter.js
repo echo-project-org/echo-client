@@ -32,6 +32,7 @@ class audioRtcTransmitter {
     this.inputStreams = [];
     this.streamIds = new Map();
 
+    this.talkingThreashold = 0.05;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
@@ -319,14 +320,23 @@ class audioRtcTransmitter {
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          // let audioOutputLevel = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
-          ep.audioStatsUpdate({
-            id: "8",
-            audioLevel: audioInputLevels.reduce((a, b) => a + b, 0) / 2,
-          });
+          // TODO: to smart toggle to not overload the events
+          if (audioInputLevels.reduce((a, b) => a + b, 0) / 2 >= this.talkingThreashold && !this.hasSpoken) {
+            this.hasSpoken = true;
+            ep.audioStatsUpdate({
+              id: "8",
+              talking: this.hasSpoken,
+            });
+          } else if (audioInputLevels.reduce((a, b) => a + b, 0) / 2 < this.talkingThreashold && this.hasSpoken) {
+            this.hasSpoken = false;
+            ep.audioStatsUpdate({
+              id: "8",
+              talking: this.hasSpoken,
+            });
+          }
         });
       }
-    }, 100);
+    }, 20);
   }
 
   async subscribeToAudio(id) {
