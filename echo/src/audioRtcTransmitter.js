@@ -28,6 +28,7 @@ class audioRtcTransmitter {
     this.isDeaf = false;
     this.volume = volume;
     this.gainNode = null;
+    this.voiceActivityDetectionVolumeNode = null;
     this.context = null;
     this.inputStreams = [];
     this.streamIds = new Map();
@@ -68,11 +69,13 @@ class audioRtcTransmitter {
     this.outputChannelCount = source.channelCount;
 
     this.gainNode = context.createGain();
+    this.voiceActivityDetectionVolumeNode = context.createGain();
     this.channelSplitter = context.createChannelSplitter(this.outputChannelCount);
 
     source.connect(this.gainNode);
     this.gainNode.connect(this.channelSplitter);
-    this.gainNode.connect(destination);
+    this.gainNode.connect(this.voiceActivityDetectionVolumeNode);
+    this.voiceActivityDetectionVolumeNode.connect(destination);
 
     this.analyser = this.createAudioAnalyser(context, this.channelSplitter, this.outputChannelCount);
 
@@ -102,6 +105,15 @@ class audioRtcTransmitter {
     if (this.gainNode) {
       this.gainNode.gain.value = volume;
     }
+  }
+
+  setVoiceDetectionVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.voiceActivityDetectionVolumeNode.gain.value = volume;
   }
 
   async setInputDevice(deviceId) {
@@ -379,12 +391,14 @@ class audioRtcTransmitter {
         // console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
         if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
           this.hasSpokenLocal = true;
+          this.setVoiceDetectionVolume(1.0);
           ep.audioStatsUpdate({
             id: this.id,
             talking: this.hasSpokenLocal,
           });
         } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
           this.hasSpokenLocal = false;
+          this.setVoiceDetectionVolume(0.0);
           ep.audioStatsUpdate({
             id: this.id,
             talking: this.hasSpokenLocal,
