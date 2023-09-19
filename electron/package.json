@@ -1,6 +1,6 @@
 {
   "name": "echo",
-  "version": "1.0.0",
+  "version": "0.1.0-beta.1",
   "description": "echo electron",
   "main": "main.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "start-backend": "electron-forge start",
     "start-frontend": "cd ../echo && npm run start",
     "package": "electron-forge package",
+    "publish": "electron-forge publish",
     "make": "electron-forge make",
     "build": "concurrently --kill-others \"npm run build-frontend\" \"npm run build-backend\"",
     "build-frontend": "cd ../echo && npm run build",
