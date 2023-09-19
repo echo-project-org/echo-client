@@ -114,7 +114,6 @@ function OnlineUserIcon({ user }) {
 
     ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
       if (audioData.id === user.id) {
-        console.log("got talking", audioData.talking, "for", audioData.id)
         setTalking(audioData.talking);
       }
     });

@@ -336,6 +336,25 @@ class audioRtcTransmitter {
           }
         });
       }
+
+      // local user's audio levels
+      if (this.analyser) {
+        let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
+        if (!this.hasSpokenLocal && audioOutputLevels.reduce((a, b) => a + b, 0) / 2 >= this.talkingThreashold) {
+          this.hasSpokenLocal = true;
+          console.log("sending talking", this.hasSpokenLocal)
+          ep.audioStatsUpdate({
+            id: this.id,
+            talking: this.hasSpokenLocal,
+          });
+        } else if (this.hasSpokenLocal && audioOutputLevels.reduce((a, b) => a + b, 0) / 2 < this.talkingThreashold) {
+          this.hasSpokenLocal = false;
+          ep.audioStatsUpdate({
+            id: this.id,
+            talking: this.hasSpokenLocal,
+          });
+        }
+      }
     }, 20);
   }
 
