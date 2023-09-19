@@ -22,7 +22,7 @@ function Room({ active, data }) {
     });
 
     ep.on("usersCacheUpdated", "Room.usersCacheUpdated", (_) => {
-      console.log("Room.usersCacheUpdated", data);
+      // console.log("Room.usersCacheUpdated", data);
       updateUsersInRoom();
     });
 

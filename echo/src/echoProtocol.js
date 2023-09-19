@@ -18,7 +18,21 @@ class EchoProtocol {
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
 
+    this.currentConnectionState = "";
+    this.currentConnectionStateInterval = null;
+
     this.SERVER_URL = "https://echo.kuricki.com";
+  }
+
+  _startReconnectTry() {
+    this.currentConnectionStateInterval = setInterval(() => {
+      if (this.currentConnectionState === "connected") {
+        clearInterval(this.currentConnectionStateInterval);
+        this.currentConnectionStateInterval = null;
+        return;
+      };
+      this.openConnection(localStorage.getItem("id"));
+    }, 5000);
   }
 
   _makeIO(id) {
@@ -65,6 +79,7 @@ class EchoProtocol {
       this.rtcConnectionStateChange({ state: "disconnected" });
       this.stopTransmitting();
       this.stopReceiving();
+      this._startReconnectTry();
     })
 
     this.socket.io.on("error", (error) => {
@@ -73,6 +88,8 @@ class EchoProtocol {
       this.stopTransmitting();
       this.stopReceiving();
       this.socket.close();
+      this.rtcConnectionStateChange({ state: "disconnected" });
+      this._startReconnectTry();
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
@@ -454,7 +471,6 @@ class EchoProtocol {
       this.cachedUsers.update(id, field, value);
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
-        console.log("updating chat of", room.id)
         room.chat.updateUser({ id, field, value });
         if (room.id === this.cachedUsers.get(localStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
@@ -551,6 +567,7 @@ EchoProtocol.prototype.usersCacheUpdated = function (data) {
 }
 
 EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
+  this.currentConnectionState = data.state;
   this.emit("rtcConnectionStateChange", data);
 }
 
