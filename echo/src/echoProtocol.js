@@ -24,6 +24,7 @@ class EchoProtocol {
     this.SERVER_URL = "https://echo.kuricki.com";
   }
 
+  // TODO: make resubscribe users to rooms on reconnect
   _startReconnectTry() {
     this.currentConnectionStateInterval = setInterval(() => {
       if (this.currentConnectionState === "connected") {

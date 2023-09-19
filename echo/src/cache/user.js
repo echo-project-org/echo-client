@@ -5,6 +5,7 @@ class Users {
 
     typeCheck(data) {
         if (typeof data !== "object") {
+            if (typeof data === "boolean") return data;
             return data = String(data);
         }
         if (data.img) data.userImage = data.img;
@@ -94,9 +95,10 @@ class Users {
         id = this.typeCheck(id);
         field = this.typeCheck(field);
         value = this.typeCheck(value);
-        console.log("[CACHE] Updated user in cache", id, field, value)
         if (!this.users[id]) return console.error(`[CACHE] User ${id} not found in cache`);
         this.users[id][field] = value;
+        console.log(typeof id, typeof field, typeof value)
+        console.log("[CACHE] Updated user in cache", id, field, value)
     }
 }
 
