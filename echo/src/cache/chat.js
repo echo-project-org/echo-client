@@ -5,18 +5,23 @@ class Chat {
     }
 
     add(message) {
+        message.userId = String(message.userId);
         message.dateDisplay = this.convertDate(message.date);
         this.messages.push(message);
-        if (!message.insertDate && message.date) message.insertDate = message.date;
+        if (!message.insertDate && message.date) message.insertDate = new Date(message.date).toUTCString();
         this.cached = true;
+        console.log("[CACHE] Added message to cache", message)
         return message;
     }
 
-    get() {
+    sort() {
         // sort messages by insertDate and most recent last
         this.messages = this.messages.sort((a, b) => {
             return new Date(b.insertDate) - new Date(a.insertDate);
         });
+    }
+
+    get() {
         console.log("[CACHE] Got messages from cache", this.messages);
         return this.messages;
     }
@@ -33,6 +38,7 @@ class Chat {
                 if (data.field === "name") message.name = data.value;
             }
         });
+        this.sort();
     }
 
     // convert date to current timezone and display format
