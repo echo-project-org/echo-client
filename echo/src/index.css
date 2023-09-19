@@ -277,6 +277,10 @@ body {
 
 .windowControls {
   -webkit-app-region: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .backButton {

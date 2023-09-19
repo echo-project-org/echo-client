@@ -32,7 +32,7 @@ class audioRtcTransmitter {
     this.inputStreams = [];
     this.streamIds = new Map();
 
-    this.talkingThreashold = 0.1;
+    this.talkingThreashold = 0.2;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
@@ -196,10 +196,22 @@ class audioRtcTransmitter {
     const freqs = {};
     for (let i = 0; i < channelCount; i++) {
       analyser[i] = context.createAnalyser();
-      analyser[i].minDecibels = -100;
-      analyser[i].maxDecibels = 0;
-      analyser[i].smoothingTimeConstant = 0.8;
-      analyser[i].fftSize = 32;
+
+      // for human voice
+      // https://github.com/Jam3/voice-activity-detection/blob/master/index.js
+
+      analyser[i].fftSize = 1024;
+      analyser[i].bufferLen = 1024;
+      analyser[i].smoothingTimeConstant = 0.2;
+      analyser[i].minCaptureFreq = 85;
+      analyser[i].maxCaptureFreq = 255;
+      analyser[i].noiseCaptureDuration = 1000;
+      analyser[i].minNoiseLevel = 0.3;
+      analyser[i].maxNoiseLevel = 0.7;
+      analyser[i].avgNoiseMultiplier = 1.2;
+
+      // analyser[i].minDecibels = -100;
+      // analyser[i].maxDecibels = 0;
       freqs[i] = new Uint8Array(analyser[i].frequencyBinCount);
       splitter.connect(analyser[i], i, 0);
     }
@@ -328,20 +340,30 @@ class audioRtcTransmitter {
     return userId;
   }
 
+  // round to 1 decimal places
+  _round(num) {
+    return Math.round((num + Number.EPSILON) * 10) / 10;
+  }
+
   startStatsInterval() {
     console.log(this.id, "starting stats interval")
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval);
+      this.statsInterval = null;
+    }
+
     this.statsInterval = setInterval(() => {
       // remote user's audio levels
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          if (!this.hasSpoken && audioInputLevels.reduce((a, b) => a + b, 0) / 2 >= this.talkingThreashold) {
+          if (!this.hasSpoken && this._rount(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
             this.hasSpoken = true;
             ep.audioStatsUpdate({
               id: this._findUserId(stream),
               talking: this.hasSpoken,
             });
-          } else if (this.hasSpoken && audioInputLevels.reduce((a, b) => a + b, 0) / 2 < this.talkingThreashold) {
+          } else if (this.hasSpoken && this._rount(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
             this.hasSpoken = false;
             ep.audioStatsUpdate({
               id: this._findUserId(stream),
@@ -354,14 +376,14 @@ class audioRtcTransmitter {
       // local user's audio levels
       if (this.analyser) {
         let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
-        if (!this.hasSpokenLocal && audioOutputLevels.reduce((a, b) => a + b, 0) / 2 >= this.talkingThreashold) {
+        // console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
+        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
           this.hasSpokenLocal = true;
-          console.log("sending talking", this.hasSpokenLocal)
           ep.audioStatsUpdate({
             id: this.id,
             talking: this.hasSpokenLocal,
           });
-        } else if (this.hasSpokenLocal && audioOutputLevels.reduce((a, b) => a + b, 0) / 2 < this.talkingThreashold) {
+        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
           this.hasSpokenLocal = false;
           ep.audioStatsUpdate({
             id: this.id,
@@ -369,7 +391,7 @@ class audioRtcTransmitter {
           });
         }
       }
-    }, 20);
+    }, 5);
   }
 
   async subscribeToAudio(id) {
