@@ -1,10 +1,29 @@
-name: Build
+name: Build Electron
 on: [push, pull_request]
 
 jobs:
+  build_frontend:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./echo
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@master
+      with:
+        node-version: 18
+    - name: install dependencies
+      run: npm install
+    - name: build
+      run: npm run build
+
+
   build_on_linux:
     runs-on: ubuntu-latest
-    working-directory: ./electron
+    needs: build_frontend
+    defaults:
+      run:
+        working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
@@ -17,7 +36,10 @@ jobs:
 
   build_on_mac:
     runs-on: macos-latest
-    working-directory: ./electron
+    needs: build_frontend
+    defaults:
+      run:
+        working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
@@ -30,7 +52,10 @@ jobs:
 
   build_on_win:
     runs-on: windows-latest
-    working-directory: ./electron
+    needs: build_frontend
+    defaults:
+      run:
+        working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
