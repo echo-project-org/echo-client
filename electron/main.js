@@ -45,7 +45,7 @@ let tray = null
 
 app.whenReady().then(() => {
   mainWindow = createMainWindow()
-  tray = new Tray(path.join(__dirname, 'images','echoIcon.png'))
+  tray = new Tray(path.join(process.cwd(), 'images', 'icon.png'))
   const TrayMenu = [
     {
       label: "Echo",
@@ -92,7 +92,6 @@ app.whenReady().then(() => {
       }
     })
   }
-
 
   const contextMenu = Menu.buildFromTemplate(TrayMenu);
   tray.setToolTip('Echo')
