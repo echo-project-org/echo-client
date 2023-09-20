@@ -49,6 +49,8 @@ module.exports = {
   ],
   hooks: {
     packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
+      console.log("File copy hook")
+      console.log(process.cwd())
       var src = path.join(process.cwd(), "../echo", "build");
       console.log(src);
       var dst = buildPath;
