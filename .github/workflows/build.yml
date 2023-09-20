@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: false
+      BUILD_PATH: ./electron/build
     defaults:
       run:
         working-directory: ./echo
@@ -20,6 +21,11 @@ jobs:
     - name: Install modules and build
       run: |
         npm install
+        cd ..
+        cd electron
+        mkdir build
+        cd ..
+        cd echo
         npm run build
 
   build_on_linux:
