@@ -1,11 +1,11 @@
 name: Build App
 on:
-  pull_request:
+  push:
     branches:
       - 'main'
 
 jobs:
-  build_frontend:
+  build:
     runs-on: ubuntu-latest
     env:
       CI: false
@@ -13,7 +13,7 @@ jobs:
       run:
         working-directory: ./echo
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@master
       with:
         node-version: 18
@@ -32,6 +32,22 @@ jobs:
         cd electron
         npm install
         npm run make
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: echo
+        path: electron/out/make/*
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: electron/out/make/*
+        tag_name: ${{ github.ref }}
+        body: |
+          **Changes**
+          ${{ github.event.release.body }}
+        draft: false
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
 
   # build_on_linux:
   #   runs-on: ubuntu-latest
