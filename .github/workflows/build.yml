@@ -4,11 +4,12 @@ on: [push, pull_request]
 jobs:
   build_on_linux:
     runs-on: ubuntu-latest
+    working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
       with:
-        node-version: 14
+        node-version: 18
     - name: install dependencies
       run: npm install
     - name: build
@@ -16,11 +17,12 @@ jobs:
 
   build_on_mac:
     runs-on: macos-latest
+    working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
       with:
-        node-version: 14
+        node-version: 18
     - name: install dependencies
       run: npm install
     - name: build
@@ -28,11 +30,12 @@ jobs:
 
   build_on_win:
     runs-on: windows-latest
+    working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
       with:
-        node-version: 14
+        node-version: 18
     - name: install dependencies
       run: npm install
     - name: build
