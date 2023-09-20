@@ -1,4 +1,4 @@
-name: Build Electron
+name: Build App
 on:
   pull_request:
     branches:
@@ -30,45 +30,45 @@ jobs:
     needs: build_frontend
     defaults:
       run:
-        working-directory: ../electron
+        working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
       with:
         node-version: 18
-    - name: install dependencies
-      run: npm install
-    - name: build
-      run: npm run make
+    - name: Install modules and build
+      run: |
+        npm install
+        npm run make
 
   build_on_mac:
     runs-on: macos-latest
     needs: build_frontend
     defaults:
       run:
-        working-directory: ../electron
+        working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
       with:
         node-version: 18
-    - name: install dependencies
-      run: npm install
-    - name: build
-      run: npm run make
+    - name: Install modules and build
+      run: |
+        npm install
+        npm run make
 
   build_on_win:
     runs-on: windows-latest
     needs: build_frontend
     defaults:
       run:
-        working-directory: ../electron
+        working-directory: ./electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
       with:
         node-version: 18
-    - name: install dependencies
-      run: npm install
-    - name: build
-      run: npm run make
+    - name: Install modules and build
+      run: |
+        npm install
+        npm run make

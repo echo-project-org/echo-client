@@ -25,7 +25,7 @@ module.exports = {
       config: {
         bin: "Echo",
         options: {
-          icon: path.join(process.cwd(), 'main', 'build', 'icon.png'),
+          icon: path.join(process.cwd(), 'images', 'icon.png'),
         },
       },
     },
@@ -33,7 +33,7 @@ module.exports = {
       name: '@electron-forge/maker-rpm',
       config: {
         bin: "Echo",
-        icon: path.join(process.cwd(), 'main', 'build', 'icon.png'),
+        icon: path.join(process.cwd(), 'images', 'icon.png'),
       },
     },
     {
@@ -49,7 +49,8 @@ module.exports = {
   ],
   hooks: {
     packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
-      var src = path.join(__dirname, '../echo/build/');
+      var src = path.join(process.cwd(), "../echo", "build");
+      console.log(src);
       var dst = buildPath;
       fs.cpSync(src, dst, {recursive: true});
     }
