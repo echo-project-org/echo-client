@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: false
-      BUILD_PATH: ./electron/build
     defaults:
       run:
         working-directory: ./echo
@@ -18,7 +17,7 @@ jobs:
     - uses: actions/setup-node@master
       with:
         node-version: 18
-    - name: Install modules and build
+    - name: Install modules and build frontend
       run: |
         npm install
         cd ..
@@ -27,51 +26,56 @@ jobs:
         cd ..
         cd echo
         npm run build
-
-  build_on_linux:
-    runs-on: ubuntu-latest
-    needs: build_frontend
-    defaults:
-      run:
-        working-directory: ./electron
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 18
-    - name: Install modules and build
+    - name: Build app
       run: |
-        npm install
+        cd ..
+        cd electron
         npm run make
 
-  build_on_mac:
-    runs-on: macos-latest
-    needs: build_frontend
-    defaults:
-      run:
-        working-directory: ./electron
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 18
-    - name: Install modules and build
-      run: |
-        npm install
-        npm run make
+  # build_on_linux:
+  #   runs-on: ubuntu-latest
+  #   needs: build_frontend
+  #   defaults:
+  #     run:
+  #       working-directory: ./electron
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: actions/setup-node@master
+  #     with:
+  #       node-version: 18
+  #   - name: Install modules and build
+  #     run: |
+  #       npm install
+  #       npm run make
 
-  build_on_win:
-    runs-on: windows-latest
-    needs: build_frontend
-    defaults:
-      run:
-        working-directory: ./electron
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 18
-    - name: Install modules and build
-      run: |
-        npm install
-        npm run make
+  # build_on_mac:
+  #   runs-on: macos-latest
+  #   needs: build_frontend
+  #   defaults:
+  #     run:
+  #       working-directory: ./electron
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: actions/setup-node@master
+  #     with:
+  #       node-version: 18
+  #   - name: Install modules and build
+  #     run: |
+  #       npm install
+  #       npm run make
+
+  # build_on_win:
+  #   runs-on: windows-latest
+  #   needs: build_frontend
+  #   defaults:
+  #     run:
+  #       working-directory: ./electron
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: actions/setup-node@master
+  #     with:
+  #       node-version: 18
+  #   - name: Install modules and build
+  #     run: |
+  #       npm install
+  #       npm run make
