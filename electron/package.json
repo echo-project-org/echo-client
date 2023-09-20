@@ -1,28 +1,28 @@
 {
   "name": "echo",
-  "version": "0.1.0-beta.1",
-  "description": "echo electron",
+  "version": "0.1.0",
+  "description": "Echo project - The better messaging and voice chat app",
+  "productName": "Echo",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently --kill-others \"npm run start-frontend\" \"npm run start-backend\"",
     "start-backend": "electron-forge start",
     "start-frontend": "cd ../echo && npm run start",
     "package": "electron-forge package",
     "publish": "electron-forge publish",
-    "make": "electron-forge make",
-    "build": "concurrently --kill-others \"npm run build-frontend\" \"npm run build-backend\"",
-    "build-frontend": "cd ../echo && npm run build",
-    "build-backend": "electron-forge make"
+    "make": "electron-forge make"
   },
   "author": "Kury",
   "license": "ISC",
   "devDependencies": {
-    "@electron-forge/cli": "^6.1.1",
+    "@electron-forge/cli": "^6.4.2",
     "@electron-forge/maker-deb": "^6.1.1",
+    "@electron-forge/maker-dmg": "^6.4.2",
     "@electron-forge/maker-rpm": "^6.1.1",
     "@electron-forge/maker-squirrel": "^6.1.1",
     "@electron-forge/maker-zip": "^6.1.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
+    "@electron-forge/publisher-github": "^6.4.2",
     "concurrently": "^8.0.1",
     "electron": "^24.3.1"
   },

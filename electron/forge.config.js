@@ -3,26 +3,49 @@ const fs = require('fs');
 
 module.exports = {
   packagerConfig: {
-    icon: 'images/echoIcon'
+    asar: true, // ?????
+    icon: 'images/icon'
   },
   rebuildConfig: {},
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        bin: "Echo"
+      },
+    },
+    {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        bin: "Echo"
+      },
+    },
+    {
+      name: '@electron-forge/maker-deb',
+      config: {
+        bin: "Echo",
+        options: {
+          icon: path.join(process.cwd(), 'main', 'build', 'icon.png'),
+        },
+      },
+    },
+    {
+      name: '@electron-forge/maker-rpm',
+      config: {
+        bin: "Echo",
+        icon: path.join(process.cwd(), 'main', 'build', 'icon.png'),
+      },
     },
     {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
     },
+  ],
+  plugins: [
     {
-      name: '@electron-forge/maker-deb',
-      config: {},
-    },
-    {
-      name: '@electron-forge/maker-rpm',
-      config: {},
-    },
+      name: '@electron-forge/plugin-auto-unpack-natives',
+      config: {}
+    }
   ],
   hooks: {
     packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
@@ -30,5 +53,17 @@ module.exports = {
       var dst = buildPath;
       fs.cpSync(src, dst, {recursive: true});
     }
-  }
+  },
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'KuryGabriele',
+          name: 'echo-project'
+        },
+        prerelease: true
+      }
+    }
+  ]
 };

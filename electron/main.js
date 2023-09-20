@@ -9,7 +9,7 @@ const createMainWindow = () => {
     height: 700,
     title: "Echo",
     frame: false,
-    icon: 'images/echoIcon',
+    icon: 'images/icon',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -108,7 +108,7 @@ app.whenReady().then(() => {
       width: 1000,
       height: 700,
       title: "Echo",
-      icon: 'images/echoIcon',
+      icon: 'images/icon',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: false,
