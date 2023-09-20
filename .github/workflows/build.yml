@@ -2,16 +2,16 @@ name: Build Electron
 on:
   pull_request:
     branches:
-      - 'releases/**'
-      - '!releases/**-alpha'
+      - 'releases'
   push:
     branches:
-      - 'releases/**'
-      - '!releases/**-alpha'
+      - 'releases'
 
 jobs:
   build_frontend:
     runs-on: ubuntu-latest
+    env:
+      CI: false
     defaults:
       run:
         working-directory: ./echo
@@ -20,21 +20,17 @@ jobs:
     - uses: actions/setup-node@master
       with:
         node-version: 18
-    - name: install dependencies
-      run: npm install
-    - name: create env file
+    - name: Install modules and build
       run: |
-        touch .env
-        echo CI=false >> .env
-    - name: build
-      run: npm run build
+        npm install
+        npm run build
 
   build_on_linux:
     runs-on: ubuntu-latest
     needs: build_frontend
     defaults:
       run:
-        working-directory: ./electron
+        working-directory: ../electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
@@ -50,7 +46,7 @@ jobs:
     needs: build_frontend
     defaults:
       run:
-        working-directory: ./electron
+        working-directory: ../electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
@@ -66,7 +62,7 @@ jobs:
     needs: build_frontend
     defaults:
       run:
-        working-directory: ./electron
+        working-directory: ../electron
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@master
