@@ -14,9 +14,12 @@ jobs:
         node-version: 18
     - name: install dependencies
       run: npm install
+    - name: create env file
+      run: |
+        touch .env
+        echo CI=false >> .env
     - name: build
-      run: CI=false npm run build
-
+      run: npm run build
 
   build_on_linux:
     runs-on: ubuntu-latest
