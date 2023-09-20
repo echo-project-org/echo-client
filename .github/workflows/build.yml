@@ -2,10 +2,10 @@ name: Build Electron
 on:
   pull_request:
     branches:
-      - 'releases'
+      - 'main'
   push:
     branches:
-      - 'releases'
+      - 'main'
 
 jobs:
   build_frontend:
