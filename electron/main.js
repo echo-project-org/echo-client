@@ -2,6 +2,25 @@ const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer } = require('el
 const path = require('path')
 
 var mainWindow;
+var rtcInternals;
+
+const createRtcInternalsWindow = () => {
+  var rtcInternals = new BrowserWindow({
+    width: 1000,
+    height: 700,
+    title: "Echo",
+    icon: 'images/icon',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      devTools: true
+    }
+  })
+
+  rtcInternals.loadURL("chrome://webrtc-internals");
+
+  return rtcInternals;
+}
 
 const createMainWindow = () => {
   var win = new BrowserWindow({
@@ -25,18 +44,18 @@ const createMainWindow = () => {
   } else {
     win.loadURL('http://localhost:3000'); // dev
   }
-/*
-  win.setThumbarButtons([
-    {
-      tooltip: 'Mute microphone',
-      icon: path.join(__dirname, 'images', 'mic.png'),
-      click: function() { console.log('button1 clicked') }
-    }, {
-      tooltip: 'Deafen audio',
-      icon: path.join(__dirname, 'images', 'mic.png'),
-      click: function() { console.log('button2 clicked.') }
-    }
-  ])*/
+  /*
+    win.setThumbarButtons([
+      {
+        tooltip: 'Mute microphone',
+        icon: path.join(__dirname, 'images', 'mic.png'),
+        click: function() { console.log('button1 clicked') }
+      }, {
+        tooltip: 'Deafen audio',
+        icon: path.join(__dirname, 'images', 'mic.png'),
+        click: function() { console.log('button2 clicked.') }
+      }
+    ])*/
 
   return win;
 }
@@ -81,6 +100,10 @@ app.whenReady().then(() => {
     TrayMenu.splice(2, 0, {
       label: "Open rtc-internals",
       click: function () {
+        if (rtcInternals.isDestroyed()) {
+          rtcInternals = createRtcInternalsWindow();
+        }
+
         rtcInternals.show();
       }
     })
@@ -95,25 +118,17 @@ app.whenReady().then(() => {
 
   const contextMenu = Menu.buildFromTemplate(TrayMenu);
   tray.setToolTip('Echo')
-  tray.on('double-click', function(e){
+  tray.on('double-click', function (e) {
     mainWindow.show();
   })
   tray.setContextMenu(contextMenu)
 
   //WebRTC internals window
-  
+
   if (!app.isPackaged) {
-    var rtcInternals = new BrowserWindow({
-      width: 1000,
-      height: 700,
-      title: "Echo",
-      icon: 'images/icon',
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
-        devTools: true
-      }
-    })
+    if (!rtcInternals) {
+      rtcInternals = createRtcInternalsWindow();
+    }
 
     // open dev tools
     mainWindow.webContents.openDevTools();
@@ -155,6 +170,6 @@ ipcMain.on("toggleFullscreen", (event, arg) => {
   }
 })
 
-ipcMain.handle("getVideoSources", async() => {
+ipcMain.handle("getVideoSources", async () => {
   return await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });
 })
