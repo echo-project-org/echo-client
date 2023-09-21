@@ -122,95 +122,102 @@ function OnlineUserIcon({ user }) {
       }
     });
 
+    ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
+      if (data.id === user.id) {
+        console.log("updating ui for video broadcast", data)
+        setBroadcastingVideo(true)
+      }
+    });
+
     // used on re-render of component to set user's first mic and deaf state
     // DO NOT TOUCH THIS (i did this thrice already and fucked up shit)
     setDeaf(user.deaf);
-    setMuted(user.muted);
+  setMuted(user.muted);
 
-    return () => {
-      ep.releaseGroup('OnlineUserIcon.updatedAudioState');
-      ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
-    };
-  }, []);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  return () => {
+    ep.releaseGroup('OnlineUserIcon.updatedAudioState');
+    ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleVolumeChange = (event, newValue) => {
-    //set user volume
-    setUserVolulme(newValue);
-    ep.setUserVolume(newValue / 100, user.id)
-  };
+}, []);
 
-  return (
-    <div className="onlineUserContainer">
-      <div
-        className="onlineUserIcon noselect pointer"
-        onContextMenu={handleClick}
-        onClick={handleClick}
-        size="small"
-        aria-controls={open ? 'account-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-      >
-        <Badge badgeContent={1} variant="dot" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} showZero={true} invisible={true} color={"success"}>
-          <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
-        </Badge>
-        <p className='onlineUserNick'>{user.name}</p>
-        <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
-          {deaf ? <VolumeOff fontSize="small" /> : null}
-          {muted ? <MicOffRounded fontSize="small" /> : null}
-          {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{color: "red"}} /> : null}
-        </Grid>
-      </div>
+const handleClick = (event) => {
+  setAnchorEl(event.currentTarget);
+};
+const handleClose = () => {
+  setAnchorEl(null);
+};
+const handleVolumeChange = (event, newValue) => {
+  //set user volume
+  setUserVolulme(newValue);
+  ep.setUserVolume(newValue / 100, user.id)
+};
 
-      <ThemeProvider theme={theme}>
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          transitionDuration={100}
-          MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
-        >
-          <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
-            <StyledBadge
-              overlap="circular"
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              variant="dot"
-            >
-              <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
-            </StyledBadge>
-            <p style={{ marginTop: ".8rem" }}>{user.name}</p>
-          </div>
-
-          <MenuItem>
-            <div style={{ width: "100%" }}>
-              <Stack spacing={2} direction="row" alignItems="center">
-                <VolumeUp fontSize="10px" />
-                <Slider
-                  sx={{ width: 110 }}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(v) => { return v + "%" }}
-                  aria-label="Volume"
-                  value={userVolume}
-                  onChange={handleVolumeChange}
-                  size='medium'
-                />
-              </Stack>
-            </div>
-          </MenuItem>
-          <Divider sx={{ my: 0.5 }} variant='middle' />
-          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem> : null}
-          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem> : null}
-          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem> : null}
-          {localStorage.getItem("id") === user.id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem> : null}
-        </Menu>
-      </ThemeProvider>
+return (
+  <div className="onlineUserContainer">
+    <div
+      className="onlineUserIcon noselect pointer"
+      onContextMenu={handleClick}
+      onClick={handleClick}
+      size="small"
+      aria-controls={open ? 'account-menu' : undefined}
+      aria-haspopup="true"
+      aria-expanded={open ? 'true' : undefined}
+    >
+      <Badge badgeContent={1} variant="dot" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} showZero={true} invisible={true} color={"success"}>
+        <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
+      </Badge>
+      <p className='onlineUserNick'>{user.name}</p>
+      <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
+        {deaf ? <VolumeOff fontSize="small" /> : null}
+        {muted ? <MicOffRounded fontSize="small" /> : null}
+        {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{ color: "red" }} /> : null}
+      </Grid>
     </div>
-  )
+
+    <ThemeProvider theme={theme}>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        transitionDuration={100}
+        MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
+      >
+        <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
+          <StyledBadge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            variant="dot"
+          >
+            <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
+          </StyledBadge>
+          <p style={{ marginTop: ".8rem" }}>{user.name}</p>
+        </div>
+
+        <MenuItem>
+          <div style={{ width: "100%" }}>
+            <Stack spacing={2} direction="row" alignItems="center">
+              <VolumeUp fontSize="10px" />
+              <Slider
+                sx={{ width: 110 }}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(v) => { return v + "%" }}
+                aria-label="Volume"
+                value={userVolume}
+                onChange={handleVolumeChange}
+                size='medium'
+              />
+            </Stack>
+          </div>
+        </MenuItem>
+        <Divider sx={{ my: 0.5 }} variant='middle' />
+        {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem> : null}
+        {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem> : null}
+        {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem> : null}
+        {localStorage.getItem("id") === user.id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem> : null}
+      </Menu>
+    </ThemeProvider>
+  </div>
+)
 }
 
 OnlineUserIcon.defaultProps = {
