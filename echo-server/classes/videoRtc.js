@@ -51,7 +51,9 @@ class VideoRTC {
                 console.log("Got video track from user " + id);
                 this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [], outStreams: [] });
                 //Notify users that the stream has started
-                user.notifyUsersAboutBroadcast({ id, streamId: e.streams[0].id });
+                if(e.track.kind === "video"){
+                    user.notifyUsersAboutBroadcast({ id, streamId: e.streams[0].id });
+                }
             };
 
             peer.onicecandidate = (e) => {
