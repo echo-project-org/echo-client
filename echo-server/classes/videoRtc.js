@@ -188,13 +188,15 @@ class VideoRTC {
         });
     }
 
-    async stopVideoBroadcast(data) {
+    async stopVideoBroadcast(data, user) {
         let sender = data.id;
         console.log("User " + sender + " stopped broadcasting video");
         if (!sender) return reject("NO-ID");
         if (this.peers.has(sender)) {
             this.peers.get(sender).peer.close();
             this.peers.delete(sender);
+            //notify users that the stream has stopped
+            user.notifyUsersAboutBroadcastStop({ id: sender, streamId: null });
         }
     }
 

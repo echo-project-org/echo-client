@@ -130,6 +130,13 @@ function OnlineUserIcon({ user }) {
       }
     });
 
+    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+      if (data.id === user.id) {
+        console.log("updating ui for video broadcast stop", data)
+        setBroadcastingVideo(false)
+      }
+    });
+
     // used on re-render of component to set user's first mic and deaf state
     // DO NOT TOUCH THIS (i did this thrice already and fucked up shit)
     setDeaf(user.deaf);

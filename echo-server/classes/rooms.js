@@ -57,6 +57,9 @@ class Rooms {
         user.registerEvent("videoBroadcastStarted", (data) => {
             this.videoBroadcastStarted(data);
         });
+        user.registerEvent("videoBroadcastStop", (data) => {
+            this.videoBroadcastStop(data);
+        });
     }
 
     updateUser(data) {
@@ -73,6 +76,14 @@ class Rooms {
         if (this.connectedClients.has(data.id)) {
             this.connectedClients.forEach((user, _) => {
                 user.videoBroadcastStarted(data);
+            });
+        }
+    }
+
+    videoBroadcastStop(data) {
+        if (this.connectedClients.has(data.id)) {
+            this.connectedClients.forEach((user, _) => {
+                user.videoBroadcastStop(data);
             });
         }
     }

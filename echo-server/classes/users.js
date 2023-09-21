@@ -64,8 +64,16 @@ class User {
         this.triggerEvent("videoBroadcastStarted", data)
     }
 
+    notifyUsersAboutBroadcastStop(data) {
+        this.triggerEvent("videoBroadcastStopped", data)
+    }
+
     videoBroadcastStarted(data) {
         this.socket.emit("server.videoBroadcastStarted", data);
+    }
+
+    videoBroadcastStop(data) {
+        this.socket.emit("server.videoBroadcastStop", data);
     }
 
     /**
@@ -261,7 +269,7 @@ class User {
         }
     }
 
-    stopVideoBroadcast(data) {
+    stopVideoBroadcast(data, this) {
         if (this.videoRtc) {
             const resp = this.videoRtc.stopVideoBroadcast(data);
             switch (resp) {

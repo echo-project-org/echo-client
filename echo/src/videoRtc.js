@@ -82,6 +82,7 @@ class videoRtc {
             track.stop();
         });
         this.stream = null;
+        ep.stopVideoBroadcast({ id: this.id });
 
         this.isTransmitting = false;
     }

@@ -163,6 +163,11 @@ class EchoProtocol {
       console.log("User", data.id, "started broadcasting video", data.streamId);
       this.videoBroadcastStarted(data);
     });
+
+    this.socket.on("server.videoBroadcastStop", (data) => {
+      console.log("User", data.id, "stopped broadcasting video", data.streamId);
+      this.videoBroadcastStop(data);
+    });
   }
 
   endConnection(data) {
@@ -218,6 +223,12 @@ class EchoProtocol {
   stopReceiving(remoteId) {
     if (this.at) {
       this.at.unsubscribeFromAudio(remoteId);
+    }
+  }
+
+  stopReceivingVideo(remoteId) {
+    if(this.vt) {
+      this.vt.unsubscribeFromVideo(remoteId);
     }
   }
 
@@ -281,6 +292,7 @@ class EchoProtocol {
 
   exitFromRoom(id) {
     this.stopReceiving();
+    this.stopReceivingVideo();
     if (this.socket) this.socket.emit("client.exit", { id });
   }
 
@@ -605,6 +617,10 @@ EchoProtocol.prototype.audioStatsUpdate = function (data) {
 
 EchoProtocol.prototype.videoBroadcastStarted = function (data) {
   this.emit("videoBroadcastStarted", data);
+}
+
+EchoProtocol.prototype.videoBroadcastStop = function (data) {
+  this.emit("videoBroadcastStop", data);
 }
 
 export default EchoProtocol;
