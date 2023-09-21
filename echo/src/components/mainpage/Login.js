@@ -119,6 +119,11 @@ const Login = () => {
           type="password"
           className="input"
           placeholder="Password"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              checkCredentials();
+            }
+          }}
         />
 
         <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>

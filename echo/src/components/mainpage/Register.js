@@ -140,6 +140,11 @@ const Register = () => {
                 type="password"
                 className="input"
                 placeholder="Repeat password"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        checkCredentials();
+                    }
+                }}
             />
             <Button theme={theme} variant="outlined" onClick={checkCredentials}>Register</Button>
         </div>
