@@ -158,7 +158,7 @@ class EchoProtocol {
 
     this.socket.on("server.videoBroadcastStarted", (data) => {
       console.log("User", data.id, "started broadcasting video", data.streamId);
-      //this.videoBroadcastStarted(data);
+      this.videoBroadcastStarted(data);
     });
   }
 
@@ -598,6 +598,10 @@ EchoProtocol.prototype.needUserCacheUpdate = function (data) {
 
 EchoProtocol.prototype.audioStatsUpdate = function (data) {
   this.emit("audioStatsUpdate", data);
+}
+
+EchoProtocol.prototype.videoBroadcastStarted = function (data) {
+  this.emit("videoBroadcastStarted", data);
 }
 
 export default EchoProtocol;
