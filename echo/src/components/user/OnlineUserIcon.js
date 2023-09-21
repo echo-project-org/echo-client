@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { ep } from "../../index";
+import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 const theme = createTheme({
   components: {
@@ -210,10 +211,7 @@ return (
           </div>
         </MenuItem>
         <Divider sx={{ my: 0.5 }} variant='middle' />
-        {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem> : null}
-        {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem> : null}
-        {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem> : null}
-        {localStorage.getItem("id") === user.id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem> : null}
+        <OnlineUsersMenuItems user={user} handleClose={handleClose} />
       </Menu>
     </ThemeProvider>
   </div>
