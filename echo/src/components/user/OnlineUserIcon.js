@@ -2,6 +2,7 @@ import '../../css/onlineusers.css'
 
 import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, styled } from '@mui/material'
 import { VolumeUp, Message, DoDisturb, Gavel, Settings, MicOffRounded, VolumeOff } from '@mui/icons-material';
+import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -99,6 +100,7 @@ function OnlineUserIcon({ user }) {
   const [deaf, setDeaf] = useState(false);
   const [muted, setMuted] = useState(false);
   const [talking, setTalking] = useState(false);
+  const [broadcastingVideo, setBroadcastingVideo] = useState(false);
 
   const open = Boolean(anchorEl);
 
@@ -137,7 +139,6 @@ function OnlineUserIcon({ user }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
   const handleVolumeChange = (event, newValue) => {
     //set user volume
     setUserVolulme(newValue);
@@ -151,17 +152,18 @@ function OnlineUserIcon({ user }) {
         onContextMenu={handleClick}
         onClick={handleClick}
         size="small"
-        aria-controls={ open ? 'account-menu' : undefined }
+        aria-controls={open ? 'account-menu' : undefined}
         aria-haspopup="true"
-        aria-expanded={ open ? 'true' : undefined }
+        aria-expanded={open ? 'true' : undefined}
       >
-        <Badge badgeContent={1} variant="dot" anchorOrigin={{vertical: 'bottom', horizontal: 'right'}} showZero={true} invisible={true} color={"success"}>
-          <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{height: '1.8rem', width:'1.8rem'}}/>
+        <Badge badgeContent={1} variant="dot" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} showZero={true} invisible={true} color={"success"}>
+          <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
         </Badge>
         <p className='onlineUserNick'>{user.name}</p>
         <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
           {deaf ? <VolumeOff fontSize="small" /> : null}
           {muted ? <MicOffRounded fontSize="small" /> : null}
+          {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{color: "red"}} /> : null}
         </Grid>
       </div>
 
@@ -170,7 +172,7 @@ function OnlineUserIcon({ user }) {
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
-          transitionDuration={ 100 }
+          transitionDuration={100}
           MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
         >
           <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
@@ -179,7 +181,7 @@ function OnlineUserIcon({ user }) {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant="dot"
             >
-              <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width:'4rem' }} style={{ border: "3px solid white" }}/>
+              <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
             </StyledBadge>
             <p style={{ marginTop: ".8rem" }}>{user.name}</p>
           </div>
@@ -201,10 +203,10 @@ function OnlineUserIcon({ user }) {
             </div>
           </MenuItem>
           <Divider sx={{ my: 0.5 }} variant='middle' />
-          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }}/>Send message</MenuItem> : null }
-          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/>Kick</MenuItem> : null }
-          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }}/> Ban</MenuItem> : null }
-          {localStorage.getItem("id") === user.id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }}/> Settings</MenuItem> : null }
+          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem> : null}
+          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem> : null}
+          {localStorage.getItem("id") !== user.id ? <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem> : null}
+          {localStorage.getItem("id") === user.id ? <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem> : null}
         </Menu>
       </ThemeProvider>
     </div>
