@@ -31,6 +31,7 @@ class User {
         // videoRtc stuff
         this.socket.on("client.negotiateVideoRtc", (data, cb) => this.negotiateVideoRtc(data, cb));
         this.socket.on("client.subscribeVideo", (data, cb) => this.subscribeVideo(data, cb));
+        this.socket.on("client.startVideoBroadcast", (data) => this.startVideoBroadcast(data));
         this.socket.on("client.stopVideoBroadcast", (data) => this.stopVideoBroadcast(data));
         this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
         this.socket.on("client.videoIceCandidate", (data) => this.setVideoIceCandidate(data));
@@ -269,9 +270,15 @@ class User {
         }
     }
 
-    stopVideoBroadcast(data, this) {
+    startVideoBroadcast(data) {
+        if(this.videoRtc) {
+            this.videoRtc.broadcastVideo(data, this);
+        }
+    }
+
+    stopVideoBroadcast(data) {
         if (this.videoRtc) {
-            const resp = this.videoRtc.stopVideoBroadcast(data);
+            const resp = this.videoRtc.stopVideoBroadcast(data, this);
             switch (resp) {
                 case "NO-ID":
                     console.error("NO-ID");

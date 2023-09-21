@@ -51,7 +51,7 @@ class VideoRTC {
                 console.log("Got video track from user " + id);
                 this.peers.set(id, { peer, videoStream: e.streams[0], videoSubscriptionsIds: [], outStreams: [] });
                 //Notify users that the stream has started
-                if(e.track.kind === "video"){
+                if (e.track.kind === "video") {
                     user.notifyUsersAboutBroadcast({ id, streamId: e.streams[0].id });
                 }
             };
@@ -71,7 +71,7 @@ class VideoRTC {
                             let parsed = sdpTransform.parse(answer.sdp);
                             //edit the sdp to make the video look better
                             parsed.media.forEach((media) => {
-                                if(media.type === "video"){
+                                if (media.type === "video") {
                                     //media.fmtp[0].config = goodH264Settings;
                                 }
                             });
@@ -88,6 +88,19 @@ class VideoRTC {
                         });
                 });
         });
+    }
+
+    async stopVideoBroadcast(data, user) {
+        let sender = data.id;
+        if (typeof sender !== "string") id = String(sender);
+        console.log("User " + sender + " stopped broadcasting video");
+        if (!sender) return reject("NO-ID");
+        if (this.peers.has(sender)) {
+            this.peers.get(sender).peer.close();
+            this.peers.delete(sender);
+            //notify users that the stream has stopped
+            user.notifyUsersAboutBroadcastStop({ id: sender, streamId: null });
+        }
     }
 
     isBroadcasting(id) {
@@ -186,18 +199,6 @@ class VideoRTC {
 
             resolve(true);
         });
-    }
-
-    async stopVideoBroadcast(data, user) {
-        let sender = data.id;
-        console.log("User " + sender + " stopped broadcasting video");
-        if (!sender) return reject("NO-ID");
-        if (this.peers.has(sender)) {
-            this.peers.get(sender).peer.close();
-            this.peers.delete(sender);
-            //notify users that the stream has stopped
-            user.notifyUsersAboutBroadcastStop({ id: sender, streamId: null });
-        }
     }
 
     addCandidate(data) {

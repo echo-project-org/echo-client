@@ -122,7 +122,6 @@ function OnlineUserIcon({ user }) {
         setTalking(audioData.talking);
       }
     });
-
     ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         console.log("updating ui for video broadcast", data)

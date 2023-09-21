@@ -416,6 +416,7 @@ class EchoProtocol {
 
   stopVideoBroadcast(data) {
     if (this.socket) {
+      console.log("User", data.id, "stopped broadcasting video", data.streamId)
       this.socket.emit("client.stopVideoBroadcast", data);
     }
   }
