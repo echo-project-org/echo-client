@@ -130,6 +130,12 @@ class User {
         return this.currentRoom;
     }
 
+    isBroadcastingVideo() {
+        if( this.videoRtc) {
+            return this.videoRtc.isBroadcastingVideo(this.id);
+        }
+    }
+
     // send the chat message to the non-sender users
     receiveChatMessage(data) {
         this.socket.emit("server.receiveChatMessage", data);

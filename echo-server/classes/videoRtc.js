@@ -90,6 +90,12 @@ class VideoRTC {
         });
     }
 
+    isBroadcasting(id) {
+        if (!id) return false;
+        if (typeof id !== "string") id = String(id);
+        return this.peers.has(id);
+    }
+
     handleStreamChanged(data) {
         let { id, streamId } = data;
         if (!id) return console.error("NO-ID");

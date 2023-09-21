@@ -99,6 +99,9 @@ class EchoProtocol {
       this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
       this.updateUser({ id: data.id, field: "muted", value: data.muted });
       this.updateUser({ id: data.id, field: "deaf", value: data.deaf });
+      if (data.broadcastingVideo) {
+        this.videoBroadcastStarted({ id: data.id, streamId: null });
+      }
       this.userJoinedChannel(data);
       // render the component Room with the new user
     });
