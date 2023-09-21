@@ -211,7 +211,7 @@ return (
           </div>
         </MenuItem>
         <Divider sx={{ my: 0.5 }} variant='middle' />
-        <OnlineUsersMenuItems user={user} handleClose={handleClose} />
+        <OnlineUsersMenuItems user={user} broadcastingVideo={broadcastingVideo} handleClose={handleClose} />
       </Menu>
     </ThemeProvider>
   </div>
