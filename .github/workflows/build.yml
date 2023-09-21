@@ -36,18 +36,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: echo
-        path: electron/out/make/*
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: electron/out/make/*
-        tag_name: ${{ github.ref }}
-        body: |
-          **Changes**
-          ${{ github.event.release.body }}
-        draft: false
-        prerelease: false
-        token: ${{ secrets.GITHUB_TOKEN }}
+        path: out/*
 
   # build_on_linux:
   #   runs-on: ubuntu-latest
