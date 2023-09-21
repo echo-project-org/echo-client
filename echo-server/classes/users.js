@@ -66,7 +66,7 @@ class User {
     }
 
     notifyUsersAboutBroadcastStop(data) {
-        this.triggerEvent("videoBroadcastStopped", data)
+        this.triggerEvent("videoBroadcastStop", data)
     }
 
     videoBroadcastStarted(data) {
