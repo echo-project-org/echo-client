@@ -36,6 +36,7 @@ jobs:
 
       - name: Build Electron App
         id: build_electron_app
+        working-directory: ./electron
         run: |
           $build_output = npm run make
           echo "artifact_path=$(echo $build_output | Select-String -Pattern '\[DATA\] Artifacts available at: ' | ForEach-Object { $_.Matches.Value.Substring(29) })" >> $GITHUB_ENV
