@@ -51,15 +51,16 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Executable
+      - name: Upload Executables
         id: upload-executables
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/make/*.exe
-          asset_name: echo-${{ steps.extract_version.outputs.version }}.exe
+          asset_path: |
+            ./electron/out/make/squirrel.windows/x64/Echo-0.1.0 Setup.exe 
+          asset_name: echo-${{ steps.extract_version.outputs.version }}-executables.zip
           asset_content_type: application/zip
 
       - name: Upload Package
@@ -69,7 +70,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/make/*.nupkg
+          asset_path: |
+            ./electron/out/make/squirrel.windows/x64/echo-0.1.0-full.nupkg
           asset_name: echo-${{ steps.extract_version.outputs.version }}.nupkg
           asset_content_type: application/zip
 
