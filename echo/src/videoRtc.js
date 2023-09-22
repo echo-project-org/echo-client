@@ -181,13 +181,12 @@ class videoRtc {
     async handleNegotiationNeededEvent(peer) {
         let senderCodecs = RTCRtpSender.getCapabilities('video').codecs.filter((codec) => {
             console.log(codec);
-            return true;
+            return codec.mimeType === 'video/VP9';
         });
 
         let receiverCodecs = RTCRtpReceiver.getCapabilities('video').codecs.filter((codec) => {
             console.log(codec);
-            return true;
-            //return codec.mimeType !== 'video/VP8' && codec.mimeType !== 'video/VP9';
+            return codec.mimeType === 'video/VP9';
         });
         peer.getTransceivers().forEach((transceiver) => {
             transceiver.setCodecPreferences([...senderCodecs, ...receiverCodecs]);
