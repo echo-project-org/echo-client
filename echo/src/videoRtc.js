@@ -123,13 +123,13 @@ class videoRtc {
         peer.ontrack = (e) => { this.handleTrackEvent(e) };
         peer.onconnectionstatechange = () => {
             if (peer.connectionState === 'failed') {
-                peer.restartIce();
+                //peer.restartIce();
             }
         }
 
         peer.oniceconnectionstatechange = () => {
             if (peer.iceconnectionState === 'failed') {
-                peer.restartIce()
+                //peer.restartIce()
             }
         }
 
