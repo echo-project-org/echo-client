@@ -35,14 +35,18 @@ jobs:
         run: npm install
 
       - name: Build Electron App
+        id: build_electron_app
         working-directory: ./electron
         run: |
           npm run make
-          echo "::set-output name=artifact_path::$(grep -oP '\[DATA\] Artifacts available at: \K.*' make.log)"
+          echo "artifact_path=$(grep -oP '\[DATA\] Artifacts available at: \K.*' make.log)" >> $artifact_path
+        # echo "::set-output name=artifact_path::$(grep -oP '\[DATA\] Artifacts available at: \K.*' make.log)"
 
       - name: Extract version from package.json
         id: extract_version
-        run: echo "::set-output name=version::$(cat ./echo/package.json | jq -r .version)"
+        run: |
+          echo "version=$(cat ./echo/package.json | jq -r .version)" >> $version
+        # echo "::set-output name=version::$(cat ./echo/package.json | jq -r .version)"
 
       - name: Create GitHub Release
         id: create_release
@@ -61,7 +65,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: |
-            ${{ steps.build-electron-app.outputs.artifact_path }}/*.exe
+            ${{ steps.build_electron_app.outputs.artifact_path }}/*.exe
           asset_name: echo-${{ steps.extract_version.outputs.version }}-executables.zip
           asset_content_type: application/zip
 
@@ -73,7 +77,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: |
-            ${{ steps.build-electron-app.outputs.artifact_path }}/*.nupkg
+            ${{ steps.build_electron_app.outputs.artifact_path }}/*.nupkg
           asset_name: echo-${{ steps.extract_version.outputs.version }}.nupkg
           asset_content_type: application/zip
 
