@@ -9,6 +9,9 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
 
+    env:
+      CI: false
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -24,9 +27,7 @@ jobs:
 
       - name: Build React Frontend
         working-directory: ./echo
-        run: |
-          echo "CI=false" > .env.production.local
-          npm run build
+        run: npm run build
 
       - name: Install dependencies for the Electron app
         working-directory: ./electron
