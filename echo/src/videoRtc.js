@@ -2,7 +2,7 @@ import { ep } from "./index";
 
 const { ipcRenderer } = window.require('electron');
 const sdpTransform = require('sdp-transform');
-const goodH264Settings = "x-google-max-bitrate=20000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
+const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
 
 const ICE_SERVERS = [{
     username: 'echo',
@@ -33,12 +33,9 @@ class videoRtc {
                 mandatory: {
                     chromeMediaSource: 'desktop',
                     chromeMediaSourceId: videoSourceId,
-                    minWidth: 800,
-                    minHeight: 600,
-                    maxWidth: 1920,
-                    maxHeight: 1080,
-                    maxFrameRate: 60,
-                    minFrameRate: 30
+                    width: { min: 800, ideal: 1920, max: 1920 },
+                    height: { min: 600, ideal: 1080, max: 1080 },
+                    frameRate: { min: 30, ideal: 60, max: 60 },
                 }
             },
         };
@@ -94,12 +91,13 @@ class videoRtc {
     }
 
     getVideo(remoteId) {
-        if (this.streamIds.has(remoteId)) {
+        let ri = String(remoteId);
+        if (this.streamIds.has(ri)) {
             return this.inputstreams.filter((stream) => {
-                return stream.stream.id === this.streamIds.get(remoteId);
+                return stream.stream.id === this.streamIds.get(ri);
             })[0].stream;
         } else {
-            console.error("No stream id for", remoteId);
+            console.error("No stream id for", ri);
             return null;
         }
     }
@@ -137,12 +135,14 @@ class videoRtc {
     }
 
     async subscribeToVideo(id) {
+        console.log("Subscribing to video from", id);
         ep.subscribeVideo({
             senderId: id,
             receiverId: this.id
         }, (a) => {
             if (a) {
-                this.streamIds.set(id, a);
+                console.log("Got video stream for id", id, a);
+                this.streamIds.set(String(id), a);
             } else {
                 console.error("Failed to subscribe to video from", id);
                 return;
@@ -150,13 +150,9 @@ class videoRtc {
         })
     }
 
-    getScreenShareStream(id) {
-        return this.stream;
-    }
-
     unsubscribeFromVideo(id = null) {
         if (id) {
-            let streamId = this.streamIds.get(id);
+            let streamId = this.streamIds.get(String(id));
             if (streamId) {
                 this.inputstreams.filter((stream) => {
                     return stream.stream.id === streamId;
@@ -188,15 +184,16 @@ class videoRtc {
 
     async handleNegotiationNeededEvent(peer) {
         const offer = await peer.createOffer();
-        let parsed = sdpTransform.parse(offer.sdp);
-        //edit sdp to make video look better
-        parsed.media.forEach((media) => {
-            if(media.type === "video"){
-                //media.fmtp[0].config = goodH264Settings;
+        var arr = offer.sdp.split('\r\n');
+        arr.forEach((line, index) => {
+            if (line.startsWith('a=fmtp:')) {
+                arr[index] = line.concat(';'.concat(goodH264Settings));
+            } else if (line.startsWith('a=mid:1') || line.startsWith('a=mid: video')) {
+                arr[index] = line.concat('\r\nb=AS:20000');
             }
         });
-        offer.sdp = sdpTransform.write(parsed);
-        console.log(parsed)
+
+        offer.sdp = arr.join('\r\n');
 
         await peer.setLocalDescription(offer);
 
@@ -213,9 +210,17 @@ class videoRtc {
         const remoteDesc = new RTCSessionDescription(remoteOffer);
         this.peer.setRemoteDescription(remoteDesc).then(() => {
             this.peer.createAnswer().then((answer) => {
-                let parsed = sdpTransform.parse(answer.sdp);
-                //edit sdp to make video look better
-                answer.sdp = sdpTransform.write(parsed);
+                var arr = answer.sdp.split('\r\n');
+                arr.forEach((line, index) => {
+                    if (line.startsWith('a=fmtp:')) {
+                        arr[index] = line.concat(';'.concat(goodH264Settings));
+                    } else if (line.startsWith('a=mid:1') || line.startsWith('a=mid: video')) {
+                        arr[index] = line.concat('\r\nb=AS:20000');
+                    }
+                });
+
+                answer.sdp = arr.join('\r\n');
+                console.log(answer.sdp)
 
                 this.peer.setLocalDescription(answer).then(() => {
                     cb(this.peer.localDescription);

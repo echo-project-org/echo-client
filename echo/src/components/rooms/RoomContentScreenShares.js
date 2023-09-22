@@ -61,7 +61,7 @@ function RoomContentScreenShares({ roomId }) {
 
     const toggleMuteStream = () => {
         setMuted(!muted);
-        setScreenShareStream(ep.getScreenShareStream(1));
+        setScreenShareStream(ep.getVideo(1));
     }
 
     return (

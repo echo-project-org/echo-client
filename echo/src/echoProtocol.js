@@ -394,18 +394,18 @@ class EchoProtocol {
     }
   }
 
-  getScreenShareStream(remoteId) {
-    if (this.vt) return this.vt.getScreenShareStream(remoteId);
-  }
-
   /**
    * @param {string} remoteId Id from the user to get the video stream from
    * @returns {MediaStream} Screen share stream
    */
   getVideo(remoteId) {
-    let stream = this.vt.getVideo(remoteId);
-    console.log("Got video stream", stream);
-    return stream;
+    if(this.vt){
+      let stream = this.vt.getVideo(remoteId);
+      console.log("Got video stream", stream);
+      return stream;
+    } else {
+      console.error("VideoRtc not initialized");
+    }
   }
 
   negotiateVideoRtc(data, cb) {

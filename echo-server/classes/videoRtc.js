@@ -1,7 +1,7 @@
 const webrtc = require("wrtc");
 const sdpTransform = require("sdp-transform");
 
-const goodH264Settings = "x-google-max-bitrate=20000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
+const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";
 
 class VideoRTC {
     constructor() {
@@ -20,14 +20,16 @@ class VideoRTC {
     async handleNegotiationNeededEvent(peer, user) {
         console.log("Negotiation needed");
         const offer = await peer.createOffer();
-        let parsed = sdpTransform.parse(offer.sdp);
-        //edit the sdp to make the video look better
-        parsed.media.forEach((media) => {
-            if (media.type === "video") {
-                //media.fmtp[0].config = goodH264Settings;
+        var arr = offer.sdp.split('\r\n');
+        arr.forEach((line, index) => {
+            if (line.startsWith('a=fmtp:')) {
+                arr[index] = line.concat(';'.concat(goodH264Settings));
+            } else if (line.startsWith('a=mid:1') || line.startsWith('a=mid: video')) {
+                arr[index] = line.concat('\r\nb=AS:20000');
             }
         });
-        offer.sdp = sdpTransform.write(parsed);
+
+        offer.sdp = arr.join('\r\n');
         await peer.setLocalDescription(offer);
 
         user.videoRenegotiationNeeded({
@@ -68,15 +70,16 @@ class VideoRTC {
                     console.log("User" + id + " connected and started broadcasting video");
                     peer.createAnswer()
                         .then((answer) => {
-                            let parsed = sdpTransform.parse(answer.sdp);
-                            //edit the sdp to make the video look better
-                            parsed.media.forEach((media) => {
-                                if (media.type === "video") {
-                                    //media.fmtp[0].config = goodH264Settings;
+                            var arr = answer.sdp.split('\r\n');
+                            arr.forEach((line, index) => {
+                                if (line.startsWith('a=fmtp:')) {
+                                    arr[index] = line.concat(';'.concat(goodH264Settings));
+                                } else if (line.startsWith('a=mid:1') || line.startsWith('a=mid: video')) {
+                                    arr[index] = line.concat('\r\nb=AS:20000');
                                 }
                             });
 
-                            answer.sdp = sdpTransform.write(parsed);
+                            answer.sdp = arr.join('\r\n');
 
                             peer.setLocalDescription(answer)
                                 .then(() => {

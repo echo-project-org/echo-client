@@ -93,7 +93,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 function OnlineUserIcon({ user }) {
-  console.log(">>> [OnlineUserIcon] Re-rendering component", user)
+  //console.log(">>> [OnlineUserIcon] Re-rendering component", user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);

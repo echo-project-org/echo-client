@@ -22,7 +22,7 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
     } else {
         return (
             <>
-                {broadcastingVideo ? <MenuItem onClick={handleClose}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
+                {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
                 <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem>
             </>
         )
