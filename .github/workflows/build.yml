@@ -51,13 +51,26 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Electron App
-        id: upload-release-asset
+      - name: Upload Executable
+        id: upload-executables
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/* # Change to the path where the Electron app build artifacts are located
-          asset_name: electron-app.zip # Change to your desired asset name
+          asset_path: ./electron/out/make/*.exe
+          asset_name: executables-and-packages-${{ steps.extract_version.outputs.version }}.exe
+          asset_content_type: application/zip
+
+      - name: Upload Package
+        id: upload-executables
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./electron/out/make/*.nupkg
+          asset_name: executables-and-packages-${{ steps.extract_version.outputs.version }}.nupkg
           asset_content_type: application/zip
 
       - name: Upload Source Code
@@ -67,17 +80,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/Echo-win32-x64/*
-          asset_name: source-code-${{ steps.extract_version.outputs.version }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload Executables and Packages
-        id: upload-executables
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.zth_token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/make/*.exe ./electron/out/make/*.nupkg
-          asset_name: executables-and-packages-${{ steps.extract_version.outputs.version }}.zip
+          asset_path: ./electron/out/Echo-win32-x64
+          asset_name: pre-compiled-${{ steps.extract_version.outputs.version }}.zip
           asset_content_type: application/zip
