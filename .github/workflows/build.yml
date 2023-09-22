@@ -12,10 +12,6 @@ jobs:
     env:
       CI: false
 
-    permissions:
-      contents: read
-      releases: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
