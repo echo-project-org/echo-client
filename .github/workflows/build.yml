@@ -38,15 +38,17 @@ jobs:
         id: build_electron_app
         working-directory: ./electron
         run: |
-          npm run make
-          echo "artifact_path=$(grep -oP '\[DATA\] Artifacts available at: \K.*' make.log)" >> $GITHUB_STATE
-        # echo "::set-output name=artifact_path::$(grep -oP '\[DATA\] Artifacts available at: \K.*' make.log)"
+          build_output=$(npm run make)
+          path_reg=$(echo "$build_output" | grep -oP '\[DATA\] Artifacts available at: \K.*')
+          echo $path_reg
+          echo "artifact_path=$path_reg" >> $GITHUB_STATE
 
       - name: Extract version from package.json
         id: extract_version
         run: |
-          echo "version=$(cat ./echo/package.json | jq -r .version)" >> $GITHUB_STATE
-        # echo "::set-output name=version::$(cat ./echo/package.json | jq -r .version)"
+          pkg_version=$(cat ./echo/package.json | jq -r .version)
+          echo $pkg_version
+          echo "version=$pkg_version" >> $GITHUB_STATE
 
       - name: Create GitHub Release
         id: create_release
