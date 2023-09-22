@@ -216,6 +216,7 @@ class ServerRTC {
             console.log("User " + sender + " stopped broadcasting audio, closing connection");
             let peer = this.peers.get(sender).peer;
             peer.close();
+            peer = null;
             this.peers.delete(sender);
         }
     }

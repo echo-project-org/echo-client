@@ -96,8 +96,11 @@ class VideoRTC {
         console.log("User " + sender + " stopped broadcasting video");
         if (!sender) return reject("NO-ID");
         if (this.peers.has(sender)) {
-            this.peers.get(sender).peer.close();
-            this.peers.delete(sender);
+            this.peers.get(sender).videoStream.getTracks().forEach((track) => {
+                track.stop();
+            });
+            let peer = this.peers.get(sender).peer
+            this.peers.set(sender, { peer: peer, videoStream: null, videoSubscriptionsIds: [] });
             //notify users that the stream has stopped
             user.notifyUsersAboutBroadcastStop({ id: sender, streamId: null });
         }

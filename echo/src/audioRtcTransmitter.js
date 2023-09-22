@@ -528,13 +528,13 @@ class audioRtcTransmitter {
     } else {
       console.warn("Peer is null")
     }
+    
+    ep.stopAudioBroadcast({ id: this.id });
 
     if (this.statsInterval) {
       clearInterval(this.statsInterval);
       this.statsInterval = null;
     }
-
-    ep.stopAudioBroadcast({ id: this.id });
 
     this.isTransmitting = false;
   }

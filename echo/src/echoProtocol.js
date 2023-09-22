@@ -210,6 +210,7 @@ class EchoProtocol {
     }
 
     if (this.vt) {
+      this.vt.stopSharing();
       this.vt.close();
       this.vt = null;
     }
@@ -304,6 +305,7 @@ class EchoProtocol {
     }
 
     this.stopReceiving();
+    this.stopReceivingVideo();
     this.stopTransmitting();
 
     if (this.socket) {
