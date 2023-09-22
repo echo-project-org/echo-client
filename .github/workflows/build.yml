@@ -50,6 +50,13 @@ jobs:
           echo $pkg_version
           echo "version=$pkg_version" >> $GITHUB_OUTPUT
 
+      - name: Extract all file names
+        id: extract_file_names
+        run: |
+          files=$(ls ${{ steps.build_electron_app.outputs.artifact_path }})
+          echo $files
+          echo "file_names=$files" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
