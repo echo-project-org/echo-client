@@ -59,18 +59,18 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./electron/out/make/*.exe
-          asset_name: executables-and-packages-${{ steps.extract_version.outputs.version }}.exe
+          asset_name: echo-${{ steps.extract_version.outputs.version }}.exe
           asset_content_type: application/zip
 
       - name: Upload Package
-        id: upload-executables
+        id: upload-package
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./electron/out/make/*.nupkg
-          asset_name: executables-and-packages-${{ steps.extract_version.outputs.version }}.nupkg
+          asset_name: echo-${{ steps.extract_version.outputs.version }}.nupkg
           asset_content_type: application/zip
 
       - name: Upload Source Code
