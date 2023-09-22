@@ -24,11 +24,7 @@ class videoRtc {
         this.streamIds = new Map();
 
         this.constraints = {
-            audio: {
-                mandatory: {
-                    chromeMediaSource: 'desktop',
-                }
-            },
+            audio: false,
             video: {
                 mandatory: {
                     chromeMediaSource: 'desktop',
@@ -183,6 +179,21 @@ class videoRtc {
     }
 
     async handleNegotiationNeededEvent(peer) {
+        let senderCodecs = RTCRtpSender.getCapabilities('video').codecs.filter((codec) => {
+            console.log(codec);
+            return true;
+        });
+
+        let receiverCodecs = RTCRtpReceiver.getCapabilities('video').codecs.filter((codec) => {
+            console.log(codec);
+            return true;
+            //return codec.mimeType !== 'video/VP8' && codec.mimeType !== 'video/VP9';
+        });
+        peer.getTransceivers().forEach((transceiver) => {
+            transceiver.setCodecPreferences([...senderCodecs, ...receiverCodecs]);
+        });
+
+
         const offer = await peer.createOffer();
         var arr = offer.sdp.split('\r\n');
         arr.forEach((line, index) => {
