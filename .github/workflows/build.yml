@@ -64,9 +64,9 @@ jobs:
           echo "Version: $version"
           $first_digit = $version.Split('.')[0]
           if ($first_digit -ne '0') {
-            echo "is_prerelease=true" >> $ENV:GITHUB_OUTPUT
-          } else {
             echo "is_prerelease=false" >> $ENV:GITHUB_OUTPUT
+          } else {
+            echo "is_prerelease=true" >> $ENV:GITHUB_OUTPUT
           }
 
       - name: Create GitHub Release
