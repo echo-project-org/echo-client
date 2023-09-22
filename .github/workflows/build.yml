@@ -38,12 +38,16 @@ jobs:
         working-directory: ./electron
         run: npm run make
 
+      - name: Extract version from package.json
+        id: extract_version
+        run: echo "::set-output name=version::$(cat ./echo/package.json | jq -r .version)"
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v1.0.0 # Replace with your desired version number
-          release_name: Release v1.0.0 # Replace with your desired release name
+          tag_name: v${{ steps.extract_version.outputs.version }}
+          release_name: Release v${{ steps.extract_version.outputs.version }}
           draft: false
           prerelease: false
 
@@ -54,4 +58,26 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./electron/out/* # Change to the path where the Electron app build artifacts are located
           asset_name: electron-app.zip # Change to your desired asset name
+          asset_content_type: application/zip
+
+      - name: Upload Source Code
+        id: upload-source-code
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./electron/out/Echo-win32-x64/*
+          asset_name: source-code-${{ steps.extract_version.outputs.version }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload Executables and Packages
+        id: upload-executables
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./electron/out/make/*.exe ./electron/out/make/*.nupkg
+          asset_name: executables-and-packages-${{ steps.extract_version.outputs.version }}.zip
           asset_content_type: application/zip
