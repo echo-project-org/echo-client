@@ -106,6 +106,8 @@ function OnlineUserIcon({ user }) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
+    console.log(">>> [OnlineUserIcon] useEffect", user)
+
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
       console.log(">>> [OnlineUserIcon] updatedAudioState", data)
       ep.updateUser({ id: data.id, field: "muted", value: data.muted });
@@ -122,30 +124,31 @@ function OnlineUserIcon({ user }) {
         setTalking(audioData.talking);
       }
     });
-    ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
-      if (data.id === user.id) {
-        console.log("updating ui for video broadcast", data)
-        setBroadcastingVideo(true)
-      }
-    });
 
-    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
-      if (data.id === user.id) {
-        console.log("updating ui for video broadcast stop", data)
-        setBroadcastingVideo(false)
-      }
-    });
+    // ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
+    //   if (data.id === user.id) {
+    //     console.log("updating ui for video broadcast", data)
+    //     setBroadcastingVideo(true)
+    //   }
+    // });
+
+    // ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+    //   if (data.id === user.id) {
+    //     console.log("updating ui for video broadcast stop", data)
+    //     setBroadcastingVideo(false)
+    //   }
+    // });
 
     // used on re-render of component to set user's first mic and deaf state
     // DO NOT TOUCH THIS (i did this thrice already and fucked up shit)
     setDeaf(user.deaf);
-  setMuted(user.muted);
+    setMuted(user.muted);
 
   return () => {
     ep.releaseGroup('OnlineUserIcon.updatedAudioState');
     ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
   };
-}, []);
+}, [user]);
 
 const handleClick = (event) => {
   setAnchorEl(event.currentTarget);
