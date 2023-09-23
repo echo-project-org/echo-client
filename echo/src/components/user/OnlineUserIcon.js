@@ -106,8 +106,6 @@ function OnlineUserIcon({ user }) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    console.log(">>> [OnlineUserIcon] useEffect", user)
-
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
       console.log(">>> [OnlineUserIcon] updatedAudioState", data)
       ep.updateUser({ id: data.id, field: "muted", value: data.muted });
