@@ -1,7 +1,7 @@
 import '../../css/onlineusers.css'
 
 import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, styled } from '@mui/material'
-import { VolumeUp, Message, DoDisturb, Gavel, Settings, MicOffRounded, VolumeOff } from '@mui/icons-material';
+import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 
@@ -80,18 +80,6 @@ const theme = createTheme({
   },
 });
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: "15%",
-    backgroundColor: '#44b700',
-    color: '#44b700',
-    width: "20%",
-    height: "20%",
-    borderRadius: "50%",
-    // boxShadow: "0 0 0 8px #44b700",
-  }
-}));
-
 function OnlineUserIcon({ user }) {
   //console.log(">>> [OnlineUserIcon] Re-rendering component", user)
   user.id = user.id.toString();
@@ -168,9 +156,7 @@ return (
       aria-haspopup="true"
       aria-expanded={open ? 'true' : undefined}
     >
-      <Badge badgeContent={1} variant="dot" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} showZero={true} invisible={true} color={"success"}>
-        <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
-      </Badge>
+      <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
       <p className='onlineUserNick'>{user.name}</p>
       <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
         {deaf ? <VolumeOff fontSize="small" /> : null}
@@ -188,13 +174,13 @@ return (
         MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
       >
         <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
-          <StyledBadge
-            overlap="circular"
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            variant="dot"
-          >
+          <div className="avatarBadge">
             <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
-          </StyledBadge>
+            {localStorage.getItem("online") === "1" ? <Circle className="statusIndicator" style={{ color: "#44b700" }} /> : null}
+            {localStorage.getItem("online") === "2" ? <DarkMode className="statusIndicator rotateMoon" style={{ color: "#ff8800" }} /> : null}
+            {localStorage.getItem("online") === "3" ? <DoNotDisturbOn className="statusIndicator" style={{ color: "#fd4949" }} /> : null}
+            {localStorage.getItem("online") === "4" ? <Circle className="statusIndicator" style={{ color: "#f5e8da" }} /> : null}
+          </div>
           <p style={{ marginTop: ".8rem" }}>{user.name}</p>
         </div>
 

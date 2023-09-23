@@ -2,7 +2,7 @@ import "../../css/settings.css";
 
 import { useState, useEffect } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Divider } from '@mui/material'
-import { CameraAlt, Circle, DoNotDisturbOn, Loop, ModeNight } from '@mui/icons-material';
+import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
 import { ep } from "../../index";
 
@@ -149,7 +149,7 @@ function UserSettings() {
       case "2":
         return (
           <Container className="statusText">
-            <ModeNight style={{ color: "#ff8800" }} />
+            <DarkMode style={{ color: "#ff8800" }} />
             <p>Away</p>
           </Container>
         );
@@ -186,7 +186,7 @@ function UserSettings() {
             Online
           </Grid>
           <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <ModeNight style={{ color: "#ff8800" }} />
+            <DarkMode style={{ color: "#ff8800" }} />
             Away
           </Grid>
           <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
@@ -271,8 +271,12 @@ function UserSettings() {
         statusId = 0;
         break;
     }
+    statusId = String(statusId);
     localStorage.setItem("online", statusId);
     ep.updatePersonalSettings({ id: localStorage.getItem("id"), field: "online", value: statusId });
+    api.call("users/status", "POST", { id: localStorage.getItem("id"), status: statusId })
+      .then((res) => { })
+      .catch((err) => { console.log(err); });
     setStatusHover(false);
   }
 
