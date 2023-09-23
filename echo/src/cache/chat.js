@@ -8,9 +8,9 @@ class Chat {
         message.userId = String(message.userId);
         message.dateDisplay = this.convertDate(message.date);
         this.messages.push(message);
-        if (!message.insertDate && message.date) message.insertDate = new Date(message.date).toUTCString();
+        if (!message.insertDate && message.date) message.insertDate = new Date(message.date).toISOString();
         this.cached = true;
-        console.log("[CACHE] Added message to cache", message)
+        // console.log("[CACHE] Added message to cache", message)
         return message;
     }
 

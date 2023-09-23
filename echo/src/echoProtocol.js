@@ -184,7 +184,7 @@ class EchoProtocol {
     if (room) {
       const user = this.cachedUsers.get(data.id);
       if (user) {
-        console.log("got message chat from socket", data)
+        // console.log("got message chat from socket", data)
         data.userId = user.id;
         data.img = user.userImage;
         data.name = user.name;
@@ -498,6 +498,11 @@ class EchoProtocol {
     else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
   }
 
+  getRoom(id) {
+    if (typeof id !== "string") id = id.toString();
+    return this.cachedRooms.get(id);
+  }
+
   getUser(id) {
     return this.cachedUsers.get(id);
   }
@@ -513,6 +518,7 @@ class EchoProtocol {
 
   // chat messages function
   sendChatMessage(data) {
+    console.log("Sending chat message", data)
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
     if (typeof data.userId !== "string") data.userId = data.userId.toString();
     const room = this.cachedRooms.get(data.roomId);
@@ -591,6 +597,8 @@ EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
 }
 
 EchoProtocol.prototype.updatedAudioState = function (data) {
+  this.updateUser({ id: data.id, field: "muted", value: data.muted });
+  this.updateUser({ id: data.id, field: "deaf", value: data.deaf });
   this.emit("updatedAudioState", data);
 }
 

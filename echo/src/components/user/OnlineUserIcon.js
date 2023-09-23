@@ -1,7 +1,7 @@
 import '../../css/onlineusers.css'
 
 import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, styled } from '@mui/material'
-import { VolumeUp, Message, DoDisturb, Gavel, Settings, MicOffRounded, VolumeOff } from '@mui/icons-material';
+import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 
@@ -80,20 +80,8 @@ const theme = createTheme({
   },
 });
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: "15%",
-    backgroundColor: '#44b700',
-    color: '#44b700',
-    width: "20%",
-    height: "20%",
-    borderRadius: "50%",
-    // boxShadow: "0 0 0 8px #44b700",
-  }
-}));
-
 function OnlineUserIcon({ user }) {
-  //console.log(">>> [OnlineUserIcon] Re-rendering component", user)
+  console.log(">>> [OnlineUserIcon] Re-rendering component", user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -108,10 +96,7 @@ function OnlineUserIcon({ user }) {
   useEffect(() => {
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
       console.log(">>> [OnlineUserIcon] updatedAudioState", data)
-      ep.updateUser({ id: data.id, field: "muted", value: data.muted });
-      ep.updateUser({ id: data.id, field: "deaf", value: data.deaf });
       if (data.id === user.id) {
-        console.log(">>> [OnlineUserIcon] updatedAudioState 2", data)
         setDeaf(data.deaf);
         setMuted(data.muted);
       }
@@ -122,30 +107,31 @@ function OnlineUserIcon({ user }) {
         setTalking(audioData.talking);
       }
     });
-    ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
-      if (data.id === user.id) {
-        console.log("updating ui for video broadcast", data)
-        setBroadcastingVideo(true)
-      }
-    });
 
-    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
-      if (data.id === user.id) {
-        console.log("updating ui for video broadcast stop", data)
-        setBroadcastingVideo(false)
-      }
-    });
+    // ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
+    //   if (data.id === user.id) {
+    //     console.log("updating ui for video broadcast", data)
+    //     setBroadcastingVideo(true)
+    //   }
+    // });
+
+    // ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+    //   if (data.id === user.id) {
+    //     console.log("updating ui for video broadcast stop", data)
+    //     setBroadcastingVideo(false)
+    //   }
+    // });
 
     // used on re-render of component to set user's first mic and deaf state
     // DO NOT TOUCH THIS (i did this thrice already and fucked up shit)
     setDeaf(user.deaf);
-  setMuted(user.muted);
+    setMuted(user.muted);
 
   return () => {
     ep.releaseGroup('OnlineUserIcon.updatedAudioState');
     ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
   };
-}, []);
+}, [user]);
 
 const handleClick = (event) => {
   setAnchorEl(event.currentTarget);
@@ -170,9 +156,7 @@ return (
       aria-haspopup="true"
       aria-expanded={open ? 'true' : undefined}
     >
-      <Badge badgeContent={1} variant="dot" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} showZero={true} invisible={true} color={"success"}>
-        <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
-      </Badge>
+      <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
       <p className='onlineUserNick'>{user.name}</p>
       <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
         {deaf ? <VolumeOff fontSize="small" /> : null}
@@ -190,13 +174,13 @@ return (
         MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
       >
         <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
-          <StyledBadge
-            overlap="circular"
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            variant="dot"
-          >
+          <div className="avatarBadge">
             <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
-          </StyledBadge>
+            {user.online === "1" ? <Circle className="statusIndicator" style={{ color: "#44b700" }} /> : null}
+            {user.online === "2" ? <DarkMode className="statusIndicator rotateMoon" style={{ color: "#ff8800" }} /> : null}
+            {user.online === "3" ? <DoNotDisturbOn className="statusIndicator" style={{ color: "#fd4949" }} /> : null}
+            {user.online === "4" ? <Circle className="statusIndicator" style={{ color: "#f5e8da" }} /> : null}
+          </div>
           <p style={{ marginTop: ".8rem" }}>{user.name}</p>
         </div>
 

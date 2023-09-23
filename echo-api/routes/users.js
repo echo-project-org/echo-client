@@ -111,11 +111,11 @@ router.get("/status/:id", (req, res) => {
 router.post('/status', (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
     
-    const ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
+    // const ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
     const { id, status } = req.body;
     if (!id || !status) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("UPDATE users SET online = '" + status + "', lastSeen = CURRENT_TIMESTAMP(), ip = '" + ip + "' WHERE id = " + id, function (err, result, fields) {
+    req.database.query("UPDATE users SET online = ? WHERE id = ?", [status, id], (err, result, fields) => {
         if (err) console.log(err);
         if (err) return res.status(500).send({ error: "You messed up the request." });
         res.status(200).send({ message: "Status updated!" });

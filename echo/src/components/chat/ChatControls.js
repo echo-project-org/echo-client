@@ -63,8 +63,7 @@ function ChatControls({ onEmojiOn, roomId }) {
     if (document.getElementById("messageBox").value === "") return;
     const message = document.getElementById("messageBox").value;
     document.getElementById("messageBox").value = "";
-    console.log("sending message", message);
-    ep.sendChatMessage({ roomId, userId: localStorage.getItem("id"), message, self: true, date: new Date().toUTCString() });
+    ep.sendChatMessage({ roomId, userId: localStorage.getItem("id"), message, self: true, date: new Date().toISOString() });
   }
 
   useEffect(() => {
