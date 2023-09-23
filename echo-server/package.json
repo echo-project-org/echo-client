@@ -9,9 +9,9 @@
   "author": "zThundy",
   "license": "ISC",
   "dependencies": {
+    "mediasoup": "^3.12.13",
     "nodemon": "^2.0.22",
     "sdp-transform": "^2.14.1",
-    "socket.io": "^4.6.1",
-    "wrtc": "^0.4.7"
+    "socket.io": "^4.6.1"
   }
 }
