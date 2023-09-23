@@ -15,11 +15,11 @@
   overflow: auto;
   display: flex;
   flex-direction: column-reverse;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   height: 100%;
   width: 100%;
   background-color: var(--chat-background-color);
-  border-bottom-left-radius: 1rem;
+  border-radius: 0 0 1rem 1rem;
   line-break: anywhere;
   position: relative;
 }

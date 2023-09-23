@@ -17,6 +17,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     maxWidth: "calc(100vw - 20rem)",
     backgroundColor: "#3e2542",
     padding: "0 0 0 .6rem",
+    maxHeight: "43.09px",
+    top: "20%",
   },
   [theme.breakpoints.up('lg')]: {
     margin: "0 0 0 1rem",
@@ -27,6 +29,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     maxWidth: "calc(100vw - 20rem)",
     backgroundColor: "#3e2542",
     padding: "0 0 0 .6rem",
+    maxHeight: "43.09px",
+    top: "20%",
   },
   [theme.breakpoints.up('xl')]: {
     margin: "0 0 0 1rem",
@@ -37,6 +41,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     maxWidth: "calc(100vw - 20rem)",
     backgroundColor: "#3e2542",
     padding: "0 0 0 .6rem",
+    maxHeight: "43.09px",
+    top: "20%",
   },
 }));
 
