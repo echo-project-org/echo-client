@@ -1,4 +1,5 @@
 const Loader = require("./classes/configLoader");
+const mediasoup = require("mediasoup");
 const config = new Loader();
 
 const { Server } = require('socket.io')
