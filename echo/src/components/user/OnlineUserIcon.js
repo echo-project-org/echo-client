@@ -81,7 +81,7 @@ const theme = createTheme({
 });
 
 function OnlineUserIcon({ user }) {
-  //console.log(">>> [OnlineUserIcon] Re-rendering component", user)
+  console.log(">>> [OnlineUserIcon] Re-rendering component", user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -176,10 +176,10 @@ return (
         <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
           <div className="avatarBadge">
             <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
-            {localStorage.getItem("online") === "1" ? <Circle className="statusIndicator" style={{ color: "#44b700" }} /> : null}
-            {localStorage.getItem("online") === "2" ? <DarkMode className="statusIndicator rotateMoon" style={{ color: "#ff8800" }} /> : null}
-            {localStorage.getItem("online") === "3" ? <DoNotDisturbOn className="statusIndicator" style={{ color: "#fd4949" }} /> : null}
-            {localStorage.getItem("online") === "4" ? <Circle className="statusIndicator" style={{ color: "#f5e8da" }} /> : null}
+            {user.online === "1" ? <Circle className="statusIndicator" style={{ color: "#44b700" }} /> : null}
+            {user.online === "2" ? <DarkMode className="statusIndicator rotateMoon" style={{ color: "#ff8800" }} /> : null}
+            {user.online === "3" ? <DoNotDisturbOn className="statusIndicator" style={{ color: "#fd4949" }} /> : null}
+            {user.online === "4" ? <Circle className="statusIndicator" style={{ color: "#f5e8da" }} /> : null}
           </div>
           <p style={{ marginTop: ".8rem" }}>{user.name}</p>
         </div>
