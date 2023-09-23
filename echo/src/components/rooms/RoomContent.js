@@ -7,6 +7,8 @@ import { ChatBubble, PeopleAlt } from '@mui/icons-material';
 import RoomContentChat from "./RoomContentChat";
 import RoomContentScreenShares from "./RoomContentScreenShares";
 
+import { ep } from "../../index";
+
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     margin: "0 0 0 1rem",
@@ -49,6 +51,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 function RoomContent({ roomId }) {
   const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
   const [contentSelected, setContentSelected] = useState("chat");
+  const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
+  const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
 
   const computeRoomContent = () => {
     switch (contentSelected) {
@@ -61,6 +65,17 @@ function RoomContent({ roomId }) {
     }
   }
 
+  useEffect(() => {
+    console.log("should be calling room data", roomId)
+    const roomData = ep.getRoom(roomId);
+    console.log("roomData", roomData)
+    if (roomData) {
+      console.log("im in roomData if statement")
+      setRoomName(roomData.name);
+      setRoomDescription(roomData.description);
+    }
+  }, [roomId]);
+
   return (
     <Grid container>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -71,11 +86,11 @@ function RoomContent({ roomId }) {
               flexDirection: "row",
             }} >
               <Container className="roomTitleContainer">
-                MAX (20)
+                {roomName}
               </Container>
               <Divider orientation="vertical" sx={{ backgroundColor: "#2e2030" }} />
               <Container className="roomDescriptionContainer">
-                MAX (150)
+                {roomDescription}
               </Container>
             </Grid>
             <Grid item xs={1} sm={1} md={2} lg={2} xl={2}>

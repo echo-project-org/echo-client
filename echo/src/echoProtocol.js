@@ -498,6 +498,11 @@ class EchoProtocol {
     else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
   }
 
+  getRoom(id) {
+    if (typeof id !== "string") id = id.toString();
+    return this.cachedRooms.get(id);
+  }
+
   getUser(id) {
     return this.cachedUsers.get(id);
   }
