@@ -1,150 +1,117 @@
-name: Build App
+name: Build and Release Electron App For Windows
+
 on:
   push:
     branches:
-      - 'dev'
+      - main
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     CI: false
-  #   defaults:
-  #     run:
-  #       working-directory: ./echo
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - uses: actions/setup-node@master
-  #     with:
-  #       node-version: 18
-  #   - name: Install modules and build frontend
-  #     run: |
-  #       npm install
-  #       cd ..
-  #       cd electron
-  #       mkdir build
-  #       cd ..
-  #       cd echo
-  #       npm run build
-  #   - name: Build app
-  #     run: |
-  #       cd ..
-  #       cd electron
-  #       npm install
-  #       npm run make
-  #   - name: Upload compiled folder
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: echo
-  #       path: out/Echo-win32-x64
-  #   - name: Upload compiled exes
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: echo
-  #       path: out/make/squirrel.windows/x64
+  build-and-release:
+    runs-on: windows-latest
 
-  upload_test_artifacts:
-    runs-on: ubuntu-latest
-    # needs: build
+    env:
+      CI: false
+      GITHUB_TOKEN: ${{ secrets.zth_token }}
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 18
-    - name: Upload compiled folder
-      uses: actions/upload-artifact@v3
-      with:
-        name: echo
-        path: README.md
-    - name: Upload compiled exes
-      uses: actions/upload-artifact@v3
-      with:
-        name: echo
-        path: README.md
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  create_tag:
-    runs-on: ubuntu-latest
-    needs: upload_test_artifacts
-    # retreive last version tag
-    # env:
-    #   LAST_VERSION_TAG: $(git describe --abbrev=0 --tags)
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 18
-    - name: Create tag
-        # run the command to create the tag
-      run: |
-        git config --local user.email ${{ secrets.EMAIL }}
-        git config --local user.name ${{ secrets.USERNAME }}
-        git tag -a v${{ github.run_number }} -m "Release v${{ github.run_number }}"
-        git push origin v${{ github.run_number }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-  release:
-    runs-on: ubuntu-latest
-    needs: create_tag
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@master
-      with:
-        node-version: 18
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: out/
-        tag_name: ${{ github.ref }}
-        body: |
-          **Changes**
-          ${{ github.event.release.body }}
-        draft: false
-        prerelease: false
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies for the React frontend
+        shell: pwsh
+        run: npm install
+        working-directory: ./echo
 
-  # build_on_linux:
-  #   runs-on: ubuntu-latest
-  #   needs: build_frontend
-  #   defaults:
-  #     run:
-  #       working-directory: ./electron
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: actions/setup-node@master
-  #     with:
-  #       node-version: 18
-  #   - name: Install modules and build
-  #     run: |
-  #       npm install
-  #       npm run make
+      - name: Build React Frontend
+        shell: pwsh
+        run: npm run build
+        working-directory: ./echo
 
-  # build_on_mac:
-  #   runs-on: macos-latest
-  #   needs: build_frontend
-  #   defaults:
-  #     run:
-  #       working-directory: ./electron
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: actions/setup-node@master
-  #     with:
-  #       node-version: 18
-  #   - name: Install modules and build
-  #     run: |
-  #       npm install
-  #       npm run make
+      - name: Install dependencies for the Electron app
+        shell: pwsh
+        run: npm install
+        working-directory: ./electron
 
-  # build_on_win:
-  #   runs-on: windows-latest
-  #   needs: build_frontend
-  #   defaults:
-  #     run:
-  #       working-directory: ./electron
-  #   steps:
-  #   - uses: actions/checkout@v2
-  #   - uses: actions/setup-node@master
-  #     with:
-  #       node-version: 18
-  #   - name: Install modules and build
-  #     run: |
-  #       npm install
-  #       npm run make
+      - name: Build Electron App
+        id: build_electron_app
+        shell: pwsh
+        working-directory: ./electron
+        run: |
+          $build_output = npm run make
+          $out_path = echo $build_output | Select-String -Pattern '\[DATA\] Artifacts available at: ' | ForEach-Object { $_ -replace '^.*\[DATA\] Artifacts available at: ', '' }
+          echo "artifact_path=$out_path" >> $ENV:GITHUB_OUTPUT
+          echo "Build Output: $out_path"
+
+      - name: Extract version from package.json
+        id: extract_version
+        shell: pwsh
+        run: |
+          $pkg_version = (Get-Content -Path .\echo\package.json | ConvertFrom-Json).version
+          echo "Version: $pkg_version"
+          echo "Working Directory: ${{ steps.build_electron_app.outputs.artifact_path }}"
+          echo "release_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
+
+      - name: Check if version is a pre-release
+        id: check_pre_release
+        shell: pwsh
+        run: |
+          $version = "${{ steps.extract_version.outputs.release_version }}"
+          echo "Version: $version"
+          $first_digit = $version.Split('.')[0]
+          if ($first_digit -ne '0') {
+            echo "is_prerelease=false" >> $ENV:GITHUB_OUTPUT
+          } else {
+            echo "is_prerelease=true" >> $ENV:GITHUB_OUTPUT
+          }
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.extract_version.outputs.release_version }}
+          release_name: Release v${{ steps.extract_version.outputs.release_version }}
+          draft: false
+          prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
+
+      - name: Upload Executables
+        id: upload-executables
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}/squirrel.windows/x64/Echo-0.1.0 Setup.exe"
+          asset_name: echo-installer-${{ steps.extract_version.outputs.release_version }}.exe
+          asset_content_type: application/zip
+
+      - name: Upload Package
+        id: upload-package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}/squirrel.windows/x64/echo-0.1.0-full.nupkg"
+          asset_name: echo-${{ steps.extract_version.outputs.release_version }}.nupkg
+          asset_content_type: application/zip
+        
+      - name: Create ZIP Archive of Pre-compiled Folder
+        shell: pwsh
+        working-directory: ./electron/out
+        run: 7z a -r -tzip pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip Echo-win32-x64
+        
+      - name: Upload Source Code
+        id: upload-source-code
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./electron/out/pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip
+          asset_name: pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip
+          asset_content_type: application/zip
