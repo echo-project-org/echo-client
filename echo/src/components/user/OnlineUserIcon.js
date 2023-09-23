@@ -108,10 +108,7 @@ function OnlineUserIcon({ user }) {
   useEffect(() => {
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
       console.log(">>> [OnlineUserIcon] updatedAudioState", data)
-      ep.updateUser({ id: data.id, field: "muted", value: data.muted });
-      ep.updateUser({ id: data.id, field: "deaf", value: data.deaf });
       if (data.id === user.id) {
-        console.log(">>> [OnlineUserIcon] updatedAudioState 2", data)
         setDeaf(data.deaf);
         setMuted(data.muted);
       }
