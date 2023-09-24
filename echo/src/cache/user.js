@@ -1,3 +1,5 @@
+import { storage } from '../index';
+
 class Users {
     constructor() {
         this.users = {};
@@ -33,10 +35,10 @@ class Users {
         console.log("[CACHE] Added user in cache", data)
 
         if (self) {
-            localStorage.setItem("id", data.id);
-            localStorage.setItem("name", data.name);
-            localStorage.setItem("userImage", data.userImage);
-            localStorage.setItem("online", data.online);
+            storage.set("id", data.id);
+            storage.set("name", data.name);
+            storage.set("userImage", data.userImage);
+            storage.set("online", data.online);
         }
 
         if (!data.id) return console.error("[CACHE] ID is required to add a user to the cache");

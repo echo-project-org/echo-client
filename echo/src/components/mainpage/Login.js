@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import BackButton from '../settings/BackButton';
 
 import imgLogo from "../../img/headphones.svg"
+import { storage } from "../../index";
 
 var api = require('../../api')
 
@@ -16,7 +17,6 @@ const theme = createTheme({
     secondary: { main: '#2b192e', },
   }
 });
-
 
 const Login = () => {
   let navigate = useNavigate();
@@ -61,13 +61,13 @@ const Login = () => {
             .then((data) => {
               console.log(data);
               hideError();
-              localStorage.setItem("id", data.json.id);
-              localStorage.setItem("name", data.json.name);
-              localStorage.setItem("email", data.json.email);
-              localStorage.setItem("userImage", data.json.img);
-              localStorage.setItem("online", data.json.online);
-              localStorage.setItem("token", data.json.token);
-              localStorage.setItem("refreshToken", data.json.refreshToken);
+              storage.set("id", data.json.id);
+              storage.set("name", data.json.name);
+              storage.set("email", data.json.email);
+              storage.set("userImage", data.json.img);
+              storage.set("online", data.json.online);
+              storage.set("token", data.json.token);
+              storage.set("refreshToken", data.json.refreshToken);
 
               navigate("/");
             })

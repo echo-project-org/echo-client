@@ -6,7 +6,7 @@ import { ThemeProvider } from '@emotion/react';
 import { ButtonGroup, Button } from '@mui/material'
 import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const api = require('../../api');
 const { ipcRenderer } = window.require('electron');
@@ -21,7 +21,7 @@ const theme = createTheme({
 function WindowControls({ muted, audioMuted }) {
   const closeApp = async () => {
     ep.closeConnection();
-    api.call('users/' + localStorage.getItem("id") + '/status', "POST", { status: "0" });
+    api.call('users/' + storage.get("id") + '/status', "POST", { status: "0" });
 
     ipcRenderer.send("exitApplication", true);
   }

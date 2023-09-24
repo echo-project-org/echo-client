@@ -4,8 +4,10 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import EchoProtocol from './echoProtocol';
+import Storage from './cache/storage';
 const ep = new EchoProtocol();
-export { ep };
+const storage = new Storage();
+export { ep, storage };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

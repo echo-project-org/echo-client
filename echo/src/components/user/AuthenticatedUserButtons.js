@@ -3,7 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React from 'react'
 import { useNavigate } from "react-router-dom";
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 var api = require('../../api');
 
@@ -18,14 +18,14 @@ const AuthenticatedUserButtons = ({ visibility }) => {
   let navigate = useNavigate();
 
   const logout = async () => {
-    localStorage.removeItem("id");
-    localStorage.removeItem("name");
-    localStorage.removeItem("email");
-    localStorage.removeItem("userImage");
-    localStorage.removeItem("token");
-    localStorage.removeItem("online");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userImage");
+    storage.remove("id");
+    storage.remove("name");
+    storage.remove("email");
+    storage.remove("userImage");
+    storage.remove("token");
+    storage.remove("online");
+    storage.remove("refreshToken");
+    storage.remove("userImage");
 
     // EEEEEEEEWWWWWWWWWWWWWWW
     // but why??
@@ -35,16 +35,16 @@ const AuthenticatedUserButtons = ({ visibility }) => {
   const enterServer = async () => {
     // TODO: check the initial status of user (maybe get it from the login form?)
     // and check if we need to update it or not
-    api.call('users/status', "POST", { id: localStorage.getItem('id'), status: "1" })
+    api.call('users/status', "POST", { id: storage.get('id'), status: "1" })
       .then((res) => {
-        ep.openConnection(localStorage.getItem('id'));
+        ep.openConnection(storage.get('id'));
         navigate("/main");
 
         ep.addUser({
-          id: localStorage.getItem('id'),
-          name: localStorage.getItem('name'),
-          userImage: localStorage.getItem('userImage'),
-          online: localStorage.getItem('online'),
+          id: storage.get('id'),
+          name: storage.get('name'),
+          userImage: storage.get('userImage'),
+          online: storage.get('online'),
           roomId: 0
         }, true);
       })

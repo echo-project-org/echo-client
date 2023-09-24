@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { MenuItem, Stack, Slider, Typography, Select, Divider } from '@mui/material';
-import { VolumeUp } from '@mui/icons-material';
+import { Stack, Slider, Typography, Grid } from '@mui/material';
+import { VolumeUp, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const theme = createTheme({
   components: {
@@ -42,137 +42,77 @@ const theme = createTheme({
         }
       }
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          transition: "none",
-          backgroundColor: "#3a223e",
-          color: "white",
-          borderRadius: '0px 0px 5px 5px',
-          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
-          border: "1px solid #4b2b50",
-          margin: "0",
-        },
-      }
-    },
-    MuiList: {
-      styleOverrides: {
-        root: {
-          transition: "none",
-          padding: "0",
-          width: "100%",
-          color: "white",
-          borderRadius: '0px 0px 5px 5px',
-          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
-          border: "1px solid #4b2b50",
-          margin: "0"
-        },
-      }
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          color: "white",
-          borderBottom: "1px solid #4b2b50",
-          padding: "0.5rem 1rem",
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
-      }
-    },
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          width: "95%",
-          border: "1px solid #f5e8da",
-          color: "#f5e8da",
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:active": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
-        icon: {
-          color: "white"
-        }
-      }
-    },
   }
 });
 
 function OutputDevicesSettings({ outputDevices }) {
   const [outputDevice, setOutputDevice] = useState('default');
   const [soundVolume, setSoundVolulme] = useState(100);
+  const [showList, setShowList] = useState(false);
+
+  useEffect(() => {
+    setOutputDevice(storage.get('outputAudioDeviceId') || "default");
+    ep.setSpeakerDevice(storage.get('outputAudioDeviceId') || 1);
+    setSoundVolulme(Math.floor(storage.get('audioVolume') * 100) || 100);
+  }, []);
 
   const handleOutputDeviceChange = (event) => {
-    localStorage.setItem('outputAudioDeviceId', event.target.value);
-    setOutputDevice(event.target.value);
-    ep.setSpeakerDevice(event.target.value)
+    storage.set('outputAudioDeviceId', event.target.dataset.value);
+    setOutputDevice(event.target.dataset.value);
+    ep.setSpeakerDevice(event.target.dataset.value)
   };
 
   const handleSoundVolumeChange = (event, newValue) => {
     //set user volume
-    localStorage.setItem('audioVolume', newValue / 100);
+    storage.set('audioVolume', newValue / 100);
     setSoundVolulme(newValue);
     ep.setSpeakerVolume(newValue / 100);
   };
 
-  useEffect(() => {
-    ep.setSpeakerDevice(localStorage.getItem('outputAudioDeviceId') || 1);
-    setSoundVolulme(Math.floor(localStorage.getItem('audioVolume') * 100) || 100);
-  }, []);
-
-  const renderDeviceList = () => {
-    let a = outputDevices.map((device, id) => (
-      <MenuItem key={id} value={device.id}>
-        {device.name}
-      </MenuItem>
-    ))
-
-    setSelected();
-    return a;
+  const deviceListToggle = () => {
+    setShowList(!showList);
   }
-
-  const setSelected = () => {
-    let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
-    if (audioDeviceId && audioDeviceId !== outputDevice) {
-      setOutputDevice(audioDeviceId);
+  const computeCurrentDevice = () => {
+    var currentDevice = outputDevices.find(device => device.id === outputDevice);
+    if (!currentDevice) currentDevice = { name: "Default" };
+    return (
+      <Typography className="deviceSelectorText" sx={{ width: "100%" }}>
+        {showList ? <ArrowDropUp /> : <ArrowDropDown />}
+        {currentDevice.name}
+      </Typography>
+    )
+  }
+  const computeSelectList = () => {
+    if (showList) {
+      return (
+        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }}>
+          {
+            outputDevices.map((device, id) => (
+              <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseDown={handleOutputDeviceChange} data-value={device.id} key={id}>
+                {device.name}
+              </Grid>
+            ))
+          }
+        </Grid>
+      )
     }
-
-    let audioVol = localStorage.getItem('mainOutVolume') * 100;
-    audioVol = Math.round(audioVol);
-    if (audioVol && audioVol !== soundVolume) {
-      setSoundVolulme(audioVol);
-    }
+    return <></>
   }
 
   return (
-    <div className="settingsModalSubDiv">
+    <div className="settingsModalSubDiv noselect">
       <ThemeProvider theme={theme}>
         <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
           Output device
         </Typography>
-        <Select
-          value={outputDevice}
-          onChange={handleOutputDeviceChange}
-          autoWidth
-          size='small'
-        >
-          {renderDeviceList()}
-        </Select>
+        <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
+          <div className="deviceSelectorContainer">
+            {computeCurrentDevice()}
+          </div>
+          <div className="deviceSelectorListContainer">
+            {computeSelectList()}
+          </div>
+        </div>
         <div style={{ paddingRight: "2%", width: "95%" }}>
           <Stack spacing={2} direction="row" alignItems="center">
             <VolumeUp fontSize="medium" />

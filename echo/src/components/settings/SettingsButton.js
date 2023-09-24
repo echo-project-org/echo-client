@@ -109,10 +109,10 @@ function SettingsButton() {
                 </Typography>
 
                 <Grid container spacing={2}>
-                  <Grid item xs>
+                  <Grid item lg={6} md={12} xs={12}>
                     <InputDevicesSettings inputDevices={inputDevices} />
                   </Grid>
-                  <Grid item xs>
+                  <Grid item lg={6} md={12} xs={12}>
                     <OutputDevicesSettings outputDevices={outputDevices} />
                   </Grid>
                   <Grid item xs={12}>
