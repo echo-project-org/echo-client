@@ -140,6 +140,7 @@ class audioRtcTransmitter {
   }
 
   setOutputDevice(deviceId) {
+    console.log("Setting output device to", deviceId);
     if (deviceId === 'default') {
       return
     }

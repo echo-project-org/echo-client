@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { MenuItem, Stack, Slider, Typography, Select } from '@mui/material';
+import { Stack, Slider, Typography, Grid } from '@mui/material';
 import { Mic } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -42,85 +42,24 @@ const theme = createTheme({
         }
       }
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          transition: "none",
-          backgroundColor: "#3a223e",
-          color: "white",
-          borderRadius: '0px 0px 5px 5px',
-          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
-          border: "1px solid #4b2b50",
-          margin: "0",
-        },
-      }
-    },
-    MuiList: {
-      styleOverrides: {
-        root: {
-          transition: "none",
-          padding: "0",
-          width: "100%",
-          color: "white",
-          borderRadius: '0px 0px 5px 5px',
-          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
-          border: "1px solid #4b2b50",
-          margin: "0"
-        },
-      }
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          color: "white",
-          borderBottom: "1px solid #4b2b50",
-          padding: "0.5rem 1rem",
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
-      }
-    },
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          width: "95%",
-          border: "1px solid #f5e8da",
-          color: "#f5e8da",
-          "&:focus": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:hover": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          },
-          "&:active": {
-            backgroundColor: "#2f1c32",
-            color: "white"
-          }
-        },
-        icon: {
-          color: "white"
-        }
-      }
-    },
   }
 });
 
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
   const [micVolume, setMicVolulme] = useState(100);
+  const [showList, setShowList] = useState(false);
+
+  useEffect(() => {
+    setInputDevice(storage.get('inputAudioDeviceId') || "default");
+    ep.setMicrophoneVolume(storage.get('micVolume') || 1);
+    setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
+  }, []);
 
   const handleInputDeviceChange = (event) => {
-    storage.set('inputAudioDeviceId', event.target.value);
-    setInputDevice(event.target.value);
-    ep.setMicrophoneDevice(event.target.value);
+    storage.set('inputAudioDeviceId', event.target.dataset.value);
+    setInputDevice(event.target.dataset.value);
+    ep.setMicrophoneDevice(event.target.dataset.value);
   };
 
   const handleMicVolumeChange = (event, newValue) => {
@@ -130,43 +69,49 @@ function InputDevicesSettings({ inputDevices }) {
     ep.setMicrophoneVolume(newValue / 100);
   };
 
-  useEffect(() => {
-    ep.setMicrophoneVolume(storage.get('micVolume') || 1);
-    setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
-  });
-
-  const renderDeviceList = () => {
-    let a = inputDevices.map((device, id) => (
-      <MenuItem key={id} value={device.id}>
-        {device.name}
-      </MenuItem>
-    ))
-
-    setSelected();
-    return a;
+  const deviceListToggle = () => {
+    setShowList(!showList);
   }
-
-  const setSelected = () => {
-    let audioDeviceId = storage.get('inputAudioDeviceId');
-    if (audioDeviceId && audioDeviceId !== inputDevice) {
-      setInputDevice(audioDeviceId);
+  const computeCurrentDevice = () => {
+    var currentDevice = inputDevices.find(device => device.id === inputDevice);
+    if (!currentDevice) currentDevice = { name: "Default" };
+    return (
+      <Typography className="deviceSelectorText" sx={{ width: "100%" }}>
+        {currentDevice.name}
+      </Typography>
+    )
+  }
+  const computeSelectList = () => {
+    if (showList) {
+      return (
+        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }}>
+          {
+            inputDevices.map((device, id) => (
+              <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseDown={handleInputDeviceChange} data-value={device.id} key={id}>
+                {device.name}
+              </Grid>
+            ))
+          }
+        </Grid>
+      )
     }
+    return <></>
   }
 
   return (
-    <div className="settingsModalSubDiv">
+    <div className="settingsModalSubDiv noselect">
       <ThemeProvider theme={theme} >
         <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
           Input device
         </Typography>
-        <Select
-          value={inputDevice}
-          onChange={handleInputDeviceChange}
-          autoWidth
-          size='small'
-        >
-          {renderDeviceList()}
-        </Select>
+        <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
+          <div className="deviceSelectorContainer">
+            {computeCurrentDevice()}
+          </div>
+          <div className="deviceSelectorListContainer">
+            {computeSelectList()}
+          </div>
+        </div>
         <div style={{ paddingRight: "2%", width: "95%" }}>
           <Stack spacing={2} direction="row" alignItems="center">
             <Mic fontSize="medium" />
