@@ -4,7 +4,7 @@ import { TextField } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import MessageBoxButtons from './MessageBoxButtons';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const api = require("../../api");
 
@@ -63,12 +63,12 @@ function ChatControls({ onEmojiOn, roomId }) {
     if (document.getElementById("messageBox").value === "") return;
     const message = document.getElementById("messageBox").value;
     document.getElementById("messageBox").value = "";
-    ep.sendChatMessage({ roomId, userId: localStorage.getItem("id"), message, self: true, date: new Date().toISOString() });
+    ep.sendChatMessage({ roomId, userId: storage.get("id"), message, self: true, date: new Date().toISOString() });
   }
 
   useEffect(() => {
     ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
-      if (String(data.userId) === localStorage.getItem("id")) {
+      if (String(data.userId) === storage.get("id")) {
         newSelfMessageAudio.play();
         data.userId = Number(data.id);
         console.log("ChatControls.receiveChatMessage", data)

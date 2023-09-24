@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Divider } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 var api = require('../../api');
 
@@ -114,10 +114,10 @@ function UserSettings() {
 
           setLoading(true);
           
-          api.call("users/image", "POST", { id: localStorage.getItem("id"), image: base64 })
+          api.call("users/image", "POST", { id: storage.get("id"), image: base64 })
             .then((res) => {
-              localStorage.setItem("userImage", base64);
-              ep.updatePersonalSettings({ id: localStorage.getItem("id"), field: "userImage", value: base64 });
+              storage.set("userImage", base64);
+              ep.updatePersonalSettings({ id: storage.get("id"), field: "userImage", value: base64 });
               setLoading(false);
             })
             .catch(err => {
@@ -130,7 +130,7 @@ function UserSettings() {
   }
 
   const computeOnline = () => {
-    const online = localStorage.getItem("online");
+    const online = storage.get("online");
     switch (online) {
       case "0":
         return (
@@ -272,9 +272,9 @@ function UserSettings() {
         break;
     }
     statusId = String(statusId);
-    localStorage.setItem("online", statusId);
-    ep.updatePersonalSettings({ id: localStorage.getItem("id"), field: "online", value: statusId });
-    api.call("users/status", "POST", { id: localStorage.getItem("id"), status: statusId })
+    storage.set("online", statusId);
+    ep.updatePersonalSettings({ id: storage.get("id"), field: "online", value: statusId });
+    api.call("users/status", "POST", { id: storage.get("id"), status: statusId })
       .then((res) => { })
       .catch((err) => { console.log(err); });
     setStatusHover(false);
@@ -291,7 +291,7 @@ function UserSettings() {
             invisible
           >
             {computeDiv()}
-            <StyledAvatar src={localStorage.getItem("userImage")} onMouseEnter={onAvatarHover} />
+            <StyledAvatar src={storage.get("userImage")} onMouseEnter={onAvatarHover} />
           </StyledBadge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">
@@ -312,7 +312,7 @@ function UserSettings() {
                 fullWidth
                 placeholder="Type your nickname here"
                 size="small"
-                defaultValue={localStorage.getItem("name")}
+                defaultValue={storage.get("name")}
               />
             </Grid>
             <Grid item lg={5.9} xs={12}>
@@ -323,7 +323,7 @@ function UserSettings() {
                 fullWidth
                 placeholder="Type your email here"
                 size="small"
-                defaultValue={localStorage.getItem("email")}
+                defaultValue={storage.get("email")}
               />
             </Grid>
             <Grid item lg={11.8} xs={12}>
@@ -335,7 +335,7 @@ function UserSettings() {
                 placeholder="Type your password here"
                 size="small"
                 type='password'
-                defaultValue={localStorage.getItem("password")}
+                defaultValue={storage.get("password")}
               />
             </Grid>
           </StyledGridContainer>

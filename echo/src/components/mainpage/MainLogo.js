@@ -6,6 +6,8 @@ import LoadingAnimation from './LoadingAnimation';
 import AuthenticatedUserButtons from '../user/AuthenticatedUserButtons';
 import LoginButtons from './LoginButtons';
 
+import { storage } from "../../index";
+
 const MainLogo = () => {
   let navigate = useNavigate();
   const [loadingVisibility, setLoadingVisibility] = useState(true);
@@ -52,7 +54,7 @@ const MainLogo = () => {
     setLoadingVisibility(true);
     setTimeout(() => {
       setLoadingVisibility(false);
-      if (localStorage.getItem('id')) {
+      if (storage.get('id')) {
         //If cookies are found then prompt user to access the app
         setAccessBtnVisibility(true);
         setLoginBtnVisibility(false);

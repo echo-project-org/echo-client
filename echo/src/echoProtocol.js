@@ -5,6 +5,8 @@ import videoRtc from "./videoRtc";
 import Users from "./cache/user";
 import Room from "./cache/room";
 
+import { storage } from "./index";
+
 const io = require("socket.io-client");
 
 class EchoProtocol {
@@ -32,7 +34,7 @@ class EchoProtocol {
         this.currentConnectionStateInterval = null;
         return;
       };
-      this.openConnection(localStorage.getItem("id"));
+      this.openConnection(storage.get("id"));
     }, 5000);
   }
 
@@ -154,7 +156,7 @@ class EchoProtocol {
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
         room.chat.updateUser(data);
-        if (room.id === this.cachedUsers.get(localStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+        if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     });
@@ -299,7 +301,7 @@ class EchoProtocol {
 
   closeConnection(id = null) {
     if (this.socket) {
-      if (!id) id = localStorage.getItem('id');
+      if (!id) id = storage.get('id');
       console.log("closing connection with socket")
       this.socket.emit("client.end", { id });
     }
@@ -491,7 +493,7 @@ class EchoProtocol {
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
         room.chat.updateUser({ id, field, value });
-        if (room.id === this.cachedUsers.get(localStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+        if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     }

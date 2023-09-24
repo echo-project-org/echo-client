@@ -3,7 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MenuItem, Stack, Slider, Typography, Select } from '@mui/material';
 import { Mic } from '@mui/icons-material';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const theme = createTheme({
   components: {
@@ -118,21 +118,21 @@ function InputDevicesSettings({ inputDevices }) {
   const [micVolume, setMicVolulme] = useState(100);
 
   const handleInputDeviceChange = (event) => {
-    localStorage.setItem('inputAudioDeviceId', event.target.value);
+    storage.set('inputAudioDeviceId', event.target.value);
     setInputDevice(event.target.value);
     ep.setMicrophoneDevice(event.target.value);
   };
 
   const handleMicVolumeChange = (event, newValue) => {
     //set user volume
-    localStorage.setItem('micVolume', newValue / 100);
+    storage.set('micVolume', newValue / 100);
     setMicVolulme(newValue);
     ep.setMicrophoneVolume(newValue / 100);
   };
 
   useEffect(() => {
-    ep.setMicrophoneVolume(localStorage.getItem('micVolume') || 1);
-    setMicVolulme(Math.floor(localStorage.getItem('micVolume') * 100) || 100);
+    ep.setMicrophoneVolume(storage.get('micVolume') || 1);
+    setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
   });
 
   const renderDeviceList = () => {
@@ -147,7 +147,7 @@ function InputDevicesSettings({ inputDevices }) {
   }
 
   const setSelected = () => {
-    let audioDeviceId = localStorage.getItem('inputAudioDeviceId');
+    let audioDeviceId = storage.get('inputAudioDeviceId');
     if (audioDeviceId && audioDeviceId !== inputDevice) {
       setInputDevice(audioDeviceId);
     }

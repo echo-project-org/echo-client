@@ -9,7 +9,7 @@ import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabl
 import SettingsButton from '../settings/SettingsButton';
 import ScreenShareSelector from '../settings/ScreenShareSelector';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const muteSound = require("../../audio/mute.mp3");
 const unmuteSound = require("../../audio/unmute.mp3");
@@ -58,8 +58,8 @@ function RoomControl({ state, setState, screenSharing }) {
 
   let navigate = useNavigate();
 
-  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
-  useEffect(() => { ep.sendAudioState(localStorage.getItem("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
+  useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
+  useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
   useEffect(() => {
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
       console.log("Event rtcConnectionStateChange", data)
@@ -101,7 +101,7 @@ function RoomControl({ state, setState, screenSharing }) {
     // Notify api
     setState(false);
     if (!state) {
-      api.call("users/status", "POST", { id: localStorage.getItem('id'), status: "0" })
+      api.call("users/status", "POST", { id: storage.get('id'), status: "0" })
         .then(res => {
           ep.closeConnection();
           // TODO: check if user is connected in room, if so change icon and action when clicked
@@ -111,13 +111,13 @@ function RoomControl({ state, setState, screenSharing }) {
           console.error(err);
           navigate("/");
           // clean cache and local storage
-          localStorage.clear();
+          storage.clear();
         });
     } else {
-      api.call("rooms/join", "POST", { userId: localStorage.getItem('id'), roomId: "0" })
+      api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0" })
         .then(res => {
-          ep.exitFromRoom(localStorage.getItem('id'));
-          ep.updateUser({ id: localStorage.getItem('id'), field: "currentRoom", value: 0 });
+          ep.exitFromRoom(storage.get('id'));
+          ep.updateUser({ id: storage.get('id'), field: "currentRoom", value: 0 });
           leaveAudio.play();
         })
         .catch(err => {

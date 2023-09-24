@@ -1,3 +1,4 @@
+import { storage } from './index';
 
 const API_URL = "https://echo.kuricki.com/api/";
 
@@ -12,7 +13,7 @@ export async function call(path, method = "GET", body = null, forceString = true
       cache: 'no-cache',
       headers: {
         'Content-Type': forceContentType ? null : 'application/json',
-        "Authorization": "Bearer " + localStorage.getItem("token")
+        "Authorization": "Bearer " + storage.get("token")
       },
       body: body ? (forceString ? JSON.stringify(body) : body) : null
     };

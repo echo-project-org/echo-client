@@ -2,10 +2,9 @@ import "../../css/rooms.css"
 import { useState, useEffect } from 'react';
 import Room from './Room';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const api = require("../../api");
-
 const joinSound = require("../../audio/join.mp3");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
@@ -56,23 +55,23 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       }
 
       const joiningId = data.roomId;
-      const currentRoom = ep.getUser(localStorage.getItem("id")).currentRoom;
+      const currentRoom = ep.getUser(storage.get("id")).currentRoom;
       console.log("roomClicked in Rooms", joiningId, currentRoom, String(joiningId) === currentRoom)
       console.log("roomClicked in Rooms", typeof joiningId, typeof currentRoom)
       if (String(joiningId) === currentRoom) return;
-      if (currentRoom !== 0) ep.exitFromRoom(localStorage.getItem("id"));
+      if (currentRoom !== 0) ep.exitFromRoom(storage.get("id"));
       // update audio state of the user
       const userAudioState = ep.getAudioState();
-      ep.updateUser({ id: localStorage.getItem("id"), field: "muted", value: userAudioState.isMuted });
-      ep.updateUser({ id: localStorage.getItem("id"), field: "deaf", value: userAudioState.isDeaf });
+      ep.updateUser({ id: storage.get("id"), field: "muted", value: userAudioState.isMuted });
+      ep.updateUser({ id: storage.get("id"), field: "deaf", value: userAudioState.isDeaf });
       // join room
-      ep.joinRoom(localStorage.getItem("id"), joiningId);
-      ep.updateUser({ id: localStorage.getItem("id"), field: "currentRoom", value: String(joiningId) });
+      ep.joinRoom(storage.get("id"), joiningId);
+      ep.updateUser({ id: storage.get("id"), field: "currentRoom", value: String(joiningId) });
       // update active room id
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
-      api.call("rooms/join", "POST", { userId: localStorage.getItem("id"), roomId: joiningId })
+      api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: joiningId })
         .then((res) => {
           if (res.ok) {
             joinAudio.play();

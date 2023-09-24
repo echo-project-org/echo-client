@@ -3,14 +3,14 @@ import React from 'react'
 import { MenuItem } from '@mui/material'
 import { Message, DoDisturb, Gavel, Settings } from '@mui/icons-material'
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
     const startWatchingBroadcast = () => {
         ep.startReceivingVideo(user.id);
     }
 
-    if (localStorage.getItem("id") !== user.id) {
+    if (storage.get("id") !== user.id) {
         return (
             <>
                 {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}

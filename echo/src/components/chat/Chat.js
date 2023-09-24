@@ -4,7 +4,7 @@ import MessageLeft from './MessageLeft'
 
 import LoadingAnimation from '../mainpage/LoadingAnimation'
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const api = require('../../api');
 
@@ -75,7 +75,7 @@ function Chat({ currentRoomId, onMouseDown }) {
       <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
 
       {messages.length > 0 ? messages.map((message, id) => {
-        if (String(message.userId) === String(localStorage.getItem("id"))) {
+        if (String(message.userId) === String(storage.get("id"))) {
           return <MessageLeft key={id} message={message} />
         } else {
           return <MessageRight key={id} message={message} />

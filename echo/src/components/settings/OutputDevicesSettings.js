@@ -3,7 +3,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { MenuItem, Stack, Slider, Typography, Select, Divider } from '@mui/material';
 import { VolumeUp } from '@mui/icons-material';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const theme = createTheme({
   components: {
@@ -118,21 +118,21 @@ function OutputDevicesSettings({ outputDevices }) {
   const [soundVolume, setSoundVolulme] = useState(100);
 
   const handleOutputDeviceChange = (event) => {
-    localStorage.setItem('outputAudioDeviceId', event.target.value);
+    storage.set('outputAudioDeviceId', event.target.value);
     setOutputDevice(event.target.value);
     ep.setSpeakerDevice(event.target.value)
   };
 
   const handleSoundVolumeChange = (event, newValue) => {
     //set user volume
-    localStorage.setItem('audioVolume', newValue / 100);
+    storage.set('audioVolume', newValue / 100);
     setSoundVolulme(newValue);
     ep.setSpeakerVolume(newValue / 100);
   };
 
   useEffect(() => {
-    ep.setSpeakerDevice(localStorage.getItem('outputAudioDeviceId') || 1);
-    setSoundVolulme(Math.floor(localStorage.getItem('audioVolume') * 100) || 100);
+    ep.setSpeakerDevice(storage.get('outputAudioDeviceId') || 1);
+    setSoundVolulme(Math.floor(storage.get('audioVolume') * 100) || 100);
   }, []);
 
   const renderDeviceList = () => {
@@ -147,12 +147,12 @@ function OutputDevicesSettings({ outputDevices }) {
   }
 
   const setSelected = () => {
-    let audioDeviceId = localStorage.getItem('outputAudioDeviceId');
+    let audioDeviceId = storage.get('outputAudioDeviceId');
     if (audioDeviceId && audioDeviceId !== outputDevice) {
       setOutputDevice(audioDeviceId);
     }
 
-    let audioVol = localStorage.getItem('mainOutVolume') * 100;
+    let audioVol = storage.get('mainOutVolume') * 100;
     audioVol = Math.round(audioVol);
     if (audioVol && audioVol !== soundVolume) {
       setSoundVolulme(audioVol);
