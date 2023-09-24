@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Stack, Slider, Typography, Grid } from '@mui/material';
-import { Mic } from '@mui/icons-material';
+import { Mic, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
 
@@ -77,6 +77,7 @@ function InputDevicesSettings({ inputDevices }) {
     if (!currentDevice) currentDevice = { name: "Default" };
     return (
       <Typography className="deviceSelectorText" sx={{ width: "100%" }}>
+        {showList ? <ArrowDropUp /> : <ArrowDropDown />}
         {currentDevice.name}
       </Typography>
     )

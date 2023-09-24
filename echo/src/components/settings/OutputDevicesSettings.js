@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Stack, Slider, Typography, Grid } from '@mui/material';
-import { VolumeUp } from '@mui/icons-material';
+import { VolumeUp, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
 
@@ -77,6 +77,7 @@ function OutputDevicesSettings({ outputDevices }) {
     if (!currentDevice) currentDevice = { name: "Default" };
     return (
       <Typography className="deviceSelectorText" sx={{ width: "100%" }}>
+        {showList ? <ArrowDropUp /> : <ArrowDropDown />}
         {currentDevice.name}
       </Typography>
     )
@@ -99,7 +100,7 @@ function OutputDevicesSettings({ outputDevices }) {
   }
 
   return (
-    <div className="settingsModalSubDiv">
+    <div className="settingsModalSubDiv noselect">
       <ThemeProvider theme={theme}>
         <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
           Output device

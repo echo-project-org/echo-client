@@ -102,6 +102,15 @@
   font-weight: 300;
 }
 
+.deviceSelectorText svg {
+  position: absolute;
+  top: 50%;
+  right: .8rem;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+}
+
 .deviceSelector-root {
   position: relative;
   margin: auto;
