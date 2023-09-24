@@ -22,21 +22,18 @@ function WindowControls({ muted, audioMuted }) {
   const closeApp = async () => {
     ep.closeConnection();
     api.call('users/' + storage.get("id") + '/status', "POST", { status: "0" });
-
     ipcRenderer.send("exitApplication", true);
   }
-
   const toggleFullscreen = async () => {
     ipcRenderer.send("toggleFullscreen", true);
   }
-
   const minimize = async () => {
     // remote.BrowserWindow.getFocusedWindow().minimize();
     ipcRenderer.send("minimize", true);
   }
 
   return (
-    <div className='noDrag'>
+    <div className='noselect'>
       <ThemeProvider theme={theme}>
         <ButtonGroup variant='text' size="small" className='windowControls'>
           <Button onClick={minimize} disableRipple>
@@ -50,8 +47,8 @@ function WindowControls({ muted, audioMuted }) {
             disableRipple
             onMouseEnter={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
             onMouseLeave={(e) => e.target.style.backgroundColor = null}
-            onMouseDown={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
-            onMouseUp={(e) => e.target.style.backgroundColor = null}
+            // onMouseDown={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
+            // onMouseUp={(e) => e.target.style.backgroundColor = null}
           >
             <Close fontSize="small" />
           </Button>
