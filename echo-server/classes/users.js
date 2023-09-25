@@ -1,3 +1,5 @@
+const mediasoup = require("mediasoup");
+
 class User {
     constructor(socket, id) {
         this.id = id;
@@ -20,6 +22,7 @@ class User {
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
         this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
+
         // audioRtc stuff
         this.socket.on("client.broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
         this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
@@ -36,6 +39,39 @@ class User {
         this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
         this.socket.on("client.videoIceCandidate", (data) => this.setVideoIceCandidate(data));
         this.socket.on("client.videoStreamChanged", (data) => this.handleVideoStreamChanged(data));
+
+        // mediasoup
+        this.socket.on("create-transport", (data, cb) => {
+            console.log("create-transport");
+            cb(this.createTransport(data));
+        });
+    }
+
+    async createTransport(data) {
+        const { forceTcp, rtpPort, rtcpPort, sctpPort, rtpMux, comedia, internal, probator, multiSource, appData } = data;
+        const transport = await this.rtc.createTransport({
+            forceTcp,
+            rtpPort,
+            rtcpPort,
+            sctpPort,
+            rtpMux,
+            comedia,
+            internal,
+            probator,
+            multiSource,
+            appData,
+        });
+        return {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            appData: transport.appData,
+        };
     }
 
     registerEvent(event, cb) {
