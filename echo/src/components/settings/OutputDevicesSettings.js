@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Stack, Slider, Typography, Grid } from '@mui/material';
-import { VolumeUp, ArrowDropDown, ArrowDropUp } from '@mui/icons-material';
+import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
 
@@ -83,12 +83,22 @@ function OutputDevicesSettings({ outputDevices }) {
     )
   }
   const computeSelectList = () => {
+    outputDevices.forEach(device => {
+      const startIndex = device.name.indexOf('(', device.name.indexOf('(') + 1);
+      const endIndex = device.name.indexOf(')', startIndex);
+      if (startIndex !== -1 && endIndex !== -1) {
+        // Remove the second set of parentheses and trim the result
+        device.name = device.name.slice(0, startIndex) + device.name.slice(endIndex + 1).trim();
+      }
+    })
+
     if (showList) {
       return (
-        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }}>
+        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseLeave={deviceListToggle}>
           {
             outputDevices.map((device, id) => (
               <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseDown={handleOutputDeviceChange} data-value={device.id} key={id}>
+                {device.id === outputDevice ? <CheckCircle fontSize="small" /> : <></>}
                 {device.name}
               </Grid>
             ))
