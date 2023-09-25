@@ -59,7 +59,6 @@ const Login = () => {
         .then((hashed) => {
           api.call('auth/login', "POST", { email, password: hashed })
             .then((data) => {
-              console.log(data);
               hideError();
               storage.set("id", data.json.id);
               storage.set("name", data.json.name);
@@ -89,9 +88,8 @@ const Login = () => {
     });
   }
 
-  useEffect(() => {
-
-  }, [])
+  // useEffect(() => {
+  // }, [])
 
   return (
     <motion.div

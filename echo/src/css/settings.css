@@ -170,3 +170,12 @@
 .deviceSelectorContainer-item:hover {
   background-color: #361f3a;
 }
+
+.deviceSelectorContainer-item svg {
+  position: absolute;
+  top: 50%;
+  right: .8rem;
+  transform: translateY(-50%);
+  width: 1.3rem;
+  height: 1.3rem;
+}
