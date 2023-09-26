@@ -22,7 +22,7 @@
 
 .onlineUserNick {
   margin: 0 0 0 0.5rem;
-  color: var(--color3)
+  color: var(--mui-palette-text-main)
 }
 
 .avatarBadge {
@@ -45,6 +45,6 @@
   right: 0;
   border-radius: 50%;
   transform: translate(25%, 25%);
-  background-color: var(--color3);
+  background-color: var(--mui-palette-text-main);
   margin: .1rem;
 }

@@ -51,28 +51,19 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 const StyledTextField = styled(TextField)({
-  "& label": {
-    color: "#f5e8da",
-  },
-  "& label.Mui-focused": {
-    color: "#f5e8da",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#f5e8da",
-  },
   "& .MuiInputBase-root": {
-    color: "#f5e8da",
+    color: "var(--mui-palette-text-main)",
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
     },
     "&:hover fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
+      border: "2px solid var(--mui-palette-text-main)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#f5e8da",
-
+      borderColor: "var(--mui-palette-text-main)",
     }
   }
 });

@@ -19,7 +19,7 @@
 }
 
 .secondRoom {
-  background-color: var(--chat-background-color);
+  background-color: var(--mui-palette-background-light);
   border-radius: 0 .3rem .3rem 0;
   margin-bottom: 0.2rem;
   margin-top: 0.2rem;
@@ -29,13 +29,13 @@
 }
 
 .secondRoom:hover {
-  /* border-inline-end: 2px solid var(--color3); */
-  box-shadow: .2rem 0 .3rem .5px var(--color3);
+  /* border-inline-end: 2px solid var(--mui-palette-text-main); */
+  box-shadow: .2rem 0 .3rem .5px var(--mui-palette-text-main);
   transition: all .2s ease-in-out;
 }
 
 .SecondRoomName {
-  color: var(--color3)
+  color: var(--mui-palette-text-main)
 }
 
 .SecondRoomUsers {
@@ -45,11 +45,11 @@
 }
 
 .room {
-  background-color: var(--chat-background-color);
+  background-color: var(--mui-palette-background-light);
   border-top-right-radius: .4rem;
   border-bottom-right-radius: .4rem;
   margin-bottom: 0.5rem;
-  box-shadow: .3rem 0 .3rem .1rem var(--color3);
+  box-shadow: .3rem 0 .3rem .1rem var(--mui-palette-text-main);
   transition: all .1s ease-in-out;
   margin-right: .75rem;
 }
@@ -58,7 +58,7 @@
   padding-top: .5rem;
   /* margin-bottom: 1rem; */
   /* margin-top: 0.5rem; */
-  color: var(--color3)
+  color: var(--mui-palette-text-main)
 }
 
 .roomUsers {
@@ -73,6 +73,7 @@
   justify-content: center;
   text-align: center;
   align-items: center;
+  /* margin-bottom: 1rem; */
   z-index: 1;
 }
 
@@ -85,14 +86,14 @@
   font-family: Roboto Condensed;
   font-size: 1rem;
   border-radius: 1rem;
-  border: 1px var(--main-bg-color) solid;
-  background-color: var(--color1);
-  color: var(--color3);
+  border: 1px var(--mui-palette-background-main) solid;
+  background-color: var(--mui-palette-room-main);
+  color: var(--mui-palette-text-main);
   cursor: pointer;
 }
 
 .roomBtn:hover {
-  border: 1px var(--color3) solid;
+  border: 1px var(--mui-palette-text-main) solid;
 }
 
 .roomTitleContainer {

@@ -18,7 +18,7 @@
   flex: 0 1 auto;
   height: 100%;
   width: 100%;
-  background-color: var(--chat-background-color);
+  background-color: var(--mui-palette-background-light);
   border-radius: 0 0 1rem 1rem;
   line-break: anywhere;
   position: relative;
@@ -32,7 +32,7 @@
   max-width: 68%;
   min-height: fit-content;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
-  background-color: var(--color4);
+  background-color: var(--mui-palette-messages-main);
   border-radius: 1rem 1rem 0 1rem;
   width: fit-content !important;
   margin: 1rem 1rem .4rem auto;
@@ -44,7 +44,7 @@
   max-width: 68%;
   min-height: fit-content;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
-  background-color: var(--color3);
+  background-color: var(--mui-palette-messages-light);
   border-radius: 1rem 1rem 1rem 0;
   width: fit-content !important;
   margin: 1rem auto .4rem 1rem;
@@ -54,7 +54,7 @@
 
 .messageDate {
   font-size: 0.7rem;
-  color: var(--color2);
+  color: var(--mui-palette-text-dark);
   text-align: left;
   margin: 0;
   padding-top: 0.2rem;

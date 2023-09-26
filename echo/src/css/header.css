@@ -13,14 +13,14 @@
   height: 5rem;
   margin: auto;
   width: 100%;
-  background-color: var(--color1);
+  background-color: var(--mui-palette-room-main);
 }
 
 .topBar {
   /* position: fixed; */
   width: 100%;
   min-height: 1.7rem;
-  background-color: var(--main-bg-color);
+  background-color: var(--mui-palette-background-main);
   display: flex;
   flex-direction: row-reverse;
   flex: 0 0 auto;

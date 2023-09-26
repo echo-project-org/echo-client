@@ -1,23 +1,65 @@
 import './App.css';
 import './index.css';
 
+import "./css/wave.css";
+import "./css/scrollbar.css";
+
 // import { useEffect } from 'react'
 import { HashRouter } from "react-router-dom";
 import AnimatedRoutes from './components/mainpage/AnimatedRoutes';
 import WindowControls from './components/header/WindowControls';
 
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@emotion/react';
+import {
+  createTheme,
+  ThemeProvider,
+  experimental_extendTheme as extendTheme,
+  Experimental_CssVarsProvider as CssVarsProvider,
+} from '@mui/material/styles';
+// import { ThemeProvider } from '@emotion/react';
 
-const theme = createTheme({
+const theme = extendTheme({
   palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
+    background: {
+      dark: '#1c111e',
+      main: '#2b192e',
+      light: '#3e2542',
+      lighter: '#502350',
+      pink: "#a268ab",
+      darkpink: "#805087",
+    },
+    room: {
+      main: "#4d014d",
+      light: "#ffccff",
+    },
+    messages: {
+      light: "#ffccdf",
+      main: "#fff0fb",
+    },
+    text: {
+      dark: "#2b192e",
+      main: "#f5e8da",
+      light: "#ffcff8",
+    },
+    primary: {
+      main: '#2b192e',
+    },
+    secondary: {
+      main: '#ce8ca5',
+    },
   },
   typography: {
     fontFamily: ['Roboto Condensed'].join(','),
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          color: theme.palette.text.main,
+          backgroundColor: theme.palette.primary.main,
+          textAlign: "center",
+        }),
+      }
+    },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
@@ -103,6 +145,15 @@ const theme = createTheme({
           }
         }
       }
+    },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          maxWidth: "100%",
+          margin: 0,
+          padding: 0,
+        }
+      }
     }
   }
 });
@@ -112,16 +163,14 @@ function App() {
   
   return (
     <div className="App">
-      <ThemeProvider className="appWrapper" theme={theme}>
+      <CssVarsProvider theme={theme}>
         <div className="topBar">
           <WindowControls/>
         </div>
-        <div className="animatedRoutes">
-          <HashRouter>
-            <AnimatedRoutes/>
-          </HashRouter>
-        </div>
-      </ThemeProvider>
+        <HashRouter>
+          <AnimatedRoutes/>
+        </HashRouter>
+      </CssVarsProvider>
       
       <script src="/socket.io/socket.io.js"></script>
     </div>
