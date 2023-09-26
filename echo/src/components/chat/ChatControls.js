@@ -22,6 +22,8 @@ const StyledTextField = styled(TextField)({
   },
   "& .MuiInputBase-root": {
     color: "#f5e8da",
+    backgroundColor: "#3e2542",
+    zIndex: 2,
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
@@ -37,7 +39,7 @@ const StyledTextField = styled(TextField)({
       color: "#f5e8da",
       alignSelf: "flex-start",
       fixAlign: "flex-start",
-      marginTop: "0.6rem"
+      marginTop: "0.6rem",
     }
   }
 });
@@ -48,10 +50,12 @@ function ChatControls({ onEmojiOn, roomId }) {
   const newSelfMessageAudio = new Audio(newSelfMessageSound);
   newSelfMessageAudio.volume = 0.6;
 
-  const sendChatMessage = () => {
+  const sendChatMessage = (e) => {
+    console.log(e);
     if (document.getElementById("messageBox").value === "") return;
-    const message = document.getElementById("messageBox").value;
+    const message = document.getElementById("messageBox").value.replace(/\n/g, "<br/>");
     document.getElementById("messageBox").value = "";
+    // replace all new lines with <br>
     ep.sendChatMessage({ roomId, userId: storage.get("id"), message, self: true, date: new Date().toISOString() });
   }
 
@@ -75,31 +79,32 @@ function ChatControls({ onEmojiOn, roomId }) {
 
   return (
     <div className='chatControls'>
-      <div className="chatInputContainer">
-        <StyledTextField
-          id="messageBox"
-          autoFocus
-          onKeyDown={(e) => {
-            // check if enter is pressed
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              sendChatMessage();
-            }
-          }}
-          fullWidth
-          multiline
-          maxRows={20}
-          placeholder='Send a message...'
-          InputProps={{
-            endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />,
-            style: { color: "#f5e8da" },
-            maxLength: 3000,
-          }}
-          onInput = {(e) =>{
-            e.target.value = e.target.value.slice(0, 3000)
-          }}
-        />
-      </div>
+      <StyledTextField
+        id="messageBox"
+        autoFocus
+        onKeyDown={(e) => {
+          // check if enter is pressed
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage(e);
+          }
+        }}
+        onChange={(e) => {
+          console.log("changed", e)
+        }}
+        fullWidth
+        multiline
+        maxRows={15}
+        placeholder='Send a message...'
+        InputProps={{
+          endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />,
+          style: { color: "#f5e8da" },
+          maxLength: 3000,
+        }}
+        onInput = {(e) =>{
+          e.target.value = e.target.value.slice(0, 3000)
+        }}
+      />
     </div>
   )
 }

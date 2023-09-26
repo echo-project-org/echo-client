@@ -1,18 +1,18 @@
 import React from 'react'
-import { Typography, Grid, Avatar } from '@mui/material';
+import { Typography, Grid, Avatar, Text } from '@mui/material';
 
 function MessageLeft({ message }) {
-  const sanitize = (input) => {
-    const doc = new DOMParser().parseFromString(input, 'text/html');
-    for (const elm of doc.querySelectorAll('*')) {
-      for (const attrib of elm.attributes) {
-        if (attrib.name.startsWith('on')) {
-          elm.removeAttribute(attrib.name);
-        }
-      }
-    }
-    return doc.body.innerHTML;
-  };
+  // const sanitize = (input) => {
+  //   const doc = new DOMParser().parseFromString(input, 'text/html');
+  //   for (const elm of doc.querySelectorAll('*')) {
+  //     for (const attrib of elm.attributes) {
+  //       if (attrib.name.startsWith('on')) {
+  //         elm.removeAttribute(attrib.name);
+  //       }
+  //     }
+  //   }
+  //   return doc.body.innerHTML;
+  // };
 
   return (
     <Grid container className='leftMessage' direction={"row"} sx={{ flexFlow: "row" }}>
