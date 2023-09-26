@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Slider, Typography, Grid } from '@mui/material';
+import { Stack, Slider, Typography, Grid, ClickAwayListener } from '@mui/material';
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -28,8 +28,8 @@ function OutputDevicesSettings({ outputDevices }) {
     ep.setSpeakerVolume(newValue / 100);
   };
 
-  const deviceListToggle = () => {
-    setShowList(!showList);
+  const deviceListToggle = (status = true) => {
+    setShowList(status);
   }
   const computeCurrentDevice = () => {
     var currentDevice = outputDevices.find(device => device.id === outputDevice);
@@ -74,9 +74,11 @@ function OutputDevicesSettings({ outputDevices }) {
         Output device
       </Typography>
       <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
-        <div className="deviceSelectorContainer">
-          {computeCurrentDevice()}
-        </div>
+        <ClickAwayListener onClickAway={() => deviceListToggle(false)}>
+          <div className="deviceSelectorContainer">
+            {computeCurrentDevice()}
+          </div>
+        </ClickAwayListener>
         <div className="deviceSelectorListContainer">
           {computeSelectList()}
         </div>

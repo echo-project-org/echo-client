@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Slider, Typography, Grid } from '@mui/material';
+import { Stack, Slider, Typography, Grid, ClickAwayListener } from '@mui/material';
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -28,8 +28,8 @@ function InputDevicesSettings({ inputDevices }) {
     ep.setMicrophoneVolume(newValue / 100);
   };
 
-  const deviceListToggle = () => {
-    setShowList(!showList);
+  const deviceListToggle = (status = true) => {
+    setShowList(status);
   }
   const computeCurrentDevice = () => {
     var currentDevice = inputDevices.find(device => device.id === inputDevice);
@@ -53,10 +53,10 @@ function InputDevicesSettings({ inputDevices }) {
 
     if (showList) {
       return (
-        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseLeave={deviceListToggle}>
+        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }}>
           {
             inputDevices.map((device, id) => (
-              <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseDown={handleInputDeviceChange} data-value={device.id} key={id}>
+              <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseUp={handleInputDeviceChange} data-value={device.id} key={id}>
                 {device.id === inputDevice ? <CheckCircle fontSize="small" /> : <></>}
                 {device.name}
               </Grid>
@@ -73,10 +73,12 @@ function InputDevicesSettings({ inputDevices }) {
       <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
         Input device
       </Typography>
-      <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
-        <div className="deviceSelectorContainer">
-          {computeCurrentDevice()}
-        </div>
+      <div className="deviceSelector-root" onMouseUp={deviceListToggle}>
+        <ClickAwayListener onClickAway={() => deviceListToggle(false)}>
+          <div className="deviceSelectorContainer">
+            {computeCurrentDevice()}
+          </div>
+        </ClickAwayListener>
         <div className="deviceSelectorListContainer">
           {computeSelectList()}
         </div>
