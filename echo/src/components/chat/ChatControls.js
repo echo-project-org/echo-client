@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
-import { createTheme, styled } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { TextField } from '@mui/material';
-import { ThemeProvider } from '@emotion/react';
 import MessageBoxButtons from './MessageBoxButtons';
 
 import { ep, storage } from "../../index";
@@ -43,16 +42,6 @@ const StyledTextField = styled(TextField)({
   }
 });
 
-const theme = createTheme({
-  palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
-  },
-  typography: {
-    fontFamily: ['Roboto Condensed'].join(','),
-  },
-});
-
 function ChatControls({ onEmojiOn, roomId }) {
   const newMessageAudio = new Audio(newMessageSound);
   newMessageAudio.volume = 0.6;
@@ -86,34 +75,31 @@ function ChatControls({ onEmojiOn, roomId }) {
 
   return (
     <div className='chatControls'>
-      <ThemeProvider theme={theme}>
-        <div className="chatInputContainer">
-          <StyledTextField
-            
-            id="messageBox"
-            autoFocus
-            onKeyDown={(e) => {
-              // check if enter is pressed
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendChatMessage();
-              }
-            }}
-            fullWidth
-            multiline
-            maxRows={20}
-            placeholder='Send a message...'
-            InputProps={{
-              endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />,
-              style: { color: "#f5e8da" },
-              maxLength: 3000,
-            }}
-            onInput = {(e) =>{
-              e.target.value = e.target.value.slice(0, 3000)
-            }}
-          />
-        </div>
-      </ThemeProvider>
+      <div className="chatInputContainer">
+        <StyledTextField
+          id="messageBox"
+          autoFocus
+          onKeyDown={(e) => {
+            // check if enter is pressed
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              sendChatMessage();
+            }
+          }}
+          fullWidth
+          multiline
+          maxRows={20}
+          placeholder='Send a message...'
+          InputProps={{
+            endAdornment: <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />,
+            style: { color: "#f5e8da" },
+            maxLength: 3000,
+          }}
+          onInput = {(e) =>{
+            e.target.value = e.target.value.slice(0, 3000)
+          }}
+        />
+      </div>
     </div>
   )
 }

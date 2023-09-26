@@ -1,18 +1,10 @@
 import { Button, ButtonGroup } from '@mui/material'
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React from 'react'
 import { useNavigate } from "react-router-dom";
 
 import { ep, storage } from "../../index";
 
 var api = require('../../api');
-
-const theme = createTheme({
-  palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
-  },
-});
 
 const AuthenticatedUserButtons = ({ visibility }) => {
   let navigate = useNavigate();
@@ -56,18 +48,16 @@ const AuthenticatedUserButtons = ({ visibility }) => {
   if (!visibility) return null;
 
   return (
-    <ThemeProvider theme={theme}>
-      <ButtonGroup
-        size='large'
-        orientation='vertical'
-        disableElevation
-        variant="text"
-        className="loginButtons"
-      >
-        <Button onClick={enterServer}>Enter</Button>
-        <Button onClick={logout}>Logout</Button>
-      </ButtonGroup>
-    </ThemeProvider>
+    <ButtonGroup
+      size='large'
+      orientation='vertical'
+      disableElevation
+      variant="text"
+      className="loginButtons"
+    >
+      <Button onClick={enterServer}>Enter</Button>
+      <Button onClick={logout}>Logout</Button>
+    </ButtonGroup>
   )
 }
 

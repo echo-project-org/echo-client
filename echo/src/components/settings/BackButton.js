@@ -1,30 +1,19 @@
 import React from 'react'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Button from '@mui/material/Button'
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@emotion/react';
-
-const theme = createTheme({
-    palette: {
-        primary: { main: '#f5e8da', },
-        secondary: { main: '#ce8ca5', },
-    },
-});
+import { ArrowBack } from '@mui/icons-material';
+import { Button } from '@mui/material'
 
 function BackButton() {
-    const goBack = async () => {
-        window.history.back();
-    }
+  const goBack = async () => {
+    window.history.back();
+  }
 
-    return (
-        <div className="backButton">
-            <ThemeProvider theme={theme}>
-                <Button onClick={goBack}>
-                    <ArrowBackIcon fontSize="small" />
-                </Button>
-            </ThemeProvider>
-        </div>
-    )
+  return (
+    <div className="backButton">
+      <Button onClick={goBack}>
+        <ArrowBack fontSize="small" />
+      </Button>
+    </div>
+  )
 }
 
 export default BackButton

@@ -1,84 +1,12 @@
 import '../../css/onlineusers.css'
 
-import { Badge, Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid, styled } from '@mui/material'
+import { Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid } from '@mui/material'
 import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
 import { ep } from "../../index";
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
-
-const theme = createTheme({
-  components: {
-    MuiMenu: {
-      styleOverrides: {
-        root: {
-          borderRadius: '10px',
-          background: "none"
-        },
-        paper: {
-          borderRadius: '10px',
-          background: "none",
-          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)"
-        },
-        list: {
-          borderRadius: '10px',
-          boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)"
-        }
-      },
-    },
-    MuiSlider: {
-      styleOverrides: {
-        thumb: {
-          cursor: "e-resize",
-          width: "15px",
-          height: "15px",
-          color: "white",
-          ":hover": {
-            color: "white",
-            boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
-          }
-        },
-        valueLabel: {
-          backgroundColor: "#3e2542",
-          color: "white",
-          borderRadius: "10px",
-        },
-        valueLabelOpen: {
-          backgroundColor: "#3e2542",
-          color: "white",
-          borderRadius: "10px",
-        },
-        colorPrimary: {
-          color: "white",
-          // backgroundColor: "white"
-        },
-        colorSecondary: {
-          color: "white",
-          // backgroundColor: "white"
-        },
-        markLabel: {
-          color: "white"
-        }
-      }
-    },
-    MuiMenuItem: {
-      defaultProps: {
-        disableRipple: true
-      },
-      styleOverrides: {
-        root: {
-          ":hover": {
-            backgroundColor: "rgba(0, 0, 0, .1)",
-            transitionDuration: ".1s"
-          }
-        }
-      }
-    }
-  },
-});
 
 function OnlineUserIcon({ user }) {
   console.log(">>> [OnlineUserIcon] Re-rendering component", user)
@@ -127,45 +55,44 @@ function OnlineUserIcon({ user }) {
     setDeaf(user.deaf);
     setMuted(user.muted);
 
-  return () => {
-    ep.releaseGroup('OnlineUserIcon.updatedAudioState');
-    ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
+    return () => {
+      ep.releaseGroup('OnlineUserIcon.updatedAudioState');
+      ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
+    };
+  }, [user]);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
-}, [user]);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleVolumeChange = (event, newValue) => {
+    //set user volume
+    setUserVolulme(newValue);
+    ep.setUserVolume(newValue / 100, user.id)
+  };
 
-const handleClick = (event) => {
-  setAnchorEl(event.currentTarget);
-};
-const handleClose = () => {
-  setAnchorEl(null);
-};
-const handleVolumeChange = (event, newValue) => {
-  //set user volume
-  setUserVolulme(newValue);
-  ep.setUserVolume(newValue / 100, user.id)
-};
+  return (
+    <div className="onlineUserContainer">
+      <div
+        className="onlineUserIcon noselect pointer"
+        onContextMenu={handleClick}
+        onClick={handleClick}
+        size="small"
+        aria-controls={open ? 'account-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+      >
+        <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
+        <p className='onlineUserNick'>{user.name}</p>
+        <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
+          {deaf ? <VolumeOff fontSize="small" /> : null}
+          {muted ? <MicOffRounded fontSize="small" /> : null}
+          {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{ color: "red" }} /> : null}
+        </Grid>
+      </div>
 
-return (
-  <div className="onlineUserContainer">
-    <div
-      className="onlineUserIcon noselect pointer"
-      onContextMenu={handleClick}
-      onClick={handleClick}
-      size="small"
-      aria-controls={open ? 'account-menu' : undefined}
-      aria-haspopup="true"
-      aria-expanded={open ? 'true' : undefined}
-    >
-      <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
-      <p className='onlineUserNick'>{user.name}</p>
-      <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
-        {deaf ? <VolumeOff fontSize="small" /> : null}
-        {muted ? <MicOffRounded fontSize="small" /> : null}
-        {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{ color: "red" }} /> : null}
-      </Grid>
-    </div>
-
-    <ThemeProvider theme={theme}>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -203,9 +130,8 @@ return (
         <Divider sx={{ my: 0.5 }} variant='middle' />
         <OnlineUsersMenuItems user={user} broadcastingVideo={broadcastingVideo} handleClose={handleClose} />
       </Menu>
-    </ThemeProvider>
-  </div>
-)
+    </div>
+  )
 }
 
 OnlineUserIcon.defaultProps = {
