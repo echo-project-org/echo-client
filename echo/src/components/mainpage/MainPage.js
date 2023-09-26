@@ -3,9 +3,8 @@ import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
 
-import { ep } from "../../index";
-
-const api = require('../../api')
+// import { ep } from "../../index";
+// const api = require('../../api')
 
 function MainPage() {
   const [roomId, setRoomId] = useState(0);
