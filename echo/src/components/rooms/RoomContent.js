@@ -12,7 +12,6 @@ import { ep } from "../../index";
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     margin: "0 0 0 1rem",
-    height: "90%",
     width: "100%",
     position: "relative",
     display: "inline-flex",
@@ -20,11 +19,10 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     backgroundColor: "#3e2542",
     padding: "0 0 0 .6rem",
     maxHeight: "43.09px",
-    top: "20%",
+    top: "10%",
   },
   [theme.breakpoints.up('lg')]: {
     margin: "0 0 0 1rem",
-    height: "90%",
     width: "100%",
     position: "relative",
     display: "inline-flex",
@@ -32,11 +30,10 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     backgroundColor: "#3e2542",
     padding: "0 0 0 .6rem",
     maxHeight: "43.09px",
-    top: "20%",
+    top: "10%",
   },
   [theme.breakpoints.up('xl')]: {
     margin: "0 0 0 1rem",
-    height: "90%",
     width: "100%",
     position: "relative",
     display: "inline-flex",
@@ -44,12 +41,48 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     backgroundColor: "#3e2542",
     padding: "0 0 0 .6rem",
     maxHeight: "43.09px",
-    top: "20%",
+    top: "10%",
+  },
+}));
+
+const StyledContainerContent = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    margin: ".1rem 0 0 1rem",
+    height: "100%",
+    width: "100%",
+    position: "relative",
+    padding: "0",
+    display: "inline-flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    maxWidth: "calc(100vw - 20rem)",
+  },
+  [theme.breakpoints.up('lg')]: {
+    margin: ".1rem 0 0 1rem",
+    height: "100%",
+    width: "100%",
+    position: "relative",
+    padding: "0",
+    display: "inline-flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    maxWidth: "calc(100vw - 20rem)",
+  },
+  [theme.breakpoints.up('xl')]: {
+    margin: ".1rem 0 0 1rem",
+    height: "100%",
+    width: "100%",
+    position: "relative",
+    padding: "0",
+    display: "inline-flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    maxWidth: "calc(100vw - 20rem)",
   },
 }));
 
 function RoomContent({ roomId }) {
-  const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
+  // const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
   const [contentSelected, setContentSelected] = useState("chat");
   const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
   const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
@@ -77,8 +110,10 @@ function RoomContent({ roomId }) {
   }, [roomId]);
 
   return (
-    <Grid container>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+    <Grid container direction={"row"}>
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
+        maxHeight: "43.09px",
+      }}>
         <StyledContainer>
           <Grid container>
             <Grid item xs={11} sm={11} md={10} lg={10} xl={10} sx={{
@@ -112,8 +147,13 @@ function RoomContent({ roomId }) {
           </Grid>
         </StyledContainer>
       </Grid>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-        {computeRoomContent()}
+      <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
+        height: "calc(100vh - 5rem)",
+        maxHeight: "calc(100vh - 5rem)",
+      }}>
+        <StyledContainerContent>
+          {computeRoomContent()}
+        </StyledContainerContent>
       </Grid>
     </Grid>
   )
