@@ -4,18 +4,6 @@
   font-family: Roboto Condensed;
 }
 
-:root {
-  --context-menu-background: #4d3352;
-  --main-text-color: #fff;
-  --mui-palette-background-light: #3e2542;
-  --no-messages-color: #2b1a2e;
-  --chat-box-background-color: #c573d1;
-  --login-form-background: #ab6fb4;
-  --input-background: #7d5284;
-  --input-box-shadow: #7d5284;
-  --input-placeholder-color: #9b76a1;
-}
-
 html {
   height: 100%;
   overflow: hidden;
