@@ -12,6 +12,7 @@ function OutputDevicesSettings({ outputDevices }) {
   useEffect(() => {
     setOutputDevice(storage.get('outputAudioDeviceId') || "default");
     ep.setSpeakerDevice(storage.get('outputAudioDeviceId') || 1);
+    ep.setSpeakerVolume(storage.get('audioVolume') || 1);
     setSoundVolulme(Math.floor(storage.get('audioVolume') * 100) || 100);
   }, []);
 
