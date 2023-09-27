@@ -51,11 +51,9 @@ function ChatControls({ onEmojiOn, roomId }) {
   newSelfMessageAudio.volume = 0.6;
 
   const sendChatMessage = (e) => {
-    console.log(e);
     if (document.getElementById("messageBox").value === "") return;
-    const message = document.getElementById("messageBox").value.replace(/\n/g, "<br/>");
+    const message = document.getElementById("messageBox").value.replace(/\n/g, "<br>");
     document.getElementById("messageBox").value = "";
-    // replace all new lines with <br>
     ep.sendChatMessage({ roomId, userId: storage.get("id"), message, self: true, date: new Date().toISOString() });
   }
 

@@ -1,19 +1,7 @@
 import React from 'react'
-import { Typography, Grid, Avatar, Text } from '@mui/material';
+import { Typography, Grid, Avatar } from '@mui/material';
 
 function MessageLeft({ message }) {
-  // const sanitize = (input) => {
-  //   const doc = new DOMParser().parseFromString(input, 'text/html');
-  //   for (const elm of doc.querySelectorAll('*')) {
-  //     for (const attrib of elm.attributes) {
-  //       if (attrib.name.startsWith('on')) {
-  //         elm.removeAttribute(attrib.name);
-  //       }
-  //     }
-  //   }
-  //   return doc.body.innerHTML;
-  // };
-
   return (
     <Grid container className='leftMessage' direction={"row"} sx={{ flexFlow: "row" }}>
       <Grid item>
@@ -28,7 +16,9 @@ function MessageLeft({ message }) {
           </Grid>
           <Grid item>
             <div className="messageText">
-              {message.message}
+              {message.message.split("<br>").map((item, key) => {
+                return <span key={key}>{item}<br /></span>
+              })}
             </div>
           </Grid>
           <Grid item>
