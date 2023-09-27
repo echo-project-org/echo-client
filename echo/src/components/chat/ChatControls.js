@@ -12,31 +12,31 @@ const newSelfMessageSound = require("../../audio/newmessageself.mp3");
 
 const StyledTextField = styled(TextField)({
   "& label": {
-    color: "#f5e8da",
+    color: "var(--mui-palette-text-main)",
   },
   "& label.Mui-focused": {
-    color: "#f5e8da",
+    color: "var(--mui-palette-text-main)",
   },
   "& .MuiInput-underline:after": {
-    borderBottomColor: "#f5e8da",
+    borderBottomColor: "var(--mui-palette-text-main)",
   },
   "& .MuiInputBase-root": {
-    color: "#f5e8da",
-    backgroundColor: "#3e2542",
+    color: "var(--mui-palette-text-main)",
+    backgroundColor: "var(--mui-palette-background-dark)",
     zIndex: 2,
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
     },
     "&:hover fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
     },
     "& .MuiInputAdornment-root": {
-      color: "#f5e8da",
+      color: "var(--mui-palette-text-main)",
       alignSelf: "flex-start",
       fixAlign: "flex-start",
       marginTop: "0.6rem",

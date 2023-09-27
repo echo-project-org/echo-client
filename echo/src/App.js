@@ -17,35 +17,30 @@ import {
 } from '@mui/material/styles';
 // import { ThemeProvider } from '@emotion/react';
 
+const _theme = createTheme();
+
 const theme = extendTheme({
   palette: {
-    background: {
-      dark: '#1c111e',
-      main: '#2b192e',
-      light: '#3e2542',
-      lighter: '#502350',
-      pink: "#a268ab",
-      darkpink: "#805087",
-    },
-    room: {
-      main: "#4d014d",
-      light: "#ffccff",
-    },
-    messages: {
-      light: "#ffccdf",
-      main: "#fff0fb",
-    },
-    text: {
-      dark: "#2b192e",
-      main: "#f5e8da",
-      light: "#ffcff8",
-    },
+    background: _theme.palette.augmentColor({
+      color: {
+        main: '#331b36',
+        contrastText: '#ce91d7',
+      }
+    }),
+    text: _theme.palette.augmentColor({
+      color: {
+        main: "#f9d1ff",
+      }
+    }),
     primary: {
-      main: '#2b192e',
+      main: '#e6c6eb',
+      contrastText: '#ce91d7',
     },
     secondary: {
-      main: '#ce8ca5',
+      main: '#d794e0',
+      contrastText: '#ce91d7',
     },
+    // accent: 633f69
   },
   typography: {
     fontFamily: ['Roboto Condensed'].join(','),
@@ -55,7 +50,7 @@ const theme = extendTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           color: theme.palette.text.main,
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: theme.palette.background.main,
           textAlign: "center",
         }),
       }
@@ -154,7 +149,32 @@ const theme = extendTheme({
           padding: 0,
         }
       }
-    }
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "var(--mui-palette-background-dark)",
+          color: "var(--mui-palette-text-main)",
+          ":hover": {
+            color: "var(--mui-palette-text-main)",
+            backgroundColor: "rgba(0, 0, 0, .1)",
+            transitionDuration: ".5s"
+          },
+          "&& .Mui-selected": {
+            backgroundColor: "var(--mui-palette-background-dark)",
+            color: "var(--mui-palette-text-main)",
+          },
+        },
+      }
+    },
+    // MuiButtonGroup: {
+    //   styleOverrides: {
+    //     root: {
+    //       borderRadius: '10px',
+    //       boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
+    //     }
+    //   }
+    // },
   }
 });
 

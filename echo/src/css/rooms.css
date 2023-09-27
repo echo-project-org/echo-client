@@ -19,7 +19,7 @@
 }
 
 .secondRoom {
-  background-color: var(--mui-palette-background-light);
+  background-color: var(--mui-palette-background-dark);
   border-radius: 0 .3rem .3rem 0;
   margin-bottom: 0.2rem;
   margin-top: 0.2rem;
@@ -45,7 +45,7 @@
 }
 
 .room {
-  background-color: var(--mui-palette-background-light);
+  background-color: var(--mui-palette-background-dark);
   border-top-right-radius: .4rem;
   border-bottom-right-radius: .4rem;
   margin-bottom: 0.5rem;
@@ -106,7 +106,7 @@
   align-items: left;
   margin-top: 1rem;
   display: flex !important;
-  color: white;
+  color: var(--mui-palette-text-main);
   max-width: 15% !important;
   font-size: .8rem;
 }
@@ -120,7 +120,7 @@
   align-items: left;
   margin-top: 1rem;
   display: flex !important;
-  color: white;
+  color: var(--mui-palette-text-main);
   max-width: 100% !important;
   font-size: .7rem;
 }
@@ -134,7 +134,7 @@
   align-items: right;
   margin-top: 1rem;
   display: flex !important;
-  color: white;
+  color: var(--mui-palette-text-main);
   max-width: 100% !important;
 }
 

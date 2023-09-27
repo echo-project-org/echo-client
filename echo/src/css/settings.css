@@ -77,7 +77,7 @@
 }
 
 .selectContainer-item:hover {
-  background-color: var(--mui-palette-background-lighter);
+  background-color: var(--mui-palette-background-light);
 }
 
 .selectContainer-item svg {
@@ -132,7 +132,7 @@
 }
 
 .deviceSelectorContainer:hover {
-  background-color: var(--mui-palette-background-lighter);
+  background-color: var(--mui-palette-background-light);
 }
 
 .deviceSelectorListContainer {
@@ -168,7 +168,7 @@
 }
 
 .deviceSelectorContainer-item:hover {
-  background-color: var(--mui-palette-background-lighter);
+  background-color: var(--mui-palette-background-light);
 }
 
 .deviceSelectorContainer-item svg {

@@ -8,5 +8,5 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--mui-palette-messages-main);
+  background: var(--mui-palette-primary-main);
 }

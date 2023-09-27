@@ -3,6 +3,7 @@ import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/materi
 import { useState } from 'react';
 
 import UserSettings from "./UserSettings";
+import ThemeSettings from "./ThemeSettings";
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 
@@ -14,8 +15,8 @@ const modalStyle = {
   margin: "auto",
   height: '80%',
   width: '80%',
-  bgcolor: '#4d3352',
-  color: '#f5e8da',
+  bgcolor: 'var(--mui-palette-background-main)',
+  color: 'var(--mui-palette-text-main)',
   overflow: 'auto',
   border: '2px solid #000',
   boxShadow: 24,
@@ -43,7 +44,7 @@ function SettingsButton() {
   };
 
   return (
-    <div>
+    <>
       <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
         <Button onClick={handleClick}>
           <SettingsIcon />
@@ -71,12 +72,15 @@ function SettingsButton() {
                 <Grid item xs={12}>
                   <UserSettings />
                 </Grid>
+                <Grid item xs={12}>
+                  <ThemeSettings />
+                </Grid>
               </Grid>
             </div>
           </Box>
         </Zoom>
       </Modal>
-    </div>
+    </>
   )
 }
 

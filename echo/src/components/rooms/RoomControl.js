@@ -59,12 +59,10 @@ function RoomControl({ state, setState, screenSharing }) {
       ep.getPing().then(ping => setPing(ping));
     }, 500);
   }
-
   const stopUpdatePing = () => {
     clearInterval(interval);
     interval = null;
   }
-
   const closeConnection = () => {
     // Notify api
     setState(false);
@@ -93,7 +91,6 @@ function RoomControl({ state, setState, screenSharing }) {
         });
     }
   }
-
   const computeAudio = (isDeaf) => {
     if (isDeaf)
       if (!muted) {

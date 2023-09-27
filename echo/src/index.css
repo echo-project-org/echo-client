@@ -126,7 +126,7 @@ body {
 }
 
 .connectButton:active {
-  background-color: var(--mui-palette-messages-main);
+  background-color: var(--mui-palette-primary-main);
   outline: 0;
 }
 
@@ -157,14 +157,6 @@ body {
 
 .pointer:hover {
   cursor: pointer;
-}
-
-.windowControls {
-  -webkit-app-region: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
 }
 
 .backButton {
@@ -228,7 +220,7 @@ body {
 }
 
 .settingsModalSubDiv {
-  background-color: var(--mui-palette-background-main);
+  background-color: var(--mui-palette-background-dark);
   padding: 1rem;
   justify-content: center;
   align-items: center;

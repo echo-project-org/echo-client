@@ -1,7 +1,7 @@
 import "../../css/chat.css";
 
 import { useState, useEffect } from 'react'
-import { Grid, Container, styled, Divider } from '@mui/material';
+import { Grid, Container, styled, Divider, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { ChatBubble, PeopleAlt } from '@mui/icons-material';
 
 import RoomContentChat from "./RoomContentChat";
@@ -16,7 +16,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     position: "relative",
     display: "inline-flex",
     maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: "#3e2542",
+    backgroundColor: theme.palette.background.dark,
     padding: "0 0 0 .6rem",
     maxHeight: "43.09px",
     top: "10%",
@@ -27,7 +27,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     position: "relative",
     display: "inline-flex",
     maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: "#3e2542",
+    backgroundColor: theme.palette.background.dark,
     padding: "0 0 0 .6rem",
     maxHeight: "43.09px",
     top: "10%",
@@ -38,7 +38,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     position: "relative",
     display: "inline-flex",
     maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: "#3e2542",
+    backgroundColor: theme.palette.background.dark,
     padding: "0 0 0 .6rem",
     maxHeight: "43.09px",
     top: "10%",
@@ -87,6 +87,23 @@ function RoomContent({ roomId }) {
   const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
   const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
 
+  const children = [
+    <ToggleButton value="chat" key="left" disableRipple>
+      <ChatBubble />
+    </ToggleButton>,
+    <ToggleButton value="screen" key="center" disableRipple>
+      <PeopleAlt />
+    </ToggleButton>
+  ];
+  const handleChange = (event, newAlignment) => {
+    if (newAlignment === null) return;
+    setContentSelected(newAlignment);
+  };
+  const control = {
+    value: contentSelected,
+    onChange: handleChange,
+    exclusive: true,
+  };
   const computeRoomContent = () => {
     switch (contentSelected) {
       case "chat":
@@ -97,13 +114,9 @@ function RoomContent({ roomId }) {
         return <RoomContentChat roomId={roomId} />
     }
   }
-
   useEffect(() => {
-    console.log("should be calling room data", roomId)
     const roomData = ep.getRoom(roomId);
-    console.log("roomData", roomData)
     if (roomData) {
-      console.log("im in roomData if statement")
       setRoomName(roomData.name);
       setRoomDescription(roomData.description);
     }
@@ -129,20 +142,9 @@ function RoomContent({ roomId }) {
               </Container>
             </Grid>
             <Grid item xs={1} sm={1} md={2} lg={2} xl={2}>
-              <Container className="iconsContainer">
-                {
-                  contentSelected === "chat" ?
-                    <ChatBubble onClick={() => setContentSelected("chat")} sx={{ color: "#c895ff" }} />
-                    :
-                    <ChatBubble onClick={() => setContentSelected("chat")} />
-                }
-                {
-                  contentSelected === "screen" ?
-                    <PeopleAlt onClick={() => setContentSelected("screen")} sx={{ color: "#c895ff" }} />
-                    :
-                    <PeopleAlt onClick={() => setContentSelected("screen")} />
-                }
-              </Container>
+              <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
+                {children}
+              </ToggleButtonGroup>
             </Grid>
           </Grid>
         </StyledContainer>

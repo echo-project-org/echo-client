@@ -14,7 +14,7 @@
   position: relative;
   height: 100%;
   width: 100%;
-  background-color: var(--mui-palette-background-light);
+  background-color: var(--mui-palette-background-dark);
   border-radius: 0 0 1rem 1rem;
   line-break: anywhere;
 }
@@ -23,7 +23,7 @@
   max-width: 68%;
   min-height: fit-content;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
-  background-color: var(--mui-palette-messages-main);
+  background-color: var(--mui-palette-primary-main);
   border-radius: 1rem 1rem 0 1rem;
   width: fit-content !important;
   margin: 1rem 1rem .2rem auto;
@@ -35,7 +35,7 @@
   max-width: 68%;
   min-height: fit-content;
   padding: 0.5rem 1rem 0.5rem 0.5rem;
-  background-color: var(--mui-palette-messages-light);
+  background-color: var(--mui-palette-primary-light);
   border-radius: 1rem 1rem 1rem 0;
   width: fit-content !important;
   margin: 1rem auto .2rem 1rem;
