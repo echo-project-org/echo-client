@@ -38,7 +38,7 @@ const theme = extendTheme({
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#d794e0',
+      main: '#F4A9FE',
       contrastText: '#ffffff',
     },
     // accent: 633f69
@@ -154,13 +154,16 @@ const theme = extendTheme({
         root: {
           color: "var(--mui-palette-text-dark)",
           backgroundColor: "rgba(0, 0, 0, 0)",
+          border: "none",
           ":hover": {
             backgroundColor: "rgba(0, 0, 0, 0)",
+            border: "none",
             color: "var(--mui-palette-text-dark)",
             transitionDuration: ".5s"
           },
           "&.Mui-selected, &.Mui-selected:hover": {
             backgroundColor: "rgba(0, 0, 0, 0)",
+            border: "none",
             color: "var(--mui-palette-text-light)",
             transitionDuration: ".5s"
           },
