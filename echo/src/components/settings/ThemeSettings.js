@@ -1,18 +1,20 @@
 import "../../css/settings.css";
 
 import { useState, useEffect } from 'react'
-import { Grid } from "@mui/material";
+import { Grid, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import { ep, storage } from "../../index";
 import { useTheme } from "@emotion/react";
 
 function ThemeSettings() {
-  const [background, setBackground] = useState("#331b36");
-  const [primary, setPrimary] = useState("#8f4e9d");
-  const [secondary, setSecondary] = useState("#d794e0");
-  const [text, setText] = useState("#ffffff");
+  const [background, setBackground] = useState(storage.get("background") || "#331b36");
+  const [primary, setPrimary] = useState(storage.get("primary") || "#8f4e9d");
+  const [secondary, setSecondary] = useState(storage.get("secondary") || "#d794e0");
+  const [text, setText] = useState(storage.get("text") || "#ffffff");
 
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     switch(event.target.dataset.type) {
@@ -32,6 +34,26 @@ function ThemeSettings() {
         break;
     }
   };
+
+  const resetTheme = () => {
+    storage.remove("background");
+    storage.remove("primary");
+    storage.remove("secondary");
+    storage.remove("text");
+
+    navigate("/");
+    window.location.reload();
+  }
+
+  const updateTheme = () => {
+    storage.set("background", background);
+    storage.set("primary", primary);
+    storage.set("secondary", secondary);
+    storage.set("text", text);
+
+    navigate("/");
+    window.location.reload();
+  }
 
   useEffect(() => {
     console.log("background: " + background)
@@ -75,6 +97,16 @@ function ThemeSettings() {
           <input id="input-color" value={text} className="input-color" type="color" onChange={handleChange} data-type="text" />
         </div>
         <div className="input-color-label">Change text color</div>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container justifyContent="center" direction={"row"}>
+          <Grid item xs={5} sx={{ textAlign: "center", marginTop: "1rem", marginBottom: "1rem" }}>
+            <Button variant="outlined" onClick={updateTheme} sx={{ width: "80%" }}>Save</Button>
+          </Grid>
+          <Grid item xs={5} sx={{ textAlign: "center", marginTop: "1rem", marginBottom: "1rem" }}>
+            <Button variant="outlined" onClick={resetTheme} sx={{ width: "80%" }}>Reset</Button>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   )

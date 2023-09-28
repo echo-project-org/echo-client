@@ -13,43 +13,12 @@ const MainLogo = () => {
   const [loadingVisibility, setLoadingVisibility] = useState(true);
   const [accessBtnVisibility, setAccessBtnVisibility] = useState(false);
   const [loginBtnVisibility, setLoginBtnVisibility] = useState(false);
-  const [serverAddress, setServerAddress] = useState('0.0.0.0');
-  const [serverPort, setServerPort] = useState('00000');
 
   const goToPage = (page) => {
     navigate(page);
   }
 
-  function timeout(delay) {
-    return new Promise(res => setTimeout(res, delay));
-  }
-
   useEffect(() => {
-    //Getting server audio settings, this also is used to check if the API are responding
-    // api.call('app/settings')
-    //     .then(async (res) => {
-    //         const data = await res.json();
-
-    //         //TODO check if api errors out
-
-    //         //Saving the audio settings
-    //         setServerAddress(data.address);
-    //         setServerPort(data.port);
-    //         //Hide loading animation
-    //         setLoadingVisibility(false);
-
-    //         if(userNickCookie != null) {
-    //             //If cookies are found then prompt user to access the app
-    //             setAccessBtnVisibility(true);
-    //             setLoginBtnVisibility(false);
-    //             setUserNickname(userNickCookie);
-    //         } else {
-    //             //If no cookies are found then ask for login / registration
-    //             setAccessBtnVisibility(false);
-    //             setLoginBtnVisibility(true);
-    //         }
-    //     });
-
     // cause it's cool :3
     setLoadingVisibility(true);
     setTimeout(() => {
