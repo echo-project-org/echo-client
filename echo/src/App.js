@@ -21,6 +21,7 @@ const _theme = createTheme();
 
 const theme = extendTheme({
   palette: {
+    mode: 'dark',
     background: _theme.palette.augmentColor({
       color: {
         main: '#331b36',
@@ -29,16 +30,16 @@ const theme = extendTheme({
     }),
     text: _theme.palette.augmentColor({
       color: {
-        main: "#fff",
+        main: "#ffffff",
       }
     }),
     primary: {
       main: '#8f4e9d',
-      contrastText: '#fff',
+      contrastText: '#ffffff',
     },
     secondary: {
       main: '#d794e0',
-      contrastText: '#fff',
+      contrastText: '#ffffff',
     },
     // accent: 633f69
   },

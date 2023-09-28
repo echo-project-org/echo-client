@@ -179,3 +179,32 @@
   width: 1.3rem;
   height: 1.3rem;
 }
+
+/* THEME LIST SELECTION */
+
+.input-color-container {
+  position: relative;
+  overflow: hidden;
+  width: 5rem;
+  height: 5rem;
+  border: solid 3px var(--mui-palette-background-light);
+  border-radius: 50%;
+  margin: auto;
+}
+
+.input-color {
+  position: absolute;
+  top: -.5rem;
+  left: -.5rem;
+  width: 6rem;
+  height: 6rem;
+  border: none;
+}
+
+.input-color-label {
+  margin: 1rem 0 0 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--mui-palette-text-light)
+}
