@@ -1,6 +1,6 @@
 # Echo project
 
-Teamspeak like application with overkill audio quality
+Discord like application with overkill audio quality
 
 # Dev build
 
