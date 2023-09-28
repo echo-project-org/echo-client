@@ -1,35 +1,22 @@
-import "../../css/login.css"
-
-import { useState, useEffect, forwardRef } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Alert, Button, createTheme, Snackbar } from '@mui/material'
+import { Alert, Button, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
+
 import BackButton from '../settings/BackButton';
-
 import imgLogo from "../../img/headphones.svg"
+
 import { storage } from "../../index";
-
 var api = require('../../api')
-
-const theme = createTheme({
-  palette: {
-    primary: { main: '#2b192e', },
-    secondary: { main: '#2b192e', },
-  }
-});
 
 const Login = () => {
   let navigate = useNavigate();
 
-  var [loginError, setLoginError] = useState(false);
-  var [vertical, setVertical] = useState('bottom');
-  var [horizontal, sethHorizontal] = useState('left');
   var [open, setOpen] = useState(false);
   var [message, setMessage] = useState("Error message");
 
   const showError = (msg) => {
     //Show error message
-    setLoginError(true);
     setOpen(true);
     setMessage(msg);
   }
@@ -37,16 +24,17 @@ const Login = () => {
   const hideError = () => {
     //Hide error message
     setOpen(false);
-    setLoginError(false);
   }
 
   const handleClose = () => {
     //Close error message handler
     setOpen(false);
-    setLoginError(false);
   }
 
-  const checkCredentials = async () => {
+  const checkCredentials = async (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+
     var email = document.getElementById('usernameBox').value
     var password = document.getElementById('passwordBox').value
 
@@ -88,19 +76,15 @@ const Login = () => {
     });
   }
 
-  // useEffect(() => {
-  // }, [])
-
   return (
     <motion.div
-      className='splashScreen'
+      className='splashScreen noselect'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-
       <BackButton />
-      <div className="loginForm" style={{ height: "28rem" }}>
+      <div className="customForm" style={{ height: "28rem" }}>
         <div className="boxedLogoContainer">
           <img className="boxedLogo" src={imgLogo} alt='echoLogo' />
           <div className="ripple"></div>
@@ -111,28 +95,22 @@ const Login = () => {
           type="text"
           className="input"
           placeholder="Email"
+          onKeyDown={checkCredentials}
         />
         <input
           id="passwordBox"
           type="password"
           className="input"
           placeholder="Password"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              checkCredentials();
-            }
-          }}
+          onKeyDown={checkCredentials}
         />
-
-        <Button theme={theme} variant="outlined" onClick={checkCredentials}>Login</Button>
+        <Button variant="outlined" onClick={checkCredentials}>Login</Button>
       </div>
 
       <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
         open={open}
         onClose={handleClose}
         message={message}
-        key={vertical + horizontal}
       >
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
           {message}

@@ -1,6 +1,7 @@
 import './App.css';
 import './index.css';
 
+import "./css/form.css";
 import "./css/wave.css";
 import "./css/scrollbar.css";
 
