@@ -74,66 +74,6 @@ body {
   margin: auto;
 }
 
-.connectButton {
-  align-items: center;
-  background-color: var(--mui-palette-text-main);
-  border: 2px solid #111;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: var(--mui-palette-background-main);
-  cursor: pointer;
-  display: flex;
-  font-size: 16px;
-  height: 80px;
-  justify-content: center;
-  line-height: 24px;
-  max-width: 100%;
-  padding: 0 25px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  animation: 500ms ease 0s 1 fadeIn;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2rem;
-  margin: auto;
-  width: 15rem;
-  cursor: pointer;
-}
-
-.connectButton:after {
-  background-color: #111;
-  border-radius: 8px;
-  content: "";
-  display: block;
-  height: 80px;
-  left: 0;
-  width: 100%;
-  position: absolute;
-  top: -2px;
-  z-index: -2;
-  transform: translate(8px, 8px);
-  transition: transform .2s ease-out;
-}
-
-.connectButton:hover:after {
-  transform: translate(0, 0);
-}
-
-.connectButton:active {
-  background-color: var(--mui-palette-primary-main);
-  outline: 0;
-}
-
-.connectButton:hover {
-  outline: 0;
-}
-
 .loadingAnimation {
   position: relative;
   margin: auto;
@@ -181,10 +121,6 @@ body {
   background-color: var(--mui-palette-background-light);
 }
 
-.buttonGroup {
-  position: relative;
-}
-
 .voiceConnected {
   font-size: 1rem;
   user-select: none;
@@ -207,10 +143,6 @@ body {
   line-height: normal;
   display: inline;
   vertical-align: middle;
-}
-
-.tooltipButton {
-  background-color: red;
 }
 
 .modalDiv {

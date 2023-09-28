@@ -134,7 +134,7 @@ function RoomControl({ state, setState, screenSharing }) {
       <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
         <div className="voiceConnected"><p>{rtcConnectionState}</p> <p><SignalCellularAlt /></p></div>
       </Tooltip>
-      <ButtonGroup variant='text' className='buttonGroup'>
+      <ButtonGroup variant='text'>
         <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
           <Button disableRipple onClick={muteMic}>
             {!muted ? <Mic /> : <MicOffRounded />}
