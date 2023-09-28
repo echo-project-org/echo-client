@@ -13,7 +13,7 @@ class audioRtcTransmitter {
     this.inputDeviceId = inputDeviceId;
     this.outputDeviceId = outputDeviceId;
     this.volume = volume;
-    this.device = null;
+    this.mediasoupDevice = null;
     this.sendTransport = null;
     this.producer = null;
     this.outChannelCount = 2;
@@ -60,10 +60,11 @@ class audioRtcTransmitter {
       multiSource: false,
       appData: {},
     });
+
   }
 
   async init() {
-    this.device = await mediasoup.Device.load({ handlerName: "Chrome" });
+    this.mediasoupDevice = new mediasoup.Device();
     this.sendTransport = await this.createSendTransport();
     this.sendTransport.on("connect", async ({ dtlsParameters }, callback, errback) => {
       ep.socket
