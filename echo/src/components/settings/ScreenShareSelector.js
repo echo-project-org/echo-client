@@ -1,6 +1,5 @@
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
 import { ep } from "../../index";
@@ -21,51 +20,6 @@ const modalStyle = {
   borderRadius: '.4rem',
 };
 
-const modalTheme = createTheme({
-  palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
-  },
-  typography: {
-    fontFamily: ['Roboto Condensed'].join(','),
-  },
-  MuiSlider: {
-    styleOverrides: {
-      thumb: {
-        cursor: "e-resize",
-        width: "15px",
-        height: "15px",
-        color: "white",
-        ":hover": {
-          color: "white",
-          boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
-        }
-      },
-      valueLabel: {
-        backgroundColor: "#3e2542",
-        color: "white",
-        borderRadius: "10px",
-      },
-      valueLabelOpen: {
-        backgroundColor: "#3e2542",
-        color: "white",
-        borderRadius: "10px",
-      },
-      colorPrimary: {
-        color: "white",
-        // backgroundColor: "white"
-      },
-      colorSecondary: {
-        color: "white",
-        // backgroundColor: "white"
-      },
-      markLabel: {
-        color: "white"
-      }
-    }
-  },
-});
-
 function ScreenShareSelector() {
   let [screenSharing, setScreenSharing] = useState(false);
   let [windowsDevices, setWindowsDevices] = useState([]);
@@ -76,7 +30,7 @@ function ScreenShareSelector() {
   const handleModalClose = () => setModalOpen(false);
 
   const handleClick = (event) => {
-    if(screenSharing) {
+    if (screenSharing) {
       ep.stopScreenSharing();
       setScreenSharing(false);
     } else {
@@ -93,10 +47,10 @@ function ScreenShareSelector() {
         setWindowsDevices(windows);
         setScreenDevices(screens);
       });
-  
+
       handleModalOpen();
     }
-    
+
   };
 
   const deviceSelected = (deviceId) => {
@@ -105,7 +59,7 @@ function ScreenShareSelector() {
     setScreenSharing(true);
     handleModalClose();
   }
-  
+
   return (
     <div>
       <Tooltip title="Share Your Screen" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -114,44 +68,42 @@ function ScreenShareSelector() {
         </Button>
       </Tooltip>
 
-      <ThemeProvider theme={modalTheme}>
-        <Modal
-          open={modalOpen}
-          onClose={handleModalClose}
-        >
-          <Zoom in={modalOpen}>
-            <Box sx={modalStyle}>
-              <Typography sx={{ marginBottom: "2%" }} variant="h3" className='noselect'>
-                Share your screen
-              </Typography>
+      <Modal
+        open={modalOpen}
+        onClose={handleModalClose}
+      >
+        <Zoom in={modalOpen}>
+          <Box sx={modalStyle}>
+            <Typography sx={{ marginBottom: "2%" }} variant="h3" className='noselect'>
+              Share your screen
+            </Typography>
 
-              <div className='screenshareModalSubdiv'>
-                <Grid container spacing={2}>
-                  {
-                    screenDevices.map((device, id) => (
-                      <Grid item key={id} xs={6} sx={{ alignContent: "center", textAlign: "center" }}>
-                        <ScreenShareOption key={id} device={device} clickHandler={deviceSelected} />
-                      </Grid>
-                    ))
-                  }
-                </Grid>
-              </div>
+            <div className='screenshareModalSubdiv'>
+              <Grid container spacing={2}>
+                {
+                  screenDevices.map((device, id) => (
+                    <Grid item key={id} xs={6} sx={{ alignContent: "center", textAlign: "center" }}>
+                      <ScreenShareOption key={id} device={device} clickHandler={deviceSelected} />
+                    </Grid>
+                  ))
+                }
+              </Grid>
+            </div>
 
-              <div className='screenshareModalSubdiv'>
-                <Grid container spacing={2}>
-                  {
-                    windowsDevices.map((device, id) => (
-                      <Grid item key={id} xs={6} sx={{ alignContent: "center", textAlign: "center" }}>
-                        <ScreenShareOption key={id} device={device} clickHandler={deviceSelected} />
-                      </Grid>
-                    ))
-                  }
-                </Grid>
-              </div>
-            </Box>
-          </Zoom>
-        </Modal>
-      </ThemeProvider>
+            <div className='screenshareModalSubdiv'>
+              <Grid container spacing={2}>
+                {
+                  windowsDevices.map((device, id) => (
+                    <Grid item key={id} xs={6} sx={{ alignContent: "center", textAlign: "center" }}>
+                      <ScreenShareOption key={id} device={device} clickHandler={deviceSelected} />
+                    </Grid>
+                  ))
+                }
+              </Grid>
+            </div>
+          </Box>
+        </Zoom>
+      </Modal>
     </div>
   )
 }

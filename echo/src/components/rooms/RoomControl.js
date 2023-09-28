@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ButtonGroup, Button, Zoom, Tooltip } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 
 import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabled, Logout } from '@mui/icons-material';
@@ -18,36 +16,6 @@ const undeafSound = require("../../audio/undeaf.mp3");
 const leaveSound = require("../../audio/leave.mp3");
 
 const api = require('../../api')
-
-const theme = createTheme({
-  palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
-  },
-  components: {
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          color: "white",
-          fontSize: ".9rem",
-          border: "1px solid rgb(235, 144, 235)",
-          background: "#3e2542",
-          borderRadius: 10,
-          padding: 8
-        },
-        arrow: {
-          fontSize: 16,
-          width: 17,
-          "&::before": {
-            border: "1px solid rgb(235, 144, 235)",
-            backgroundColor: "#3e2542",
-            boxSizing: "border-box"
-          }
-        }
-      }
-    }
-  }
-});
 
 function RoomControl({ state, setState, screenSharing }) {
   const [muted, setMuted] = useState(false);
@@ -91,12 +59,10 @@ function RoomControl({ state, setState, screenSharing }) {
       ep.getPing().then(ping => setPing(ping));
     }, 500);
   }
-
   const stopUpdatePing = () => {
     clearInterval(interval);
     interval = null;
   }
-
   const closeConnection = () => {
     // Notify api
     setState(false);
@@ -125,7 +91,6 @@ function RoomControl({ state, setState, screenSharing }) {
         });
     }
   }
-
   const computeAudio = (isDeaf) => {
     if (isDeaf)
       if (!muted) {
@@ -166,30 +131,28 @@ function RoomControl({ state, setState, screenSharing }) {
 
   return (
     <div className='roomControl'>
-      <ThemeProvider theme={theme}>
-        <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-          <div className="voiceConnected"><p>{rtcConnectionState}</p> <p><SignalCellularAlt /></p></div>
+      <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
+        <div className="voiceConnected"><p>{rtcConnectionState}</p> <p><SignalCellularAlt /></p></div>
+      </Tooltip>
+      <ButtonGroup variant='text' className='buttonGroup'>
+        <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Button disableRipple onClick={muteMic}>
+            {!muted ? <Mic /> : <MicOffRounded />}
+          </Button>
         </Tooltip>
-        <ButtonGroup variant='text' className='buttonGroup'>
-          <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Button disableRipple onClick={muteMic}>
-              {!muted ? <Mic /> : <MicOffRounded />}
-            </Button>
-          </Tooltip>
-          <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Button disableRipple onClick={deafHeadphones}>
-              {!deaf ? <VolumeUp /> : <VolumeOff />}
-            </Button>
-          </Tooltip>
-          <ScreenShareSelector />
-          <SettingsButton />
-          <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Button onClick={closeConnection}>
-              {state ? <PhoneDisabled /> : <Logout />}
-            </Button>
-          </Tooltip>
-        </ButtonGroup>
-      </ThemeProvider>
+        <Tooltip title={!deaf ? "Deafen" : "Undeafen"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Button disableRipple onClick={deafHeadphones}>
+            {!deaf ? <VolumeUp /> : <VolumeOff />}
+          </Button>
+        </Tooltip>
+        <ScreenShareSelector />
+        <SettingsButton />
+        <Tooltip title="Disconnect" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+          <Button onClick={closeConnection}>
+            {state ? <PhoneDisabled /> : <Logout />}
+          </Button>
+        </Tooltip>
+      </ButtonGroup>
     </div>
   )
 }

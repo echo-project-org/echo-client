@@ -1,9 +1,15 @@
 const User = require("./users");
-const ServerRTC = require("./rtc");
 const VideoRTC = require("./videoRtc");
-
+const mediasoup = require("mediasoup");
 const Colors = require("./colors");
 const colors = new Colors();
+
+const audioCodec = {
+    kind: "audio",
+    mimeType: "audio/opus",
+    clockRate: 48000,
+    channels: 2
+}
 
 class Rooms {
     constructor(io, socket) {
@@ -12,12 +18,49 @@ class Rooms {
         this.connectedClients = new Map();
         this.userListeners = new Map();
         this.socket = null;
+        this.worker = null;
 
-        const rtc = new ServerRTC();
-        const videoRtc = new VideoRTC();
+        //const rtc = new ServerRTC();
+        //const videoRtc = new VideoRTC();
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
-        
+
+        mediasoup.createWorker ({
+            logLevel: 'warn',
+            logTags: [
+                'info',
+                'ice',
+                'dtls',
+                'rtp',
+                'srtp',
+                'rtcp',
+                'rtx',
+                'bwe',
+                'score',
+                'simulcast',
+                'svc',
+                'sctp'
+            ],
+            rtcMinPort: 40000,
+            rtcMaxPort: 49999
+        }).then((worker) => {
+            this.worker = worker;
+            console.log(colors.changeColor("cyan", "Mediasoup worker created with pid " + this.worker.pid));
+
+            this.worker.on('died', (e) => {
+                console.log(colors.changeColor("red", "Mediasoup worker died\n" + e));
+            });
+
+            this.worker.observer.on('close', () => {
+                console.log(colors.changeColor("red", "Mediasoup worker closed"));
+            });
+
+            this.worker.observer.on('newrouter', (router) => {
+                console.log(colors.changeColor("cyan", "Mediasoup router created with id " + router.id));
+            });
+        });
+
+
         this.emitter.on('connection', (socket) => {
             const request = socket.request;
             // console.log(request._query)
@@ -25,8 +68,8 @@ class Rooms {
             if (!id) return reject("no-id-in-query");
 
             const newUser = new User(socket, id);
-            newUser.setRtc(rtc);
-            newUser.setVideoRtc(videoRtc);
+            //newUser.setRtc(rtc);
+            //newUser.setVideoRtc(videoRtc);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
             this.registerClientEvents(newUser);
@@ -132,12 +175,15 @@ class Rooms {
     addRoom(id) {
         if (!this.rooms.has(id)) {
             console.log("creating room", id, typeof id)
+
+            let r = this.worker.createRouter({ options: [audioCodec], appData: { roomId: id } });
             this.rooms.set(id, {
                 id,
                 private: false,
                 users: new Map(),
                 password: null,
-                display: "New room"
+                display: "New room",
+                mediasoupRouter: r
             });
         }
     }

@@ -1,10 +1,10 @@
 .statusSelector-root {
   position: relative;
   margin: auto;
-  top: 2rem;
+  margin: 2rem auto 1rem auto;
   left: 0;
   width: 80%;
-  background-color: #2b192e;
+  background-color: var(--mui-palette-background-main);
 }
 
 .statusContainer {
@@ -12,8 +12,8 @@
   height: 2rem;
   margin: auto;
   /* margin-top: 1rem; */
-  background-color: #2b192e;
-  border: 1px solid #ccc;
+  background-color: var(--mui-palette-background-main);
+  border: 1px solid var(--mui-palette-text-main);
   border-radius: .2rem;
   cursor: pointer;
   position: relative;
@@ -39,7 +39,7 @@
   left: .5rem;
   width: 100%;
   text-align: left;
-  color: #fff;
+  color: var(--mui-palette-text-main);
   font-size: 1rem;
   font-weight: 300;
 }
@@ -55,7 +55,7 @@
 }
 
 .selectContainer-items {
-  border: 1px solid #ccc;
+  border: 1px solid var(--mui-palette-text-main);
   top: 1rem;
   width: calc(100% + 2px) !important;
   margin-left: 0 !important;
@@ -66,18 +66,18 @@
 }
 
 .selectContainer-item {
-  border-bottom: 1px solid #3d2441;
+  border-bottom: 1px solid var(--mui-palette-background-light);
   text-align: left;
   padding: .6rem !important;
   width: 100%;
   margin: auto;
-  background-color: #492a4e;
+  background-color: var(--mui-palette-background-main);
   cursor: pointer;
   position: relative;
 }
 
 .selectContainer-item:hover {
-  background-color: #361f3a;
+  background-color: var(--mui-palette-background-light);
 }
 
 .selectContainer-item svg {
@@ -97,7 +97,7 @@
   left: .5rem;
   width: 100%;
   text-align: left;
-  color: #fff;
+  color: var(--mui-palette-text-main);
   font-size: 1rem;
   font-weight: 300;
 }
@@ -123,8 +123,8 @@
   height: 2.5rem;
   margin: auto;
   /* margin-top: 1rem; */
-  background-color: #2b192e;
-  border: 1px solid #ccc;
+  background-color: var(--mui-palette-background-main);
+  border: 1px solid var(--mui-palette-text-main);
   border-radius: .2rem;
   cursor: pointer;
   position: relative;
@@ -132,7 +132,7 @@
 }
 
 .deviceSelectorContainer:hover {
-  background-color: #492a4e;
+  background-color: var(--mui-palette-background-light);
 }
 
 .deviceSelectorListContainer {
@@ -146,7 +146,7 @@
 }
 
 .deviceSelectorContainer-items {
-  border: 1px solid #ccc;
+  border: 1px solid var(--mui-palette-text-main);
   top: 1rem;
   width: calc(100% + 2px) !important;
   margin-left: 0 !important;
@@ -157,18 +157,18 @@
 }
 
 .deviceSelectorContainer-item {
-  border-bottom: 1px solid #3d2441;
+  border-bottom: 1px solid var(--mui-palette-background-light);
   text-align: left;
   padding: .6rem !important;
   width: 100%;
   margin: auto;
-  background-color: #492a4e;
+  background-color: var(--mui-palette-background-main);
   cursor: pointer;
   position: relative;
 }
 
 .deviceSelectorContainer-item:hover {
-  background-color: #361f3a;
+  background-color: var(--mui-palette-background-light);
 }
 
 .deviceSelectorContainer-item svg {

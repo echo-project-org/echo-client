@@ -1,12 +1,46 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
+
+import { Container, styled } from '@mui/material';
+
 import MessageRight from './MessageRight'
 import MessageLeft from './MessageLeft'
-
 import LoadingAnimation from '../mainpage/LoadingAnimation'
 
 import { ep, storage } from "../../index";
-
 const api = require('../../api');
+
+const StyledContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    overflow: "auto",
+    display: "flex",
+    flexDirection: "column-reverse",
+    height: "100%",
+    width: "100%",
+    position: "absolute",
+    maxWidth: "calc(100vw - 20rem)",
+    padding: "0",
+  },
+  [theme.breakpoints.up('sm')]: {
+    overflow: "auto",
+    display: "flex",
+    flexDirection: "column-reverse",
+    height: "100%",
+    width: "100%",
+    position: "absolute",
+    maxWidth: "calc(100vw - 20rem)",
+    padding: "0",
+  },
+  [theme.breakpoints.up('lg')]: {
+    overflow: "auto",
+    display: "flex",
+    flexDirection: "column-reverse",
+    height: "100%",
+    width: "100%",
+    position: "absolute",
+    maxWidth: "calc(100vw - 20rem)",
+    padding: "0",
+  }
+}));
 
 function Chat({ currentRoomId, onMouseDown }) {
   const [loadingVisibility, setLoadingVisibility] = useState(false);
@@ -48,6 +82,7 @@ function Chat({ currentRoomId, onMouseDown }) {
   useEffect(() => {
     ep.on("receiveChatMessage", "Chat.receiveChatMessage", (newMessage) => {
       console.log("Chat.receiveChatMessage", newMessage)
+      // check if message contains <br>, if so replace with \n
       setMessages((routeMessages) => [newMessage, ...routeMessages]);
     });
     ep.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
@@ -65,7 +100,9 @@ function Chat({ currentRoomId, onMouseDown }) {
     return (
       <div className='chat' onMouseDown={onMouseDown}>
         <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
-        <div className='noMessages'>Join a room to open the chat</div>
+        <StyledContainer>
+          <div className='noMessages'>Join a room to open the chat</div>
+        </StyledContainer>
       </div>
     )
   }
@@ -74,13 +111,15 @@ function Chat({ currentRoomId, onMouseDown }) {
     <div className='chat' onMouseDown={onMouseDown}>
       <LoadingAnimation visibility={Boolean(loadingVisibility)} className='loadingAnimation'/>
 
-      {messages.length > 0 ? messages.map((message, id) => {
-        if (String(message.userId) === String(storage.get("id"))) {
-          return <MessageLeft key={id} message={message} />
-        } else {
-          return <MessageRight key={id} message={message} />
-        }
-      }) : <div className='noMessages'>{ Boolean(loadingVisibility) ? "" : "No messages yet" }</div>}
+      <StyledContainer>
+        {messages.length > 0 ? messages.map((message, id) => {
+          if (String(message.userId) === String(storage.get("id"))) {
+            return <MessageLeft key={id} message={message} />
+          } else {
+            return <MessageRight key={id} message={message} />
+          }
+        }) : <div className='noMessages'>{ Boolean(loadingVisibility) ? "" : "No messages yet" }</div>}
+        </StyledContainer>
     </div>
   )
 }

@@ -1,29 +1,26 @@
 import React from 'react'
 import { Button, ButtonGroup, InputAdornment } from '@mui/material'
 import { Send, EmojiEmotions } from '@mui/icons-material';
-import { ThemeProvider } from '@emotion/react';
-import { createTheme } from '@mui/material/styles';
+import { useTheme } from '@emotion/react';
 
 function MessageBoxButtons({ onEmojiOn, onClick }) {
-  const theme = createTheme({
-    palette: {
-      primary: { main: '#f5e8da', },
-      secondary: { main: '#ce8ca5', },
-    },
-  });
+  const theme = useTheme();
+  const buttonStyle = {
+    color: theme.palette.text.main,
+    backgroundColor: theme.palette.background.dark,
+    textAlign: "center",
+  }
 
   return (
     <InputAdornment position="end">
-      <ThemeProvider theme={theme}>
-        <ButtonGroup variant='text'>
-          <Button onClick={onEmojiOn}>
-            <EmojiEmotions />
-          </Button>
-          <Button >
-            <Send onClick={onClick} />
-          </Button>
-        </ButtonGroup>
-      </ThemeProvider>
+      <ButtonGroup variant='text'>
+        <Button onClick={onEmojiOn} sx={buttonStyle}>
+          <EmojiEmotions />
+        </Button>
+        <Button sx={buttonStyle}>
+          <Send onClick={onClick} />
+        </Button>
+      </ButtonGroup>
     </InputAdornment>
   )
 }

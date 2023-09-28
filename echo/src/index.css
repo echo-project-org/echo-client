@@ -4,73 +4,15 @@
   font-family: Roboto Condensed;
 }
 
-@keyframes wave {
-  0% {
-    transform: scale(0);
-  }
-
-  50% {
-    transform: scale(1);
-  }
-
-  100% {
-    transform: scale(0);
-  }
-}
-
-@keyframes popIn {
-  0% {
-    transform: scale(0);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    animation-delay: 1.5s;
-    opacity: 1;
-  }
-}
-
-:root {
-  --main-bg-color: #2b192e;
-  --color1: rgb(77, 1, 77);
-  --color2: #ce8ca5;
-  --color3: #f5e8da;
-  --color4: #E4DAF5;
-  --context-menu-background: #4d3352;
-  --main-text-color: #fff;
-}
-
 html {
   height: 100%;
   overflow: hidden;
 }
 
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color3);
-  border-radius: 50px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color2);
-}
-
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--main-bg-color);
+  background-color: var(--mui-palette-background-main);
   height: 100%;
 }
 
@@ -78,24 +20,10 @@ body {
   height: 100%;
 }
 
-.App {
-  height: 100%;
-}
-
-.appWrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.animatedRoutes {
-  flex: 1 1 auto;
-}
-
 .utilitiesBar {
   height: 3rem;
-  background-color: var(--main-bg-color);
-  border-bottom: 1px solid var(--color3);
+  background-color: var(--mui-palette-background-main);
+  border-bottom: 1px solid var(--mui-palette-text-main);
   display: flex;
   flex-direction: row;
   flex: 0 0 auto;
@@ -118,7 +46,7 @@ body {
 }
 
 .mainLogoImg {
-  color: var(--color3);
+  color: var(--mui-palette-text-main);
   height: 15rem;
   position: absolute;
   top: 0;
@@ -148,11 +76,11 @@ body {
 
 .connectButton {
   align-items: center;
-  background-color: var(--color3);
+  background-color: var(--mui-palette-text-main);
   border: 2px solid #111;
   border-radius: 8px;
   box-sizing: border-box;
-  color: var(--main-bg-color);
+  color: var(--mui-palette-background-main);
   cursor: pointer;
   display: flex;
   font-size: 16px;
@@ -198,7 +126,7 @@ body {
 }
 
 .connectButton:active {
-  background-color: var(--color2);
+  background-color: var(--mui-palette-primary-main);
   outline: 0;
 }
 
@@ -210,50 +138,6 @@ body {
   position: relative;
   margin: auto;
   display: flex;
-}
-
-.wave {
-  width: 5px;
-  height: 30px;
-  background: linear-gradient(45deg, var(--color2), var(--color3));
-  margin: 10px;
-  border-radius: 20px;
-  animation: wave 1s ease infinite;
-}
-
-.wave:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.wave:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.wave:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.wave:nth-child(5) {
-  animation-delay: 0.4s;
-}
-
-.wave:nth-child(6) {
-  animation-delay: 0.5s;
-}
-
-.wave:nth-child(7) {
-  animation-delay: 0.6s;
-}
-
-/* .wave:nth-child(8) {} */
-
-.wave:nth-child(9) {
-  animation-delay: 0.7s;
-  animation-delay: 0.8s;
-}
-
-.wave:nth-child(10) {
-  animation-delay: 0.9s;
 }
 
 .noselect {
@@ -275,14 +159,6 @@ body {
   cursor: pointer;
 }
 
-.windowControls {
-  -webkit-app-region: none;
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
-}
-
 .backButton {
   position: absolute;
   top: 0;
@@ -302,7 +178,7 @@ body {
 .userMenuModal {
   color: white;
   min-width: 12rem;
-  background-color: var(--context-menu-background);
+  background-color: var(--mui-palette-background-light);
 }
 
 .buttonGroup {
@@ -344,7 +220,7 @@ body {
 }
 
 .settingsModalSubDiv {
-  background-color: var(--main-bg-color);
+  background-color: var(--mui-palette-background-dark);
   padding: 1rem;
   justify-content: center;
   align-items: center;
@@ -355,7 +231,7 @@ body {
 }
 
 .screenshareModalSubdiv {
-  background-color: var(--main-bg-color);
+  background-color: var(--mui-palette-background-main);
   padding: 1rem;
   justify-content: center;
   align-items: center;
@@ -402,5 +278,26 @@ body {
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    animation-delay: 1.5s;
+    opacity: 1;
   }
 }

@@ -38,41 +38,20 @@ const StyledGridContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: "15%",
-    backgroundColor: '#44b700',
-    color: '#44b700',
-    width: "20%",
-    height: "20%",
-    borderRadius: "50%",
-    // boxShadow: "0 0 0 8px #44b700",
-  }
-}));
-
 const StyledTextField = styled(TextField)({
-  "& label": {
-    color: "#f5e8da",
-  },
-  "& label.Mui-focused": {
-    color: "#f5e8da",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#f5e8da",
-  },
   "& .MuiInputBase-root": {
-    color: "#f5e8da",
+    color: "var(--mui-palette-text-main)",
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
     },
     "&:hover fieldset": {
-      borderColor: "#f5e8da",
+      borderColor: "var(--mui-palette-text-main)",
+      border: "2px solid var(--mui-palette-text-main)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#f5e8da",
-
+      borderColor: "var(--mui-palette-text-main)",
     }
   }
 });
@@ -89,7 +68,6 @@ function UserSettings() {
       setHover(true);
     }
   }
-
   const uploadPicture = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -128,7 +106,6 @@ function UserSettings() {
     };
     fileInput.click();
   }
-
   const computeOnline = () => {
     const online = storage.get("online");
     switch (online) {
@@ -176,7 +153,6 @@ function UserSettings() {
         );
     }
   }
-  
   const computeSelectList = () => {
     if (statusHover)
       return (
@@ -200,7 +176,6 @@ function UserSettings() {
         </Grid>
       )
   }
-
   const computeDiv = () => {
     if (hover) {
       return (
@@ -244,7 +219,6 @@ function UserSettings() {
     }
     return null;
   }
-
   const statusSelectOn = () => {
     setStatusHover(true);
   }
@@ -283,8 +257,8 @@ function UserSettings() {
   return (
     <div className="settingsModalSubDiv">
       <StyledGridContainer container direction={"row"} alignItems={"center"}>
-        <Grid item lg={2} md={4} xs={6} sx={{ textAlign: "center" }}>
-          <StyledBadge
+        <Grid item lg={2} md={6} xs={6} sx={{ textAlign: "center" }}>
+          <Badge
             overlap="circular"
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             variant="dot"
@@ -292,7 +266,7 @@ function UserSettings() {
           >
             {computeDiv()}
             <StyledAvatar src={storage.get("userImage")} onMouseEnter={onAvatarHover} />
-          </StyledBadge>
+          </Badge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">
               {computeOnline()}

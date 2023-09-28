@@ -1,4 +1,3 @@
-const webrtc = require("wrtc");
 const sdpTransform = require("sdp-transform");
 
 const goodH264Settings = "x-google-max-bitrate=10000;x-google-min-bitrate=0;x-google-start-bitrate=6000";

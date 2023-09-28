@@ -1,49 +1,8 @@
 import { useState, useEffect } from 'react'
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Stack, Slider, Typography, Grid } from '@mui/material';
+import { Stack, Slider, Typography, Grid, ClickAwayListener } from '@mui/material';
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
-
-const theme = createTheme({
-  components: {
-    MuiSlider: {
-      styleOverrides: {
-        thumb: {
-          cursor: "e-resize",
-          width: "15px",
-          height: "15px",
-          color: "white",
-          ":hover": {
-            color: "white",
-            boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
-          }
-        },
-        valueLabel: {
-          backgroundColor: "#3e2542",
-          color: "white",
-          borderRadius: "10px",
-        },
-        valueLabelOpen: {
-          backgroundColor: "#3e2542",
-          color: "white",
-          borderRadius: "10px",
-        },
-        colorPrimary: {
-          color: "white",
-          // backgroundColor: "white"
-        },
-        colorSecondary: {
-          color: "white",
-          // backgroundColor: "white"
-        },
-        markLabel: {
-          color: "white"
-        }
-      }
-    },
-  }
-});
 
 function OutputDevicesSettings({ outputDevices }) {
   const [outputDevice, setOutputDevice] = useState('default');
@@ -53,6 +12,7 @@ function OutputDevicesSettings({ outputDevices }) {
   useEffect(() => {
     setOutputDevice(storage.get('outputAudioDeviceId') || "default");
     ep.setSpeakerDevice(storage.get('outputAudioDeviceId') || 1);
+    ep.setSpeakerVolume(storage.get('audioVolume') || 1);
     setSoundVolulme(Math.floor(storage.get('audioVolume') * 100) || 100);
   }, []);
 
@@ -69,8 +29,8 @@ function OutputDevicesSettings({ outputDevices }) {
     ep.setSpeakerVolume(newValue / 100);
   };
 
-  const deviceListToggle = () => {
-    setShowList(!showList);
+  const deviceListToggle = (status = true) => {
+    setShowList(status);
   }
   const computeCurrentDevice = () => {
     var currentDevice = outputDevices.find(device => device.id === outputDevice);
@@ -111,33 +71,33 @@ function OutputDevicesSettings({ outputDevices }) {
 
   return (
     <div className="settingsModalSubDiv noselect">
-      <ThemeProvider theme={theme}>
-        <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
-          Output device
-        </Typography>
-        <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
+        Output device
+      </Typography>
+      <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
+        <ClickAwayListener onClickAway={() => deviceListToggle(false)}>
           <div className="deviceSelectorContainer">
             {computeCurrentDevice()}
           </div>
-          <div className="deviceSelectorListContainer">
-            {computeSelectList()}
-          </div>
+        </ClickAwayListener>
+        <div className="deviceSelectorListContainer">
+          {computeSelectList()}
         </div>
-        <div style={{ paddingRight: "2%", width: "95%" }}>
-          <Stack spacing={2} direction="row" alignItems="center">
-            <VolumeUp fontSize="medium" />
-            <Slider
-              sx={{ width: "95%" }}
-              valueLabelDisplay="auto"
-              valueLabelFormat={(v) => { return v + "%" }}
-              aria-label="Volume"
-              value={soundVolume}
-              onChange={handleSoundVolumeChange}
-              size='medium'
-            />
-          </Stack>
-        </div>
-      </ThemeProvider>
+      </div>
+      <div style={{ paddingRight: "2%", width: "95%" }}>
+        <Stack spacing={2} direction="row" alignItems="center">
+          <VolumeUp fontSize="medium" />
+          <Slider
+            sx={{ width: "95%" }}
+            valueLabelDisplay="auto"
+            valueLabelFormat={(v) => { return v + "%" }}
+            aria-label="Volume"
+            value={soundVolume}
+            onChange={handleSoundVolumeChange}
+            size='medium'
+          />
+        </Stack>
+      </div>
     </div>
   )
 }

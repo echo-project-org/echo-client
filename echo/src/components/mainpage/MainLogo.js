@@ -63,7 +63,8 @@ const MainLogo = () => {
         setAccessBtnVisibility(false);
         setLoginBtnVisibility(true);
       }
-    }, Math.random() * 2400);
+    // }, Math.random() * 2400);
+    }, 1);
 
   }, [])
 

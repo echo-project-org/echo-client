@@ -1,9 +1,9 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import UserSettings from "./UserSettings";
+import ThemeSettings from "./ThemeSettings";
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 
@@ -15,59 +15,14 @@ const modalStyle = {
   margin: "auto",
   height: '80%',
   width: '80%',
-  bgcolor: '#4d3352',
-  color: '#f5e8da',
+  bgcolor: 'var(--mui-palette-background-main)',
+  color: 'var(--mui-palette-text-main)',
   overflow: 'auto',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
   borderRadius: '.4rem',
 };
-
-const modalTheme = createTheme({
-  palette: {
-    primary: { main: '#f5e8da', },
-    secondary: { main: '#ce8ca5', },
-  },
-  typography: {
-    fontFamily: ['Roboto Condensed'].join(','),
-  },
-  MuiSlider: {
-    styleOverrides: {
-      thumb: {
-        cursor: "e-resize",
-        width: "15px",
-        height: "15px",
-        color: "white",
-        ":hover": {
-          color: "white",
-          boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
-        }
-      },
-      valueLabel: {
-        backgroundColor: "#3e2542",
-        color: "white",
-        borderRadius: "10px",
-      },
-      valueLabelOpen: {
-        backgroundColor: "#3e2542",
-        color: "white",
-        borderRadius: "10px",
-      },
-      colorPrimary: {
-        color: "white",
-        // backgroundColor: "white"
-      },
-      colorSecondary: {
-        color: "white",
-        // backgroundColor: "white"
-      },
-      markLabel: {
-        color: "white"
-      }
-    }
-  },
-});
 
 function SettingsButton() {
   const [inputDevices, setInputDevices] = useState([]);
@@ -89,42 +44,43 @@ function SettingsButton() {
   };
 
   return (
-    <div>
+    <>
       <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
         <Button onClick={handleClick}>
           <SettingsIcon />
         </Button>
       </Tooltip>
 
-      <ThemeProvider theme={modalTheme}>
-        <Modal
-          open={modalOpen}
-          onClose={handleModalClose}
-        >
-          <Zoom in={modalOpen}>
-            <Box sx={modalStyle}>
-              <div className='modalDiv'>
-                <Typography variant="h3">
-                  Echo settings
-                </Typography>
+      <Modal
+        open={modalOpen}
+        onClose={handleModalClose}
+      >
+        <Zoom in={modalOpen}>
+          <Box sx={modalStyle}>
+            <div className='modalDiv'>
+              <Typography variant="h3">
+                Echo settings
+              </Typography>
 
-                <Grid container spacing={2}>
-                  <Grid item lg={6} md={12} xs={12}>
-                    <InputDevicesSettings inputDevices={inputDevices} />
-                  </Grid>
-                  <Grid item lg={6} md={12} xs={12}>
-                    <OutputDevicesSettings outputDevices={outputDevices} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <UserSettings />
-                  </Grid>
+              <Grid container spacing={2}>
+                <Grid item lg={6} md={12} xs={12}>
+                  <InputDevicesSettings inputDevices={inputDevices} />
                 </Grid>
-              </div>
-            </Box>
-          </Zoom>
-        </Modal>
-      </ThemeProvider>
-    </div>
+                <Grid item lg={6} md={12} xs={12}>
+                  <OutputDevicesSettings outputDevices={outputDevices} />
+                </Grid>
+                <Grid item xs={12}>
+                  <UserSettings />
+                </Grid>
+                <Grid item xs={12}>
+                  <ThemeSettings />
+                </Grid>
+              </Grid>
+            </div>
+          </Box>
+        </Zoom>
+      </Modal>
+    </>
   )
 }
 

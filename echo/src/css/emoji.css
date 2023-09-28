@@ -2,14 +2,14 @@
   --epr-bg-color: #2b192e !important;
   --epr-category-label-bg-color: #2b192e !important;
 
-  --epr-highlight-color: #ff6bf8 !important;
-  --epr-hover-bg-color: #4f2e55 !important;
-  --epr-focus-bg-color: #4f2e55 !important;
-  --epr-text-color: #fa85ea !important;
-  --epr-search-input-bg-color: #2b192e !important;
-  --epr-picker-border-color: #fa85ea !important;
-  --epr-category-icon-active-color: #fa85ea !important;
-  --epr-skin-tone-picker-menu-color: #fa85ea !important;
+  --epr-highlight-color: var(--mui-palette-primary-main) !important;
+  --epr-hover-bg-color: var(--mui-palette-background-light) !important;
+  --epr-focus-bg-color: var(--mui-palette-background-light) !important;
+  --epr-text-color: var(--mui-palette-text-main) !important;
+  --epr-search-input-bg-color: var(--mui-palette-background-main) !important;
+  --epr-picker-border-color: var(--mui-palette-background-light) !important;
+  --epr-category-icon-active-color: var(--mui-palette-background-light) !important;
+  --epr-skin-tone-picker-menu-color: var(--mui-palette-background-light) !important;
   --epr-horizontal-padding: .5rem !important;
   --epr-picker-border-radius: 8px;
   --epr-search-border-color: var(--epr-highlight-color);
