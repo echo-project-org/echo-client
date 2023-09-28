@@ -1,7 +1,11 @@
 import { ep } from "./index";
-
-const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
 const mediasoup = require("mediasoup-client");
+
+const ICE_SERVERS = [{
+  username: 'echo',
+  credential: 'echo123',
+  urls: ["turn:turn.kuricki.com:6984"]
+}];
 
 class audioRtcTransmitter {
   constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
@@ -14,20 +18,18 @@ class audioRtcTransmitter {
     this.producer = null;
     this.outChannelCount = 2;
 
+    this.isMuted = false;
+    this.context = null;
     this.outStream = null;
-    /**
-     * @type {GainNode}
-     * @description Output gain node
-     */
     this.outGainNode = null;
-
-    /**
-     * @type {GainNode}
-     * @description Voice activity detection gain node
-     */
     this.vadNode = null;
 
+
     this.analyser = null;
+    this.talkingThreashold = 0.2;
+    this.statsInterval = null;
+    this.inputLevel = 0;
+    this.outputLevel = 0;
 
     this.constraints = {
       audio: {
@@ -142,9 +144,114 @@ class audioRtcTransmitter {
     }
   }
 
+  calculateAudioLevels(analyser, freqs, channelCount) {
+    const audioLevels = [];
+    for (let channelI = 0; channelI < channelCount; channelI++) {
+      analyser[channelI].getByteFrequencyData(freqs[channelI]);
+      let value = 0;
+      for (let freqBinI = 0; freqBinI < analyser[channelI].frequencyBinCount; freqBinI++) {
+        value = Math.max(value, freqs[channelI][freqBinI]);
+      }
+      audioLevels[channelI] = value / 256;
+    }
+    return audioLevels;
+  }
+
+  setVoiceDetectionVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    //cancel previous time change
+    this.vadNode.gain.cancelAndHoldAtTime(0);
+    //ramp volume to new value in 1 second
+    this.vadNode.gain.linearRampToValueAtTime(volume, 1);
+  }
+
+  startStatsInterval() {
+    console.log(this.id, "starting stats interval")
+    if (this.statsInterval) {
+      clearInterval(this.statsInterval);
+      this.statsInterval = null;
+    }
+
+    this.statsInterval = setInterval(() => {
+      // remote user's audio levels
+      if (this.inputStreams) {
+        this.inputStreams.forEach((stream) => {
+          let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
+          if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
+            this.hasSpoken = true;
+            ep.audioStatsUpdate({
+              id: this._findUserId(stream),
+              talking: this.hasSpoken,
+            });
+          } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
+            this.hasSpoken = false;
+            ep.audioStatsUpdate({
+              id: this._findUserId(stream),
+              talking: this.hasSpoken,
+            });
+          }
+        });
+      }
+
+      // local user's audio levels
+      if (this.analyser) {
+        let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
+        // console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
+        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
+          this.hasSpokenLocal = true;
+          this.setVoiceDetectionVolume(1.0);
+          ep.audioStatsUpdate({
+            id: this.id,
+            talking: this.hasSpokenLocal,
+          });
+        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
+          this.hasSpokenLocal = false;
+          this.setVoiceDetectionVolume(0.0);
+          ep.audioStatsUpdate({
+            id: this.id,
+            talking: this.hasSpokenLocal,
+          });
+        }
+      }
+    }, 5);
+  }
+
   setOutVolume(volume) {
     this.volume = volume;
     this.outGainNode.gain.value = volume;
+  }
+
+  async setInputDevice(deviceId) {
+    console.log("Setting input device to", deviceId);
+    this.deviceId = deviceId;
+    this.constraints.audio.deviceId = deviceId;
+
+    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+    this.peer.getSenders().forEach((sender) => {
+      if (sender.track && sender.track.kind === 'audio') {
+        sender.replaceTrack(newStream.getAudioTracks()[0]);
+      }
+    });
+
+    this.stream = newStream;
+  }
+
+  mute() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.enabled = false);
+      this.isMuted = true;
+    }
+  }
+
+  unmute() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.enabled = true);
+      this.isMuted = false;
+    }
   }
 
   /**
