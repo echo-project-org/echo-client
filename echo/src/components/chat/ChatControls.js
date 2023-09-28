@@ -70,8 +70,14 @@ function ChatControls({ onEmojiOn, roomId }) {
       };
     });
 
+    ep.on("selectedEmoji", "ChatControls.selectedEmoji", (data) => {
+      console.log("ChatControls.selectedEmoji", data);
+      document.getElementById("messageBox").value += (data.emoji + " ");
+    });
+
     return () => {
       ep.releaseGroup("ChatControls.receiveChatMessage");
+      ep.releaseGroup("ChatControls.selectedEmoji");
     }
   }, [])
 
