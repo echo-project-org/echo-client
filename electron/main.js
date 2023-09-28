@@ -11,9 +11,9 @@ const createRtcInternalsWindow = () => {
     title: "Echo",
     icon: 'images/icon',
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: false,
-      devTools: true
+      devTools: false
     }
   })
 
