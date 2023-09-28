@@ -33,12 +33,12 @@ const theme = extendTheme({
       }
     }),
     primary: {
-      main: '#e6c6eb',
-      contrastText: '#ce91d7',
+      main: '#8f4e9d',
+      contrastText: '#fff',
     },
     secondary: {
       main: '#d794e0',
-      contrastText: '#ce91d7',
+      contrastText: '#fff',
     },
     // accent: 633f69
   },
@@ -82,32 +82,30 @@ const theme = extendTheme({
           cursor: "e-resize",
           width: "15px",
           height: "15px",
-          color: "white",
+          color: "var(--mui-palette-text-light)",
           ":hover": {
-            color: "white",
-            boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
+            color: "var(--mui-palette-text-light)",
+            boxShadow: "0 0 15px 10px var(--mui-palette-background-light)",
           }
         },
         valueLabel: {
-          backgroundColor: "#3e2542",
-          color: "white",
+          backgroundColor: "var(--mui-palette-background-main)",
+          color: "var(--mui-palette-text-light)",
           borderRadius: "10px",
         },
         valueLabelOpen: {
-          backgroundColor: "#3e2542",
-          color: "white",
+          backgroundColor: "var(--mui-palette-background-main)",
+          color: "var(--mui-palette-text-light)",
           borderRadius: "10px",
         },
         colorPrimary: {
-          color: "white",
-          // backgroundColor: "white"
+          color: "var(--mui-palette-text-light)",
         },
         colorSecondary: {
-          color: "white",
-          // backgroundColor: "white"
+          color: "var(--mui-palette-text-light)",
         },
         markLabel: {
-          color: "white"
+          color: "var(--mui-palette-text-light)",
         }
       }
     },

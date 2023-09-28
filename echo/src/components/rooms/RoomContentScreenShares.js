@@ -3,8 +3,8 @@ import ReactPlayer from 'react-player';
 import { useState, useEffect } from 'react'
 import { Container, styled } from '@mui/material'
 import ScreenShareControlIcons from './ScreenShareControlIcons';
-import { ep } from '../..';
 
+import { ep } from '../..';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {

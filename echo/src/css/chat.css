@@ -59,7 +59,7 @@
 .noMessages {
   user-select: none;
   margin: auto;
-  color: var(--no-messages-color);
+  color: var(--mui-palette-text-light);
   text-align: center;
   vertical-align: middle;
   display: inline-block;

@@ -162,8 +162,8 @@ body {
 }
 
 .screenshareModalSubdiv {
-  background-color: var(--mui-palette-background-main);
-  padding: 1rem;
+  background-color: var(--mui-palette-background-dark);
+  padding: 2rem;
   justify-content: center;
   align-items: center;
   border-radius: 1rem;
@@ -190,7 +190,13 @@ body {
   cursor: pointer;
 }
 
+.screenShareOption p {
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
 .screenShareThumbnail {
+  margin-top: 1rem;
   max-width: 100%;
 }
 
