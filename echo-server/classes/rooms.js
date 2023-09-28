@@ -177,6 +177,14 @@ class Rooms {
             console.log("creating room", id, typeof id)
 
             let r = this.worker.createRouter({ options: [audioCodec], appData: { roomId: id } });
+            r.observer.on('close', () => {
+                console.log(colors.changeColor("cyan", "[R-"+ r.id +"] Mediasoup router closed"));
+            });
+
+            r.observer.on('newtransport', (transport) => {
+                console.log(colors.changeColor("cyan", "[R-"+ r.id +"] Mediasoup transport created with id " + transport.id));
+            });
+
             this.rooms.set(id, {
                 id,
                 private: false,
