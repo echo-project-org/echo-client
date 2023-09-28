@@ -3,7 +3,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--mui-palette-text-main);
+  background: var(--mui-palette-text-light);
   border-radius: 50px;
 }
 

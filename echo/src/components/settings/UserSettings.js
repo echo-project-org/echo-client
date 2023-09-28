@@ -40,18 +40,18 @@ const StyledGridContainer = styled(Grid)(({ theme }) => ({
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-root": {
-    color: "var(--mui-palette-text-main)",
+    color: "var(--mui-palette-text-light)",
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     },
     "&:hover fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
-      border: "2px solid var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
+      border: "2px solid var(--mui-palette-text-light)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     }
   }
 });
@@ -187,8 +187,7 @@ function UserSettings() {
               height: "100%",
               position: "absolute",
               zIndex: "1",
-              borderRadius:
-              "50%",
+              borderRadius: "50%",
               cursor: "pointer"
             }}
             onMouseDown={uploadPicture}
@@ -318,18 +317,18 @@ function UserSettings() {
           <Button
             variant="contained"
             style={{
-              backgroundColor: "rgb(155, 95, 155)",
-              color: "white",
+              backgroundColor: "var(--mui-palette-primary-main)",
+              color: "var(--mui-palette-text-light)",
               fontWeight: "bold",
               fontSize: "1.2rem",
               width: "20%",
               transition: "all .1s ease-in-out",
               margin: "3rem 0 1rem 0"
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "rgb(215, 124, 215)"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "rgb(155, 95, 155)"}
-            onMouseDown={(e) => e.target.style.backgroundColor = "rgb(185, 125, 185)"}
-            onMouseUp={(e) => e.target.style.backgroundColor = "rgb(215, 124, 215)"}
+            onMouseEnter={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-light)"}
+            onMouseLeave={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-main)"}
+            onMouseDown={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-dark)"}
+            onMouseUp={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-main)"}
             disableRipple
           >Update</Button>
         </Grid>

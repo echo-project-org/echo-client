@@ -12,31 +12,31 @@ const newSelfMessageSound = require("../../audio/newmessageself.mp3");
 
 const StyledTextField = styled(TextField)({
   "& label": {
-    color: "var(--mui-palette-text-main)",
+    color: "var(--mui-palette-text-light)",
   },
   "& label.Mui-focused": {
-    color: "var(--mui-palette-text-main)",
+    color: "var(--mui-palette-text-light)",
   },
   "& .MuiInput-underline:after": {
-    borderBottomColor: "var(--mui-palette-text-main)",
+    borderBottomColor: "var(--mui-palette-text-light)",
   },
   "& .MuiInputBase-root": {
-    color: "var(--mui-palette-text-main)",
+    color: "var(--mui-palette-text-light)",
     backgroundColor: "var(--mui-palette-background-dark)",
     zIndex: 2,
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     },
     "&:hover fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     },
     "& .MuiInputAdornment-root": {
-      color: "var(--mui-palette-text-main)",
+      color: "var(--mui-palette-text-light)",
       alignSelf: "flex-start",
       fixAlign: "flex-start",
       marginTop: "0.6rem",

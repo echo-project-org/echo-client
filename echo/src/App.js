@@ -21,6 +21,7 @@ const _theme = createTheme();
 
 const theme = extendTheme({
   palette: {
+    mode: 'dark',
     background: _theme.palette.augmentColor({
       color: {
         main: '#331b36',
@@ -29,16 +30,16 @@ const theme = extendTheme({
     }),
     text: _theme.palette.augmentColor({
       color: {
-        main: "#f9d1ff",
+        main: "#ffffff",
       }
     }),
     primary: {
-      main: '#e6c6eb',
-      contrastText: '#ce91d7',
+      main: '#8f4e9d',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#d794e0',
-      contrastText: '#ce91d7',
+      main: '#F4A9FE',
+      contrastText: '#ffffff',
     },
     // accent: 633f69
   },
@@ -58,10 +59,10 @@ const theme = extendTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          color: "white",
+          color: "var(--mui-palette-text-light)",
           fontSize: ".9rem",
-          border: "1px solid rgb(235, 144, 235)",
-          background: "#3e2542",
+          border: "1px solid var(--mui-palette-background-light)",
+          background: "var(--mui-palette-background-main)",
           borderRadius: 10,
           padding: 8
         },
@@ -69,8 +70,8 @@ const theme = extendTheme({
           fontSize: 16,
           width: 17,
           "&::before": {
-            border: "1px solid rgb(235, 144, 235)",
-            backgroundColor: "#3e2542",
+            border: "1px solid var(--mui-palette-background-light)",
+            backgroundColor: "var(--mui-palette-background-main)",
             boxSizing: "border-box"
           }
         }
@@ -82,32 +83,30 @@ const theme = extendTheme({
           cursor: "e-resize",
           width: "15px",
           height: "15px",
-          color: "white",
+          color: "var(--mui-palette-text-light)",
           ":hover": {
-            color: "white",
-            boxShadow: "0 0 5px 10px rgba(255, 255, 255, 0.1)"
+            color: "var(--mui-palette-text-light)",
+            boxShadow: "0 0 15px 10px var(--mui-palette-background-light)",
           }
         },
         valueLabel: {
-          backgroundColor: "#3e2542",
-          color: "white",
+          backgroundColor: "var(--mui-palette-background-main)",
+          color: "var(--mui-palette-text-light)",
           borderRadius: "10px",
         },
         valueLabelOpen: {
-          backgroundColor: "#3e2542",
-          color: "white",
+          backgroundColor: "var(--mui-palette-background-main)",
+          color: "var(--mui-palette-text-light)",
           borderRadius: "10px",
         },
         colorPrimary: {
-          color: "white",
-          // backgroundColor: "white"
+          color: "var(--mui-palette-text-light)",
         },
         colorSecondary: {
-          color: "white",
-          // backgroundColor: "white"
+          color: "var(--mui-palette-text-light)",
         },
         markLabel: {
-          color: "white"
+          color: "var(--mui-palette-text-light)",
         }
       }
     },
@@ -153,16 +152,20 @@ const theme = extendTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
-          backgroundColor: "var(--mui-palette-background-dark)",
-          color: "var(--mui-palette-text-main)",
+          color: "var(--mui-palette-text-dark)",
+          backgroundColor: "rgba(0, 0, 0, 0)",
+          border: "none",
           ":hover": {
-            color: "var(--mui-palette-text-main)",
-            backgroundColor: "rgba(0, 0, 0, .1)",
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            border: "none",
+            color: "var(--mui-palette-text-dark)",
             transitionDuration: ".5s"
           },
-          "&& .Mui-selected": {
-            backgroundColor: "var(--mui-palette-background-dark)",
-            color: "var(--mui-palette-text-main)",
+          "&.Mui-selected, &.Mui-selected:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            border: "none",
+            color: "var(--mui-palette-text-light)",
+            transitionDuration: ".5s"
           },
         },
       }

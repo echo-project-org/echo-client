@@ -7,12 +7,12 @@ import ScreenShareOption from './ScreenShareOption';
 
 const modalStyle = {
   position: "relative",
-  top: "15%",
+  top: "5%",
   margin: "auto",
-  height: '50%',
-  width: '50%',
-  bgcolor: '#4d3352',
-  color: '#f5e8da',
+  height: '80%',
+  width: '70%',
+  bgcolor: 'var(--mui-palette-background-main)',
+  color: 'var(--mui-palette-text-light)',
   overflow: 'auto',
   border: '2px solid #000',
   boxShadow: 24,
@@ -52,7 +52,6 @@ function ScreenShareSelector() {
     }
 
   };
-
   const deviceSelected = (deviceId) => {
     console.log("device selected", deviceId)
     ep.startScreenSharing(deviceId);

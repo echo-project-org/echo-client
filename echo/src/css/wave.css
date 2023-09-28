@@ -1,7 +1,7 @@
 .wave {
   width: 5px;
   height: 30px;
-  background: linear-gradient(45deg, var(--mui-palette-primary-main), var(--mui-palette-text-main));
+  background: linear-gradient(0deg, var(--mui-palette-primary-dark), var(--mui-palette-primary-light));
   margin: 10px;
   border-radius: 20px;
   animation: wave 1s ease infinite;

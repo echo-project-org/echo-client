@@ -5,7 +5,7 @@
   --epr-highlight-color: var(--mui-palette-primary-main) !important;
   --epr-hover-bg-color: var(--mui-palette-background-light) !important;
   --epr-focus-bg-color: var(--mui-palette-background-light) !important;
-  --epr-text-color: var(--mui-palette-text-main) !important;
+  --epr-text-color: var(--mui-palette-text-light) !important;
   --epr-search-input-bg-color: var(--mui-palette-background-main) !important;
   --epr-picker-border-color: var(--mui-palette-background-light) !important;
   --epr-category-icon-active-color: var(--mui-palette-background-light) !important;

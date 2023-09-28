@@ -141,7 +141,12 @@ function RoomContent({ roomId }) {
                 {roomDescription}
               </Container>
             </Grid>
-            <Grid item xs={1} sm={1} md={2} lg={2} xl={2}>
+            <Grid item xs={1} sm={1} md={2} lg={2} xl={2} sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}>
               <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
                 {children}
               </ToggleButtonGroup>

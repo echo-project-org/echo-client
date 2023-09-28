@@ -23,7 +23,7 @@ body {
 .utilitiesBar {
   height: 3rem;
   background-color: var(--mui-palette-background-main);
-  border-bottom: 1px solid var(--mui-palette-text-main);
+  border-bottom: 1px solid var(--mui-palette-text-light);
   display: flex;
   flex-direction: row;
   flex: 0 0 auto;
@@ -46,7 +46,7 @@ body {
 }
 
 .mainLogoImg {
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   height: 15rem;
   position: absolute;
   top: 0;
@@ -72,66 +72,6 @@ body {
   align-items: center;
   justify-content: center;
   margin: auto;
-}
-
-.connectButton {
-  align-items: center;
-  background-color: var(--mui-palette-text-main);
-  border: 2px solid #111;
-  border-radius: 8px;
-  box-sizing: border-box;
-  color: var(--mui-palette-background-main);
-  cursor: pointer;
-  display: flex;
-  font-size: 16px;
-  height: 80px;
-  justify-content: center;
-  line-height: 24px;
-  max-width: 100%;
-  padding: 0 25px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  animation: 500ms ease 0s 1 fadeIn;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 2rem;
-  margin: auto;
-  width: 15rem;
-  cursor: pointer;
-}
-
-.connectButton:after {
-  background-color: #111;
-  border-radius: 8px;
-  content: "";
-  display: block;
-  height: 80px;
-  left: 0;
-  width: 100%;
-  position: absolute;
-  top: -2px;
-  z-index: -2;
-  transform: translate(8px, 8px);
-  transition: transform .2s ease-out;
-}
-
-.connectButton:hover:after {
-  transform: translate(0, 0);
-}
-
-.connectButton:active {
-  background-color: var(--mui-palette-primary-main);
-  outline: 0;
-}
-
-.connectButton:hover {
-  outline: 0;
 }
 
 .loadingAnimation {
@@ -176,13 +116,9 @@ body {
 }
 
 .userMenuModal {
-  color: white;
+  color: var(--mui-palette-text-light);
   min-width: 12rem;
   background-color: var(--mui-palette-background-light);
-}
-
-.buttonGroup {
-  position: relative;
 }
 
 .voiceConnected {
@@ -195,10 +131,9 @@ body {
   height: auto;
   width: 80%;
   color: white;
-  border: 1px solid rgb(235, 144, 235);
-  background: rgb(110, 64, 110);
-  background: linear-gradient(30deg, rgb(107, 65, 107) 0%, rgb(134, 76, 134) 50%, rgb(155, 95, 155) 100%);
-  box-shadow: 0 0 .3rem .1rem rgba(78, 46, 78, .8);
+  border: 1px solid var(--mui-palette-background-light);
+  background: linear-gradient(200deg, var(--mui-palette-background-main) 10%, var(--mui-palette-background-main) 20%, var(--mui-palette-background-light) 100%);
+  box-shadow: 0 0 .3rem .1rem var(--mui-palette-background-dark);
   border-radius: 10px;
   padding: 5px;
 }
@@ -207,10 +142,6 @@ body {
   line-height: normal;
   display: inline;
   vertical-align: middle;
-}
-
-.tooltipButton {
-  background-color: red;
 }
 
 .modalDiv {
@@ -231,8 +162,8 @@ body {
 }
 
 .screenshareModalSubdiv {
-  background-color: var(--mui-palette-background-main);
-  padding: 1rem;
+  background-color: var(--mui-palette-background-dark);
+  padding: 2rem;
   justify-content: center;
   align-items: center;
   border-radius: 1rem;
@@ -255,11 +186,17 @@ body {
 }
 
 .screenShareOption:hover {
-  background-color: #472a4d;
+  background-color: var(--mui-palette-background-light);
   cursor: pointer;
 }
 
+.screenShareOption p {
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
 .screenShareThumbnail {
+  margin-top: 1rem;
   max-width: 100%;
 }
 

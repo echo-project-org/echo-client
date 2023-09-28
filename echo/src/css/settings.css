@@ -13,7 +13,7 @@
   margin: auto;
   /* margin-top: 1rem; */
   background-color: var(--mui-palette-background-main);
-  border: 1px solid var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
   border-radius: .2rem;
   cursor: pointer;
   position: relative;
@@ -39,7 +39,7 @@
   left: .5rem;
   width: 100%;
   text-align: left;
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   font-size: 1rem;
   font-weight: 300;
 }
@@ -55,7 +55,7 @@
 }
 
 .selectContainer-items {
-  border: 1px solid var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
   top: 1rem;
   width: calc(100% + 2px) !important;
   margin-left: 0 !important;
@@ -97,7 +97,7 @@
   left: .5rem;
   width: 100%;
   text-align: left;
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   font-size: 1rem;
   font-weight: 300;
 }
@@ -124,7 +124,7 @@
   margin: auto;
   /* margin-top: 1rem; */
   background-color: var(--mui-palette-background-main);
-  border: 1px solid var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
   border-radius: .2rem;
   cursor: pointer;
   position: relative;
@@ -146,7 +146,7 @@
 }
 
 .deviceSelectorContainer-items {
-  border: 1px solid var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
   top: 1rem;
   width: calc(100% + 2px) !important;
   margin-left: 0 !important;
@@ -178,4 +178,33 @@
   transform: translateY(-50%);
   width: 1.3rem;
   height: 1.3rem;
+}
+
+/* THEME LIST SELECTION */
+
+.input-color-container {
+  position: relative;
+  overflow: hidden;
+  width: 5rem;
+  height: 5rem;
+  border: solid 3px var(--mui-palette-background-light);
+  border-radius: 50%;
+  margin: auto;
+}
+
+.input-color {
+  position: absolute;
+  top: -.5rem;
+  left: -.5rem;
+  width: 6rem;
+  height: 6rem;
+  border: none;
+}
+
+.input-color-label {
+  margin: 1rem 0 0 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--mui-palette-text-light)
 }
