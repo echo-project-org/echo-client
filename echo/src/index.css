@@ -23,7 +23,7 @@ body {
 .utilitiesBar {
   height: 3rem;
   background-color: var(--mui-palette-background-main);
-  border-bottom: 1px solid var(--mui-palette-text-main);
+  border-bottom: 1px solid var(--mui-palette-text-light);
   display: flex;
   flex-direction: row;
   flex: 0 0 auto;
@@ -46,7 +46,7 @@ body {
 }
 
 .mainLogoImg {
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   height: 15rem;
   position: absolute;
   top: 0;
@@ -116,7 +116,7 @@ body {
 }
 
 .userMenuModal {
-  color: white;
+  color: var(--mui-palette-text-light);
   min-width: 12rem;
   background-color: var(--mui-palette-background-light);
 }
@@ -131,10 +131,9 @@ body {
   height: auto;
   width: 80%;
   color: white;
-  border: 1px solid rgb(235, 144, 235);
-  background: rgb(110, 64, 110);
-  background: linear-gradient(30deg, rgb(107, 65, 107) 0%, rgb(134, 76, 134) 50%, rgb(155, 95, 155) 100%);
-  box-shadow: 0 0 .3rem .1rem rgba(78, 46, 78, .8);
+  border: 1px solid var(--mui-palette-background-light);
+  background: linear-gradient(200deg, var(--mui-palette-background-main) 10%, var(--mui-palette-background-main) 20%, var(--mui-palette-background-light) 100%);
+  box-shadow: 0 0 .3rem .1rem var(--mui-palette-background-dark);
   border-radius: 10px;
   padding: 5px;
 }
@@ -187,7 +186,7 @@ body {
 }
 
 .screenShareOption:hover {
-  background-color: #472a4d;
+  background-color: var(--mui-palette-background-light);
   cursor: pointer;
 }
 

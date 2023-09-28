@@ -29,7 +29,7 @@ const theme = extendTheme({
     }),
     text: _theme.palette.augmentColor({
       color: {
-        main: "#f9d1ff",
+        main: "#fff",
       }
     }),
     primary: {
@@ -58,10 +58,10 @@ const theme = extendTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          color: "white",
+          color: "var(--mui-palette-text-light)",
           fontSize: ".9rem",
-          border: "1px solid rgb(235, 144, 235)",
-          background: "#3e2542",
+          border: "1px solid var(--mui-palette-background-light)",
+          background: "var(--mui-palette-background-main)",
           borderRadius: 10,
           padding: 8
         },
@@ -69,8 +69,8 @@ const theme = extendTheme({
           fontSize: 16,
           width: 17,
           "&::before": {
-            border: "1px solid rgb(235, 144, 235)",
-            backgroundColor: "#3e2542",
+            border: "1px solid var(--mui-palette-background-light)",
+            backgroundColor: "var(--mui-palette-background-main)",
             boxSizing: "border-box"
           }
         }
@@ -153,16 +153,17 @@ const theme = extendTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
-          backgroundColor: "var(--mui-palette-background-dark)",
-          color: "var(--mui-palette-text-main)",
+          color: "var(--mui-palette-text-dark)",
+          backgroundColor: "rgba(0, 0, 0, 0)",
           ":hover": {
-            color: "var(--mui-palette-text-main)",
-            backgroundColor: "rgba(0, 0, 0, .1)",
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            color: "var(--mui-palette-text-dark)",
             transitionDuration: ".5s"
           },
-          "&& .Mui-selected": {
-            backgroundColor: "var(--mui-palette-background-dark)",
-            color: "var(--mui-palette-text-main)",
+          "&.Mui-selected, &.Mui-selected:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            color: "var(--mui-palette-text-light)",
+            transitionDuration: ".5s"
           },
         },
       }

@@ -40,18 +40,18 @@ const StyledGridContainer = styled(Grid)(({ theme }) => ({
 
 const StyledTextField = styled(TextField)({
   "& .MuiInputBase-root": {
-    color: "var(--mui-palette-text-main)",
+    color: "var(--mui-palette-text-light)",
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     },
     "&:hover fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
-      border: "2px solid var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
+      border: "2px solid var(--mui-palette-text-light)",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "var(--mui-palette-text-main)",
+      borderColor: "var(--mui-palette-text-light)",
     }
   }
 });

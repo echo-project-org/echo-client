@@ -84,7 +84,7 @@
 }
 
 .loginForm h1 {
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   font-size: 2.2rem;
 }
 
@@ -112,38 +112,38 @@
   outline: none;
   padding: 12px;
   border-radius: 12px;
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   background: var(--mui-palette-background-pink);
-  border: 1px solid var(--mui-palette-text-main);
-  box-shadow: 0px 1px 5px var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
+  box-shadow: 0px 1px 5px var(--mui-palette-text-light);
 }
 
 .input::placeholder {
   /* font-weight: bold; */
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
   opacity: 1;
   /* Firefox */
 }
 
 .input:-ms-input-placeholder {
   /* font-weight: bold; */
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
 }
 
 .input::-ms-input-placeholder {
   /* font-weight: bold; */
-  color: var(--mui-palette-text-main);
+  color: var(--mui-palette-text-light);
 }
 
 .input:hover {
   transition: all .1s ease;
-  border: 1px solid var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
 }
 
 .input:focus {
   transition: all .1s ease;
-  border: 1px solid var(--mui-palette-text-main);
-  box-shadow: 0px 1px 8px var(--mui-palette-text-main);
+  border: 1px solid var(--mui-palette-text-light);
+  box-shadow: 0px 1px 8px var(--mui-palette-text-light);
 }
 
 /* firefox */

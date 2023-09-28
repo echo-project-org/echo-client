@@ -16,7 +16,7 @@ const modalStyle = {
   height: '80%',
   width: '80%',
   bgcolor: 'var(--mui-palette-background-main)',
-  color: 'var(--mui-palette-text-main)',
+  color: 'var(--mui-palette-text-light)',
   overflow: 'auto',
   border: '2px solid #000',
   boxShadow: 24,
