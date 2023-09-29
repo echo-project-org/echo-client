@@ -1,6 +1,6 @@
 .EmojiPickerReact {
-  --epr-bg-color: #2b192e !important;
-  --epr-category-label-bg-color: #2b192e !important;
+  --epr-bg-color: var(--mui-palette-background-main) !important;
+  --epr-category-label-bg-color: var(--mui-palette-background-main) !important;
 
   --epr-highlight-color: var(--mui-palette-primary-main) !important;
   --epr-hover-bg-color: var(--mui-palette-background-light) !important;
