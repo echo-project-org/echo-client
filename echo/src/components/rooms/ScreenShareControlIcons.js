@@ -44,9 +44,10 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         left: "0",
         width: "100%",
         height: "100%",
-        backgroundColor: showControls ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 0.0)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         transition: "all 0.1s ease",
         zIndex: "2",
+        opacity: showControls ? "1" : "0",
       }}>
         <Grid container direction='row' alignContent='center' justifyContent='start' style={{ padding: 16 }}>
           <Grid item>
