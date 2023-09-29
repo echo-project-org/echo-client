@@ -18,7 +18,7 @@ function InactiveRoom({ users, data }) {
   return (
     <div className='secondRoom' onClick={handleClick}>
       <p className='roomName noselect'>{data.name}</p>
-      <StyledAvatarGroup max={4} sx={{ justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem' }}>
+      <StyledAvatarGroup max={15} sx={{ justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem' }}>
         {
           users.map((user, id) => (
             <Avatar key={id} alt={users.name} src={user.userImage} sx={{ height: '1.25rem', width: '1.25rem', marginBottom: '.5rem' }} />

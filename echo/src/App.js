@@ -55,21 +55,31 @@ function App() {
             textAlign: "center",
           }),
           // change the style of the contained button type
-          contained: {
+          contained: ({ theme }) => ({
             // boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
-            backgroundColor: "var(--mui-palette-primary-main)",
-            color: "var(--mui-palette-text-light)",
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.text.light,
             ":hover": {
-              backgroundColor: "var(--mui-palette-primary-light)",
-              color: "var(--mui-palette-text-light)",
+              backgroundColor: theme.palette.primary.light,
+              color: theme.palette.text.light,
               transitionDuration: ".5s"
             },
             "&.Mui-disabled": {
-              backgroundColor: "var(--mui-palette-primary-dark)",
-              color: "var(--mui-palette-text-light)",
+              backgroundColor: theme.palette.primary.dark,
+              color: theme.palette.text.light,
               boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
             }
-          },
+          }),
+        }
+      },
+      MuiAvatar: {
+        root: {
+          styleOverrides: {
+            ".MuiAvatar-fallback": {
+              objectFit: "cover",
+              background: "var(--mui-palette-background-main)",
+            }
+          }
         }
       },
       MuiTooltip: {
