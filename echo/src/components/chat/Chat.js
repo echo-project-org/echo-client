@@ -20,26 +20,6 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     maxWidth: "calc(100vw - 20rem)",
     padding: "0",
   },
-  [theme.breakpoints.up('sm')]: {
-    overflow: "auto",
-    display: "flex",
-    flexDirection: "column-reverse",
-    height: "100%",
-    width: "100%",
-    position: "absolute",
-    maxWidth: "calc(100vw - 20rem)",
-    padding: "0",
-  },
-  [theme.breakpoints.up('lg')]: {
-    overflow: "auto",
-    display: "flex",
-    flexDirection: "column-reverse",
-    height: "100%",
-    width: "100%",
-    position: "absolute",
-    maxWidth: "calc(100vw - 20rem)",
-    padding: "0",
-  }
 }));
 
 function Chat({ currentRoomId, onMouseDown }) {

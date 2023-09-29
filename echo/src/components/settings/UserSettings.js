@@ -317,12 +317,10 @@ function UserSettings() {
           <Button
             variant="contained"
             sx={{
-              fontWeight: "bold",
               fontSize: "1.2rem",
               width: "50%",
               margin: "3rem 0 1rem 0"
             }}
-            disableRipple
           >Update</Button>
         </Grid>
       </StyledGridContainer>
