@@ -15,6 +15,7 @@ import { storage } from "./index";
 import {
   createTheme,
   ThemeProvider,
+  responsiveFontSizes,
   experimental_extendTheme as extendTheme,
   Experimental_CssVarsProvider as CssVarsProvider,
 } from '@mui/material/styles';
@@ -22,7 +23,7 @@ import {
 
 function App() {
   const _theme = createTheme();
-  const theme = extendTheme({
+  let theme = extendTheme({
     palette: {
       mode: 'dark',
       background: _theme.palette.augmentColor({
@@ -51,9 +52,24 @@ function App() {
         styleOverrides: {
           root: ({ theme }) => ({
             color: theme.palette.text.main,
-            backgroundColor: theme.palette.primary.main,
             textAlign: "center",
           }),
+          // change the style of the contained button type
+          contained: {
+            // boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
+            backgroundColor: "var(--mui-palette-primary-main)",
+            color: "var(--mui-palette-text-light)",
+            ":hover": {
+              backgroundColor: "var(--mui-palette-primary-light)",
+              color: "var(--mui-palette-text-light)",
+              transitionDuration: ".5s"
+            },
+            "&.Mui-disabled": {
+              backgroundColor: "var(--mui-palette-primary-dark)",
+              color: "var(--mui-palette-text-light)",
+              boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
+            }
+          },
         }
       },
       MuiTooltip: {
@@ -171,6 +187,12 @@ function App() {
         }
       },
     }
+  });
+  theme = responsiveFontSizes(theme, {
+    breakpoints: ['xs', 'sm', 'md', 'lg', 'xl'],
+    disableAlign: true,
+    factor: 2,
+    variants: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'subtitle1', 'subtitle2', 'body1', 'body2', 'caption', 'button', 'overline'],
   });
 
   return (

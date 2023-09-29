@@ -104,7 +104,7 @@ const Login = () => {
           placeholder="Password"
           onKeyDown={checkCredentials}
         />
-        <Button variant="outlined" onClick={checkCredentials}>Login</Button>
+        <Button variant="contained" onClick={checkCredentials}>Login</Button>
       </div>
 
       <Snackbar

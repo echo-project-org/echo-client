@@ -316,19 +316,12 @@ function UserSettings() {
         <Grid item lg={12} xs={12} sx={{ textAlign: "center" }}>
           <Button
             variant="contained"
-            style={{
-              backgroundColor: "var(--mui-palette-primary-main)",
-              color: "var(--mui-palette-text-light)",
+            sx={{
               fontWeight: "bold",
               fontSize: "1.2rem",
-              width: "20%",
-              transition: "all .1s ease-in-out",
+              width: "50%",
               margin: "3rem 0 1rem 0"
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-light)"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-main)"}
-            onMouseDown={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-dark)"}
-            onMouseUp={(e) => e.target.style.backgroundColor = "var(--mui-palette-primary-main)"}
             disableRipple
           >Update</Button>
         </Grid>
