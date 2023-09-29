@@ -1,0 +1,42 @@
+#screenShareContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.screenshareUserGridContainer {
+  align-content: center;
+  justify-content: center;
+  margin: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-direction: column-reverse;
+  display: flex;
+}
+
+.screenshareUserContainer {
+  width: 26rem;
+  height: 15rem;
+  overflow: hidden;
+  position: relative;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.screenshareUser {
+  position: absolute;
+  width: 5rem;
+  height: 5rem;
+  overflow: hidden;
+  filter: blur(50px);
+  transform: scale(3);
+  background-size: cover;
+}
+
+.screenshareUser .MuiAvatar-root {
+  width: 100%;
+  text-align: center;
+}
+
+.screenshareUser .MuiTypography-root {
+  margin-top: .8rem !important;
+}
