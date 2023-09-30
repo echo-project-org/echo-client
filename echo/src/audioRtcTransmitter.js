@@ -68,11 +68,11 @@ class audioRtcTransmitter {
     }
 
 
-    this.sendTransport.on("connect", async ({ dtlsParameters }, callback, errback) => {
+    this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
       console.log("Send transport connect");
-      ep.sendTransportConnect({
-        dtlsParameters
-      }, () => {callback();}, errback);
+      ep.sendTransportConnect({ dtlsParameters }, () => {
+        cb();
+      }, errback);
     });
 
     this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {

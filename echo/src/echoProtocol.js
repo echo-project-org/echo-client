@@ -227,9 +227,9 @@ class EchoProtocol {
 
   sendTransportConnect(data, cb, errCb) {
     if (this.socket) {
-      this.socket.emit("client.sendTransportConnect", data, () => {
-        console.log("Pheni")
-      }, errCb);
+      this.socket.emit("client.sendTransportConnect", data, (a) => {
+        cb(a);
+      });
     }
   }
 
