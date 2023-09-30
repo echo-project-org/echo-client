@@ -82,7 +82,7 @@ class EchoProtocol {
       this.rtcConnectionStateChange({ state: "disconnected" });
       this.stopTransmitting();
       this.stopReceiving();
-      this._startReconnectTry();
+      //this._startReconnectTry();
     })
 
     this.socket.io.on("error", (error) => {
@@ -170,6 +170,13 @@ class EchoProtocol {
       console.log("User", data.id, "stopped broadcasting video", data.streamId);
       this.videoBroadcastStop(data);
     });
+
+    this.socket.on("server.transportCreated", (data) => {
+      console.log("Server created transport with id", data.id);
+      if (this.at) {
+        this.at.createSendTransport(data);
+      }
+    });
   }
 
   endConnection(data) {
@@ -218,21 +225,24 @@ class EchoProtocol {
     }
   }
 
+  sendTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendTransportConnect", data, () => {
+        console.log("Pheni")
+      }, errCb);
+    }
+  }
+
   startReceiving(remoteId) {
-    console.log("Starting input stream for", remoteId)
-    this.at.subscribeToAudio(remoteId);
+
   }
 
   stopReceiving(remoteId) {
-    if (this.at) {
-      this.at.unsubscribeFromAudio(remoteId);
-    }
+
   }
 
   stopReceivingVideo(remoteId) {
-    if(this.vt) {
-      this.vt.unsubscribeFromVideo(remoteId);
-    }
+
   }
 
   toggleMute(mutestate) {
@@ -304,6 +314,7 @@ class EchoProtocol {
       if (!id) id = storage.get('id');
       console.log("closing connection with socket")
       this.socket.emit("client.end", { id });
+      clearInterval(this.currentConnectionStateInterval);
     }
 
     this.stopReceiving();
@@ -446,7 +457,7 @@ class EchoProtocol {
   }
 
   getAudioState(id = false) {
-    if (id) {
+    if (id && this.at) {
       const cachedUser = this.cachedUsers.get(id);
       if (cachedUser && !cachedUser.self) {
         return {

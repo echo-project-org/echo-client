@@ -9,6 +9,7 @@ class User {
         this.isDeaf = false;
         this.isMuted = false;
         this.events = {};
+        this.transport = null;
 
         // define rtc
         this.rtc = null;
@@ -41,37 +42,35 @@ class User {
         this.socket.on("client.videoStreamChanged", (data) => this.handleVideoStreamChanged(data));
 
         // mediasoup
-        this.socket.on("create-transport", (data, cb) => {
-            console.log("create-transport");
-            cb(this.createTransport(data));
+        this.socket.on("client.sendTransportConnect", (data, cb) => 
+            this.transportConnect(data, cb)
+        );
+
+        this.socket.on("client.sendTransportProduce", (data, cb) => {
+            cb(this.transportProduce(data));
         });
     }
 
-    async createTransport(data) {
-        const { forceTcp, rtpPort, rtcpPort, sctpPort, rtpMux, comedia, internal, probator, multiSource, appData } = data;
-        const transport = await this.rtc.createTransport({
-            forceTcp,
-            rtpPort,
-            rtcpPort,
-            sctpPort,
-            rtpMux,
-            comedia,
-            internal,
-            probator,
-            multiSource,
-            appData,
+    async transportConnect(data, cb) {
+        console.log("transportConnect", data);
+        await this.transport.connect({
+            dtlsParameters: data.dtlsParameters
         });
-        return {
-            id: transport.id,
-            iceParameters: transport.iceParameters,
-            iceCandidates: transport.iceCandidates,
-            dtlsParameters: transport.dtlsParameters,
-            sctpParameters: transport.sctpParameters,
-            iceServers: transport.iceServers,
-            iceTransportPolicy: transport.iceTransportPolicy,
-            additionalSettings: transport.additionalSettings,
-            appData: transport.appData,
-        };
+
+        cb(true);
+    }
+
+    async transportProduce(data) {
+        console.log("transportProduce", data);
+        const producer = await this.transport.produce({
+            kind: data.kind,
+            rtpParameters: data.rtpParameters,
+            appData: data.appData
+        });
+
+        return({
+            id: producer.id
+        });
     }
 
     registerEvent(event, cb) {
@@ -355,6 +354,21 @@ class User {
         this.socket.emit("server.videoRenegotiationNeeded", { data: offer }, (description) => {
             console.log("Got video renegotiation answer from client");
             cb(description)
+        });
+    }
+
+    setTransport(transport, rtpCapabilities) {
+        this.transport = transport;
+        this.socket.emit("server.transportCreated", { 
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
         });
     }
 }

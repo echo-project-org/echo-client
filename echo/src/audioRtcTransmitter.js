@@ -47,51 +47,57 @@ class audioRtcTransmitter {
     }
   }
 
-  createSendTransport() {
-    return ep.socket.request("create-transport", {
-      forceTcp: false,
-      rtpPort: 0,
-      rtcpPort: 0,
-      sctpPort: 0,
-      rtpMux: true,
-      comedia: false,
-      internal: false,
-      probator: false,
-      multiSource: false,
-      appData: {},
+  async createSendTransport(data) {
+    console.log("Creating send transport", data);
+    if(!this.mediasoupDevice.loaded){
+      await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+    }
+    this.sendTransport = this.mediasoupDevice.createSendTransport({
+      id: data.id,
+      iceParameters: data.iceParameters,
+      iceCandidates: data.iceCandidates,
+      dtlsParameters: data.dtlsParameters,
+      sctpParameters: data.sctpParameters,
+      iceServers: data.iceServers,
+      iceTransportPolicy: data.iceTransportPolicy,
+      additionalSettings: data.additionalSettings,
     });
 
+    const callback = () => {
+      console.log("Send transport connect callback");
+    }
+
+
+    this.sendTransport.on("connect", async ({ dtlsParameters }, callback, errback) => {
+      console.log("Send transport connect");
+      ep.sendTransportConnect({
+        dtlsParameters
+      }, () => {callback();}, errback);
+    });
+
+    this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+      console.log("Send transport produce");
+      ep.sendTransportProduce({
+        kind,
+        rtpParameters,
+        appData,
+      }, callback, errback);
+    });
+
+    this.startAudioBroadcast();
   }
 
   async init() {
     this.mediasoupDevice = new mediasoup.Device();
-    this.sendTransport = await this.createSendTransport();
-    this.sendTransport.on("connect", async ({ dtlsParameters }, callback, errback) => {
-      ep.socket
-        .request("connect-transport", {
-          transportId: this.sendTransport.id,
-          dtlsParameters,
-        })
-        .then(callback)
-        .catch(errback);
-    });
-
-    this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      try {
-        const { producerId } = await ep.socket.request("produce", {
-          transportId: this.sendTransport.id,
-          kind,
-          rtpParameters,
-          appData,
-        });
-        callback({ producerId });
-      } catch (err) {
-        errback(err);
-      }
-    });
   }
 
   async startAudioBroadcast() {
+    console.log("Starting audio broadcast");
+    if(!this.mediasoupDevice.canProduce("audio")){
+      console.error("Cannot produce audio");
+      return;
+    }
+
     this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
     const context = new AudioContext();
 
@@ -111,7 +117,15 @@ class audioRtcTransmitter {
     this.analyser = this.createAudioAnalyser(context, this.channelSplitter, this.outChannelCount);
 
     this.setOutVolume(this.volume);
-    //Add tracks to mediasoup
+    
+    const audioTrack = dst.stream.getAudioTracks()[0];
+    this.producer = await this.sendTransport.produce({
+      track: audioTrack,
+      codecOptions: {
+        opusStereo: true,
+        opusDtx: true,
+      },
+    });
   }
 
   createAudioAnalyser(context, splitter, channelCount) {
@@ -255,6 +269,22 @@ class audioRtcTransmitter {
     }
   }
 
+  deaf() {
+
+  }
+
+  undeaf() {
+
+  }
+  
+  close(){
+
+  }
+
+  getAudioState() {
+    return {};
+  }
+
   /**
    * @function getAudioDevices - Gets the audio devices
    * @returns {Promise} - The promise that resolves when the audio devices are found
@@ -297,6 +327,12 @@ class audioRtcTransmitter {
 
         resolve(out);
       })
+    })
+  }
+
+  getConnectionStats() {
+    return new Promise((resolve, reject) => {
+      resolve([]);
     })
   }
 }
