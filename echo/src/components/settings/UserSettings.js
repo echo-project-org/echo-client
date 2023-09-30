@@ -1,5 +1,3 @@
-import "../../css/settings.css";
-
 import { useState, useEffect } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Divider } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';

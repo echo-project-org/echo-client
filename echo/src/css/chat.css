@@ -6,10 +6,6 @@
   min-height: 1vh; */
 }
 
-.chatControls {
-  margin-top: 0.5rem;
-}
-
 .chat {
   position: relative;
   height: 100%;

@@ -6,6 +6,8 @@ import Chat from '../chat/Chat'
 import ChatControls from '../chat/ChatControls'
 import EmojiPicker from "../chat/EmojiPicker";
 
+import { ep } from "../../index";
+
 function RoomContentChat({ roomId }) {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const handleEmojiPicker = () => {
@@ -15,6 +17,16 @@ function RoomContentChat({ roomId }) {
   const closeEmojiPicker = () => {
     setEmojiPicker(false);
   };
+
+  useEffect(() => {
+    ep.on("selectedEmoji", "RoomContentChat.selectedEmoji", (data) => {
+      closeEmojiPicker()
+    });
+
+    return () => {
+      ep.off("selectedEmoji", "RoomContentChat.selectedEmoji");
+    }
+  }, []);
 
   return (
     <>

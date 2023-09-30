@@ -8,20 +8,20 @@ import { ep } from "../../index";
 
 function EmojiPicker({ show, style }) {
   // const [emojiPicker, setEmojiPicker] = useState(false);
-  const [selectEmoji, setSelectEmoji] = useState("");
+  // const [selectEmoji, setSelectEmoji] = useState("");
 
   // function for emoji selection
   function handleSelectEmoji(emojiData, event) {
-    setSelectEmoji(emojiData.unified);
-    console.log(selectEmoji, "this is the selected emoji");
-    console.log(emojiData);
+    // setSelectEmoji(emojiData.unified);
+    // console.log(selectEmoji, "this is the selected emoji");
+    // console.log(emojiData);
     ep.emit("selectedEmoji", emojiData)
   }
 
   // function for showing the actual emoji
-  function ShowEmoji() {
-    return <Emoji unified={selectEmoji} emojiStyle={EmojiStyle.TWITTER} />;
-  }
+  // function ShowEmoji() {
+  //   return <Emoji unified={selectEmoji} emojiStyle={EmojiStyle.TWITTER} />;
+  // }
 
   if (!show) return (<></>);
 

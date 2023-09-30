@@ -7,7 +7,8 @@ import ReactPlayer from 'react-player';
 
 const ScreenShareControlIcons = ({ stopPlayback }) => {
   const [showControls, setShowControls] = useState(false);
-  const [screenShareStream, setScreenShareStream] = useState(`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`);
+  // const [screenShareStream, setScreenShareStream] = useState(`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`);
+  const [screenShareStream, setScreenShareStream] = useState(`https://www.youtube.com/watch?v=Pve3zUEc4bU&t=1s`);
   const [muted, setMuted] = useState(true);
 
   const handleMouseEnter = () => {
@@ -35,8 +36,16 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         url={screenShareStream}
         playing={true}
         muted={muted}
-        width="100%"
-        height="100%"
+        // width="1000px"
+        // height="1000px"
+        config={{
+          youtube: {
+            playerVars: {
+              width: "2000px",
+              height: "2000px",
+            }
+          }
+        }}
       />
       <Container sx={{
         position: "absolute",

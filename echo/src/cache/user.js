@@ -88,7 +88,7 @@ class Users {
                 users.push(this.typeCheck(this.users[user]));
             }
         }
-        console.log("getInRoom", users)
+        // console.log("getInRoom", users)
         return users;
     }
 
