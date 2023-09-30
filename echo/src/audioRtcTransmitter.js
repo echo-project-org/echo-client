@@ -63,11 +63,6 @@ class audioRtcTransmitter {
       additionalSettings: data.additionalSettings,
     });
 
-    const callback = () => {
-      console.log("Send transport connect callback");
-    }
-
-
     this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
       console.log("Send transport connect");
       ep.sendTransportConnect({ dtlsParameters }, cb, errback);
@@ -170,6 +165,10 @@ class audioRtcTransmitter {
     return audioLevels;
   }
 
+  _round(num) {
+    return Math.round((num + Number.EPSILON) * 10) / 10;
+  }
+
   setVoiceDetectionVolume(volume) {
     if (volume > 1.0 || volume < 0.0) {
       console.error("Volume must be between 0.0 and 1.0", volume);
@@ -239,18 +238,15 @@ class audioRtcTransmitter {
   }
 
   async setInputDevice(deviceId) {
-    console.log("Setting input device to", deviceId);
-    this.deviceId = deviceId;
-    this.constraints.audio.deviceId = deviceId;
 
-    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
-    this.peer.getSenders().forEach((sender) => {
-      if (sender.track && sender.track.kind === 'audio') {
-        sender.replaceTrack(newStream.getAudioTracks()[0]);
-      }
-    });
+  }
 
-    this.stream = newStream;
+  setSpeakerDevice(deviceId) {
+
+  }
+
+  setSpeakerVolume(volume) {
+    
   }
 
   mute() {

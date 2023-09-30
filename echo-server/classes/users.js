@@ -47,7 +47,7 @@ class User {
         );
 
         this.socket.on("client.sendTransportProduce", (data, cb) => {
-            cb(this.transportProduce(data));
+            this.transportProduce(data, cb);
         });
     }
 
@@ -60,7 +60,7 @@ class User {
         cb(true);
     }
 
-    async transportProduce(data) {
+    async transportProduce(data, cb) {
         console.log("transportProduce", data);
         const producer = await this.transport.produce({
             kind: data.kind,
@@ -68,7 +68,7 @@ class User {
             appData: data.appData
         });
 
-        return({
+        cb({
             id: producer.id
         });
     }

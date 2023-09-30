@@ -233,6 +233,14 @@ class EchoProtocol {
     }
   }
 
+  sendTransportProduce(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
   startReceiving(remoteId) {
 
   }
@@ -260,11 +268,11 @@ class EchoProtocol {
   }
 
   setSpeakerDevice(deviceId) {
-    this.at.setOutputDevice(deviceId);
+    this.at.setSpeakerDevice(deviceId);
   }
 
   setSpeakerVolume(volume) {
-    this.at.setOutputVolume(volume);
+    this.at.setSpeakerVolume(volume);
   }
 
   setMicrophoneDevice(deviceId) {
@@ -275,7 +283,7 @@ class EchoProtocol {
 
   setMicrophoneVolume(volume) {
     if (this.at) {
-      this.at.setVolume(volume);
+      this.at.setOutVolume(volume);
     }
   }
 

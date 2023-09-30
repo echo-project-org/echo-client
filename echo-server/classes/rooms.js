@@ -8,7 +8,14 @@ const codecs = [{
     kind: "audio",
     mimeType: "audio/opus",
     clockRate: 48000,
-    channels: 2
+    channels: 2,
+    parameters: {
+        useinbandfec: 1,
+        minptipe: 10,
+        maxaveragebitrate: 510000,
+        stereo: 1,
+        maxplaybackrate: 48000
+    }
 },
 {
     kind: "video",
