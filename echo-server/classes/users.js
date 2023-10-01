@@ -7,13 +7,16 @@ class User {
         this.isDeaf = false;
         this.isMuted = false;
         this.events = {};
+
         this.receiveTransport = null;
         this.sendTransport = null;
         this.audioProducerId = null;
+        this.audioConsumers = [];
 
         this.receiveVideoTransport = null;
         this.sendVideoTransport = null;
         this.videoProducerId = null;
+        this.videoConsumers = [];
 
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
@@ -47,6 +50,10 @@ class User {
 
         this.socket.on("client.receiveVideoTransportConnect", (data, cb) => {
             this.sendVideoTransportConnect(data, cb);
+        });
+
+        this.socket.on("client.subscribeAudio", (data, cb) => {
+            this.subscribeAudio(data, cb); 
         });
     }
 
@@ -111,6 +118,23 @@ class User {
         console.log("sendVideoTransportConnect", data);
         this.sendVideoTransport = data;
         cb(true);
+    }
+
+    async subscribeAudio(data, cb) {
+        console.log("User " + this.id + " subscribeAudio" + data.id);
+        const consumer = await this.receiveTransport.consume({
+            producerId: data.id + "-audio",
+            rtpCapabilities: data.rtpCapabilities,
+            paused: true
+        });
+
+        this.audioConsumers.push(consumer);
+        cb({
+            id: consumer.id,
+            producerId: data.id,
+            kind: consumer.kind,
+            rtpParameters: consumer.rtpParameters,
+        });
     }
 
     registerEvent(event, cb) {
