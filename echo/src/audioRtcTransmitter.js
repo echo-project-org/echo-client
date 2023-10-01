@@ -241,8 +241,8 @@ class audioRtcTransmitter {
     if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
       context.setSinkId(this.outputDeviceId);
     }
-
-    let src = context.createMediaStreamSource(new MediaStream([track]));
+    console.log(track);
+    let src = context.createMediaStreamSource(track);
     let dst = context.destination;
 
     let personalGainNode = context.createGain();
@@ -261,7 +261,7 @@ class audioRtcTransmitter {
 
     //Chrome bug fix
     let audioElement = new Audio();
-    audioElement.srcObject = new MediaStream([track]);
+    audioElement.srcObject = track;
     audioElement.autoplay = true;
     audioElement.pause();
 
