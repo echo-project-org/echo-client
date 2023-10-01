@@ -160,6 +160,7 @@ class audioRtcTransmitter {
   }
 
   calculateAudioLevels(analyser, freqs, channelCount) {
+    console.log(analyser, freqs, channelCount)
     const audioLevels = [];
     for (let channelI = 0; channelI < channelCount; channelI++) {
       analyser[channelI].getByteFrequencyData(freqs[channelI]);
@@ -186,6 +187,19 @@ class audioRtcTransmitter {
     this.vadNode.gain.cancelAndHoldAtTime(0);
     //ramp volume to new value in 1 second
     this.vadNode.gain.linearRampToValueAtTime(volume, 1);
+  }
+
+  _findUserId(stream) {
+    // find the userId from the streamId using streamIds
+    let userId = null;
+    for (const [key, value] of this.streamIds) {
+      if (value === stream.stream.id) {
+        userId = key;
+        break;
+      }
+    }
+    console.log("found userId", userId, "for streamId", stream.stream.id)
+    return userId;
   }
 
   startStatsInterval() {
@@ -218,8 +232,8 @@ class audioRtcTransmitter {
 
       // local user's audio levels
       if (this.analyser) {
-        let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
-        // console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
+        let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outChannelCount);
+        //console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
         if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
           this.hasSpokenLocal = true;
           this.setVoiceDetectionVolume(1.0);
