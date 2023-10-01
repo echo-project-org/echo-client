@@ -299,7 +299,7 @@ class EchoProtocol {
   }
 
   startReceiving(remoteId) {
-
+    this.subscribeAudio({ id: remoteId });
   }
 
   stopReceiving(remoteId) {
@@ -417,7 +417,10 @@ class EchoProtocol {
 
   subscribeAudio(data) {
     if (this.socket) {
-      this.socket.emit("client.subscribeAudio", data);
+      this.socket.emit("client.subscribeAudio", data, (data) => {
+        console.log("Got description from server", data);
+        this.at.consume(data);
+      });
     }
   }
 
