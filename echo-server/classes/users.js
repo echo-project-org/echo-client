@@ -11,6 +11,10 @@ class User {
         this.sendTransport = null;
         this.audioProducerId = null;
 
+        this.receiveVideoTransport = null;
+        this.sendVideoTransport = null;
+        this.videoProducerId = null;
+
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("client.ping", (callback) => { callback(); });
@@ -31,6 +35,18 @@ class User {
 
         this.socket.on("client.receiveTransportConnect", (data, cb) => {
             this.sendTransportConnect(data, cb);
+        });
+
+        this.socket.on("client.sendVideoTransportConnect", (data, cb) => {
+            this.receiveVideoTransportConnect(data, cb);
+        });
+
+        this.socket.on("client.sendVideoTransportProduce", (data, cb) => {
+            this.receiveVideoTransportProduce(data, cb);
+        });
+
+        this.socket.on("client.receiveVideoTransportConnect", (data, cb) => {
+            this.sendVideoTransportConnect(data, cb);
         });
     }
 
@@ -64,6 +80,36 @@ class User {
             dtlsParameters: data.dtlsParameters
         });
 
+        cb(true);
+    }
+
+    async receiveVideoTransportConnect(data, cb) {
+        console.log("receiveVideoTransportConnect", data);
+        await this.receiveVideoTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
+        cb(true);
+    }
+
+    async receiveVideoTransportProduce(data, cb) {
+        console.log("receiveVideoTransportProduce", data);
+        const producer = await this.receiveVideoTransport.produce({
+            id: data.id,
+            kind: data.kind,
+            rtpParameters: data.rtpParameters,
+            appData: data.appData
+        });
+        this.videoProducerId = producer.id;
+        console.log("producer", producer.id)
+        cb({
+            id: producer.id
+        });
+    }
+
+    sendVideoTransportConnect(data, cb) {
+        console.log("sendVideoTransportConnect", data);
+        this.sendVideoTransport = data;
         cb(true);
     }
 
@@ -191,6 +237,36 @@ class User {
     setSendTransport(transport, rtpCapabilities) {
         this.sendTransport = transport;
         this.socket.emit("server.sendTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    setReceiveVideoTransport(transport, rtpCapabilities) {
+        this.receiveVideoTransport = transport;
+        this.socket.emit("server.receiveVideoTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    setSendVideoTransport(transport, rtpCapabilities) {
+        this.sendVideoTransport = transport;
+        this.socket.emit("server.sendVideoTransportCreated", {
             id: transport.id,
             iceParameters: transport.iceParameters,
             iceCandidates: transport.iceCandidates,

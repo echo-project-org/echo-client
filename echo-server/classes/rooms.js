@@ -292,6 +292,41 @@ class Rooms {
                     console.log("created send transport")
                     newUser.setSendTransport(transport, router.rtpCapabilities);
                 });
+
+                //Create video receive transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created receive video transport")
+                    newUser.setReceiveVideoTransport(transport, router.rtpCapabilities);
+                });
+
+                //Create video sender transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created send video transport")
+                    newUser.setSendVideoTransport(transport, router.rtpCapabilities);
+                });
+
                 this.getUsersInRoom(roomId).forEach((user, id) => {
                     if (newUser.id !== user.id) {
                         console.log("Notifing", newUser.id, "about", user.id)

@@ -106,7 +106,7 @@ class audioRtcTransmitter {
     this.startAudioBroadcast();
   }
 
-  async createVideoReceiveTransport(data) {
+  async createReceiveVideoTransport(data) {
     console.log("Creating video receive transport", data);
     if (data) {
       if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
@@ -129,7 +129,7 @@ class audioRtcTransmitter {
     }
   }
 
-  async createVideoSendTransport(data) {
+  async createSendVideoTransport(data) {
     console.log("Creating video send transport", data);
     if (!this.mediasoupDevice.loaded) {
       await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });

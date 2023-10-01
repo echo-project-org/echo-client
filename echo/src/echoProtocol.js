@@ -186,6 +186,22 @@ class EchoProtocol {
         this.at.createReceiveTransport(data);
       }
     });
+
+    this.socket.on("server.receiveVideoTransportCreated", (data) => {
+      console.log("Server created video transport with id", data.id);
+      if (this.vt) {
+        //Server will receive and what client sends
+        this.vt.createSendVideoTransport(data);
+      }
+    });
+
+    this.socket.on("server.sendVideoTransportCreated", (data) => {
+      console.log("Server created video transport with id", data.id);
+      if (this.vt) {
+        //Client will receive and what server sends
+        this.vt.createReceiveVideoTransport(data);
+      }
+    });
   }
 
   endConnection(data) {
@@ -253,6 +269,30 @@ class EchoProtocol {
   receiveTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.receiveTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  sendVideoTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendVideoTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  sendVideoTransportProduce(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendVideoTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  receiveVideoTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.receiveVideoTransportConnect", data, (a) => {
         cb(a);
       });
     }
