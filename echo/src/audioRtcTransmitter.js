@@ -10,6 +10,8 @@ class audioRtcTransmitter {
     this.mediasoupDevice = null;
     this.sendTransport = null;
     this.rcvTransport = null;
+    this.videoSendTransport = null;
+    this.videoRcvTransport = null;
     this.producer = null;
     this.outChannelCount = 2;
 
@@ -94,7 +96,7 @@ class audioRtcTransmitter {
     this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
       console.log("Send transport produce");
       ep.sendTransportProduce({
-        id: this.id,
+        id: this.id + "-audio",
         kind,
         rtpParameters,
         appData,
@@ -102,6 +104,62 @@ class audioRtcTransmitter {
     });
 
     this.startAudioBroadcast();
+  }
+
+  async createVideoReceiveTransport(data) {
+    console.log("Creating video receive transport", data);
+    if (data) {
+      if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
+        this.videoRcvTransport = this.mediasoupDevice.createRecvTransport({
+          id: data.id,
+          iceParameters: data.iceParameters,
+          iceCandidates: data.iceCandidates,
+          dtlsParameters: data.dtlsParameters,
+          sctpParameters: data.sctpParameters,
+          iceServers: data.iceServers,
+          iceTransportPolicy: data.iceTransportPolicy,
+          additionalSettings: data.additionalSettings,
+        });
+
+        this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+          console.log("Send transport connect");
+          ep.receiveVideoTransportConnect({ dtlsParameters }, cb, errback);
+        });
+      }
+    }
+  }
+
+  async createVideoSendTransport(data) {
+    console.log("Creating video send transport", data);
+    if (!this.mediasoupDevice.loaded) {
+      await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+    }
+    this.videoSendTransport = this.mediasoupDevice.createSendTransport({
+      id: data.id,
+      iceParameters: data.iceParameters,
+      iceCandidates: data.iceCandidates,
+      dtlsParameters: data.dtlsParameters,
+      sctpParameters: data.sctpParameters,
+      iceServers: data.iceServers,
+      iceTransportPolicy: data.iceTransportPolicy,
+      additionalSettings: data.additionalSettings,
+    });
+
+    this.videoSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+      console.log("Send transport connect");
+      ep.sendVideoTransportConnect({ dtlsParameters }, cb, errback);
+    });
+
+    this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+      console.log("Send transport produce");
+      ep.sendVideoTransportProduce({
+        id: this.id + "-video",
+        kind,
+        rtpParameters,
+        appData,
+      }, callback, errback);
+    });
+
   }
 
   async init() {
