@@ -417,12 +417,19 @@ class EchoProtocol {
 
   subscribeAudio(data) {
     if (this.socket) {
-      this.socket.emit("client.subscribeAudio", data, (data) => {
+      let remoteId = data.id;
+      let a = this.at.getRtpCapabilities()
+      console.log("Got rtp capabilities", a);
+      
+      this.socket.emit("client.subscribeAudio", {id: remoteId, rtpCapabilities: a}, (data) => {
         console.log("Got description from server", data);
-        let a = this.at.getRtpCapabilities();
         this.at.consume({
+          id: data.id,
           producerId: data.producerId,
-          rtpCapabilities: a,
+          kind: data.kind,
+          rtpParameters: data.rtpParameters,
+          type: data.type,
+          producerPaused: data.producerPaused,
         });
       });
     }
