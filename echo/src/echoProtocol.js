@@ -191,7 +191,7 @@ class EchoProtocol {
       console.log("Server created video transport with id", data.id);
       if (this.vt) {
         //Server will receive and what client sends
-        this.vt.createSendVideoTransport(data);
+        this.at.createSendVideoTransport(data);
       }
     });
 
@@ -199,7 +199,7 @@ class EchoProtocol {
       console.log("Server created video transport with id", data.id);
       if (this.vt) {
         //Client will receive and what server sends
-        this.vt.createReceiveVideoTransport(data);
+        this.at.createReceiveVideoTransport(data);
       }
     });
   }
