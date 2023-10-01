@@ -259,6 +259,7 @@ class Rooms {
                 //Notify the user about all other users
                 let newUser = this.connectedClients.get(id);
                 let router = this.rooms.get(roomId).mediasoupRouter;
+                //Create receive transport
                 router.createWebRtcTransport({
                     listenIps: [
                         {
@@ -272,7 +273,24 @@ class Rooms {
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
                     console.log("created transport")
-                    newUser.setTransport(transport, router.rtpCapabilities);
+                    newUser.setReceiveTransport(transport, router.rtpCapabilities);
+                });
+
+                //Create sender transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created send transport")
+                    newUser.setSendTransport(transport, router.rtpCapabilities);
                 });
                 this.getUsersInRoom(roomId).forEach((user, id) => {
                     if (newUser.id !== user.id) {
