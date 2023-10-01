@@ -184,7 +184,7 @@ class audioRtcTransmitter {
   }
 
   getRtpCapabilities() {
-    if(this.mediasoupDevice){
+    if (this.mediasoupDevice) {
       return this.mediasoupDevice.rtpCapabilities;
     }
   }
@@ -241,8 +241,8 @@ class audioRtcTransmitter {
     if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
       context.setSinkId(this.outputDeviceId);
     }
-    console.log(track);
-    let src = context.createMediaStreamSource(new MediaStream([track]));
+    let stream = new MediaStream([track])
+    let src = context.createMediaStreamSource(stream);
     let dst = context.destination;
 
     let personalGainNode = context.createGain();
@@ -261,7 +261,8 @@ class audioRtcTransmitter {
 
     //Chrome bug fix
     let audioElement = new Audio();
-    audioElement.srcObject = new MediaStream([track]);
+
+    audioElement.srcObject = stream;
     audioElement.autoplay = true;
     audioElement.pause();
 
