@@ -228,7 +228,7 @@ class audioRtcTransmitter {
   }
 
   consume(data) {
-    const consumer = this.sendTransport.consume({
+    const consumer = this.rcvTransport.consume({
       id: data.id,
       producerId: data.producerId,
       kind: data.kind,
