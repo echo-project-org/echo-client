@@ -242,7 +242,7 @@ class audioRtcTransmitter {
       context.setSinkId(this.outputDeviceId);
     }
     console.log(track);
-    let src = context.createMediaStreamSource(track);
+    let src = context.createMediaStreamSource(new MediaStream([track]));
     let dst = context.destination;
 
     let personalGainNode = context.createGain();
