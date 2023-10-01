@@ -9,6 +9,7 @@ class audioRtcTransmitter {
     this.volume = volume;
     this.mediasoupDevice = null;
     this.sendTransport = null;
+    this.rcvTransport = null;
     this.producer = null;
     this.outChannelCount = 2;
 
@@ -17,7 +18,6 @@ class audioRtcTransmitter {
     this.outStream = null;
     this.outGainNode = null;
     this.vadNode = null;
-
 
     this.analyser = null;
     this.talkingThreashold = 0.2;
@@ -38,6 +38,29 @@ class audioRtcTransmitter {
         googNoiseSupression: false,
       },
       video: false,
+    }
+  }
+
+  async createReceiveTransport(data) {
+    console.log("Creating receive transport", data);
+    if (data) {
+      if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
+        this.rcvTransport = this.mediasoupDevice.createRecvTransport({
+          id: data.id,
+          iceParameters: data.iceParameters,
+          iceCandidates: data.iceCandidates,
+          dtlsParameters: data.dtlsParameters,
+          sctpParameters: data.sctpParameters,
+          iceServers: data.iceServers,
+          iceTransportPolicy: data.iceTransportPolicy,
+          additionalSettings: data.additionalSettings,
+        });
+
+        this.rcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+          console.log("Send transport connect");
+          ep.receiveTransportConnect({ dtlsParameters }, cb, errback);
+        });
+      }
     }
   }
 
