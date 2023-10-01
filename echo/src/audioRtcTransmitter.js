@@ -102,7 +102,7 @@ class audioRtcTransmitter {
     this.vadNode = context.createGain();
     this.channelSplitter = context.createChannelSplitter(this.outChannelCount);
 
-    src.connect(this.channelSplitter);
+    src.connect(this.outGainNode);
     this.outGainNode.connect(this.channelSplitter);
     this.outGainNode.connect(this.vadNode);
     this.vadNode.connect(dst);
@@ -110,7 +110,8 @@ class audioRtcTransmitter {
     this.analyser = this.createAudioAnalyser(context, this.channelSplitter, this.outChannelCount);
 
     this.setOutVolume(this.volume);
-    
+
+    console.log(dst.stream.getAudioTracks());
     const audioTrack = dst.stream.getAudioTracks()[0];
     this.producer = await this.sendTransport.produce({
       track: audioTrack,
@@ -238,6 +239,10 @@ class audioRtcTransmitter {
   }
 
   async setInputDevice(deviceId) {
+    console.log("Setting microphone device to", deviceId);
+    this.deviceId = deviceId;
+    this.constraints.audio.deviceId = deviceId;
+
 
   }
 
@@ -276,7 +281,14 @@ class audioRtcTransmitter {
   }
 
   getAudioState() {
-    return {};
+    return {
+      isTransmitting: true,
+      isMuted: this.isMuted,
+      isDeaf: false,
+      volume: this.volume,
+      deviceId: this.inputDeviceId,
+      outputDeviceId: this.outputDeviceId,
+    };
   }
 
   /**
