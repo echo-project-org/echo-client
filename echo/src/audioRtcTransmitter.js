@@ -27,6 +27,9 @@ class audioRtcTransmitter {
     this.inputLevel = 0;
     this.outputLevel = 0;
 
+    this.videoSourceId = 'undefined'
+    this.outVideoStream = null;
+
     this.constraints = {
       audio: {
         channelCount: 2,
@@ -40,6 +43,19 @@ class audioRtcTransmitter {
         googNoiseSupression: false,
       },
       video: false,
+    }
+
+    this.videoConstraints = {
+      audio: false,
+      video: {
+        mandatory: {
+          chromeMediaSource: 'desktop',
+          chromeMediaSourceId: this.videoSourceId,
+          width: { min: 800, ideal: 1920, max: 1920 },
+          height: { min: 600, ideal: 1080, max: 1080 },
+          frameRate: { min: 30, ideal: 60, max: 60 },
+        }
+      },
     }
   }
 
@@ -204,6 +220,30 @@ class audioRtcTransmitter {
     });
   }
 
+  async startScreenShare() {
+    console.log("Starting screen share");
+    if (!this.mediasoupDevice.canProduce("video")) {
+      console.error("Cannot produce video");
+      return;
+    }
+
+    if(this.videoSourceId === 'undefined') {
+      console.error("No video source id");
+      return;
+    }
+
+    this.outVideoStream = await navigator.mediaDevices.getUserMedia(this.videoConstraints, err => { console.error(err); return; });
+    const videoTrack = this.outVideoStream.getVideoTracks()[0];
+    this.videoProducer = await this.videoSendTransport.produce({
+      track: videoTrack,
+      codecOptions: {
+        videoGoogleStartBitrate: 3000,
+        videoGoogleMaxBitrate: 20000,
+        videoGoogleMinBitrate: 3000,
+      },
+    });
+  }
+
   createAudioAnalyser(context, splitter, channelCount) {
     const analyser = {};
     const freqs = {};
@@ -341,6 +381,10 @@ class audioRtcTransmitter {
 
   }
 
+  setScreenShareDevice(deviceId) {
+    this.videoSourceId = deviceId;
+    this.videoConstraints.video.mandatory.chromeMediaSourceId = deviceId;
+  }
   setSpeakerDevice(deviceId) {
 
   }
