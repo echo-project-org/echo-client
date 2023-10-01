@@ -1,12 +1,6 @@
 import { ep } from "./index";
 const mediasoup = require("mediasoup-client");
 
-const ICE_SERVERS = [{
-  username: 'echo',
-  credential: 'echo123',
-  urls: ["turn:turn.kuricki.com:6984"]
-}];
-
 class audioRtcTransmitter {
   constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
     this.id = id;
@@ -160,7 +154,6 @@ class audioRtcTransmitter {
   }
 
   calculateAudioLevels(analyser, freqs, channelCount) {
-    console.log(analyser, freqs, channelCount)
     const audioLevels = [];
     for (let channelI = 0; channelI < channelCount; channelI++) {
       analyser[channelI].getByteFrequencyData(freqs[channelI]);
