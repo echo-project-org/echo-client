@@ -11,10 +11,6 @@ class User {
         this.events = {};
         this.transport = null;
 
-        // define rtc
-        this.rtc = null;
-        this.videoRtc = null;
-
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("client.ping", (callback) => { callback(); });
@@ -23,23 +19,6 @@ class User {
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
         this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
-
-        // audioRtc stuff
-        this.socket.on("client.broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
-        this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
-        this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
-        this.socket.on("client.unsubscribeAudio", (data) => this.unsubscribeAudio(data));
-        this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
-        this.socket.on("client.streamChanged", (data) => this.handleStreamChanged(data));
-
-        // videoRtc stuff
-        this.socket.on("client.negotiateVideoRtc", (data, cb) => this.negotiateVideoRtc(data, cb));
-        this.socket.on("client.subscribeVideo", (data, cb) => this.subscribeVideo(data, cb));
-        this.socket.on("client.startVideoBroadcast", (data) => this.startVideoBroadcast(data));
-        this.socket.on("client.stopVideoBroadcast", (data) => this.stopVideoBroadcast(data));
-        this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
-        this.socket.on("client.videoIceCandidate", (data) => this.setVideoIceCandidate(data));
-        this.socket.on("client.videoStreamChanged", (data) => this.handleVideoStreamChanged(data));
 
         // mediasoup
         this.socket.on("client.sendTransportConnect", (data, cb) => 
@@ -56,6 +35,8 @@ class User {
         await this.transport.connect({
             dtlsParameters: data.dtlsParameters
         });
+
+        //TODO notify users about stream somehow
 
         cb(true);
     }
@@ -174,187 +155,9 @@ class User {
         return this.currentRoom;
     }
 
-    isBroadcastingVideo() {
-        if( this.videoRtc) {
-            return this.videoRtc.isBroadcastingVideo(this.id);
-        }
-    }
-
     // send the chat message to the non-sender users
     receiveChatMessage(data) {
         this.socket.emit("server.receiveChatMessage", data);
-    }
-
-    // set the user's rtc definition
-    setRtc(rtc) {
-        this.rtc = rtc;
-    }
-
-    setVideoRtc(rtc) {
-        this.videoRtc = rtc;
-    }
-
-    broadcastAudio(data, cb) {
-        if (this.rtc) {
-            this.rtc.broadcastAudio(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("broadcastAudio error", err);
-                });
-        }
-    }
-
-    handleStreamChanged(data) {
-        if (this.rtc) {
-            this.rtc.handleStreamChanged(data);
-        }
-    }
-
-    subscribeAudio(data, cb) {
-        if (this.rtc) {
-            console.log("User ", data.senderId, "requested audio subscription to user", data.receiverId);
-            data.socket = this.socket;
-            this.rtc.subscribeAudio(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("subscribeAudio error", err);
-                });
-        }
-    }
-
-    stopAudioBroadcast(data) {
-        if (this.rtc) {
-            const resp = this.rtc.stopAudioBroadcast(data);
-            switch (resp) {
-                case "NO-ID":
-                    console.error("NO-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    unsubscribeAudio(data) {
-        if (this.rtc) {
-            const resp = this.rtc.unsubscribeAudio(data);
-            switch (resp) {
-                case "NO-SENDER-ID":
-                    console.error("NO-SENDER-ID");
-                    break;
-                case "NO-RECEIVER-ID":
-                    console.error("NO-RECEIVER-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    iceCandidate(candidate) {
-        this.socket.emit("server.iceCandidate", { data: candidate });
-    }
-
-    setIceCandidate(data) {
-        if (this.rtc) {
-            this.rtc.addCandidate(data);
-        }
-    }
-
-    renegotiationNeeded(offer, cb) {
-        this.socket.emit("server.renegotiationNeeded", { data: offer }, (description) => {
-            console.log("Got renegotiation answer from client");
-            cb(description)
-        });
-    }
-
-    // video stuff
-    negotiateVideoRtc(data, cb) {
-        if (this.videoRtc) {
-            this.videoRtc.broadcastVideo(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("broadcastVideo error", err);
-                });
-        }
-    }
-
-    handleVideoStreamChanged(data) {
-        if (this.videoRtc) {
-            this.videoRtc.handleStreamChanged(data);
-        }
-    }
-
-    subscribeVideo(data, cb) {
-        if (this.videoRtc) {
-            console.log("User ", data.senderId, "requested video subscription to user", data.receiverId);
-            data.socket = this.socket;
-            this.videoRtc.subscribeVideo(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("subscribeVideo error", err);
-                });
-        }
-    }
-
-    startVideoBroadcast(data) {
-        if(this.videoRtc) {
-            this.videoRtc.broadcastVideo(data, this);
-        }
-    }
-
-    stopVideoBroadcast(data) {
-        if (this.videoRtc) {
-            const resp = this.videoRtc.stopVideoBroadcast(data, this);
-            switch (resp) {
-                case "NO-ID":
-                    console.error("NO-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    unsubscribeVideo(data) {
-        if (this.videoRtc) {
-            const resp = this.videoRtc.unsubscribeVideo(data);
-            switch (resp) {
-                case "NO-SENDER-ID":
-                    console.error("NO-SENDER-ID");
-                    break;
-                case "NO-RECEIVER-ID":
-                    console.error("NO-RECEIVER-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    videoIceCandidate(candidate) {
-        this.socket.emit("server.videoIceCandidate", { data: candidate });
-    }
-
-    setVideoIceCandidate(data) {
-        if (this.videoRtc) {
-            this.videoRtc.addCandidate(data);
-        }
-    }
-
-    videoRenegotiationNeeded(offer, cb) {
-        this.socket.emit("server.videoRenegotiationNeeded", { data: offer }, (description) => {
-            console.log("Got video renegotiation answer from client");
-            cb(description)
-        });
     }
 
     setTransport(transport, rtpCapabilities) {
