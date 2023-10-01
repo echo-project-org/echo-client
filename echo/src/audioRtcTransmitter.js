@@ -63,6 +63,12 @@ class audioRtcTransmitter {
       additionalSettings: data.additionalSettings,
     });
 
+    this.sendTransport.on("connectionstatechange", () => {
+      ep.rtcConnectionStateChange({
+        state: this.sendTransport.connectionState,
+      })
+    });
+
     this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
       console.log("Send transport connect");
       ep.sendTransportConnect({ dtlsParameters }, cb, errback);
