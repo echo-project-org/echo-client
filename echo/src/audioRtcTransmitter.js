@@ -49,7 +49,7 @@ class audioRtcTransmitter {
 
   async createSendTransport(data) {
     console.log("Creating send transport", data);
-    if(!this.mediasoupDevice.loaded){
+    if (!this.mediasoupDevice.loaded) {
       await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
     }
     this.sendTransport = this.mediasoupDevice.createSendTransport({
@@ -86,7 +86,7 @@ class audioRtcTransmitter {
 
   async startAudioBroadcast() {
     console.log("Starting audio broadcast");
-    if(!this.mediasoupDevice.canProduce("audio")){
+    if (!this.mediasoupDevice.canProduce("audio")) {
       console.error("Cannot produce audio");
       return;
     }
@@ -251,7 +251,7 @@ class audioRtcTransmitter {
   }
 
   setSpeakerVolume(volume) {
-    
+
   }
 
   mute() {
@@ -275,8 +275,8 @@ class audioRtcTransmitter {
   undeaf() {
 
   }
-  
-  close(){
+
+  close() {
 
   }
 
@@ -338,7 +338,40 @@ class audioRtcTransmitter {
 
   getConnectionStats() {
     return new Promise((resolve, reject) => {
-      resolve([]);
+      let ping = 0;
+      let bytesSent = 0;
+      let bytesReceived = 0;
+      let packetsSent = 0;
+      let packetsReceived = 0;
+      let jitterIn = 0;
+      let packetsLostIn = 0;
+
+      let stats = this.sendTransport.getStats();
+      stats.then((res) => {
+        res.forEach((report) => {
+          if (report.type === "candidate-pair" && report.nominated) {
+            ping = report.currentRoundTripTime * 1000;
+            bytesSent = report.bytesSent;
+            bytesReceived = report.bytesReceived;
+            packetsSent = report.packetsSent;
+            packetsReceived = report.packetsReceived;
+          }
+
+          if (report.type === "remote-inbound.rtp" && report.kind === "audio") {
+            jitterIn = report.jitter * 1000;
+            packetsLostIn = report.packetsLost;
+          }
+        });
+        resolve({
+          ping: ping,
+          bytesSent: bytesSent,
+          bytesReceived: bytesReceived,
+          packetsSent: packetsSent,
+          packetsReceived: packetsReceived,
+          jitterIn: jitterIn,
+          packetsLostIn: packetsLostIn,
+        })
+      });
     })
   }
 }
