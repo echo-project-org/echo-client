@@ -46,11 +46,13 @@ class User {
     async receiveTransportProduce(data, cb) {
         console.log("transportProduce", data);
         const producer = await this.receiveTransport.produce({
+            id: data.id,
             kind: data.kind,
             rtpParameters: data.rtpParameters,
             appData: data.appData
         });
         this.audioProducerId = producer.id;
+        console.log("producer", producer.id)
         cb({
             id: producer.id
         });

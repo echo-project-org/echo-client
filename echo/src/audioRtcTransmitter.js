@@ -94,6 +94,7 @@ class audioRtcTransmitter {
     this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
       console.log("Send transport produce");
       ep.sendTransportProduce({
+        id: this.id,
         kind,
         rtpParameters,
         appData,
