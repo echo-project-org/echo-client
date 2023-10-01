@@ -2,10 +2,11 @@ import "../../css/chat.css";
 
 import { useState, useEffect } from 'react'
 import { Grid, Container, styled, Divider, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { ChatBubble, PeopleAlt } from '@mui/icons-material';
+import { ChatBubble, PeopleAlt, Window } from '@mui/icons-material';
 
 import RoomContentChat from "./RoomContentChat";
 import RoomContentScreenShares from "./RoomContentScreenShares";
+import RoomContentFriends from "./RoomContentFriends";
 
 import { ep } from "../../index";
 
@@ -62,18 +63,10 @@ const StyledContainerContent = styled(Container)(({ theme }) => ({
 
 function RoomContent({ roomId }) {
   // const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
-  const [contentSelected, setContentSelected] = useState("chat");
+  const [contentSelected, setContentSelected] = useState("friends");
   const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
   const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
 
-  const children = [
-    <ToggleButton value="chat" key="left" disableRipple>
-      <ChatBubble />
-    </ToggleButton>,
-    <ToggleButton value="screen" key="center" disableRipple>
-      <PeopleAlt />
-    </ToggleButton>
-  ];
   const handleChange = (event, newAlignment) => {
     if (newAlignment === null) return;
     setContentSelected(newAlignment);
@@ -86,11 +79,13 @@ function RoomContent({ roomId }) {
   const computeRoomContent = () => {
     switch (contentSelected) {
       case "chat":
-        return <RoomContentChat roomId={roomId} />
+        return <RoomContentChat roomId={roomId} key={0} />
       case "screen":
-        return <RoomContentScreenShares roomId={roomId} />
+        return <RoomContentScreenShares roomId={roomId} key={1} />
+      case "friends":
+        return <RoomContentFriends key={2} />
       default:
-        return <RoomContentChat roomId={roomId} />
+        return <RoomContentChat roomId={roomId} key={0} />
     }
   }
   useEffect(() => {
@@ -127,7 +122,15 @@ function RoomContent({ roomId }) {
               alignItems: "center",
             }}>
               <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
-                {children}
+                <ToggleButton value="friends" key="center" disableRipple>
+                  <PeopleAlt />
+                </ToggleButton>
+                <ToggleButton value="chat" key="left" disableRipple>
+                  <ChatBubble />
+                </ToggleButton>
+                <ToggleButton value="screen" key="center" disableRipple>
+                  <Window />
+                </ToggleButton>
               </ToggleButtonGroup>
             </Grid>
           </Grid>
