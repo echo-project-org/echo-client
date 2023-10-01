@@ -424,6 +424,12 @@ class EchoProtocol {
     }
   }
 
+  resumeStreams(data){
+    if (this.socket) {
+      this.socket.emit("client.resumeStreams", data);
+    }
+  }
+
   unsubscribeAudio(data, cb) {
     if (this.socket) {
       this.socket.emit("client.unsubscribeAudio", data, (description) => {

@@ -55,6 +55,10 @@ class User {
         this.socket.on("client.subscribeAudio", (data, cb) => {
             this.subscribeAudio(data, cb); 
         });
+
+        this.socket.on("client.resumeStreams", (data) => {
+            this.resumeStreams(data);
+        });
     }
 
     async receiveTransportConnect(data, cb) {
@@ -128,12 +132,25 @@ class User {
             paused: true
         });
 
-        this.audioConsumers.push(consumer);
+        this.audioConsumers.push({
+            consumer: consumer,
+            senderId: data.id,
+        });
+
         cb({
             id: consumer.id,
             producerId: data.id,
             kind: consumer.kind,
             rtpParameters: consumer.rtpParameters,
+        });
+    }
+
+    async resumeStreams() {
+        //resume all streams
+        this.audioConsumers.forEach(async (consumer) => {
+            if(consumer.consumer.paused){
+                await consumer.consumer.resume();
+            }
         });
     }
 
