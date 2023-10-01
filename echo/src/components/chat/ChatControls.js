@@ -22,7 +22,7 @@ function ChatControls({ onEmojiOn, roomId }) {
   // const [focusedChatLine, setFocusedChatLine] = useState(0);
   // const [chatLines, setChatLines] = useState([{ position: 0, message: "" }]);
   // const [prevKey, setPrevKey] = useState("");
-  // const inputRef = useRef(null);
+  const inputRef = useRef(null);
 
   const newMessageAudio = new Audio(newMessageSound);
   newMessageAudio.volume = 0.6;
@@ -62,11 +62,33 @@ function ChatControls({ onEmojiOn, roomId }) {
 
   useEffect(() => {
     if (pressedEmoji.unified === undefined) return;
-    // message.current += "\\" + pressedEmoji.unified;
-    // setMessage({ html: message.html + "\\" + pressedEmoji.unified })
-    // insert the emoji on the current focus position
-    // console.log(window.getSelection())
-    window.getSelection().getRangeAt(0).insertNode(document.createTextNode("\\" + pressedEmoji.unified));
+    const emojiFormat = "[emoji:" + pressedEmoji.unified + "]";
+    const s = window.getSelection();
+    const r = s.getRangeAt(0);
+    // if selection is the div@chatInputText, return
+    console.log("s before", s)
+    console.log('sfo:', s.focusOffset, 'sao:', s.anchorOffset, 'rso:', r.startOffset, 'reo:', r.endOffset, '»' + s.toString());
+    console.log(s.focusNode.innerHTML)
+    if (s.focusNode && s.focusNode.id === "chatInputText") {
+      // add a div to the selection
+      // s.focusNode.innerHTML = "<div><br></div>";
+      return
+    };
+    console.log("s after", s)
+    var node = s.focusNode.textContent;
+    console.log("before", node)
+    const cursorPosition = s.focusOffset;
+    console.log(cursorPosition);
+    let textBeforeCursorPosition = node.substring(0, cursorPosition)
+    let textAfterCursorPosition = node.substring(cursorPosition, node.length)
+    s.focusNode.textContent = textBeforeCursorPosition + emojiFormat + textAfterCursorPosition;
+    console.log("after", node);
+    // set the new value to the focused child node
+    console.log(s.focusNode.textContent)
+    console.log(inputRef.current.innerHTML)
+
+    // set the new message
+    setMessage({ html: inputRef.current.innerHTML });
   }, [pressedEmoji])
 
   const handleChange = (e) => {
@@ -77,17 +99,26 @@ function ChatControls({ onEmojiOn, roomId }) {
         if (wordIndex === 0) {
           return "<div>" + word + "</div>";
         } else {
-          return "<div>" + word;
+          if (!word.includes("</div>")) {
+            return "<div>" + word + "</div>";
+          } else {
+            return "<div>" + word;
+          }
         }
       });
     }
+    // console.log("1", e.target.value)
     // check if all the text is incapsulated in a div, if so remove it
     if (e.target.value.indexOf("<div>") === 0 && e.target.value.lastIndexOf("</div>") === e.target.value.length - 6) {
       e.target.value = e.target.value.substring(5, e.target.value.length - 6);
     }
-    // make array into string
-    console.log(e.target.value)
-    if (typeof e.target.value !== "string") e.target.value = e.target.value.join("");
+    // console.log("2", e.target.value, e.target.value[e.target.value.length - 1])
+    // remove last div if is empy
+    if (typeof e.target.value !== "string") {
+      e.target.value = e.target.value[e.target.value.length - 1] === "<div></div>" ? "" : e.target.value;
+    }
+    // console.log("3", e.target.value)
+    if (typeof e.target.value !== "string" && e.target.value) e.target.value = e.target.value.join("");
     setMessage({ html: e.target.value });
   }
 
@@ -105,19 +136,8 @@ function ChatControls({ onEmojiOn, roomId }) {
             onChange={handleChange} // handle innerHTML change
             spellCheck={false}
             suppressContentEditableWarning={true}
+            innerRef={inputRef}
           />
-        {/* <div className='chatInputText' id='chatInputText'>
-          <div
-            id="message"
-            className="message"
-            onKeyDown={computeKeyPress}
-            contentEditable={true}
-            spellCheck={false}
-            suppressContentEditableWarning={true}
-          >
-            {computeMessage()}
-          </div>
-        </div> */}
         <div className="messageBoxButtons">
           <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />
         </div>
