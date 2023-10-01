@@ -14,6 +14,7 @@ class audioRtcTransmitter {
     this.videoRcvTransport = null;
     this.producer = null;
     this.outChannelCount = 2;
+    this.inputStreams = [];
 
     this.isMuted = false;
     this.context = null;
@@ -220,6 +221,56 @@ class audioRtcTransmitter {
     });
   }
 
+  consume(data) {
+    const consumer = this.sendTransport.consume({
+      id: data.id,
+      producerId: data.producerId,
+      kind: data.kind,
+      rtpParameters: data.rtpParameters,
+    });
+
+    const { track } = consumer;
+    let context = new AudioContext();
+
+    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
+      context.setSinkId(this.outputDeviceId);
+    }
+
+    let src = context.createMediaStreamSource(new MediaStream([track]));
+    let dst = context.destination;
+
+    let personalGainNode = context.createGain();
+    let gainNode = context.createGain();
+    let deafNode = context.createGain();
+
+    let channelSplitter = context.createChannelSplitter(src.channelCount);
+
+    src.connect(personalGainNode);
+    personalGainNode.connect(gainNode);
+    gainNode.connect(deafNode);
+    deafNode.connect(channelSplitter);
+    deafNode.connect(dst);
+
+    context.resume();
+
+    //Chrome bug fix
+    let audioElement = new Audio();
+    audioElement.srcObject = new MediaStream([track]);
+    audioElement.autoplay = true;
+    audioElement.pause();
+
+    this.inputStreams.push({
+      consumer,
+      src,
+      context,
+      gainNode,
+      deafNode,
+      personalGainNode,
+      audioElement,
+      analyser: this.createAudioAnalyser(context, channelSplitter, src.channelCount),
+    });
+  }
+
   async startScreenShare() {
     console.log("Starting screen share");
     if (!this.mediasoupDevice.canProduce("video")) {
@@ -227,7 +278,7 @@ class audioRtcTransmitter {
       return;
     }
 
-    if(this.videoSourceId === 'undefined') {
+    if (this.videoSourceId === 'undefined') {
       console.error("No video source id");
       return;
     }
