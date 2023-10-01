@@ -261,7 +261,7 @@ class audioRtcTransmitter {
 
     //Chrome bug fix
     let audioElement = new Audio();
-    audioElement.srcObject = track;
+    audioElement.srcObject = new MediaStream([track]);
     audioElement.autoplay = true;
     audioElement.pause();
 
