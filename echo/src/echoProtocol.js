@@ -419,7 +419,11 @@ class EchoProtocol {
     if (this.socket) {
       this.socket.emit("client.subscribeAudio", data, (data) => {
         console.log("Got description from server", data);
-        this.at.consume(data);
+        let a = this.at.getRtpCapabilities();
+        this.at.consume({
+          producerId: data.producerId,
+          rtpCapabilities: a,
+        });
       });
     }
   }
