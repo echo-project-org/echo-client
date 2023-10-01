@@ -269,6 +269,7 @@ class audioRtcTransmitter {
     this.inputStreams.push({
       consumer,
       source: src,
+      stream,
       context,
       gainNode,
       deafNode,
