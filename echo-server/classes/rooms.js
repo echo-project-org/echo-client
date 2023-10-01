@@ -1,5 +1,4 @@
 const User = require("./users");
-const VideoRTC = require("./videoRtc");
 const mediasoup = require("mediasoup");
 const Colors = require("./colors");
 const colors = new Colors();
@@ -34,9 +33,6 @@ class Rooms {
         this.userListeners = new Map();
         this.socket = null;
         this.worker = null;
-
-        //const rtc = new ServerRTC();
-        //const videoRtc = new VideoRTC();
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
 
@@ -77,8 +73,6 @@ class Rooms {
             if (!id) return reject("no-id-in-query");
 
             const newUser = new User(socket, id);
-            //newUser.setRtc(rtc);
-            //newUser.setVideoRtc(videoRtc);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
             this.registerClientEvents(newUser);
@@ -92,7 +86,6 @@ class Rooms {
         });
         user.registerEvent("end", (data) => {
             this.endConnection(data);
-            user.rtc.clearUserConnection(data);
         });
         user.registerEvent("audioState", (data) => {
             this.sendAudioState(data);
