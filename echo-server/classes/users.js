@@ -80,6 +80,13 @@ class User {
         });
         this.audioProducerId = producer.id;
         console.log("producer", producer.id)
+
+        this.triggerEvent("userFullyConnectedToRoom", { 
+            id: this.id, 
+            roomId: this.currentRoom,
+            muted: this.isMuted,
+            deaf: this.isDeaf,
+        })
         cb({
             id: producer.id
         });

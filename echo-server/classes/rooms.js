@@ -105,6 +105,9 @@ class Rooms {
         user.registerEvent("videoBroadcastStop", (data) => {
             this.videoBroadcastStop(data);
         });
+        user.registerEvent("userFullyConnectedToRoom", (data) => {
+            this.userFullyConnectedToRoom(data);
+        });
     }
 
     updateUser(data) {
@@ -115,6 +118,24 @@ class Rooms {
                 }
             });
         }
+    }
+
+    userFullyConnectedToRoom(a) {
+        //Notify all users
+        this.connectedClients.forEach((user, _) => {
+            if (a.id !== user.id) {
+                console.log("Notifing", user.id, "about", a.id)
+                const userRoom = user.getCurrentRoom();
+                a.isConnected = userRoom === a.roomId;
+                user.userJoinedChannel({
+                    id: a.id,
+                    roomId: a.roomId,
+                    muted: a.muted,
+                    deaf: a.deaf,
+                    isConnected: a.isConnected,
+                });
+            }
+        })
     }
 
     videoBroadcastStarted(data) {
@@ -246,17 +267,6 @@ class Rooms {
                 user.setCurrentRoom(roomId);
                 this.rooms.get(roomId).users.set(user.id, user);
 
-                //Notify all users
-                this.connectedClients.forEach((user, _) => {
-                    if (id !== user.id) {
-                        console.log("Notifing", user.id, "about", id)
-                        const userRoom = user.getCurrentRoom();
-                        data.isConnected = userRoom === roomId;
-                        user.userJoinedChannel(data);
-                    }
-                })
-
-                //Notify the user about all other users
                 let newUser = this.connectedClients.get(id);
                 let router = this.rooms.get(roomId).mediasoupRouter;
                 //Create receive transport
