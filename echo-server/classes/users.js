@@ -1,5 +1,3 @@
-const mediasoup = require("mediasoup");
-
 class User {
     constructor(socket, id) {
         this.id = id;
@@ -9,7 +7,9 @@ class User {
         this.isDeaf = false;
         this.isMuted = false;
         this.events = {};
-        this.transport = null;
+        this.receiveTransport = null;
+        this.sendTransport = null;
+        this.audioProducerId = null;
 
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
@@ -21,37 +21,48 @@ class User {
         this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
 
         // mediasoup
-        this.socket.on("client.sendTransportConnect", (data, cb) => 
-            this.transportConnect(data, cb)
+        this.socket.on("client.sendTransportConnect", (data, cb) =>
+            this.receiveTransportConnect(data, cb)
         );
 
         this.socket.on("client.sendTransportProduce", (data, cb) => {
-            this.transportProduce(data, cb);
+            this.receiveTransportProduce(data, cb);
+        });
+
+        this.socket.on("client.receiveTransportConnect", (data, cb) => {
+            this.sendTransportConnect(data, cb);
         });
     }
 
-    async transportConnect(data, cb) {
+    async receiveTransportConnect(data, cb) {
         console.log("transportConnect", data);
-        await this.transport.connect({
+        await this.receiveTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
-
-        //TODO notify users about stream somehow
 
         cb(true);
     }
 
-    async transportProduce(data, cb) {
+    async receiveTransportProduce(data, cb) {
         console.log("transportProduce", data);
-        const producer = await this.transport.produce({
+        const producer = await this.receiveTransport.produce({
             kind: data.kind,
             rtpParameters: data.rtpParameters,
             appData: data.appData
         });
-
+        this.audioProducerId = producer.id;
         cb({
             id: producer.id
         });
+    }
+
+    async sendTransportConnect(data, cb) {
+        console.log("sendTransportConnect", data);
+        await this.sendTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
+        cb(true);
     }
 
     registerEvent(event, cb) {
@@ -160,9 +171,24 @@ class User {
         this.socket.emit("server.receiveChatMessage", data);
     }
 
-    setTransport(transport, rtpCapabilities) {
-        this.transport = transport;
-        this.socket.emit("server.transportCreated", { 
+    setReceiveTransport(transport, rtpCapabilities) {
+        this.receiveTransport = transport;
+        this.socket.emit("server.receiveTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    setSendTransport(transport, rtpCapabilities) {
+        this.sendTransport = transport;
+        this.socket.emit("server.sendTransportCreated", {
             id: transport.id,
             iceParameters: transport.iceParameters,
             iceCandidates: transport.iceCandidates,
