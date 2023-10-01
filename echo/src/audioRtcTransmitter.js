@@ -183,6 +183,12 @@ class audioRtcTransmitter {
     this.mediasoupDevice = new mediasoup.Device();
   }
 
+  getRtpCapabilities() {
+    if(this.mediasoupDevice){
+      return this.mediasoupDevice.rtpCapabilities;
+    }
+  }
+
   async startAudioBroadcast() {
     console.log("Starting audio broadcast");
     if (!this.mediasoupDevice.canProduce("audio")) {
