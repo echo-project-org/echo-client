@@ -193,6 +193,10 @@ class User {
         this.socket.emit("server.videoBroadcastStop", data);
     }
 
+    isBroadcastingVideo() {
+        return false;
+    }
+
     /**
      * Section dedicated to send socket messages to non-sender clients
      */
