@@ -171,10 +171,19 @@ class EchoProtocol {
       this.videoBroadcastStop(data);
     });
 
-    this.socket.on("server.transportCreated", (data) => {
+    this.socket.on("server.receiveTransportCreated", (data) => {
       console.log("Server created transport with id", data.id);
       if (this.at) {
+        //Server will receive and what client sends
         this.at.createSendTransport(data);
+      }
+    });
+
+    this.socket.on("server.sendTransportCreated", (data) => {
+      console.log("Server created transport with id", data.id);
+      if (this.at) {
+        //Client will receive and what server sends
+        this.at.createReceiveTransport(data);
       }
     });
   }
@@ -236,6 +245,14 @@ class EchoProtocol {
   sendTransportProduce(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  receiveTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.receiveTransportConnect", data, (a) => {
         cb(a);
       });
     }
@@ -358,11 +375,9 @@ class EchoProtocol {
     }
   }
 
-  subscribeAudio(data, cb) {
+  subscribeAudio(data) {
     if (this.socket) {
-      this.socket.emit("client.subscribeAudio", data, (description) => {
-        cb(description);
-      });
+      this.socket.emit("client.subscribeAudio", data);
     }
   }
 
