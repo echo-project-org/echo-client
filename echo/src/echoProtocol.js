@@ -452,9 +452,9 @@ class EchoProtocol {
   }
 
   startScreenSharing(deviceId) {
-    if (this.vt) {
-      this.vt.setDevice(deviceId);
-      this.vt.startSharing();
+    if (this.at) {
+      this.at.setScreenShareDevice(deviceId);
+      this.at.startScreenShare();
     }
   }
 
