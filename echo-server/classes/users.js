@@ -63,6 +63,14 @@ class User {
         this.socket.on("client.resumeStreams", (data) => {
             this.resumeStreams(data);
         });
+
+        this.socket.on("client.stopAudioBroadcast", (data) => {
+            this.stopAudioBroadcast(data);
+        });
+
+        this.socket.on("client.unsubscribeAudio", (data) => {
+            this.unsubscribeAudio(data);
+        });
     }
 
     async receiveTransportConnect(data, cb) {
@@ -159,6 +167,15 @@ class User {
         });
     }
 
+    async unsubscribeAudio(data) {
+        console.log("User " + this.id + " unsubscribeAudio" + data.producerId);
+        this.audioConsumers.forEach(async (consumer) => {
+            if(consumer.senderId === data.producerId){
+                await consumer.consumer.close();
+            }
+        });
+    }
+
     async resumeStream(data) {
         //resume stream
         this.audioConsumers.forEach(async (consumer) => {
@@ -180,6 +197,15 @@ class User {
                 await consumer.consumer.resume();
             }
         });*/
+    }
+
+    stopAudioBroadcast(data) {
+        //stop stream
+        this.audioConsumers.forEach(async (consumer) => {
+            if(consumer.senderId === data.id){
+                await consumer.consumer.close();
+            }
+        });
     }
 
     registerEvent(event, cb) {
