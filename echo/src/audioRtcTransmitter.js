@@ -621,7 +621,18 @@ class audioRtcTransmitter {
       let packetsReceived = 0;
       let jitterIn = 0;
       let packetsLostIn = 0;
-
+      
+      if(!this.sendTransport) {
+        resolve({
+          ping: ping,
+          bytesSent: bytesSent,
+          bytesReceived: bytesReceived,
+          packetsSent: packetsSent,
+          packetsReceived: packetsReceived,
+          jitterIn: jitterIn,
+          packetsLostIn: packetsLostIn,
+        })
+      }
       let stats = this.sendTransport.getStats();
       stats.then((res) => {
         res.forEach((report) => {
