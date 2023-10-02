@@ -5,10 +5,12 @@ import { ButtonGroup, Button, Tooltip, Container } from '@mui/material';
 import { CancelPresentation, VolumeUp, VolumeOff } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
 
+import { ep } from '../..';
+
 const ScreenShareControlIcons = ({ stopPlayback }) => {
   const [showControls, setShowControls] = useState(false);
   // const [screenShareStream, setScreenShareStream] = useState(`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`);
-  const [screenShareStream, setScreenShareStream] = useState(`https://www.youtube.com/watch?v=Pve3zUEc4bU&t=1s`);
+  const [screenShareStream, setScreenShareStream] = useState(ep.getVideo());
   const [muted, setMuted] = useState(true);
 
   const handleMouseEnter = () => {
