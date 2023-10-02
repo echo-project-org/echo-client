@@ -351,7 +351,7 @@ class EchoProtocol {
   }
 
   setUserVolume(volume, remoteId) {
-    this.at.setPersonalVolume(volume, remoteId);
+    this.at.setPersonalVolume(remoteId, volume);
   }
 
   getSpeakerDevices() {

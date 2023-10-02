@@ -328,11 +328,11 @@ class audioRtcTransmitter {
   }
 
   async stopConsuming(senderId) {
-    if(senderId) {
+    if (senderId) {
       //Close specific sender
       console.log("Stopping consuming", senderId);
       this.inputStreams.forEach((stream, index) => {
-        if(stream.consumer.producerId === senderId) {
+        if (stream.consumer.producerId === senderId) {
           stream.consumer.close();
           stream.context.close();
           stream.stream.getTracks().forEach(track => track.stop());
@@ -511,10 +511,10 @@ class audioRtcTransmitter {
   }
 
   async setInputDevice(deviceId) {
-    if(deviceId === this.inputDeviceId || deviceId === 'default') {
+    if (deviceId === this.inputDeviceId || deviceId === 'default') {
       return;
     }
-    
+
     console.log("Setting microphone device to", deviceId);
     this.inputDeviceId = deviceId;
     this.constraints.audio.deviceId = deviceId;
@@ -541,11 +541,11 @@ class audioRtcTransmitter {
       this.setOutVolume(this.volume);
 
       const audioTrack = dst.stream.getAudioTracks()[0];
-      await this.producer.replaceTrack({track: audioTrack});
+      await this.producer.replaceTrack({ track: audioTrack });
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
-      
+
     }
   }
 
@@ -557,10 +557,36 @@ class audioRtcTransmitter {
   setSpeakerDevice(deviceId) {
     console.log("Setting speaker device to", deviceId);
     this.outputDeviceId = deviceId;
+
+    if (this.inputStreams) {
+      this.inputStreams.forEach((stream) => {
+        stream.context.setSinkId(deviceId);
+      });
+    }
   }
 
   setSpeakerVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
 
+    this.inputStreams.forEach((stream) => {
+      stream.gainNode.gain.value = volume;
+    });
+  }
+
+  setPersonalVolume(userId, volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.inputStreams.forEach((stream) => {
+      if (stream.consumer.producerId === userId) {
+        stream.personalGainNode.gain.value = volume;
+      }
+    });
   }
 
   mute() {
@@ -661,8 +687,8 @@ class audioRtcTransmitter {
       let packetsReceived = 0;
       let jitterIn = 0;
       let packetsLostIn = 0;
-      
-      if(!this.sendTransport) {
+
+      if (!this.sendTransport) {
         resolve({
           ping: ping,
           bytesSent: bytesSent,
