@@ -144,7 +144,7 @@ class Rooms {
             if (newUser.id !== user.id) {
                 console.log("Notifing", newUser.id, "about", user.id)
                 const userRoom = user.getCurrentRoom();
-                const isBroadcatingVideo = user.isBroadcastingVideo();
+                const isBroadcatingVideo = user.isBroadcastingVideo;
                 let isConnected = userRoom === newUser.getCurrentRoom();
                 let audioState = user.getAudioState();
                 newUser.userJoinedChannel({
