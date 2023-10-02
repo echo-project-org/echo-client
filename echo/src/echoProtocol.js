@@ -371,6 +371,7 @@ class EchoProtocol {
   exitFromRoom(id) {
     this.stopReceiving();
     this.stopReceivingVideo();
+    this.at.leaveRoom();
     if (this.socket) this.socket.emit("client.exit", { id });
   }
 
