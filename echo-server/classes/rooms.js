@@ -1,15 +1,31 @@
 const User = require("./users");
-const VideoRTC = require("./videoRtc");
 const mediasoup = require("mediasoup");
 const Colors = require("./colors");
 const colors = new Colors();
 
-const audioCodec = {
+const codecs = [{
     kind: "audio",
     mimeType: "audio/opus",
     clockRate: 48000,
-    channels: 2
-}
+    channels: 2,
+    parameters: {
+        useinbandfec: 1,
+        minptipe: 10,
+        maxaveragebitrate: 510000,
+        stereo: 1,
+        maxplaybackrate: 48000
+    }
+},
+{
+    kind: "video",
+    mimeType: "video/VP8",
+    clockRate: 90000,
+    parameters: {
+        "x-google-start-bitrate": 5000,
+        "x-google-max-bitrate": 10000,
+        "x-google-min-bitrate": 1000,
+    }
+}]
 
 class Rooms {
     constructor(io, socket) {
@@ -20,26 +36,17 @@ class Rooms {
         this.socket = null;
         this.worker = null;
 
-        //const rtc = new ServerRTC();
-        //const videoRtc = new VideoRTC();
-
         console.log(colors.changeColor("green", "Listening for new client connections"));
 
-        mediasoup.createWorker ({
-            logLevel: 'warn',
+        mediasoup.createWorker({
+            logLevel: 'debug',
             logTags: [
                 'info',
                 'ice',
                 'dtls',
                 'rtp',
                 'srtp',
-                'rtcp',
-                'rtx',
-                'bwe',
-                'score',
-                'simulcast',
-                'svc',
-                'sctp'
+                'rtcp'
             ],
             rtcMinPort: 40000,
             rtcMaxPort: 49999
@@ -68,8 +75,6 @@ class Rooms {
             if (!id) return reject("no-id-in-query");
 
             const newUser = new User(socket, id);
-            //newUser.setRtc(rtc);
-            //newUser.setVideoRtc(videoRtc);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
             this.registerClientEvents(newUser);
@@ -83,7 +88,6 @@ class Rooms {
         });
         user.registerEvent("end", (data) => {
             this.endConnection(data);
-            user.rtc.clearUserConnection(data);
         });
         user.registerEvent("audioState", (data) => {
             this.sendAudioState(data);
@@ -103,6 +107,9 @@ class Rooms {
         user.registerEvent("videoBroadcastStop", (data) => {
             this.videoBroadcastStop(data);
         });
+        user.registerEvent("userFullyConnectedToRoom", (data) => {
+            this.userFullyConnectedToRoom(data);
+        });
     }
 
     updateUser(data) {
@@ -113,6 +120,43 @@ class Rooms {
                 }
             });
         }
+    }
+
+    userFullyConnectedToRoom(a) {
+        //Notify all users
+        this.connectedClients.forEach((user, _) => {
+            if (a.id !== user.id) {
+                console.log("Notifing", user.id, "about", a.id)
+                const userRoom = user.getCurrentRoom();
+                a.isConnected = userRoom === a.roomId;
+                user.userJoinedChannel({
+                    id: a.id,
+                    roomId: a.roomId,
+                    muted: a.muted,
+                    deaf: a.deaf,
+                    isConnected: a.isConnected,
+                });
+            }
+        })
+
+        let newUser = this.connectedClients.get(a.id);
+        this.getUsersInRoom(a.roomId).forEach((user, id) => {
+            if (newUser.id !== user.id) {
+                console.log("Notifing", newUser.id, "about", user.id)
+                const userRoom = user.getCurrentRoom();
+                const isBroadcatingVideo = user.isBroadcastingVideo;
+                let isConnected = userRoom === newUser.getCurrentRoom();
+                let audioState = user.getAudioState();
+                newUser.userJoinedChannel({
+                    id: user.id,
+                    roomId: a.roomId,
+                    isConnected: isConnected,
+                    deaf: audioState.deaf,
+                    muted: audioState.muted,
+                    broadcastingVideo: isBroadcatingVideo
+                });
+            }
+        });
     }
 
     videoBroadcastStarted(data) {
@@ -154,9 +198,9 @@ class Rooms {
         }
     }
 
-    joinRoom(data) {
+    async joinRoom(data) {
         console.log("got join message", data)
-        this.addRoom(data.roomId);
+        await this.addRoom(data.roomId);
         this.addUserToRoom(data);
     }
 
@@ -172,11 +216,19 @@ class Rooms {
         this.connectedClients.delete(data.id);
     }
 
-    addRoom(id) {
+    async addRoom(id) {
         if (!this.rooms.has(id)) {
             console.log("creating room", id, typeof id)
 
-            let r = this.worker.createRouter({ options: [audioCodec], appData: { roomId: id } });
+            let r = await this.worker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });
+            r.observer.on('close', () => {
+                console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup router closed"));
+            });
+
+            r.observer.on('newtransport', (transport) => {
+                console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup transport created with id " + transport.id));
+            });
+
             this.rooms.set(id, {
                 id,
                 private: false,
@@ -216,6 +268,9 @@ class Rooms {
                         user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
                     }
                 })
+
+                //clear all transports
+                user.clearTransports();
                 const room = this.rooms.get(roomId);
                 room.users.delete(data.id);
             }
@@ -236,34 +291,74 @@ class Rooms {
                 user.setCurrentRoom(roomId);
                 this.rooms.get(roomId).users.set(user.id, user);
 
-                //Notify all users
-                this.connectedClients.forEach((user, _) => {
-                    if (id !== user.id) {
-                        console.log("Notifing", user.id, "about", id)
-                        const userRoom = user.getCurrentRoom();
-                        data.isConnected = userRoom === roomId;
-                        user.userJoinedChannel(data);
-                    }
-                })
-
-                //Notify the user about all other users
                 let newUser = this.connectedClients.get(id);
-                this.getUsersInRoom(roomId).forEach((user, id) => {
-                    if (newUser.id !== user.id) {
-                        console.log("Notifing", newUser.id, "about", user.id)
-                        const userRoom = user.getCurrentRoom();
-                        const isBroadcatingVideo = user.isBroadcastingVideo();
-                        let isConnected = userRoom === roomId;
-                        let audioState = user.getAudioState();
-                        newUser.userJoinedChannel({
-                            id: user.id,
-                            roomId: roomId,
-                            isConnected: isConnected,
-                            deaf: audioState.deaf,
-                            muted: audioState.muted,
-                            broadcastingVideo: isBroadcatingVideo
-                        });
-                    }
+                let router = this.rooms.get(roomId).mediasoupRouter;
+                //Create receive transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created transport")
+                    newUser.setReceiveTransport(transport, router.rtpCapabilities);
+                });
+
+                //Create sender transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created send transport")
+                    newUser.setSendTransport(transport, router.rtpCapabilities);
+                });
+
+                //Create video receive transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created receive video transport")
+                    newUser.setReceiveVideoTransport(transport, router.rtpCapabilities);
+                });
+
+                //Create video sender transport
+                router.createWebRtcTransport({
+                    listenIps: [
+                        {
+                            ip: '0.0.0.0',
+                            announcedIp: 'echo.kuricki.com'
+                        },
+                    ],
+                    enableUdp: true,
+                    enableTcp: true,
+                    preferUdp: true,
+                    appData: { peerId: newUser.id }
+                }).then((transport) => {
+                    console.log("created send video transport")
+                    newUser.setSendVideoTransport(transport, router.rtpCapabilities);
                 });
             }
         } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + roomId + ", user is not connected to socket"));

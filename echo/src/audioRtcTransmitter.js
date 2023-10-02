@@ -1,44 +1,41 @@
 import { ep } from "./index";
+const { ipcRenderer } = window.require('electron');
+const mediasoup = require("mediasoup-client");
 
-const sdpTransform = require('sdp-transform');
-const goodOpusSettings = "minptime=10;useinbandfec=1;maxplaybackrate=48000;stereo=1;maxaveragebitrate=510000";
-
-const ICE_SERVERS = [{
-  username: 'echo',
-  credential: 'echo123',
-  urls: ["turn:turn.kuricki.com:6984"]
-}];
-
-/**
- * @class audioRtcTransmitter
- * @classdesc A class that handles the audio transmission
- * @param {string} id - The id of the user
- * @param {string} deviceId - The id of the audio device
- * @param {float} volume - The volume of the audio
- */
 class audioRtcTransmitter {
-  constructor(id, deviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
+  constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
     this.id = id;
-    this.peer = null;
-    this.stream = null;
-    this.deviceId = deviceId;
+    this.inputDeviceId = inputDeviceId;
     this.outputDeviceId = outputDeviceId;
-    this.isTransmitting = false;
-    this.isMuted = false;
-    this.isDeaf = false;
     this.volume = volume;
-    this.gainNode = null;
-    this.voiceActivityDetectionVolumeNode = null;
-    this.context = null;
+    this.mediasoupDevice = null;
+    this.sendTransport = null;
+    this.rcvTransport = null;
+    this.videoSendTransport = null;
+    this.videoRcvTransport = null;
+    this.producer = null;
+    this.outChannelCount = 2;
     this.inputStreams = [];
     this.streamIds = new Map();
 
+    this.isMuted = false;
+    this.context = null;
+    this.outStream = null;
+    this.outGainNode = null;
+    this.vadNode = null;
+
+    this.analyser = null;
     this.talkingThreashold = 0.2;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
 
-    //Audio only constraints
+    this.videoSourceId = 'undefined'
+    this.outVideoStream = null;
+    this.videoProducer = null;
+    this.videoConsumer = null;
+    this.inVideoStream = null;
+
     this.constraints = {
       audio: {
         channelCount: 2,
@@ -48,163 +45,383 @@ class audioRtcTransmitter {
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: false,
-        deviceId: this.deviceId,
-        googNoiseSupression: true,
+        deviceId: this.inputDeviceId,
+        googNoiseSupression: false,
       },
       video: false,
     }
-  }
 
-  /**
-   * @function init - Starts the audio transmission
-   */
-  async init() {
-    //Create stream
-    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
-    //Setup the volume stuff
-    const context = new AudioContext();
-
-    const source = context.createMediaStreamSource(this.stream);
-    const destination = context.createMediaStreamDestination();
-    this.outputChannelCount = source.channelCount;
-
-    this.gainNode = context.createGain();
-    this.voiceActivityDetectionVolumeNode = context.createGain();
-    this.channelSplitter = context.createChannelSplitter(this.outputChannelCount);
-
-    source.connect(this.gainNode);
-    this.gainNode.connect(this.channelSplitter);
-    this.gainNode.connect(this.voiceActivityDetectionVolumeNode);
-    this.voiceActivityDetectionVolumeNode.connect(destination);
-
-    this.analyser = this.createAudioAnalyser(context, this.channelSplitter, this.outputChannelCount);
-
-    //Set the volume
-    this.setVolume(this.volume);
-    //Create the peer
-    this.peer = this.createPeer();
-    //Add the tracks
-    destination.stream.getTracks().forEach(track => this.peer.addTrack(track, destination.stream));
-    this.isTransmitting = true;
-    this.subscribedUsers = 0;
-    // start stats interval
-    // this.startStatsInterval();
-  }
-
-  /**
-   * @function setVolume - Sets the volume of the audio
-   * @param {float} volume 
-   */
-  setVolume(volume) {
-    if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
-      volume = 1.0;
-    }
-
-    this.volume = volume;
-    if (this.gainNode) {
-      this.gainNode.gain.value = volume;
+    this.videoConstraints = {
+      audio: false,
+      video: {
+        mandatory: {
+          chromeMediaSource: 'desktop',
+          chromeMediaSourceId: this.videoSourceId,
+          width: { min: 800, ideal: 1920, max: 1920 },
+          height: { min: 600, ideal: 1080, max: 1080 },
+          frameRate: { min: 30, ideal: 60, max: 60 },
+        }
+      },
     }
   }
 
-  setVoiceDetectionVolume(volume) {
-    if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
-      volume = 1.0;
+  leaveRoom() {
+    //close all tranports
+    if (this.sendTransport) {
+      this.sendTransport.close();
+      this.sendTransport = null;
     }
 
-    //cancel previous time change
-    this.voiceActivityDetectionVolumeNode.gain.cancelAndHoldAtTime(0);
-    //ramp volume to new value in 1 second
-    this.voiceActivityDetectionVolumeNode.gain.linearRampToValueAtTime(volume, 1);
+    if (this.rcvTransport) {
+      this.rcvTransport.close();
+      this.rcvTransport = null;
+    }
+
+    if (this.videoSendTransport) {
+      this.videoSendTransport.close();
+      this.videoSendTransport = null;
+    }
+
+    if (this.videoRcvTransport) {
+      this.videoRcvTransport.close();
+      this.videoRcvTransport = null;
+    }
   }
 
-  async setInputDevice(deviceId) {
-    console.log("Setting input device to", deviceId);
-    this.deviceId = deviceId;
-    this.constraints.audio.deviceId = deviceId;
-
-    let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
-    this.peer.getSenders().forEach((sender) => {
-      if (sender.track && sender.track.kind === 'audio') {
-        sender.replaceTrack(newStream.getAudioTracks()[0]);
+  async createReceiveTransport(data) {
+    if (data) {
+      if (!this.mediasoupDevice.loaded) {
+        await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
       }
-    });
+      if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
+        console.log("Creating receive transport", data);
+        this.rcvTransport = this.mediasoupDevice.createRecvTransport({
+          id: data.id,
+          iceParameters: data.iceParameters,
+          iceCandidates: data.iceCandidates,
+          dtlsParameters: data.dtlsParameters,
+          sctpParameters: data.sctpParameters,
+          iceServers: data.iceServers,
+          iceTransportPolicy: data.iceTransportPolicy,
+          additionalSettings: data.additionalSettings,
+        });
 
-    ep.streamChanged({
-      id: this.id,
-      streamId: newStream.id,
-    });
-
-    this.stream = newStream;
-  }
-
-  setOutputDevice(deviceId) {
-    console.log("Setting output device to", deviceId);
-    if (deviceId === 'default') {
-      return
-    }
-
-    this.outputDeviceId = deviceId;
-    this.inputStreams.forEach((stream) => {
-      stream.context.setSinkId(deviceId);
-    });
-  }
-
-  setOutputVolume(volume) {
-    if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
-      volume = 1.0;
-    }
-
-    this.inputStreams.forEach((stream) => {
-      stream.gainNode.gain.value = volume;
-    });
-  }
-
-  setPersonalVolume(volume, id) {
-    if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
-      volume = 1.0;
-    }
-
-    this.inputStreams.filter((stream) => {
-      return stream.stream.id === this.streamIds.get(id);
-    }).forEach((stream) => {
-      stream.personalGainNode.gain.value = volume;
-    });
-  }
-
-  mute() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.enabled = false);
-      this.isMuted = true;
+        this.rcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+          console.log("Receive transport connect");
+          ep.receiveTransportConnect({ dtlsParameters }, cb, errback);
+        });
+      }
     }
   }
 
-  unmute() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.enabled = true);
-      this.isMuted = false;
+  async createSendTransport(data) {
+    console.log("Creating send transport", data);
+    if (!this.mediasoupDevice.loaded) {
+      await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+    }
+    this.sendTransport = this.mediasoupDevice.createSendTransport({
+      id: data.id,
+      iceParameters: data.iceParameters,
+      iceCandidates: data.iceCandidates,
+      dtlsParameters: data.dtlsParameters,
+      sctpParameters: data.sctpParameters,
+      iceServers: data.iceServers,
+      iceTransportPolicy: data.iceTransportPolicy,
+      additionalSettings: data.additionalSettings,
+    });
+
+    this.sendTransport.on("connectionstatechange", () => {
+      ep.rtcConnectionStateChange({
+        state: this.sendTransport.connectionState,
+      })
+    });
+
+    this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+      console.log("Send transport connect");
+      ep.sendTransportConnect({ dtlsParameters }, cb, errback);
+    });
+
+    this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+      console.log("Send transport produce");
+      ep.sendTransportProduce({
+        id: this.id + "-audio",
+        kind,
+        rtpParameters,
+        appData,
+      }, callback, errback);
+    });
+
+    this.startAudioBroadcast();
+  }
+
+  async createReceiveVideoTransport(data) {
+    console.log("Creating video receive transport", data);
+    if (data) {
+      if (!this.mediasoupDevice.loaded) {
+        await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+      }
+      if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
+        this.videoRcvTransport = this.mediasoupDevice.createRecvTransport({
+          id: data.id,
+          iceParameters: data.iceParameters,
+          iceCandidates: data.iceCandidates,
+          dtlsParameters: data.dtlsParameters,
+          sctpParameters: data.sctpParameters,
+          iceServers: data.iceServers,
+          iceTransportPolicy: data.iceTransportPolicy,
+          additionalSettings: data.additionalSettings,
+        });
+
+        this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+          console.log("Receive video transport connect");
+          ep.receiveVideoTransportConnect({ dtlsParameters }, cb, errback);
+        });
+      }
     }
   }
 
-  deaf() {
-    if (this.inputStreams) {
-      this.inputStreams.forEach(inputStream => {
-        inputStream.stream.getTracks().forEach(track => track.enabled = false);
+  async createSendVideoTransport(data) {
+    console.log("Creating video send transport", data);
+    if (!this.mediasoupDevice.loaded) {
+      await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+    }
+    this.videoSendTransport = this.mediasoupDevice.createSendTransport({
+      id: data.id,
+      iceParameters: data.iceParameters,
+      iceCandidates: data.iceCandidates,
+      dtlsParameters: data.dtlsParameters,
+      sctpParameters: data.sctpParameters,
+      iceServers: data.iceServers,
+      iceTransportPolicy: data.iceTransportPolicy,
+      additionalSettings: data.additionalSettings,
+    });
+
+    this.videoSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+      console.log("Send video transport connect");
+      ep.sendVideoTransportConnect({ dtlsParameters }, cb, errback);
+    });
+
+    this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+      console.log("Send video transport produce");
+      ep.sendVideoTransportProduce({
+        id: this.id + "-video",
+        kind,
+        rtpParameters,
+        appData,
+      }, callback, errback);
+    });
+
+  }
+
+  async init() {
+    this.mediasoupDevice = new mediasoup.Device();
+  }
+
+  getRtpCapabilities() {
+    if (this.mediasoupDevice) {
+      return this.mediasoupDevice.rtpCapabilities;
+    }
+  }
+
+  async startAudioBroadcast() {
+    console.log("Starting audio broadcast");
+    if (!this.mediasoupDevice.canProduce("audio")) {
+      console.error("Cannot produce audio");
+      return;
+    }
+
+    this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+    this.context = new AudioContext();
+
+    const src = this.context.createMediaStreamSource(this.outStream);
+    const dst = this.context.createMediaStreamDestination();
+    this.outChannelCount = src.channelCount;
+
+    this.outGainNode = this.context.createGain();
+    this.vadNode = this.context.createGain();
+    this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+    src.connect(this.outGainNode);
+    this.outGainNode.connect(this.channelSplitter);
+    this.outGainNode.connect(this.vadNode);
+    this.vadNode.connect(dst);
+
+    this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+    this.setOutVolume(this.volume);
+
+    console.log(dst.stream.getAudioTracks());
+    const audioTrack = dst.stream.getAudioTracks()[0];
+    this.producer = await this.sendTransport.produce({
+      track: audioTrack,
+      codecOptions: {
+        opusStereo: true,
+        opusDtx: true,
+      },
+    });
+  }
+
+  async stopAudioBroadcast() {
+    console.log("Stopping audio broadcast");
+    if (this.producer) {
+      this.producer.close();
+      this.producer = null;
+    }
+    if (this.outStream) {
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = null;
+    }
+
+    ep.stopAudioBroadcast({ id: this.id });
+  }
+
+  async consume(data) {
+    console.log("Consuming audio", data)
+    const consumer = await this.rcvTransport.consume({
+      id: data.id,
+      producerId: data.producerId,
+      kind: data.kind,
+      rtpParameters: data.rtpParameters,
+    });
+
+    const { track } = consumer;
+    let context = new AudioContext();
+
+    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
+      context.setSinkId(this.outputDeviceId);
+    }
+    let stream = new MediaStream([track])
+    this.streamIds.set(data.producerId, stream.id);
+    let src = context.createMediaStreamSource(stream);
+    let dst = context.destination;
+
+    let personalGainNode = context.createGain();
+    let gainNode = context.createGain();
+    let deafNode = context.createGain();
+
+    let channelSplitter = context.createChannelSplitter(src.channelCount);
+
+    src.connect(personalGainNode);
+    personalGainNode.connect(gainNode);
+    gainNode.connect(deafNode);
+    deafNode.connect(channelSplitter);
+    deafNode.connect(dst);
+
+    context.resume();
+
+    //Chrome bug fix
+    let audioElement = new Audio();
+
+    audioElement.srcObject = stream;
+    audioElement.autoplay = true;
+    audioElement.pause();
+
+    this.inputStreams.push({
+      consumer,
+      source: src,
+      stream,
+      context,
+      gainNode,
+      deafNode,
+      personalGainNode,
+      audioElement,
+      analyser: this.createAudioAnalyser(context, channelSplitter, src.channelCount),
+    });
+
+    ep.resumeStream({ id: this.id, producerId: data.producerId });
+  }
+
+  async stopConsuming(senderId) {
+    if (senderId) {
+      //Close specific sender
+      console.log("Stopping consuming", senderId);
+      this.inputStreams.forEach((stream, index) => {
+        if (stream.consumer.producerId === senderId) {
+          stream.consumer.close();
+          stream.context.close();
+          stream.stream.getTracks().forEach(track => track.stop());
+          stream.audioElement.remove();
+          this.inputStreams.splice(index, 1);
+        }
       });
-      this.isDeaf = true;
+
+      ep.unsubscribeAudio({ id: this.id, producerId: senderId });
+    } else {
+      //Close all senders
+      console.log("Stopping consuming all");
+      this.inputStreams.forEach((stream) => {
+        ep.unsubscribeAudio({ id: this.id, producerId: stream.consumer.producerId });
+        stream.consumer.close();
+        stream.context.close();
+        stream.stream.getTracks().forEach(track => track.stop());
+        stream.audioElement.remove();
+      });
+
+      this.inputStreams = [];
     }
   }
 
-  undeaf() {
-    if (this.inputStreams) {
-      this.inputStreams.forEach(inputStream => {
-        inputStream.stream.getTracks().forEach(track => track.enabled = true);
-      });
-      this.isDeaf = false;
+  async startScreenShare() {
+    console.log("Starting screen share");
+    if (!this.mediasoupDevice.canProduce("video")) {
+      console.error("Cannot produce video");
+      return;
     }
+
+    if (this.videoSourceId === 'undefined') {
+      console.error("No video source id");
+      return;
+    }
+
+    this.outVideoStream = await navigator.mediaDevices.getUserMedia(this.videoConstraints, err => { console.error(err); return; });
+    const videoTrack = this.outVideoStream.getVideoTracks()[0];
+    this.videoProducer = await this.videoSendTransport.produce({
+      track: videoTrack,
+      codecOptions: {
+        videoGoogleStartBitrate: 3000,
+        videoGoogleMaxBitrate: 20000,
+        videoGoogleMinBitrate: 3000,
+      },
+    });
+  }
+
+  async stopScreenShare() {
+    this.videoProducer.close();
+    this.videoProducer = null;
+    this.outVideoStream.getTracks().forEach(track => track.stop());
+    this.outVideoStream = null;
+  }
+
+  async consumeVideo(data) {
+    console.log("Consuming video", data);
+
+    this.videoConsumer = await this.videoRcvTransport.consume({
+      id: data.id,
+      producerId: data.producerId,
+      kind: data.kind,
+      rtpParameters: data.rtpParameters,
+    });
+
+    const { track } = this.videoConsumer;
+    this.inVideoStream = new MediaStream([track]);
+
+    ep.resumeVideoStream({ id: this.id, producerId: data.producerId });
+  }
+
+  stopConsumingVideo(senderId) {
+    if (this.videoConsumer) {
+      this.videoConsumer.close();
+      this.videoConsumer = null;
+    }
+
+    if (this.inVideoStream) {
+      this.inVideoStream.getTracks().forEach(track => track.stop());
+      this.inVideoStream = null;
+    }
+  }
+
+  getVideo() {
+    return this.inVideoStream;
   }
 
   createAudioAnalyser(context, splitter, channelCount) {
@@ -251,96 +468,20 @@ class audioRtcTransmitter {
     return audioLevels;
   }
 
-  handleTrackEvent(e) {
-    console.log("Got audio track event", e);
-    let context = new AudioContext();
-
-    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
-      context.setSinkId(this.outputDeviceId);
-    }
-
-    let source = context.createMediaStreamSource(e.streams[0]);
-    let destination = context.destination;
-
-    let personalGainNode = context.createGain();
-    let gainNode = context.createGain();
-    let muteNode = context.createGain();
-    let channelSplitter = context.createChannelSplitter(source.channelCount);
-
-    source.connect(personalGainNode);
-    personalGainNode.connect(gainNode);
-    gainNode.connect(muteNode);
-    gainNode.connect(channelSplitter);
-    muteNode.connect(destination);
-
-    context.resume();
-
-    //Chrome bug fix
-
-    let audioElement = new Audio();
-    audioElement.srcObject = e.streams[0];
-    audioElement.autoplay = true;
-    audioElement.pause();
-
-    this.inputStreams.push({
-      stream: e.streams[0],
-      source: source,
-      context: context,
-      gainNode: gainNode,
-      muteNode: muteNode,
-      personalGainNode: personalGainNode,
-      audioElement: audioElement,
-      analyser: this.createAudioAnalyser(context, channelSplitter, source.channelCount)
-    });
+  _round(num) {
+    return Math.round((num + Number.EPSILON) * 10) / 10;
   }
 
-  isFullyConnected() {
-    return (this.subscribedUsers === this.inputStreams.length);
-  }
-
-  addCandidate(candidate) {
-    if (this.peer) {
-      this.peer.addIceCandidate(candidate);
-    }
-  }
-
-  /**
-   * @function createPeer - Creates the peer connection
-   * @returns {RTCPeerConnection} peer - The peer connection
-   */
-  createPeer() {
-    const peer = new RTCPeerConnection({
-      iceServers: ICE_SERVERS
-    });
-    //Handle the ice candidates
-    peer.onnegotiationneeded = () => { this.handleNegotiationNeededEvent(peer) };
-
-    peer.onicecandidate = (e) => {
-      if (e.candidate) {
-        ep.sendIceCandidate({
-          candidate: e.candidate,
-          id: this.id,
-        });
-      }
+  setVoiceDetectionVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
     }
 
-    peer.ontrack = (e) => { this.handleTrackEvent(e) };
-    peer.onconnectionstatechange = () => {
-      ep.rtcConnectionStateChange({
-        state: peer.connectionState,
-      });
-      if (peer.connectionState === 'failed') {
-        peer.restartIce();
-      }
-    }
-
-    peer.oniceconnectionstatechange = () => {
-      if (peer.iceconnectionState === 'failed') {
-        peer.restartIce()
-      }
-    }
-
-    return peer;
+    //cancel previous time change
+    this.vadNode.gain.cancelAndHoldAtTime(0);
+    //ramp volume to new value in 1 second
+    this.vadNode.gain.linearRampToValueAtTime(volume, 1);
   }
 
   _findUserId(stream) {
@@ -354,11 +495,6 @@ class audioRtcTransmitter {
     }
     console.log("found userId", userId, "for streamId", stream.stream.id)
     return userId;
-  }
-
-  // round to 1 decimal places
-  _round(num) {
-    return Math.round((num + Number.EPSILON) * 10) / 10;
   }
 
   startStatsInterval() {
@@ -391,8 +527,8 @@ class audioRtcTransmitter {
 
       // local user's audio levels
       if (this.analyser) {
-        let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outputChannelCount);
-        // console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
+        let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outChannelCount);
+        //console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
         if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
           this.hasSpokenLocal = true;
           this.setVoiceDetectionVolume(1.0);
@@ -412,171 +548,135 @@ class audioRtcTransmitter {
     }, 5);
   }
 
-  async subscribeToAudio(id) {
-    ep.subscribeAudio({
-      senderId: id,
-      receiverId: this.id,
-    }, (a) => {
-      if (a) {
-        //The socket returns the audio stream id
-        this.streamIds.set(id, a);
-        this.subscribedUsers++;
-      } else {
-        console.error("Failed to subscribe to audio");
-        return;
-      }
-    });
+  setOutVolume(volume) {
+    this.volume = volume;
+    this.outGainNode.gain.value = volume;
   }
 
-  unsubscribeFromAudio(id = null) {
-    if (id) {
-      //find the stream id
-      let streamId = this.streamIds.get(id);
-      if (streamId) {
-        ep.unsubscribeAudio({ senderId: id, receiverId: this.id })
-        this.inputStreams.filter((stream) => {
-          // if (!stream) return false;
-          // if (!stream.stream) return false;
-          //find every stream that matches the id
-          return stream.stream.id === streamId;
-        }).forEach((stream) => {
-          //close it
-          stream.stream.getTracks().forEach(track => track.stop());
-          stream.stream = null;
-          stream.context.close();
-          stream.audioElement.pause();
-          stream.audioElement = null;
-          this.inputStreams.splice(this.inputStreams.indexOf(stream), 1);
-          this.subscribedUsers--;
-        });
-      }
-    } else {
-      //unsubscribe from all streams
-      for (const [key, value] of this.streamIds) {
-        ep.unsubscribeAudio({ senderId: key, receiverId: this.id })
-      }
+  async setInputDevice(deviceId) {
+    if (deviceId === this.inputDeviceId || deviceId === 'default') {
+      return;
+    }
+
+    console.log("Setting microphone device to", deviceId);
+    this.inputDeviceId = deviceId;
+    this.constraints.audio.deviceId = deviceId;
+
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+      await this.producer.replaceTrack({ track: audioTrack });
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+
+    }
+  }
+
+  setScreenShareDevice(deviceId) {
+    this.videoSourceId = deviceId;
+    this.videoConstraints.video.mandatory.chromeMediaSourceId = deviceId;
+  }
+
+  setSpeakerDevice(deviceId) {
+    if (deviceId === 'default') {
+      return
+    }
+    console.log("Setting speaker device to", deviceId);
+    this.outputDeviceId = deviceId;
+
+    if (this.inputStreams) {
       this.inputStreams.forEach((stream) => {
-        if (stream.stream) {
-          stream.stream.getTracks().forEach(track => track.stop());
-          stream.stream = null;
-          stream.context.close();
-          stream.audioElement.pause();
-          stream.audioElement = null;
-        }
+        stream.context.setSinkId(deviceId);
       });
-      this.inputStreams = [];
-      this.subscribedUsers = 0;
     }
   }
 
-  /**
-   * @function handleNegotiationNeededEvent - Handles the negotiation needed event
-   * @param {RTCPeerConnection} peer 
-   */
-  async handleNegotiationNeededEvent(peer) {
-    const offer = await peer.createOffer();
-    let parsed = sdpTransform.parse(offer.sdp);
+  setSpeakerVolume(volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
 
-    //Edit the sdp to make the audio sound better
-    parsed.media[0].fmtp[0].config = goodOpusSettings;
-    offer.sdp = sdpTransform.write(parsed);
-
-    await peer.setLocalDescription(offer);
-
-    ep.broadcastAudio({
-      sdp: peer.localDescription,
-      id: this.id
-    }, (description) => {
-      const desc = new RTCSessionDescription(description);
-      peer.setRemoteDescription(desc).catch(e => console.error(e));
-    })
-  }
-
-  async renegotiate(remoteOffer, cb) {
-    const remoteDesc = new RTCSessionDescription(remoteOffer);
-    console.log("remote description", sdpTransform.parse(remoteDesc.sdp));
-    this.peer.setRemoteDescription(remoteDesc).then(() => {
-      this.peer.createAnswer().then((answer) => {
-        let parsed = sdpTransform.parse(answer.sdp);
-        parsed.media.forEach((media) => {
-          media.fmtp[0].config = goodOpusSettings;
-        });
-        answer.sdp = sdpTransform.write(parsed);
-
-        this.peer.setLocalDescription(answer).then(() => {
-          console.log("local description", parsed)
-          cb(this.peer.localDescription);
-        });
-      });
+    this.inputStreams.forEach((stream) => {
+      stream.gainNode.gain.value = volume;
     });
   }
 
-  /**
-   * @function close - Closes the transmissionroomCli
-   */
+  setPersonalVolume(userId, volume) {
+    if (volume > 1.0 || volume < 0.0) {
+      console.error("Volume must be between 0.0 and 1.0", volume);
+      volume = 1.0;
+    }
+
+    this.inputStreams.forEach((stream) => {
+      if (stream.consumer.producerId === userId) {
+        stream.personalGainNode.gain.value = volume;
+      }
+    });
+  }
+
+  mute() {
+    if (this.outStream) {
+      this.outStream.getTracks().forEach(track => track.enabled = false);
+      this.isMuted = true;
+    }
+  }
+
+  unmute() {
+    if (this.outStream) {
+      this.outStream.getTracks().forEach(track => track.enabled = true);
+      this.isMuted = false;
+    }
+  }
+
+  deaf() {
+    this.inputStreams.forEach((stream) => {
+      stream.deafNode.gain.value = 0.0;
+    });
+  }
+
+  undeaf() {
+    this.inputStreams.forEach((stream) => {
+      stream.deafNode.gain.value = 1.0;
+    });
+  }
+
   close() {
-    //Closes the transmission
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
-      this.stream = null;
-    } else {
-      console.warn("Stream is null")
-    }
-
-    if (this.peer) {
-      this.peer.close();
-      this.peer = null;
-    } else {
-      console.warn("Peer is null")
-    }
-    
-    ep.stopAudioBroadcast({ id: this.id });
-
-    if (this.statsInterval) {
-      clearInterval(this.statsInterval);
-      this.statsInterval = null;
-    }
-
-    this.isTransmitting = false;
+    this.leaveRoom();
+    this.stopAudioBroadcast();
+    this.stopConsuming();
+    clearInterval(this.statsInterval);
   }
 
-  async getConnectionStats() {
-    return new Promise((resolve, reject) => {
-      let ping = 0;
-      let bytesSent = 0;
-      let bytesReceived = 0;
-      let packetsSent = 0;
-      let packetsReceived = 0;
-      let jitterIn = 0;
-      let packetsLostIn = 0;
-
-      let stats = this.peer.getStats();
-      stats.then((res) => {
-        res.forEach((report) => {
-          if (report.type === "candidate-pair" && report.nominated) {
-            ping = report.currentRoundTripTime * 1000;
-            bytesSent = report.bytesSent;
-            bytesReceived = report.bytesReceived;
-            packetsSent = report.packetsSent;
-            packetsReceived = report.packetsReceived;
-          }
-
-          if (report.type === "remote-inbound.rtp" && report.kind === "audio") {
-            jitterIn = report.jitter * 1000;
-            packetsLostIn = report.packetsLost;
-          }
-        });
-        resolve({
-          ping: ping,
-          bytesSent: bytesSent,
-          bytesReceived: bytesReceived,
-          packetsSent: packetsSent,
-          packetsReceived: packetsReceived,
-          jitterIn: jitterIn,
-          packetsLostIn: packetsLostIn,
-        })
-      });
-    });
+  getAudioState() {
+    return {
+      isTransmitting: true,
+      isMuted: this.isMuted,
+      isDeaf: false,
+      volume: this.volume,
+      deviceId: this.inputDeviceId,
+      outputDeviceId: this.outputDeviceId,
+    };
   }
 
   /**
@@ -602,6 +702,10 @@ class audioRtcTransmitter {
     })
   }
 
+  /**
+   * @function getAudioDevices - Gets the audio devices
+   * @returns {Promise} - The promise that resolves when the audio devices are found
+   */
   static async getOutputAudioDevices() {
     return new Promise((resolve, reject) => {
       var out = [];
@@ -620,15 +724,61 @@ class audioRtcTransmitter {
     })
   }
 
-  getAudioState() {
-    return {
-      isTransmitting: this.isTransmitting,
-      isMuted: this.isMuted,
-      isDeaf: this.isDeaf,
-      volume: this.volume,
-      deviceId: this.deviceId,
-      outputDeviceId: this.outputDeviceId,
-    }
+  static async getVideoSources() {
+    const srcs = await ipcRenderer.invoke("getVideoSources");
+    return srcs.filter((src) => {
+      return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
+    });
+  }
+
+  getConnectionStats() {
+    return new Promise((resolve, reject) => {
+      let ping = 0;
+      let bytesSent = 0;
+      let bytesReceived = 0;
+      let packetsSent = 0;
+      let packetsReceived = 0;
+      let jitterIn = 0;
+      let packetsLostIn = 0;
+
+      if (!this.sendTransport) {
+        resolve({
+          ping: ping,
+          bytesSent: bytesSent,
+          bytesReceived: bytesReceived,
+          packetsSent: packetsSent,
+          packetsReceived: packetsReceived,
+          jitterIn: jitterIn,
+          packetsLostIn: packetsLostIn,
+        })
+      }
+      let stats = this.sendTransport.getStats();
+      stats.then((res) => {
+        res.forEach((report) => {
+          if (report.type === "candidate-pair" && report.nominated) {
+            ping = report.currentRoundTripTime * 1000;
+            bytesSent = report.bytesSent;
+            bytesReceived = report.bytesReceived;
+            packetsSent = report.packetsSent;
+            packetsReceived = report.packetsReceived;
+          }
+
+          if (report.type === "remote-inbound.rtp" && report.kind === "audio") {
+            jitterIn = report.jitter * 1000;
+            packetsLostIn = report.packetsLost;
+          }
+        });
+        resolve({
+          ping: ping,
+          bytesSent: bytesSent,
+          bytesReceived: bytesReceived,
+          packetsSent: packetsSent,
+          packetsReceived: packetsReceived,
+          jitterIn: jitterIn,
+          packetsLostIn: packetsLostIn,
+        })
+      });
+    })
   }
 }
 

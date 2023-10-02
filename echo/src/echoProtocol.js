@@ -1,6 +1,5 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
-import videoRtc from "./videoRtc";
 
 import Users from "./cache/user";
 import Room from "./cache/room";
@@ -15,7 +14,6 @@ class EchoProtocol {
     this.ping = 0;
     this.pingInterval = null;
     this.at = null;
-    this.vt = null;
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
@@ -69,7 +67,6 @@ class EchoProtocol {
   openConnection(id) {
     this._makeIO(id);
     this.startTransmitting(id);
-    this.setupVideoRtc(id);
 
     this._startPing();
 
@@ -82,7 +79,7 @@ class EchoProtocol {
       this.rtcConnectionStateChange({ state: "disconnected" });
       this.stopTransmitting();
       this.stopReceiving();
-      this._startReconnectTry();
+      //this._startReconnectTry();
     })
 
     this.socket.io.on("error", (error) => {
@@ -122,24 +119,6 @@ class EchoProtocol {
       }
     });
 
-    this.socket.on("server.iceCandidate", (data) => {
-      if (this.at) {
-        this.at.addCandidate(data.candidate);
-      }
-    });
-
-    this.socket.on("server.renegotiationNeeded", (data, cb) => {
-      if (this.at) {
-        this.at.renegotiate(data.data.sdp, cb);
-      }
-    });
-
-    this.socket.on("server.videoRenegotiationNeeded", (data, cb) => {
-      if (this.vt) {
-        this.vt.renegotiate(data.data.sdp, cb);
-      }
-    });
-
     this.socket.on("server.receiveChatMessage", (data) => {
       this.reciveChatMessageFromSocket(data);
     });
@@ -169,6 +148,38 @@ class EchoProtocol {
     this.socket.on("server.videoBroadcastStop", (data) => {
       console.log("User", data.id, "stopped broadcasting video", data.streamId);
       this.videoBroadcastStop(data);
+    });
+
+    this.socket.on("server.receiveTransportCreated", (data) => {
+      console.log("Server created transport with id", data.id);
+      if (this.at) {
+        //Server will receive and what client sends
+        this.at.createSendTransport(data);
+      }
+    });
+
+    this.socket.on("server.sendTransportCreated", (data) => {
+      console.log("Server created transport with id", data.id);
+      if (this.at) {
+        //Client will receive and what server sends
+        this.at.createReceiveTransport(data);
+      }
+    });
+
+    this.socket.on("server.receiveVideoTransportCreated", (data) => {
+      console.log("Server created video transport with id", data.id);
+      if (this.at) {
+        //Server will receive and what client sends
+        this.at.createSendVideoTransport(data);
+      }
+    });
+
+    this.socket.on("server.sendVideoTransportCreated", (data) => {
+      console.log("Server created video transport with id", data.id);
+      if (this.at) {
+        //Client will receive and what server sends
+        this.at.createReceiveVideoTransport(data);
+      }
     });
   }
 
@@ -201,7 +212,11 @@ class EchoProtocol {
     if (this.at) {
       this.stopTransmitting();
     }
-    this.at = new audioRtcTransmitter(id);
+    this.at = new audioRtcTransmitter(
+      id,
+      storage.get('inputAudioDeviceId'),
+      storage.get('outputAudioDeviceId'),
+    );
     await this.at.init();
   }
 
@@ -210,28 +225,70 @@ class EchoProtocol {
       this.at.close();
       this.at = null;
     }
+  }
 
-    if (this.vt) {
-      this.vt.stopSharing();
-      this.vt.close();
-      this.vt = null;
+  sendTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  sendTransportProduce(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  receiveTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.receiveTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  sendVideoTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendVideoTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  sendVideoTransportProduce(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.sendVideoTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  receiveVideoTransportConnect(data, cb, errCb) {
+    if (this.socket) {
+      this.socket.emit("client.receiveVideoTransportConnect", data, (a) => {
+        cb(a);
+      });
     }
   }
 
   startReceiving(remoteId) {
-    console.log("Starting input stream for", remoteId)
-    this.at.subscribeToAudio(remoteId);
+    this.subscribeAudio({ id: remoteId });
   }
 
   stopReceiving(remoteId) {
     if (this.at) {
-      this.at.unsubscribeFromAudio(remoteId);
+      this.at.stopConsuming(remoteId);
     }
   }
 
   stopReceivingVideo(remoteId) {
-    if(this.vt) {
-      this.vt.unsubscribeFromVideo(remoteId);
+    if (this.at) {
+      this.at.stopConsumingVideo(remoteId);
+      this.socket.emit("client.stopReceivingVideo", { id: remoteId });
     }
   }
 
@@ -250,11 +307,11 @@ class EchoProtocol {
   }
 
   setSpeakerDevice(deviceId) {
-    this.at.setOutputDevice(deviceId);
+    this.at.setSpeakerDevice(deviceId);
   }
 
   setSpeakerVolume(volume) {
-    this.at.setOutputVolume(volume);
+    this.at.setSpeakerVolume(volume);
   }
 
   setMicrophoneDevice(deviceId) {
@@ -265,12 +322,12 @@ class EchoProtocol {
 
   setMicrophoneVolume(volume) {
     if (this.at) {
-      this.at.setVolume(volume);
+      this.at.setOutVolume(volume);
     }
   }
 
   setUserVolume(volume, remoteId) {
-    this.at.setPersonalVolume(volume, remoteId);
+    this.at.setPersonalVolume(remoteId, volume);
   }
 
   getSpeakerDevices() {
@@ -296,6 +353,7 @@ class EchoProtocol {
   exitFromRoom(id) {
     this.stopReceiving();
     this.stopReceivingVideo();
+    this.at.leaveRoom();
     if (this.socket) this.socket.emit("client.exit", { id });
   }
 
@@ -304,6 +362,7 @@ class EchoProtocol {
       if (!id) id = storage.get('id');
       console.log("closing connection with socket")
       this.socket.emit("client.end", { id });
+      clearInterval(this.currentConnectionStateInterval);
     }
 
     this.stopReceiving();
@@ -339,19 +398,40 @@ class EchoProtocol {
     }
   }
 
-  subscribeAudio(data, cb) {
+  subscribeAudio(data) {
     if (this.socket) {
-      this.socket.emit("client.subscribeAudio", data, (description) => {
-        cb(description);
+      let remoteId = data.id;
+      let a = this.at.getRtpCapabilities()
+      console.log("Got rtp capabilities", a);
+
+      this.socket.emit("client.subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
+        console.log("Got description from server", data);
+        this.at.consume({
+          id: data.id,
+          producerId: data.producerId,
+          kind: data.kind,
+          rtpParameters: data.rtpParameters,
+          type: data.type,
+          producerPaused: data.producerPaused,
+        });
       });
+    }
+  }
+  resumeStream(data) {
+    if (this.socket) {
+      this.socket.emit("client.resumeStream", data);
+    }
+  }
+
+  resumeStreams(data) {
+    if (this.socket) {
+      this.socket.emit("client.resumeStreams", data);
     }
   }
 
   unsubscribeAudio(data, cb) {
     if (this.socket) {
-      this.socket.emit("client.unsubscribeAudio", data, (description) => {
-        cb(description);
-      });
+      this.socket.emit("client.unsubscribeAudio", data);
     }
   }
 
@@ -361,38 +441,33 @@ class EchoProtocol {
     }
   }
 
-  sendIceCandidate(data) {
-    if (this.socket) {
-      this.socket.emit("client.iceCandidate", data);
-    }
-  }
-
-  sendVideoIceCandidate(data) {
-    if (this.socket) {
-      this.socket.emit("client.videoIceCandidate", data);
-    }
-  }
-
-  setupVideoRtc(id) {
-    this.vt = new videoRtc(id);
-  }
-
   startScreenSharing(deviceId) {
-    if (this.vt) {
-      this.vt.setDevice(deviceId);
-      this.vt.startSharing();
+    if (this.at) {
+      this.at.setScreenShareDevice(deviceId);
+      this.at.startScreenShare();
     }
   }
 
   stopScreenSharing() {
-    if (this.vt) {
-      this.vt.stopSharing();
+    if (this.at) {
+      this.at.stopScreenShare();
+      this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
     }
   }
 
   startReceivingVideo(remoteId) {
-    if (this.vt) {
-      this.vt.subscribeToVideo(remoteId);
+    if (this.at) {
+      let a = this.at.getRtpCapabilities()
+      this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
+        console.log("Got description from server", description);
+        this.at.consumeVideo(description);
+      });
+    }
+  }
+
+  resumeVideoStream(data) {
+    if (this.socket) {
+      this.socket.emit("client.resumeVideoStream", data);
     }
   }
 
@@ -401,8 +476,8 @@ class EchoProtocol {
    * @returns {MediaStream} Screen share stream
    */
   getVideo(remoteId) {
-    if(this.vt){
-      let stream = this.vt.getVideo(remoteId);
+    if (this.at) {
+      let stream = this.at.getVideo(remoteId);
       console.log("Got video stream", stream);
       return stream;
     } else {
@@ -410,26 +485,10 @@ class EchoProtocol {
     }
   }
 
-  negotiateVideoRtc(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.negotiateVideoRtc", data, (description) => {
-        cb(description);
-      });
-    }
-  }
-
   stopVideoBroadcast(data) {
     if (this.socket) {
       console.log("User", data.id, "stopped broadcasting video", data.streamId)
       this.socket.emit("client.stopVideoBroadcast", data);
-    }
-  }
-
-  subscribeVideo(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.subscribeVideo", data, (description) => {
-        cb(description);
-      });
     }
   }
 
@@ -442,11 +501,11 @@ class EchoProtocol {
   }
 
   getVideoDevices() {
-    return videoRtc.getVideoSources();
+    return audioRtcTransmitter.getVideoSources();
   }
 
   getAudioState(id = false) {
-    if (id) {
+    if (id && this.at) {
       const cachedUser = this.cachedUsers.get(id);
       if (cachedUser && !cachedUser.self) {
         return {

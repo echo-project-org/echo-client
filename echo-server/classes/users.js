@@ -6,11 +6,20 @@ class User {
         this.currentRoom = 0;
         this.isDeaf = false;
         this.isMuted = false;
+        this.isTransmittingVideo = false;
         this.events = {};
 
-        // define rtc
-        this.rtc = null;
-        this.videoRtc = null;
+        this.receiveTransport = null;
+        this.sendTransport = null;
+        this.audioProducerId = null;
+        this.audioProducer = null;
+        this.audioConsumers = [];
+
+        this.receiveVideoTransport = null;
+        this.sendVideoTransport = null;
+        this.videoProducerId = null;
+        this.videoProducer = null;
+        this.videoConsumers = [];
 
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
@@ -20,22 +29,258 @@ class User {
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
         this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
-        // audioRtc stuff
-        this.socket.on("client.broadcastAudio", (data, cb) => this.broadcastAudio(data, cb));
-        this.socket.on("client.subscribeAudio", (data, cb) => this.subscribeAudio(data, cb));
-        this.socket.on("client.stopAudioBroadcast", (data) => this.stopAudioBroadcast(data));
-        this.socket.on("client.unsubscribeAudio", (data) => this.unsubscribeAudio(data));
-        this.socket.on("client.iceCandidate", (data) => this.setIceCandidate(data));
-        this.socket.on("client.streamChanged", (data) => this.handleStreamChanged(data));
 
-        // videoRtc stuff
-        this.socket.on("client.negotiateVideoRtc", (data, cb) => this.negotiateVideoRtc(data, cb));
-        this.socket.on("client.subscribeVideo", (data, cb) => this.subscribeVideo(data, cb));
-        this.socket.on("client.startVideoBroadcast", (data) => this.startVideoBroadcast(data));
-        this.socket.on("client.stopVideoBroadcast", (data) => this.stopVideoBroadcast(data));
-        this.socket.on("client.unsubscribeVideo", (data) => this.unsubscribeVideo(data));
-        this.socket.on("client.videoIceCandidate", (data) => this.setVideoIceCandidate(data));
-        this.socket.on("client.videoStreamChanged", (data) => this.handleVideoStreamChanged(data));
+        // mediasoup
+        this.socket.on("client.sendTransportConnect", (data, cb) =>
+            this.receiveTransportConnect(data, cb)
+        );
+
+        this.socket.on("client.sendTransportProduce", (data, cb) => {
+            this.receiveTransportProduce(data, cb);
+        });
+
+        this.socket.on("client.receiveTransportConnect", (data, cb) => {
+            this.sendTransportConnect(data, cb);
+        });
+
+        this.socket.on("client.sendVideoTransportConnect", (data, cb) => {
+            this.receiveVideoTransportConnect(data, cb);
+        });
+
+        this.socket.on("client.sendVideoTransportProduce", (data, cb) => {
+            this.receiveVideoTransportProduce(data, cb);
+        });
+
+        this.socket.on("client.receiveVideoTransportConnect", (data, cb) => {
+            this.sendVideoTransportConnect(data, cb);
+        });
+
+        this.socket.on("client.subscribeAudio", (data, cb) => {
+            this.subscribeAudio(data, cb);
+        });
+
+        this.socket.on("client.resumeStream", (data) => {
+            this.resumeStream(data);
+        });
+
+        this.socket.on("client.resumeStreams", (data) => {
+            this.resumeStreams(data);
+        });
+
+        this.socket.on("client.resumeVideoStream", (data) => {
+            this.resumeVideoStream(data);
+        });
+
+        this.socket.on("client.stopAudioBroadcast", (data) => {
+            this.stopAudioBroadcast(data);
+        });
+
+        this.socket.on("client.unsubscribeAudio", (data) => {
+            this.unsubscribeAudio(data);
+        });
+
+        this.socket.on("client.stopScreenSharing", (data) => {
+            this.stopScreenSharing(data);
+        });
+
+        this.socket.on("client.startReceivingVideo", (data, cb) => {
+            this.startReceivingVideo(data, cb);
+        });
+
+        this.socket.on("client.stopReceivingVideo", (data) => {
+            this.stopReceivingVideo(data);
+        });
+    }
+
+    async receiveTransportConnect(data, cb) {
+        console.log("transportConnect", data);
+        await this.receiveTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
+        cb(true);
+    }
+
+    async receiveTransportProduce(data, cb) {
+        console.log("transportProduce", data);
+        this.audioProducer = await this.receiveTransport.produce({
+            id: data.id,
+            kind: data.kind,
+            rtpParameters: data.rtpParameters,
+            appData: data.appData
+        });
+        this.audioProducerId = this.audioProducer.id;
+        console.log("producer", this.audioProducer.id)
+
+        this.triggerEvent("userFullyConnectedToRoom", {
+            id: this.id,
+            roomId: this.currentRoom,
+            muted: this.isMuted,
+            deaf: this.isDeaf,
+        })
+        cb({
+            id: this.audioProducer.id
+        });
+    }
+
+    async sendTransportConnect(data, cb) {
+        console.log("sendTransportConnect", data);
+        await this.sendTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
+        cb(true);
+    }
+
+    async receiveVideoTransportConnect(data, cb) {
+        console.log("receiveVideoTransportConnect", data);
+        await this.receiveVideoTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
+        cb(true);
+    }
+
+    async receiveVideoTransportProduce(data, cb) {
+        console.log("receiveVideoTransportProduce", data);
+        this.videoProducer = await this.receiveVideoTransport.produce({
+            id: data.id,
+            kind: data.kind,
+            rtpParameters: data.rtpParameters,
+            appData: data.appData
+        });
+        this.videoProducerId = this.videoProducer.id;
+        console.log("producer", this.videoProducer.id)
+        this.isBroadcastingVideo = true;
+
+        this.triggerEvent("videoBroadcastStarted", {
+            id: this.id,
+            roomId: this.currentRoom,
+        });
+
+        cb({
+            id: this.videoProducer.id
+        });
+    }
+
+    sendVideoTransportConnect(data, cb) {
+        console.log("sendVideoTransportConnect", data);
+        this.sendVideoTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
+        cb(true);
+    }
+
+    async stopScreenSharing(data) {
+        console.log("User " + this.id + " stopScreenSharing");
+        await this.videoProducer.close();
+        this.isBroadcastingVideo = false;
+        this.triggerEvent("videoBroadcastStop", {
+            id: this.id,
+            roomId: this.currentRoom,
+        });
+    }
+
+    async startReceivingVideo(data, cb) {
+        console.log("User " + this.id + " startReceivingVideo");
+        const consumer = await this.sendVideoTransport.consume({
+            producerId: data.id + "-video",
+            rtpCapabilities: data.rtpCapabilities,
+            paused: true
+        });
+
+        this.videoConsumers.push({
+            consumer: consumer,
+            senderId: data.id,
+        });
+
+        cb({
+            id: consumer.id,
+            producerId: data.id,
+            kind: consumer.kind,
+            rtpParameters: consumer.rtpParameters,
+        });
+    }
+
+    stopReceivingVideo() {
+        console.log("User " + this.id + " stopReceivingVideo");
+        this.videoConsumers.forEach(async (consumer) => {
+            await consumer.consumer.close();
+        });
+    }
+
+    resumeVideoStream(data) {
+        //resume stream
+        this.videoConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.producerId) {
+                if (consumer.consumer.paused) {
+                    await consumer.consumer.resume();
+                }
+            }
+        });
+    }
+
+    async subscribeAudio(data, cb) {
+        console.log("User " + this.id + " subscribeAudio" + data.id);
+        const consumer = await this.sendTransport.consume({
+            producerId: data.id + "-audio",
+            rtpCapabilities: data.rtpCapabilities,
+            paused: true
+        });
+
+        this.audioConsumers.push({
+            consumer: consumer,
+            senderId: data.id,
+        });
+
+        cb({
+            id: consumer.id,
+            producerId: data.id,
+            kind: consumer.kind,
+            rtpParameters: consumer.rtpParameters,
+        });
+    }
+
+    async unsubscribeAudio(data) {
+        console.log("User " + this.id + " unsubscribeAudio" + data.producerId);
+        this.audioConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.producerId) {
+                await consumer.consumer.close();
+            }
+        });
+    }
+
+    async resumeStream(data) {
+        //resume stream
+        this.audioConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.producerId) {
+                console.log("Prima if")
+                if (consumer.consumer.paused) {
+                    console.log("Dopo if")
+                    await consumer.consumer.resume();
+                }
+            }
+        });
+    }
+
+    async resumeStreams() {
+        //resume all streams
+        /*
+        this.audioConsumers.forEach(async (consumer) => {
+            if(consumer.consumer.paused){
+                await consumer.consumer.resume();
+            }
+        });*/
+    }
+
+    stopAudioBroadcast(data) {
+        //stop stream
+        this.audioConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.id) {
+                await consumer.consumer.close();
+            }
+        });
     }
 
     registerEvent(event, cb) {
@@ -139,187 +384,81 @@ class User {
         return this.currentRoom;
     }
 
-    isBroadcastingVideo() {
-        if( this.videoRtc) {
-            return this.videoRtc.isBroadcastingVideo(this.id);
-        }
-    }
-
     // send the chat message to the non-sender users
     receiveChatMessage(data) {
         this.socket.emit("server.receiveChatMessage", data);
     }
 
-    // set the user's rtc definition
-    setRtc(rtc) {
-        this.rtc = rtc;
-    }
-
-    setVideoRtc(rtc) {
-        this.videoRtc = rtc;
-    }
-
-    broadcastAudio(data, cb) {
-        if (this.rtc) {
-            this.rtc.broadcastAudio(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("broadcastAudio error", err);
-                });
-        }
-    }
-
-    handleStreamChanged(data) {
-        if (this.rtc) {
-            this.rtc.handleStreamChanged(data);
-        }
-    }
-
-    subscribeAudio(data, cb) {
-        if (this.rtc) {
-            console.log("User ", data.senderId, "requested audio subscription to user", data.receiverId);
-            data.socket = this.socket;
-            this.rtc.subscribeAudio(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("subscribeAudio error", err);
-                });
-        }
-    }
-
-    stopAudioBroadcast(data) {
-        if (this.rtc) {
-            const resp = this.rtc.stopAudioBroadcast(data);
-            switch (resp) {
-                case "NO-ID":
-                    console.error("NO-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    unsubscribeAudio(data) {
-        if (this.rtc) {
-            const resp = this.rtc.unsubscribeAudio(data);
-            switch (resp) {
-                case "NO-SENDER-ID":
-                    console.error("NO-SENDER-ID");
-                    break;
-                case "NO-RECEIVER-ID":
-                    console.error("NO-RECEIVER-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    iceCandidate(candidate) {
-        this.socket.emit("server.iceCandidate", { data: candidate });
-    }
-
-    setIceCandidate(data) {
-        if (this.rtc) {
-            this.rtc.addCandidate(data);
-        }
-    }
-
-    renegotiationNeeded(offer, cb) {
-        this.socket.emit("server.renegotiationNeeded", { data: offer }, (description) => {
-            console.log("Got renegotiation answer from client");
-            cb(description)
+    setReceiveTransport(transport, rtpCapabilities) {
+        this.receiveTransport = transport;
+        this.socket.emit("server.receiveTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
         });
     }
 
-    // video stuff
-    negotiateVideoRtc(data, cb) {
-        if (this.videoRtc) {
-            this.videoRtc.broadcastVideo(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("broadcastVideo error", err);
-                });
-        }
-    }
-
-    handleVideoStreamChanged(data) {
-        if (this.videoRtc) {
-            this.videoRtc.handleStreamChanged(data);
-        }
-    }
-
-    subscribeVideo(data, cb) {
-        if (this.videoRtc) {
-            console.log("User ", data.senderId, "requested video subscription to user", data.receiverId);
-            data.socket = this.socket;
-            this.videoRtc.subscribeVideo(data, this)
-                .then((resp) => {
-                    cb(resp);
-                })
-                .catch((err) => {
-                    console.error("subscribeVideo error", err);
-                });
-        }
-    }
-
-    startVideoBroadcast(data) {
-        if(this.videoRtc) {
-            this.videoRtc.broadcastVideo(data, this);
-        }
-    }
-
-    stopVideoBroadcast(data) {
-        if (this.videoRtc) {
-            const resp = this.videoRtc.stopVideoBroadcast(data, this);
-            switch (resp) {
-                case "NO-ID":
-                    console.error("NO-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    unsubscribeVideo(data) {
-        if (this.videoRtc) {
-            const resp = this.videoRtc.unsubscribeVideo(data);
-            switch (resp) {
-                case "NO-SENDER-ID":
-                    console.error("NO-SENDER-ID");
-                    break;
-                case "NO-RECEIVER-ID":
-                    console.error("NO-RECEIVER-ID");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    videoIceCandidate(candidate) {
-        this.socket.emit("server.videoIceCandidate", { data: candidate });
-    }
-
-    setVideoIceCandidate(data) {
-        if (this.videoRtc) {
-            this.videoRtc.addCandidate(data);
-        }
-    }
-
-    videoRenegotiationNeeded(offer, cb) {
-        this.socket.emit("server.videoRenegotiationNeeded", { data: offer }, (description) => {
-            console.log("Got video renegotiation answer from client");
-            cb(description)
+    setSendTransport(transport, rtpCapabilities) {
+        this.sendTransport = transport;
+        this.socket.emit("server.sendTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
         });
+    }
+
+    setReceiveVideoTransport(transport, rtpCapabilities) {
+        this.receiveVideoTransport = transport;
+        this.socket.emit("server.receiveVideoTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    setSendVideoTransport(transport, rtpCapabilities) {
+        this.sendVideoTransport = transport;
+        this.socket.emit("server.sendVideoTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    clearTransports() {
+        //stop and clear all transports
+        this.receiveTransport.close();
+        this.sendTransport.close();
+        this.receiveVideoTransport.close();
+        this.sendVideoTransport.close();
+        this.receiveTransport = null;
+        this.sendTransport = null;
+        this.receiveVideoTransport = null;
+        this.sendVideoTransport = null;
     }
 }
 
