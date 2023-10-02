@@ -137,17 +137,17 @@ class Rooms {
             }
         })
 
+        let newUser = this.connectedClients.get(a.id);
         this.getUsersInRoom(a.roomId).forEach((user, id) => {
-            let newUser = this.connectedClients.get(id);
             if (newUser.id !== user.id) {
                 console.log("Notifing", newUser.id, "about", user.id)
                 const userRoom = user.getCurrentRoom();
                 const isBroadcatingVideo = user.isBroadcastingVideo();
-                let isConnected = userRoom === roomId;
+                let isConnected = userRoom === newUser.getCurrentRoom();
                 let audioState = user.getAudioState();
                 newUser.userJoinedChannel({
                     id: user.id,
-                    roomId: roomId,
+                    roomId: a.roomId,
                     isConnected: isConnected,
                     deaf: audioState.deaf,
                     muted: audioState.muted,
