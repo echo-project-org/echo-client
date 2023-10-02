@@ -420,8 +420,8 @@ class EchoProtocol {
       let remoteId = data.id;
       let a = this.at.getRtpCapabilities()
       console.log("Got rtp capabilities", a);
-      
-      this.socket.emit("client.subscribeAudio", {id: remoteId, rtpCapabilities: a}, (data) => {
+
+      this.socket.emit("client.subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
         console.log("Got description from server", data);
         this.at.consume({
           id: data.id,
@@ -434,8 +434,13 @@ class EchoProtocol {
       });
     }
   }
+  resumeStream({ data }) {
+    if (this.socket) {
+      this.socket.emit("client.resumeStream", data);
+    }
+  }
 
-  resumeStreams(data){
+  resumeStreams(data) {
     if (this.socket) {
       this.socket.emit("client.resumeStreams", data);
     }
@@ -495,7 +500,7 @@ class EchoProtocol {
    * @returns {MediaStream} Screen share stream
    */
   getVideo(remoteId) {
-    if(this.vt){
+    if (this.vt) {
       let stream = this.vt.getVideo(remoteId);
       console.log("Got video stream", stream);
       return stream;
