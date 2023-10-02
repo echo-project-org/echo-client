@@ -434,7 +434,7 @@ class EchoProtocol {
       });
     }
   }
-  resumeStream({ data }) {
+  resumeStream(data) {
     if (this.socket) {
       this.socket.emit("client.resumeStream", data);
     }
