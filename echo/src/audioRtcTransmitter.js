@@ -515,15 +515,16 @@ class audioRtcTransmitter {
     this.deviceId = deviceId;
     this.constraints.audio.deviceId = deviceId;
 
-
   }
 
   setScreenShareDevice(deviceId) {
     this.videoSourceId = deviceId;
     this.videoConstraints.video.mandatory.chromeMediaSourceId = deviceId;
   }
-  setSpeakerDevice(deviceId) {
 
+  setSpeakerDevice(deviceId) {
+    console.log("Setting speaker device to", deviceId);
+    this.outputDeviceId = deviceId;
   }
 
   setSpeakerVolume(volume) {
@@ -557,7 +558,10 @@ class audioRtcTransmitter {
   }
 
   close() {
-
+    this.leaveRoom();
+    this.stopAudioBroadcast();
+    this.stopConsuming();
+    clearInterval(this.statsInterval);
   }
 
   getAudioState() {
