@@ -408,6 +408,18 @@ class audioRtcTransmitter {
     ep.resumeVideoStream({ id: this.id, producerId: data.producerId });
   }
 
+  stopConsumingVideo(senderId) {
+    if (this.videoConsumer) {
+      this.videoConsumer.close();
+      this.videoConsumer = null;
+    }
+
+    if (this.inVideoStream) {
+      this.inVideoStream.getTracks().forEach(track => track.stop());
+      this.inVideoStream = null;
+    }
+  }
+
   getVideo() {
     return this.inVideoStream;
   }

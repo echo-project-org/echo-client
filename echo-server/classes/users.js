@@ -86,6 +86,10 @@ class User {
         this.socket.on("client.startReceivingVideo", (data, cb) => {
             this.startReceivingVideo(data, cb);
         });
+
+        this.socket.on("client.stopReceivingVideo", (data) => {
+            this.stopReceivingVideo(data);
+        });
     }
 
     async receiveTransportConnect(data, cb) {
@@ -196,6 +200,13 @@ class User {
             producerId: data.id,
             kind: consumer.kind,
             rtpParameters: consumer.rtpParameters,
+        });
+    }
+
+    stopReceivingVideo() {
+        console.log("User " + this.id + " stopReceivingVideo");
+        this.videoConsumers.forEach(async (consumer) => {
+            await consumer.consumer.close();
         });
     }
 

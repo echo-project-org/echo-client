@@ -286,7 +286,10 @@ class EchoProtocol {
   }
 
   stopReceivingVideo(remoteId) {
-
+    if (this.at) {
+      this.at.stopConsumingVideo(remoteId);
+      this.socket.emit("client.stopReceivingVideo", { id: remoteId });
+    }
   }
 
   toggleMute(mutestate) {
@@ -453,7 +456,7 @@ class EchoProtocol {
   }
 
   startReceivingVideo(remoteId) {
-    if(this.at){
+    if (this.at) {
       let a = this.at.getRtpCapabilities()
       this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
         console.log("Got description from server", description);
