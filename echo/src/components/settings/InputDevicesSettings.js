@@ -11,7 +11,7 @@ function InputDevicesSettings({ inputDevices }) {
 
   useEffect(() => {
     setInputDevice(storage.get('inputAudioDeviceId') || "default");
-    ep.setMicrophoneVolume(storage.get('micVolume')/100 || 1);
+    ep.setMicrophoneVolume(storage.get('micVolume') || 1);
     ep.setMicrophoneDevice(storage.get('inputAudioDeviceId') || "default");
     setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
   }, []);
