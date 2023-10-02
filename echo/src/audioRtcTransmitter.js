@@ -555,6 +555,9 @@ class audioRtcTransmitter {
   }
 
   setSpeakerDevice(deviceId) {
+    if (deviceId === 'default') {
+      return
+    }
     console.log("Setting speaker device to", deviceId);
     this.outputDeviceId = deviceId;
 
