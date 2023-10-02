@@ -131,13 +131,16 @@ class User {
 
     sendVideoTransportConnect(data, cb) {
         console.log("sendVideoTransportConnect", data);
-        this.sendVideoTransport = data;
+        this.sendVideoTransport.connect({
+            dtlsParameters: data.dtlsParameters
+        });
+
         cb(true);
     }
 
     async subscribeAudio(data, cb) {
         console.log("User " + this.id + " subscribeAudio" + data.id);
-        const consumer = await this.receiveTransport.consume({
+        const consumer = await this.sendTransport.consume({
             producerId: data.id + "-audio",
             rtpCapabilities: data.rtpCapabilities,
             paused: true
@@ -160,7 +163,9 @@ class User {
         //resume stream
         this.audioConsumers.forEach(async (consumer) => {
             if(consumer.senderId === data.producerId){
+                console.log("Prima if")
                 if(consumer.consumer.paused){
+                    console.log("Dopo if")
                     await consumer.consumer.resume();
                 }
             }
@@ -169,11 +174,12 @@ class User {
 
     async resumeStreams() {
         //resume all streams
+        /*
         this.audioConsumers.forEach(async (consumer) => {
             if(consumer.consumer.paused){
                 await consumer.consumer.resume();
             }
-        });
+        });*/
     }
 
     registerEvent(event, cb) {
