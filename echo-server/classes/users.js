@@ -67,6 +67,10 @@ class User {
             this.resumeStreams(data);
         });
 
+        this.socket.on("client.resumeVideoStream", (data) => {
+            this.resumeVideoStream(data);
+        });
+
         this.socket.on("client.stopAudioBroadcast", (data) => {
             this.stopAudioBroadcast(data);
         });
@@ -77,6 +81,10 @@ class User {
 
         this.socket.on("client.stopScreenSharing", (data) => {
             this.stopScreenSharing(data);
+        });
+
+        this.socket.on("client.startReceivingVideo", (data, cb) => {
+            this.startReceivingVideo(data, cb);
         });
     }
 
@@ -167,6 +175,38 @@ class User {
         this.triggerEvent("videoBroadcastStop", {
             id: this.id,
             roomId: this.currentRoom,
+        });
+    }
+
+    async startReceivingVideo(data, cb) {
+        console.log("User " + this.id + " startReceivingVideo");
+        const consumer = await this.sendVideoTransport.consume({
+            producerId: data.id + "-video",
+            rtpCapabilities: data.rtpCapabilities,
+            paused: true
+        });
+
+        this.videoConsumers.push({
+            consumer: consumer,
+            senderId: data.id,
+        });
+
+        cb({
+            id: consumer.id,
+            producerId: data.id,
+            kind: consumer.kind,
+            rtpParameters: consumer.rtpParameters,
+        });
+    }
+
+    resumeVideoStream(data) {
+        //resume stream
+        this.videoConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.producerId) {
+                if (consumer.consumer.paused) {
+                    await consumer.consumer.resume();
+                }
+            }
         });
     }
 

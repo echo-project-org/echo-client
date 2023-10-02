@@ -479,8 +479,18 @@ class EchoProtocol {
   }
 
   startReceivingVideo(remoteId) {
-    if (this.vt) {
-      this.vt.subscribeToVideo(remoteId);
+    if(this.at){
+      let a = this.at.getRtpCapabilities()
+      this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
+        console.log("Got description from server", description);
+        this.at.consumeVideo(description);
+      });
+    }
+  }
+
+  resumeVideoStream(data) {
+    if (this.socket) {
+      this.socket.emit("client.resumeVideoStream", data);
     }
   }
 
@@ -489,8 +499,8 @@ class EchoProtocol {
    * @returns {MediaStream} Screen share stream
    */
   getVideo(remoteId) {
-    if (this.vt) {
-      let stream = this.vt.getVideo(remoteId);
+    if (this.at) {
+      let stream = this.at.getVideo(remoteId);
       console.log("Got video stream", stream);
       return stream;
     } else {
@@ -502,14 +512,6 @@ class EchoProtocol {
     if (this.socket) {
       console.log("User", data.id, "stopped broadcasting video", data.streamId)
       this.socket.emit("client.stopVideoBroadcast", data);
-    }
-  }
-
-  subscribeVideo(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.subscribeVideo", data, (description) => {
-        cb(description);
-      });
     }
   }
 

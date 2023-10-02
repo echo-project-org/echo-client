@@ -21,7 +21,9 @@ const codecs = [{
     mimeType: "video/VP8",
     clockRate: 90000,
     parameters: {
-        "x-google-start-bitrate": 5000
+        "x-google-start-bitrate": 5000,
+        "x-google-max-bitrate": 10000,
+        "x-google-min-bitrate": 1000,
     }
 }]
 

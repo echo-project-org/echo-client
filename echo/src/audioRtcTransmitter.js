@@ -33,6 +33,8 @@ class audioRtcTransmitter {
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
     this.videoProducer = null;
+    this.videoConsumer = null;
+    this.inVideoStream = null;
 
     this.constraints = {
       audio: {
@@ -210,7 +212,7 @@ class audioRtcTransmitter {
     });
 
   }
-producer
+
   async init() {
     this.mediasoupDevice = new mediasoup.Device();
   }
@@ -388,6 +390,26 @@ producer
     this.videoProducer = null;
     this.outVideoStream.getTracks().forEach(track => track.stop());
     this.outVideoStream = null;
+  }
+
+  async consumeVideo(data) {
+    console.log("Consuming video", data);
+
+    this.videoConsumer = await this.videoRcvTransport.consume({
+      id: data.id,
+      producerId: data.producerId,
+      kind: data.kind,
+      rtpParameters: data.rtpParameters,
+    });
+
+    const { track } = this.videoConsumer;
+    this.inVideoStream = new MediaStream([track]);
+
+    ep.resumeVideoStream({ id: this.id, producerId: data.producerId });
+  }
+
+  getVideo() {
+    return this.inVideoStream;
   }
 
   createAudioAnalyser(context, splitter, channelCount) {
@@ -693,9 +715,9 @@ producer
   static async getVideoSources() {
     const srcs = await ipcRenderer.invoke("getVideoSources");
     return srcs.filter((src) => {
-        return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
+      return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
     });
-}
+  }
 
   getConnectionStats() {
     return new Promise((resolve, reject) => {
