@@ -531,15 +531,15 @@ class audioRtcTransmitter {
   }
 
   mute() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.enabled = false);
+    if (this.outStream) {
+      this.outStream.getTracks().forEach(track => track.enabled = false);
       this.isMuted = true;
     }
   }
 
   unmute() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.enabled = true);
+    if (this.outStream) {
+      this.outStream.getTracks().forEach(track => track.enabled = true);
       this.isMuted = false;
     }
   }
