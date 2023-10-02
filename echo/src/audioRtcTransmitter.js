@@ -1,4 +1,5 @@
 import { ep } from "./index";
+const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 
 class audioRtcTransmitter {
@@ -688,6 +689,13 @@ producer
       })
     })
   }
+
+  static async getVideoSources() {
+    const srcs = await ipcRenderer.invoke("getVideoSources");
+    return srcs.filter((src) => {
+        return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
+    });
+}
 
   getConnectionStats() {
     return new Promise((resolve, reject) => {

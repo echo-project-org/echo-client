@@ -69,7 +69,6 @@ class EchoProtocol {
   openConnection(id) {
     this._makeIO(id);
     this.startTransmitting(id);
-    this.setupVideoRtc(id);
 
     this._startPing();
 
@@ -189,7 +188,7 @@ class EchoProtocol {
 
     this.socket.on("server.receiveVideoTransportCreated", (data) => {
       console.log("Server created video transport with id", data.id);
-      if (this.vt) {
+      if (this.at) {
         //Server will receive and what client sends
         this.at.createSendVideoTransport(data);
       }
@@ -197,7 +196,7 @@ class EchoProtocol {
 
     this.socket.on("server.sendVideoTransportCreated", (data) => {
       console.log("Server created video transport with id", data.id);
-      if (this.vt) {
+      if (this.at) {
         //Client will receive and what server sends
         this.at.createReceiveVideoTransport(data);
       }
@@ -465,22 +464,6 @@ class EchoProtocol {
     }
   }
 
-  sendIceCandidate(data) {
-    if (this.socket) {
-      this.socket.emit("client.iceCandidate", data);
-    }
-  }
-
-  sendVideoIceCandidate(data) {
-    if (this.socket) {
-      this.socket.emit("client.videoIceCandidate", data);
-    }
-  }
-
-  setupVideoRtc(id) {
-    this.vt = new videoRtc(id);
-  }
-
   startScreenSharing(deviceId) {
     if (this.at) {
       this.at.setScreenShareDevice(deviceId);
@@ -515,14 +498,6 @@ class EchoProtocol {
     }
   }
 
-  negotiateVideoRtc(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.negotiateVideoRtc", data, (description) => {
-        cb(description);
-      });
-    }
-  }
-
   stopVideoBroadcast(data) {
     if (this.socket) {
       console.log("User", data.id, "stopped broadcasting video", data.streamId)
@@ -547,7 +522,7 @@ class EchoProtocol {
   }
 
   getVideoDevices() {
-    return videoRtc.getVideoSources();
+    return audioRtcTransmitter.getVideoSources();
   }
 
   getAudioState(id = false) {
