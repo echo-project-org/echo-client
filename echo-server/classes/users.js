@@ -56,6 +56,10 @@ class User {
             this.subscribeAudio(data, cb); 
         });
 
+        this.socket.on("client.resumeStream", (data) => {
+            this.resumeStream(data);
+        });
+
         this.socket.on("client.resumeStreams", (data) => {
             this.resumeStreams(data);
         });
@@ -149,6 +153,17 @@ class User {
             producerId: data.id,
             kind: consumer.kind,
             rtpParameters: consumer.rtpParameters,
+        });
+    }
+
+    async resumeStream(data) {
+        //resume stream
+        this.audioConsumers.forEach(async (consumer) => {
+            if(consumer.senderId === data.producerId){
+                if(consumer.consumer.paused){
+                    await consumer.consumer.resume();
+                }
+            }
         });
     }
 
