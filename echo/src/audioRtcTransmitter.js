@@ -15,6 +15,7 @@ class audioRtcTransmitter {
     this.producer = null;
     this.outChannelCount = 2;
     this.inputStreams = [];
+    this.streamIds = new Map();
 
     this.isMuted = false;
     this.context = null;
@@ -242,6 +243,7 @@ class audioRtcTransmitter {
       context.setSinkId(this.outputDeviceId);
     }
     let stream = new MediaStream([track])
+    this.streamIds.set(data.producerId, stream.id);
     let src = context.createMediaStreamSource(stream);
     let dst = context.destination;
 
