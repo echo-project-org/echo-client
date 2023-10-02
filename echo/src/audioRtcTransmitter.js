@@ -545,11 +545,15 @@ class audioRtcTransmitter {
   }
 
   deaf() {
-
+    this.inputStreams.forEach((stream) => {
+      stream.deafNode.gain.value = 0.0;
+    });
   }
 
   undeaf() {
-
+    this.inputStreams.forEach((stream) => {
+      stream.deafNode.gain.value = 1.0;
+    });
   }
 
   close() {
