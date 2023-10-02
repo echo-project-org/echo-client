@@ -62,9 +62,9 @@ class audioRtcTransmitter {
   }
 
   async createReceiveTransport(data) {
-    console.log("Creating receive transport", data);
     if (data) {
       if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
+        console.log("Creating receive transport", data);
         this.rcvTransport = this.mediasoupDevice.createRecvTransport({
           id: data.id,
           iceParameters: data.iceParameters,
