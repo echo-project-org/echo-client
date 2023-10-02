@@ -235,6 +235,7 @@ class audioRtcTransmitter {
   }
 
   async consume(data) {
+    console.log("Consuming audio", data)
     const consumer = await this.rcvTransport.consume({
       id: data.id,
       producerId: data.producerId,
