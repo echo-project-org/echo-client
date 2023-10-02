@@ -31,6 +31,7 @@ class audioRtcTransmitter {
 
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
+    this.videoProducer = null;
 
     this.constraints = {
       audio: {
@@ -208,7 +209,7 @@ class audioRtcTransmitter {
     });
 
   }
-
+producer
   async init() {
     this.mediasoupDevice = new mediasoup.Device();
   }
@@ -379,6 +380,13 @@ class audioRtcTransmitter {
         videoGoogleMinBitrate: 3000,
       },
     });
+  }
+
+  async stopScreenShare() {
+    this.videoProducer.close();
+    this.videoProducer = null;
+    this.outVideoStream.getTracks().forEach(track => track.stop());
+    this.outVideoStream = null;
   }
 
   createAudioAnalyser(context, splitter, channelCount) {

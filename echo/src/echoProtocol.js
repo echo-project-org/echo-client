@@ -489,8 +489,9 @@ class EchoProtocol {
   }
 
   stopScreenSharing() {
-    if (this.vt) {
-      this.vt.stopSharing();
+    if (this.at) {
+      this.at.stopScreenShare();
+      this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
     }
   }
 

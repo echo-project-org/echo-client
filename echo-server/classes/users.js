@@ -6,16 +6,19 @@ class User {
         this.currentRoom = 0;
         this.isDeaf = false;
         this.isMuted = false;
+        this.isTransmittingVideo = false;
         this.events = {};
 
         this.receiveTransport = null;
         this.sendTransport = null;
         this.audioProducerId = null;
+        this.audioProducer = null;
         this.audioConsumers = [];
 
         this.receiveVideoTransport = null;
         this.sendVideoTransport = null;
         this.videoProducerId = null;
+        this.videoProducer = null;
         this.videoConsumers = [];
 
         // room stuff
@@ -53,7 +56,7 @@ class User {
         });
 
         this.socket.on("client.subscribeAudio", (data, cb) => {
-            this.subscribeAudio(data, cb); 
+            this.subscribeAudio(data, cb);
         });
 
         this.socket.on("client.resumeStream", (data) => {
@@ -71,6 +74,10 @@ class User {
         this.socket.on("client.unsubscribeAudio", (data) => {
             this.unsubscribeAudio(data);
         });
+
+        this.socket.on("client.stopScreenSharing", (data) => {
+            this.stopScreenSharing(data);
+        });
     }
 
     async receiveTransportConnect(data, cb) {
@@ -84,23 +91,23 @@ class User {
 
     async receiveTransportProduce(data, cb) {
         console.log("transportProduce", data);
-        const producer = await this.receiveTransport.produce({
+        this.audioProducer = await this.receiveTransport.produce({
             id: data.id,
             kind: data.kind,
             rtpParameters: data.rtpParameters,
             appData: data.appData
         });
-        this.audioProducerId = producer.id;
-        console.log("producer", producer.id)
+        this.audioProducerId = this.audioProducer.id;
+        console.log("producer", this.audioProducer.id)
 
-        this.triggerEvent("userFullyConnectedToRoom", { 
-            id: this.id, 
+        this.triggerEvent("userFullyConnectedToRoom", {
+            id: this.id,
             roomId: this.currentRoom,
             muted: this.isMuted,
             deaf: this.isDeaf,
         })
         cb({
-            id: producer.id
+            id: this.audioProducer.id
         });
     }
 
@@ -124,16 +131,23 @@ class User {
 
     async receiveVideoTransportProduce(data, cb) {
         console.log("receiveVideoTransportProduce", data);
-        const producer = await this.receiveVideoTransport.produce({
+        this.videoProducer = await this.receiveVideoTransport.produce({
             id: data.id,
             kind: data.kind,
             rtpParameters: data.rtpParameters,
             appData: data.appData
         });
-        this.videoProducerId = producer.id;
-        console.log("producer", producer.id)
+        this.videoProducerId = this.videoProducer.id;
+        console.log("producer", this.videoProducer.id)
+        this.isBroadcastingVideo = true;
+
+        this.triggerEvent("videoBroadcastStarted", {
+            id: this.id,
+            roomId: this.currentRoom,
+        });
+
         cb({
-            id: producer.id
+            id: this.videoProducer.id
         });
     }
 
@@ -144,6 +158,16 @@ class User {
         });
 
         cb(true);
+    }
+
+    async stopScreenSharing(data) {
+        console.log("User " + this.id + " stopScreenSharing");
+        await this.videoProducer.close();
+        this.isBroadcastingVideo = false;
+        this.triggerEvent("videoBroadcastStop", {
+            id: this.id,
+            roomId: this.currentRoom,
+        });
     }
 
     async subscribeAudio(data, cb) {
@@ -170,7 +194,7 @@ class User {
     async unsubscribeAudio(data) {
         console.log("User " + this.id + " unsubscribeAudio" + data.producerId);
         this.audioConsumers.forEach(async (consumer) => {
-            if(consumer.senderId === data.producerId){
+            if (consumer.senderId === data.producerId) {
                 await consumer.consumer.close();
             }
         });
@@ -179,9 +203,9 @@ class User {
     async resumeStream(data) {
         //resume stream
         this.audioConsumers.forEach(async (consumer) => {
-            if(consumer.senderId === data.producerId){
+            if (consumer.senderId === data.producerId) {
                 console.log("Prima if")
-                if(consumer.consumer.paused){
+                if (consumer.consumer.paused) {
                     console.log("Dopo if")
                     await consumer.consumer.resume();
                 }
@@ -202,7 +226,7 @@ class User {
     stopAudioBroadcast(data) {
         //stop stream
         this.audioConsumers.forEach(async (consumer) => {
-            if(consumer.senderId === data.id){
+            if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
             }
         });
@@ -248,7 +272,7 @@ class User {
     }
 
     isBroadcastingVideo() {
-        return false;
+        return this.isBroadcastingVideo;
     }
 
     /**
