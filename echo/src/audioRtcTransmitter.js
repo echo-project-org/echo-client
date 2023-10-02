@@ -63,6 +63,9 @@ class audioRtcTransmitter {
 
   async createReceiveTransport(data) {
     if (data) {
+      if (!this.mediasoupDevice.loaded) {
+        await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+      }
       if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
         console.log("Creating receive transport", data);
         this.rcvTransport = this.mediasoupDevice.createRecvTransport({
@@ -127,6 +130,9 @@ class audioRtcTransmitter {
   async createReceiveVideoTransport(data) {
     console.log("Creating video receive transport", data);
     if (data) {
+      if (!this.mediasoupDevice.loaded) {
+        await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+      }
       if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
         this.videoRcvTransport = this.mediasoupDevice.createRecvTransport({
           id: data.id,
