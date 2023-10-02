@@ -136,6 +136,25 @@ class Rooms {
                 });
             }
         })
+
+        this.getUsersInRoom(roomId).forEach((user, id) => {
+            let newUser = this.connectedClients.get(id);
+            if (newUser.id !== user.id) {
+                console.log("Notifing", newUser.id, "about", user.id)
+                const userRoom = user.getCurrentRoom();
+                const isBroadcatingVideo = user.isBroadcastingVideo();
+                let isConnected = userRoom === roomId;
+                let audioState = user.getAudioState();
+                newUser.userJoinedChannel({
+                    id: user.id,
+                    roomId: roomId,
+                    isConnected: isConnected,
+                    deaf: audioState.deaf,
+                    muted: audioState.muted,
+                    broadcastingVideo: isBroadcatingVideo
+                });
+            }
+        });
     }
 
     videoBroadcastStarted(data) {
@@ -335,24 +354,6 @@ class Rooms {
                 }).then((transport) => {
                     console.log("created send video transport")
                     newUser.setSendVideoTransport(transport, router.rtpCapabilities);
-                });
-
-                this.getUsersInRoom(roomId).forEach((user, id) => {
-                    if (newUser.id !== user.id) {
-                        console.log("Notifing", newUser.id, "about", user.id)
-                        const userRoom = user.getCurrentRoom();
-                        const isBroadcatingVideo = user.isBroadcastingVideo();
-                        let isConnected = userRoom === roomId;
-                        let audioState = user.getAudioState();
-                        newUser.userJoinedChannel({
-                            id: user.id,
-                            roomId: roomId,
-                            isConnected: isConnected,
-                            deaf: audioState.deaf,
-                            muted: audioState.muted,
-                            broadcastingVideo: isBroadcatingVideo
-                        });
-                    }
                 });
             }
         } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + roomId + ", user is not connected to socket"));
