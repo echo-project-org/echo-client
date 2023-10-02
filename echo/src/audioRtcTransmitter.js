@@ -277,6 +277,8 @@ class audioRtcTransmitter {
       audioElement,
       analyser: this.createAudioAnalyser(context, channelSplitter, src.channelCount),
     });
+
+    ep.resumeStream({ id: this.id, producerId: data.producerId });
   }
 
   async startScreenShare() {
