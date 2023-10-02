@@ -303,7 +303,9 @@ class EchoProtocol {
   }
 
   stopReceiving(remoteId) {
-
+    if (this.at) {
+      this.at.stopConsuming(remoteId);
+    }
   }
 
   stopReceivingVideo(remoteId) {
