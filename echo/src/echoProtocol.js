@@ -233,7 +233,11 @@ class EchoProtocol {
     if (this.at) {
       this.stopTransmitting();
     }
-    this.at = new audioRtcTransmitter(id);
+    this.at = new audioRtcTransmitter(
+      id,
+      storage.get('inputAudioDeviceId'),
+      storage.get('outputAudioDeviceId'),
+    );
     await this.at.init();
   }
 

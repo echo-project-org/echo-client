@@ -41,7 +41,7 @@ class audioRtcTransmitter {
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: false,
-        deviceId: this.deviceId,
+        deviceId: this.inputDeviceId,
         googNoiseSupression: false,
       },
       video: false,
@@ -227,22 +227,22 @@ class audioRtcTransmitter {
     }
 
     this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
-    const context = new AudioContext();
+    this.context = new AudioContext();
 
-    const src = context.createMediaStreamSource(this.outStream);
-    const dst = context.createMediaStreamDestination();
+    const src = this.context.createMediaStreamSource(this.outStream);
+    const dst = this.context.createMediaStreamDestination();
     this.outChannelCount = src.channelCount;
 
-    this.outGainNode = context.createGain();
-    this.vadNode = context.createGain();
-    this.channelSplitter = context.createChannelSplitter(this.outChannelCount);
+    this.outGainNode = this.context.createGain();
+    this.vadNode = this.context.createGain();
+    this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
 
     src.connect(this.outGainNode);
     this.outGainNode.connect(this.channelSplitter);
     this.outGainNode.connect(this.vadNode);
     this.vadNode.connect(dst);
 
-    this.analyser = this.createAudioAnalyser(context, this.channelSplitter, this.outChannelCount);
+    this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
 
     this.setOutVolume(this.volume);
 
@@ -511,10 +511,42 @@ class audioRtcTransmitter {
   }
 
   async setInputDevice(deviceId) {
+    if(deviceId === this.inputDeviceId || deviceId === 'default') {
+      return;
+    }
+    
     console.log("Setting microphone device to", deviceId);
-    this.deviceId = deviceId;
+    this.inputDeviceId = deviceId;
     this.constraints.audio.deviceId = deviceId;
 
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+      await this.producer.replaceTrack({track: audioTrack});
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+      
+    }
   }
 
   setScreenShareDevice(deviceId) {
