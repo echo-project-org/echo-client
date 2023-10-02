@@ -1,6 +1,5 @@
 import audioRtcTransmitter from "./audioRtcTransmitter";
 import Emitter from "wildemitter";
-import videoRtc from "./videoRtc";
 
 import Users from "./cache/user";
 import Room from "./cache/room";
@@ -15,7 +14,6 @@ class EchoProtocol {
     this.ping = 0;
     this.pingInterval = null;
     this.at = null;
-    this.vt = null;
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
@@ -118,24 +116,6 @@ class EchoProtocol {
       if (!data.deaf || !data.mute) {
         this.updatedAudioState(data);
         //startReceiving();
-      }
-    });
-
-    this.socket.on("server.iceCandidate", (data) => {
-      if (this.at) {
-        this.at.addCandidate(data.candidate);
-      }
-    });
-
-    this.socket.on("server.renegotiationNeeded", (data, cb) => {
-      if (this.at) {
-        this.at.renegotiate(data.data.sdp, cb);
-      }
-    });
-
-    this.socket.on("server.videoRenegotiationNeeded", (data, cb) => {
-      if (this.vt) {
-        this.vt.renegotiate(data.data.sdp, cb);
       }
     });
 
@@ -244,12 +224,6 @@ class EchoProtocol {
     if (this.at) {
       this.at.close();
       this.at = null;
-    }
-
-    if (this.vt) {
-      this.vt.stopSharing();
-      this.vt.close();
-      this.vt = null;
     }
   }
 
