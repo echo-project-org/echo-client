@@ -137,7 +137,7 @@ class Rooms {
             }
         })
 
-        this.getUsersInRoom(roomId).forEach((user, id) => {
+        this.getUsersInRoom(a.roomId).forEach((user, id) => {
             let newUser = this.connectedClients.get(id);
             if (newUser.id !== user.id) {
                 console.log("Notifing", newUser.id, "about", user.id)

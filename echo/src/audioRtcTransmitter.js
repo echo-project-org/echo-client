@@ -77,7 +77,7 @@ class audioRtcTransmitter {
         });
 
         this.rcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-          console.log("Send transport connect");
+          console.log("Receive transport connect");
           ep.receiveTransportConnect({ dtlsParameters }, cb, errback);
         });
       }
@@ -140,7 +140,7 @@ class audioRtcTransmitter {
         });
 
         this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-          console.log("Send transport connect");
+          console.log("Receive video transport connect");
           ep.receiveVideoTransportConnect({ dtlsParameters }, cb, errback);
         });
       }
@@ -164,12 +164,12 @@ class audioRtcTransmitter {
     });
 
     this.videoSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-      console.log("Send transport connect");
+      console.log("Send video transport connect");
       ep.sendVideoTransportConnect({ dtlsParameters }, cb, errback);
     });
 
     this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      console.log("Send transport produce");
+      console.log("Send video transport produce");
       ep.sendVideoTransportProduce({
         id: this.id + "-video",
         kind,
