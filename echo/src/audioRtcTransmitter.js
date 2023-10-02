@@ -234,6 +234,20 @@ class audioRtcTransmitter {
     });
   }
 
+  async stopAudioBroadcast() {
+    console.log("Stopping audio broadcast");
+    if (this.producer) {
+      this.producer.close();
+      this.producer = null;
+    }
+    if (this.outStream) {
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = null;
+    }
+
+    ep.stopAudioBroadcast({ id: this.id });
+  }
+
   async consume(data) {
     console.log("Consuming audio", data)
     const consumer = await this.rcvTransport.consume({
@@ -288,6 +302,21 @@ class audioRtcTransmitter {
     });
 
     ep.resumeStream({ id: this.id, producerId: data.producerId });
+  }
+
+  async stopConsuming(senderId) {
+    console.log("Stopping consuming", senderId);
+    this.inputStreams.forEach((stream, index) => {
+      if(stream.consumer.producerId === senderId) {
+        stream.consumer.close();
+        stream.context.close();
+        stream.stream.getTracks().forEach(track => track.stop());
+        stream.audioElement.remove();
+        this.inputStreams.splice(index, 1);
+      }
+    });
+
+    ep.unsubscribeAudio({ id: this.id, producerId: senderId });
   }
 
   async startScreenShare() {

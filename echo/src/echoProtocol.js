@@ -448,9 +448,7 @@ class EchoProtocol {
 
   unsubscribeAudio(data, cb) {
     if (this.socket) {
-      this.socket.emit("client.unsubscribeAudio", data, (description) => {
-        cb(description);
-      });
+      this.socket.emit("client.unsubscribeAudio", data);
     }
   }
 
