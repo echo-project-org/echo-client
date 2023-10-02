@@ -266,6 +266,9 @@ class Rooms {
                         user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
                     }
                 })
+
+                //clear all transports
+                user.clearTransports();
                 const room = this.rooms.get(roomId);
                 room.users.delete(data.id);
             }

@@ -377,6 +377,18 @@ class User {
             rtpCapabilities: rtpCapabilities,
         });
     }
+
+    clearTransports() {
+        //stop and clear all transports
+        this.receiveTransport.close();
+        this.sendTransport.close();
+        this.receiveVideoTransport.close();
+        this.sendVideoTransport.close();
+        this.receiveTransport = null;
+        this.sendTransport = null;
+        this.receiveVideoTransport = null;
+        this.sendVideoTransport = null;
+    }
 }
 
 module.exports = User;
