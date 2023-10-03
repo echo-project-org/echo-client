@@ -68,6 +68,7 @@ function RoomContentScreenShares({ roomId }) {
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
+    ep.stopReceivingVideo(focusedUser.id);
     setFocusedUser(null);
   }
   const computeFocusedUser = () => {
