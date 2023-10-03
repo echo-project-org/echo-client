@@ -485,6 +485,13 @@ class EchoProtocol {
     }
   }
 
+  sendVideoStreamToFrontEnd(data) {
+    this.gotVideoStream({
+      user: this.cachedUsers.get(data.id),
+      stream: data.stream,
+    })
+  }
+
   stopVideoBroadcast(data) {
     if (this.socket) {
       console.log("User", data.id, "stopped broadcasting video", data.streamId)
@@ -693,6 +700,10 @@ EchoProtocol.prototype.videoBroadcastStarted = function (data) {
 
 EchoProtocol.prototype.videoBroadcastStop = function (data) {
   this.emit("videoBroadcastStop", data);
+}
+
+EchoProtocol.prototype.gotVideoStream = function (data) {
+  this.emit("gotVideoStream", data);
 }
 
 export default EchoProtocol;

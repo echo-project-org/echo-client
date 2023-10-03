@@ -40,8 +40,6 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         muted={muted}
         width="100%"
         height="100%"
-        // width="1000px"
-        // height="1000px"
         config={{
           youtube: {
             playerVars: {

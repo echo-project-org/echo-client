@@ -54,12 +54,18 @@ function RoomContentScreenShares({ roomId }) {
     setUsers(users)
   }, [roomId])
 
+  useEffect(() => {
+    ep.on("gotVideoStream", (data) => {
+      setFocusedUser(data.user);
+      var myDiv = document.getElementById('screenShareContainer');
+      // myDiv.innerHTML = variableLongText;
+      myDiv.scrollTop = (99999999999999 * -1);
+    })
+  }, [])
+
   const selectUser = (user) => {
     console.log("selectUser", user);
-    setFocusedUser(user);
-    var myDiv = document.getElementById('screenShareContainer');
-    // myDiv.innerHTML = variableLongText;
-    myDiv.scrollTop = (99999999999999 * -1);
+    ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
     setFocusedUser(null);

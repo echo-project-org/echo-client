@@ -406,6 +406,7 @@ class audioRtcTransmitter {
     this.inVideoStream = new MediaStream([track]);
 
     ep.resumeVideoStream({ id: this.id, producerId: data.producerId });
+    ep.sendVideoStreamToFrontEnd({ id: data.producerId, stream: this.inVideoStream })
   }
 
   stopConsumingVideo(senderId) {
