@@ -579,6 +579,10 @@ class EchoProtocol {
     return this.cachedUsers.getInRoom(roomId);
   }
 
+  getScreenSharingUsersInRoom(roomId) {
+    return this.cachedUsers.getScreenSharingUsersInRoom(roomId);
+  }
+
   isAudioFullyConnected() {
     //return this.at.isFullyConnected();
     return true;

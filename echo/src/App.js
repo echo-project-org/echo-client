@@ -14,7 +14,6 @@ import { storage } from "./index";
 
 import {
   createTheme,
-  ThemeProvider,
   responsiveFontSizes,
   experimental_extendTheme as extendTheme,
   Experimental_CssVarsProvider as CssVarsProvider,
