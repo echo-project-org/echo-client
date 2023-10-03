@@ -103,6 +103,10 @@ class User {
 
     async receiveTransportProduce(data, cb) {
         console.log("transportProduce", data);
+        if (this.audioProducer) {
+            await this.audioProducer.close();
+            this.audioProducer = null;
+        }
         this.audioProducer = await this.receiveTransport.produce({
             id: data.id,
             kind: data.kind,
@@ -143,6 +147,10 @@ class User {
 
     async receiveVideoTransportProduce(data, cb) {
         console.log("receiveVideoTransportProduce", data);
+        if (this.videoProducer) {
+            await this.videoProducer.close();
+            this.videoProducer = null;
+        }
         this.videoProducer = await this.receiveVideoTransport.produce({
             id: data.id,
             kind: data.kind,
