@@ -85,7 +85,7 @@ function ScreenShareUserContainer({ user, selectUser }) {
         );
     } else {
         return (
-            <Grid item className="screenshareUserContainer" key={user.id} onMouseDown={() => { selectUser(user); }}>
+            <Grid item className="screenshareUserContainer" key={user.id}>
                 <Container className="screenshareUser" sx={{ background: (user.userImage ? `url(${user.userImage})` : "white") }}></Container>
                 <StyledAvatar className="screenshareUserAvatar" src={user.userImage} />
                 <StyledTypography variant="h4">{user.name}</StyledTypography>
