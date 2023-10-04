@@ -1,4 +1,4 @@
-import audioRtcTransmitter from "./audioRtcTransmitter";
+import mediasoupHandler from "./mediasoupHandler";
 import Emitter from "wildemitter";
 
 import Users from "./cache/user";
@@ -13,7 +13,7 @@ class EchoProtocol {
     this.socket = null;
     this.ping = 0;
     this.pingInterval = null;
-    this.at = null;
+    this.mh = null;
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
@@ -56,8 +56,8 @@ class EchoProtocol {
 
   getPing() {
     return new Promise((resolve, reject) => {
-      if (this.at) {
-        this.at.getConnectionStats().then(stats => {
+      if (this.mh) {
+        this.mh.getConnectionStats().then(stats => {
           resolve(stats.ping);
         });
       }
@@ -152,33 +152,33 @@ class EchoProtocol {
 
     this.socket.on("server.receiveTransportCreated", (data) => {
       console.log("Server created transport with id", data.id);
-      if (this.at) {
+      if (this.mh) {
         //Server will receive and what client sends
-        this.at.createSendTransport(data);
+        this.mh.createSendTransport(data);
       }
     });
 
     this.socket.on("server.sendTransportCreated", (data) => {
       console.log("Server created transport with id", data.id);
-      if (this.at) {
+      if (this.mh) {
         //Client will receive and what server sends
-        this.at.createReceiveTransport(data);
+        this.mh.createReceiveTransport(data);
       }
     });
 
     this.socket.on("server.receiveVideoTransportCreated", (data) => {
       console.log("Server created video transport with id", data.id);
-      if (this.at) {
+      if (this.mh) {
         //Server will receive and what client sends
-        this.at.createSendVideoTransport(data);
+        this.mh.createSendVideoTransport(data);
       }
     });
 
     this.socket.on("server.sendVideoTransportCreated", (data) => {
       console.log("Server created video transport with id", data.id);
-      if (this.at) {
+      if (this.mh) {
         //Client will receive and what server sends
-        this.at.createReceiveVideoTransport(data);
+        this.mh.createReceiveVideoTransport(data);
       }
     });
   }
@@ -209,21 +209,21 @@ class EchoProtocol {
   }
 
   async startTransmitting(id) {
-    if (this.at) {
+    if (this.mh) {
       this.stopTransmitting();
     }
-    this.at = new audioRtcTransmitter(
+    this.mh = new mediasoupHandler(
       id,
       storage.get('inputAudioDeviceId'),
       storage.get('outputAudioDeviceId'),
     );
-    await this.at.init();
+    await this.mh.init();
   }
 
   stopTransmitting() {
-    if (this.at) {
-      this.at.close();
-      this.at = null;
+    if (this.mh) {
+      this.mh.close();
+      this.mh = null;
     }
   }
 
@@ -280,67 +280,67 @@ class EchoProtocol {
   }
 
   stopReceiving(remoteId) {
-    if (this.at) {
-      this.at.stopConsuming(remoteId);
+    if (this.mh) {
+      this.mh.stopConsuming(remoteId);
     }
   }
 
   stopReceivingVideo(remoteId) {
-    if (this.at) {
-      this.at.stopConsumingVideo(remoteId);
+    if (this.mh) {
+      this.mh.stopConsumingVideo(remoteId);
       this.socket.emit("client.stopReceivingVideo", { id: remoteId });
     }
   }
 
   toggleMute(mutestate) {
-    if (this.at) {
-      if (mutestate) return this.at.mute();
-      this.at.unmute();
+    if (this.mh) {
+      if (mutestate) return this.mh.mute();
+      this.mh.unmute();
     }
   }
 
   toggleDeaf(deafstate) {
-    if (this.at) {
-      if (deafstate) return this.at.deaf();
-      this.at.undeaf();
+    if (this.mh) {
+      if (deafstate) return this.mh.deaf();
+      this.mh.undeaf();
     }
   }
 
   setSpeakerDevice(deviceId) {
-    this.at.setSpeakerDevice(deviceId);
+    this.mh.setSpeakerDevice(deviceId);
   }
 
   setSpeakerVolume(volume) {
-    this.at.setSpeakerVolume(volume);
+    this.mh.setSpeakerVolume(volume);
   }
 
   setMicrophoneDevice(deviceId) {
-    if (this.at) {
-      this.at.setInputDevice(deviceId);
+    if (this.mh) {
+      this.mh.setInputDevice(deviceId);
     }
   }
 
   setMicrophoneVolume(volume) {
-    if (this.at) {
-      this.at.setOutVolume(volume);
+    if (this.mh) {
+      this.mh.setOutVolume(volume);
     }
   }
 
   setUserVolume(volume, remoteId) {
-    this.at.setPersonalVolume(remoteId, volume);
+    this.mh.setPersonalVolume(remoteId, volume);
   }
 
   getSpeakerDevices() {
-    return audioRtcTransmitter.getOutputAudioDevices();
+    return mediasoupHandler.getOutputAudioDevices();
   }
 
   getMicrophoneDevices() {
-    return audioRtcTransmitter.getInputAudioDevices();
+    return mediasoupHandler.getInputAudioDevices();
   }
 
   joinRoom(id, roomId) {
     const audioState = this.getAudioState();
-    this.at.startStatsInterval();
+    this.mh.startStatsInterval();
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
   }
@@ -353,7 +353,7 @@ class EchoProtocol {
   exitFromRoom(id) {
     this.stopReceiving();
     this.stopReceivingVideo();
-    this.at.leaveRoom();
+    this.mh.leaveRoom();
     if (this.socket) this.socket.emit("client.exit", { id });
   }
 
@@ -401,12 +401,12 @@ class EchoProtocol {
   subscribeAudio(data) {
     if (this.socket) {
       let remoteId = data.id;
-      let a = this.at.getRtpCapabilities()
+      let a = this.mh.getRtpCapabilities()
       console.log("Got rtp capabilities", a);
 
       this.socket.emit("client.subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
         console.log("Got description from server", data);
-        this.at.consume({
+        this.mh.consume({
           id: data.id,
           producerId: data.producerId,
           kind: data.kind,
@@ -442,25 +442,25 @@ class EchoProtocol {
   }
 
   startScreenSharing(deviceId) {
-    if (this.at) {
-      this.at.setScreenShareDevice(deviceId);
-      this.at.startScreenShare();
+    if (this.mh) {
+      this.mh.setScreenShareDevice(deviceId);
+      this.mh.startScreenShare();
     }
   }
 
   stopScreenSharing() {
-    if (this.at) {
-      this.at.stopScreenShare();
+    if (this.mh) {
+      this.mh.stopScreenShare();
       this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
     }
   }
 
   startReceivingVideo(remoteId) {
-    if (this.at) {
-      let a = this.at.getRtpCapabilities()
+    if (this.mh) {
+      let a = this.mh.getRtpCapabilities()
       this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
         console.log("Got description from server", description);
-        this.at.consumeVideo(description);
+        this.mh.consumeVideo(description);
       });
     }
   }
@@ -476,8 +476,8 @@ class EchoProtocol {
    * @returns {MediaStream} Screen share stream
    */
   getVideo(remoteId) {
-    if (this.at) {
-      let stream = this.at.getVideo(remoteId);
+    if (this.mh) {
+      let stream = this.mh.getVideo(remoteId);
       console.log("Got video stream", stream);
       return stream;
     } else {
@@ -508,11 +508,11 @@ class EchoProtocol {
   }
 
   getVideoDevices() {
-    return audioRtcTransmitter.getVideoSources();
+    return mediasoupHandler.getVideoSources();
   }
 
   getAudioState(id = false) {
-    if (id && this.at) {
+    if (id && this.mh) {
       const cachedUser = this.cachedUsers.get(id);
       if (cachedUser && !cachedUser.self) {
         return {
@@ -522,7 +522,7 @@ class EchoProtocol {
         }
       }
     }
-    return this.at.getAudioState();
+    return this.mh.getAudioState();
   }
 
   // cache rooms functions
@@ -584,7 +584,7 @@ class EchoProtocol {
   }
 
   isAudioFullyConnected() {
-    //return this.at.isFullyConnected();
+    //return this.mh.isFullyConnected();
     return true;
   }
 

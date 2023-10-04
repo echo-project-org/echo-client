@@ -2,7 +2,7 @@ import { ep } from "./index";
 const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 
-class audioRtcTransmitter {
+class mediasoupHandler {
   constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
     this.id = id;
     this.inputDeviceId = inputDeviceId;
@@ -783,4 +783,4 @@ class audioRtcTransmitter {
   }
 }
 
-export default audioRtcTransmitter;
+export default mediasoupHandler;
