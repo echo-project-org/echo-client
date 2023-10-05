@@ -41,6 +41,10 @@ function RoomControl({ state, setState, screenSharing }) {
         default: setRtcConnectionState("Not connected"); break;
       }
     });
+
+    ep.on("exitedFromRoom", "RoomControl.exitedFromRoom", () => {
+      setRtcConnectionState("Disconnected");
+    });
   }, []);
   const muteAudio = new Audio(muteSound);
   muteAudio.volume = 0.6;

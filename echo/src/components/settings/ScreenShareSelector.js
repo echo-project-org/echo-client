@@ -30,7 +30,7 @@ function ScreenShareSelector() {
   const handleModalClose = () => setModalOpen(false);
 
   useEffect(() => {
-    ep.on("stopSharingScreen", "ScreenShareSelector.stopSharingScreen", () => {
+    ep.on("exitedFromRoom", "ScreenShareSelector.exitedFromRoom", () => {
       setScreenSharing(false);
     });
   }, [])

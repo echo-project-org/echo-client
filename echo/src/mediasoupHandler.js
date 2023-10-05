@@ -386,15 +386,19 @@ class mediasoupHandler {
   }
 
   async stopScreenShare() {
-    if(this.videoProducer){
+    if (this.videoProducer) {
       this.videoProducer.close();
       this.videoProducer = null;
     }
 
-    if(this.outVideoStream){
+    if (this.outVideoStream) {
       this.outVideoStream.getTracks().forEach(track => track.stop());
       this.outVideoStream = null;
     }
+  }
+
+  isScreenSharing() {
+    return this.videoProducer !== null;
   }
 
   async consumeVideo(data) {
