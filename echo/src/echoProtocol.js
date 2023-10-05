@@ -351,6 +351,7 @@ class EchoProtocol {
   }
 
   exitFromRoom(id) {
+    this.stopScreenSharing();
     this.stopReceiving();
     this.stopReceivingVideo();
     this.mh.leaveRoom();
@@ -452,6 +453,7 @@ class EchoProtocol {
     if (this.mh) {
       this.mh.stopScreenShare();
       this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
+      this.stopSharingScreen();
     }
   }
 
@@ -704,6 +706,10 @@ EchoProtocol.prototype.videoBroadcastStarted = function (data) {
 
 EchoProtocol.prototype.videoBroadcastStop = function (data) {
   this.emit("videoBroadcastStop", data);
+}
+
+EchoProtocol.prototype.stopSharingScreen = function (data) {
+  this.emit("stopSharingScreen", data);
 }
 
 EchoProtocol.prototype.gotVideoStream = function (data) {

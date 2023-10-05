@@ -1,5 +1,5 @@
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
 import { ep } from "../../index";
@@ -28,6 +28,12 @@ function ScreenShareSelector() {
 
   const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => setModalOpen(false);
+
+  useEffect(() => {
+    ep.on("stopSharingScreen", "ScreenShareSelector.stopSharingScreen", () => {
+      setScreenSharing(false);
+    });
+  }, [])
 
   const handleClick = (event) => {
     if (screenSharing) {
