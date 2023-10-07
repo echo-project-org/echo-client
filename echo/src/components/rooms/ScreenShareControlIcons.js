@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { ButtonGroup, Button, Tooltip, Container } from '@mui/material';
-import { CancelPresentation, VolumeUp, VolumeOff } from '@mui/icons-material';
+import { CancelPresentation, VolumeUp, VolumeOff, PictureInPictureAlt } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
 
 import { ep } from '../..';
@@ -12,6 +12,7 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
   // const [screenShareStream, setScreenShareStream] = useState(`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`);
   const [screenShareStream, setScreenShareStream] = useState(ep.getVideo());
   const [muted, setMuted] = useState(true);
+  const [pip, setPip] = useState(false);
 
   const handleMouseEnter = () => {
     setShowControls(true);
@@ -27,6 +28,14 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
     stopPlayback();
   }
 
+  const enablePip = () => {
+    setPip(true);
+  }
+
+  const disablePip = () => {
+    setPip(false);
+  }
+
   return (
     <Container id="wrapper" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{
       margin: "auto",
@@ -40,6 +49,8 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         muted={muted}
         width="100%"
         height="100%"
+        pip={pip}
+        onDisablePIP={disablePip}
         config={{
           youtube: {
             playerVars: {
@@ -82,6 +93,11 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
             <Tooltip title={"Stop watching"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
               <Button disableRipple onClick={stopWaching}>
                 <CancelPresentation />
+              </Button>
+            </Tooltip>
+            <Tooltip title={"Picture in picture"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+              <Button disableRipple onClick={enablePip}>
+                <PictureInPictureAlt />
               </Button>
             </Tooltip>
           </ButtonGroup>
