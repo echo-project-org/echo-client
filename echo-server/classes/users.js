@@ -192,6 +192,13 @@ class User {
 
     async startReceivingVideo(data, cb) {
         console.log("User " + this.id + " startReceivingVideo");
+        this.videoConsumers.forEach(async (consumer) => {
+            if(consumer.senderId === data.id){
+                await consumer.consumer.close();
+                consumer.consumer = null;
+                this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
+            }
+        });
         const consumer = await this.sendVideoTransport.consume({
             producerId: data.id + "-video",
             rtpCapabilities: data.rtpCapabilities,
@@ -231,6 +238,13 @@ class User {
 
     async subscribeAudio(data, cb) {
         console.log("User " + this.id + " subscribeAudio" + data.id);
+        this.audioConsumers.forEach(async (consumer) => {
+            if(consumer.senderId === data.id){
+                await consumer.consumer.close();
+                consumer.consumer = null;
+                this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
+            }
+        });
         const consumer = await this.sendTransport.consume({
             producerId: data.id + "-audio",
             rtpCapabilities: data.rtpCapabilities,
