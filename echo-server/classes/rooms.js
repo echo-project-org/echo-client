@@ -22,9 +22,6 @@ const codecs = [{
     clockRate: 90000,
     parameters: {
         "max-br": 10000,
-        "max-fps": 60,
-        "profile-level-id": "42e01f",
-        "level-asymmetry-allowed": 1,
         "packetization-mode": 1,
         "x-google-start-bitrate": 5000,
         "x-google-max-bitrate": 10000,
