@@ -66,7 +66,7 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         left: "0",
         width: "100%",
         height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        background: "linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 25%, rgba(0,0,0,0) 75%, rgba(0,0,0,0.5) 100%)",
         transition: "all 0.1s ease",
         zIndex: "2",
         opacity: showControls ? "1" : "0",
