@@ -9,7 +9,6 @@ import { ep } from '../..';
 
 const ScreenShareControlIcons = ({ stopPlayback }) => {
   const [showControls, setShowControls] = useState(false);
-  // const [screenShareStream, setScreenShareStream] = useState(`http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4`);
   const [screenShareStream, setScreenShareStream] = useState(ep.getVideo());
   const [muted, setMuted] = useState(true);
   const [pip, setPip] = useState(false);
@@ -35,6 +34,14 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
   const disablePip = () => {
     setPip(false);
   }
+
+  useEffect(() => {
+    ep.on("gotVideoStream", (data) => {
+      if (data.active) {
+        setScreenShareStream(ep.getVideo());
+      }
+    })
+  }, [screenShareStream])
 
   return (
     <Container id="wrapper" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{
