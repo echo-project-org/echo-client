@@ -39,6 +39,15 @@ function RoomContentScreenShares({ roomId }) {
       // myDiv.innerHTML = variableLongText;
       myDiv.scrollTop = (99999999999999 * -1);
     })
+
+    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+      if(!focusedUser) return;
+
+      if (data.id === focusedUser.id) {
+        console.log("updating ui for video broadcast stop", data)
+        stopPlayback();
+      }
+    });
   }, [])
 
   const selectUser = (user) => {
