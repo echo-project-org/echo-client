@@ -193,7 +193,7 @@ class User {
     async startReceivingVideo(data, cb) {
         console.log("User " + this.id + " startReceivingVideo");
         this.videoConsumers.forEach(async (consumer) => {
-            if(consumer.senderId === data.id){
+            if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
                 consumer.consumer = null;
                 this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
@@ -239,7 +239,7 @@ class User {
     async subscribeAudio(data, cb) {
         console.log("User " + this.id + " subscribeAudio" + data.id);
         this.audioConsumers.forEach(async (consumer) => {
-            if(consumer.senderId === data.id){
+            if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
                 consumer.consumer = null;
                 this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
@@ -473,10 +473,47 @@ class User {
 
     clearTransports() {
         //stop and clear all transports
-        this.receiveTransport.close();
-        this.sendTransport.close();
-        this.receiveVideoTransport.close();
-        this.sendVideoTransport.close();
+        if (this.audioProducer) {
+            this.audioProducer.close();
+            this.audioProducer = null;
+        }
+
+        if (this.videoProducer) {
+            this.videoProducer.close();
+            this.videoProducer = null;
+        }
+
+        if (this.audioConsumers) {
+            this.audioConsumers.forEach(async (consumer) => {
+                await consumer.consumer.close();
+            });
+            this.audioConsumers = [];
+        }
+
+        if (this.videoConsumers) {
+            this.videoConsumers.forEach(async (consumer) => {
+                await consumer.consumer.close();
+            });
+            this.videoConsumers = [];
+        }
+
+        if (this.receiveTransport) {
+            this.receiveTransport.close();
+        }
+
+        if (this.sendTransport) {
+            this.sendTransport.close();
+        }
+
+        if (this.receiveVideoTransport) {
+            this.receiveVideoTransport.close();
+        }
+
+        if (this.sendVideoTransport) {
+            this.sendVideoTransport.close();
+        }
+
+
         this.receiveTransport = null;
         this.sendTransport = null;
         this.receiveVideoTransport = null;

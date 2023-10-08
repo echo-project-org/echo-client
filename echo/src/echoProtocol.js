@@ -19,7 +19,7 @@ class EchoProtocol {
     this.cachedRooms = new Map();
 
     this.currentConnectionState = "";
-    this.currentConnectionStateInterval = null;
+    this.currentConnectionStateInterval = null;;
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }

@@ -73,7 +73,12 @@ class Rooms {
             // console.log(request._query)
             const id = request._query["id"];
             if (!id) return reject("no-id-in-query");
-
+            if (this.connectedClients.has(id)) {
+                //get the user
+                const user = this.connectedClients.get(id);
+                user.clearTransports();
+            }
+            
             const newUser = new User(socket, id);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));
