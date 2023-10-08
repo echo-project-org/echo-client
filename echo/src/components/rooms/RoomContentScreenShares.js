@@ -34,12 +34,12 @@ function RoomContentScreenShares({ roomId }) {
 
   useEffect(() => {
     ep.on("gotVideoStream", (data) => {
-      console.log("gotVideoStream", data.user)
       setFocusedUser(data.user.id);
-      console.log("setting video streaaaaaaaaaaaaaaaaam", focusedUser)
       var myDiv = document.getElementById('screenShareContainer');
       // myDiv.innerHTML = variableLongText;
-      myDiv.scrollTop = (99999999999999 * -1);
+      if(myDiv){
+        myDiv.scrollTop = (99999999999999 * -1);
+      }
     })
 
     ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {

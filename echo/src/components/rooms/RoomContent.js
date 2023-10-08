@@ -96,6 +96,12 @@ function RoomContent({ roomId }) {
     }
   }, [roomId]);
 
+  useEffect(() => {
+    ep.on("gotVideoStream", (data) => {
+      setContentSelected("screen");
+    })
+  }, [contentSelected]);
+
   return (
     <Grid container direction={"row"}>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
