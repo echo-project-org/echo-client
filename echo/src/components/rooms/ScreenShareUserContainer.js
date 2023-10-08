@@ -58,7 +58,7 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 }));
 
 function ScreenShareUserContainer({ user, selectUser }) {
-    const [broadcastingVideo, setBroadcastingVideo] = useState(false)
+    const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo)
 
     useEffect(() => {
         ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {

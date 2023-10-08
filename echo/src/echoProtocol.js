@@ -142,11 +142,13 @@ class EchoProtocol {
 
     this.socket.on("server.videoBroadcastStarted", (data) => {
       console.log("User", data.id, "started broadcasting video", data.streamId);
+      this.updateUser({ id: data.id, field: "broadcastingVideo", value: true });
       this.videoBroadcastStarted(data);
     });
 
     this.socket.on("server.videoBroadcastStop", (data) => {
       console.log("User", data.id, "stopped broadcasting video", data.streamId);
+      this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
       this.videoBroadcastStop(data);
     });
 

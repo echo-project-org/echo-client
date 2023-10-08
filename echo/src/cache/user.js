@@ -25,6 +25,10 @@ class Users {
             if (data.deaf === "true") data.deaf = true;
             else if (data.deaf === "false") data.deaf = false;
         }
+        if(data.broadcastingVideo && typeof data.broadcastingVideo !== "boolean") {
+            if (data.broadcastingVideo === "true") data.broadcastingVideo = true;
+            else if (data.broadcastingVideo === "false") data.broadcastingVideo = false;
+        }
         return data;
     }
 
@@ -55,6 +59,7 @@ class Users {
             currentRoom: data.currentRoom || "0",
             muted: data.muted || false,
             deaf: data.deaf || false,
+            broadcastingVideo: data.broadcastingVideo || false,
             self
         };
 
