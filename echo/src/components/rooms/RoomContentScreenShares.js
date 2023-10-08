@@ -53,6 +53,9 @@ function RoomContentScreenShares({ roomId }) {
 
   const selectUser = (user) => {
     console.log("selectUser", user);
+    if(focusedUser === user.id){
+      return;
+    }
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
