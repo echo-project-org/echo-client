@@ -21,13 +21,11 @@ const codecs = [{
     mimeType: "video/H264",
     clockRate: 90000,
     parameters: {
-        "max-br": 10000,
         "packetization-mode": 1,
-        "x-google-start-bitrate": 5000,
-        "x-google-max-bitrate": 10000,
-        "x-google-min-bitrate": 1000,
+        "profile-level-id": "42e01f",
+        "level-asymmetry-allowed": 1
     }
-}]
+}];
 
 class Rooms {
     constructor(io, socket) {
@@ -80,7 +78,7 @@ class Rooms {
                 const user = this.connectedClients.get(id);
                 user.clearTransports();
             }
-            
+
             const newUser = new User(socket, id);
             this.connectedClients.set(id, newUser);
             console.log(colors.changeColor("yellow", "New socket connection from client " + id));

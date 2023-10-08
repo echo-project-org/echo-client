@@ -379,7 +379,7 @@ class mediasoupHandler {
       track: videoTrack,
       codecOptions: {
         videoGoogleStartBitrate: 3000,
-        videoGoogleMaxBitrate: 20000,
+        videoGoogleMaxBitrate: 10000,
         videoGoogleMinBitrate: 3000,
       },
     });
