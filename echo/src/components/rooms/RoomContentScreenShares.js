@@ -23,7 +23,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 
 function RoomContentScreenShares({ roomId }) {
   const [users, setUsers] = useState([]);
-  const [focusedUser, setFocusedUser] = useState(null);
+  const [focusedUser, setFocusedUser] = useState('undefined');
   // const [screenShareStream, setScreenShareStream] = useState("");
 
   useEffect(() => {
@@ -34,44 +34,44 @@ function RoomContentScreenShares({ roomId }) {
 
   useEffect(() => {
     ep.on("gotVideoStream", (data) => {
-      setFocusedUser(data.user);
+      console.log("gotVideoStream", data.user)
+      setFocusedUser(data.user.id);
+      console.log("setting video streaaaaaaaaaaaaaaaaam", focusedUser)
       var myDiv = document.getElementById('screenShareContainer');
       // myDiv.innerHTML = variableLongText;
       myDiv.scrollTop = (99999999999999 * -1);
     })
 
     ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
-      if(!focusedUser) return;
-
-      if (data.id === focusedUser.id) {
-        console.log("updating ui for video broadcast stop", data)
-        stopPlayback();
+      console.log("videoBroadcastStop", data.id, focusedUser)
+      if (data.id === focusedUser) {
+        console.log("removing video player for stopped stream", data)
+        setFocusedUser('undefined');
       }
     });
-  }, [])
+  }, [focusedUser])
 
   const selectUser = (user) => {
     console.log("selectUser", user);
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
+    console.log("stopPlayback", focusedUser)
     ep.stopReceivingVideo(focusedUser.id);
-    setFocusedUser(null);
+    setFocusedUser('undefined');
   }
   const computeFocusedUser = () => {
-    if (focusedUser) {
-      return (
-        <Grid item xs={12}>
-          <ScreenShareControlIcons stopPlayback={stopPlayback} />
-        </Grid>
-      )
-    }
+    return (
+      <Grid item xs={12}>
+        <ScreenShareControlIcons stopPlayback={stopPlayback} />
+      </Grid>
+    )
   }
 
   return (
     <StyledContainer id="screenShareContainer">
       <Grid container gap={3} className="screenshareUserGridContainer noselect">
-        {computeFocusedUser()}
+        {focusedUser!=='undefined' ? computeFocusedUser() : null}
         {
           users.map((user) => {
             return (
