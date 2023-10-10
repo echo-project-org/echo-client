@@ -1,0 +1,55 @@
+.friends-list-container {
+  width: 100%;
+  height: 100%;
+  padding: 0 !important;
+  max-width: 100% !important;
+  overflow-y: auto;
+}
+
+.friends-list-overflow {
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+.friend-container {
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  padding: .8rem;
+  color: var(--mui-palette-text-primary);
+}
+
+.friend-container:hover {
+  background-color: var(--mui-palette-background-light);
+}
+
+.friend-container .userAvatar {
+  width: calc(2rem + 2vw);
+  height: calc(2rem + 2vw);
+}
+
+.friend-container .userInfo {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.userInfo .userName {
+  font-size: calc(0.8rem + 0.5vw);
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+.userInfo .userStatus {
+  font-size: calc(0.6rem + 0.3vw);
+  font-weight: 400;
+  color: var(--mui-palette-text-secondary);
+}
+
+.friend-container .buttonsContainer {
+  text-align: right;
+}
