@@ -174,6 +174,16 @@ function App() {
           }
         }
       },
+      MuiToggleButtonGroup: {
+        styleOverrides: {
+          root: {
+            border: "none",
+          },
+          grouped: {
+            border: "none",
+          }
+        }
+      },
       MuiToggleButton: {
         styleOverrides: {
           root: {

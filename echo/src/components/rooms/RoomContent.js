@@ -102,6 +102,30 @@ function RoomContent({ roomId }) {
     })
   }, [contentSelected]);
 
+  const computeButtons = () => {
+    // console.log(roomId)
+    if (String(roomId) === "0") {
+      // setContentSelected("friends");
+      return [
+        <ToggleButton value="friends" key="center" disableRipple>
+          <PeopleAlt />
+        </ToggleButton>
+      ]
+    } else {
+      return [
+        <ToggleButton value="friends" key="center" disableRipple>
+          <PeopleAlt />
+        </ToggleButton>,
+        <ToggleButton value="chat" key="left" disableRipple>
+          <ChatBubble />
+        </ToggleButton>,
+        <ToggleButton value="screen" key="center" disableRipple>
+          <Window />
+        </ToggleButton>,
+      ]
+    }
+  }
+
   return (
     <Grid container direction={"row"}>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
@@ -128,15 +152,7 @@ function RoomContent({ roomId }) {
               alignItems: "center",
             }}>
               <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
-                <ToggleButton value="friends" key="center" disableRipple>
-                  <PeopleAlt />
-                </ToggleButton>
-                <ToggleButton value="chat" key="left" disableRipple>
-                  <ChatBubble />
-                </ToggleButton>
-                <ToggleButton value="screen" key="center" disableRipple>
-                  <Window />
-                </ToggleButton>
+                {computeButtons()}
               </ToggleButtonGroup>
             </Grid>
           </Grid>

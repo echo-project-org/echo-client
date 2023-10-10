@@ -15,9 +15,11 @@
 }
 
 .friend-container {
+  display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  flex-wrap: nowrap;
+  flex-wrap: nowrap !important;
   width: 100%;
   padding: .8rem;
   color: var(--mui-palette-text-primary);

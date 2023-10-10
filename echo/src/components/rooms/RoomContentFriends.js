@@ -228,7 +228,6 @@ function RoomContentFriends({ }) {
       <Container className="friends-list-overflow">
         {
           friends.map((user, index) => {
-            console.log(index);
             return (
               <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
                 <Grid item xs={3}>
