@@ -4,10 +4,17 @@ on:
   push:
     branches:
       - main
+      - dev
+    paths:
+      - '**'
+    tags:
+      - '*'
 
 jobs:
   build-and-release:
     runs-on: windows-latest
+
+    if: contains(github.event.head_commit.message, 'Create new release')
 
     env:
       CI: false
