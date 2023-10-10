@@ -178,10 +178,17 @@ function App() {
         styleOverrides: {
           root: {
             border: "none",
+            borderLeft: "none",
           },
           grouped: {
             border: "none",
-          }
+            borderLeft: "none",
+            ":not(:last-of-type)": {
+              margin: "0",
+              border: "none",
+              borderLeft: "none"
+            }
+          },
         }
       },
       MuiToggleButton: {

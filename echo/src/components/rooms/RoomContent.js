@@ -107,19 +107,19 @@ function RoomContent({ roomId }) {
     if (String(roomId) === "0") {
       // setContentSelected("friends");
       return [
-        <ToggleButton value="friends" key="center" disableRipple>
+        <ToggleButton value="friends" key="friends" disableRipple>
           <PeopleAlt />
         </ToggleButton>
       ]
     } else {
       return [
-        <ToggleButton value="friends" key="center" disableRipple>
+        <ToggleButton value="friends" key="friends" disableRipple>
           <PeopleAlt />
         </ToggleButton>,
-        <ToggleButton value="chat" key="left" disableRipple>
+        <ToggleButton value="chat" key="chat" disableRipple>
           <ChatBubble />
         </ToggleButton>,
-        <ToggleButton value="screen" key="center" disableRipple>
+        <ToggleButton value="screen" key="screen" disableRipple>
           <Window />
         </ToggleButton>,
       ]
