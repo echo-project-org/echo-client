@@ -90,7 +90,7 @@ const Register = () => {
 
   return (
     <motion.div
-      className='splashScreen noselect'
+      className='splashScreen'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
