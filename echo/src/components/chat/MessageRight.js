@@ -2,6 +2,16 @@ import React from 'react'
 import { Typography, Grid, Avatar } from '@mui/material';
 
 function MessageRight({ message }) {
+  const computeMessage = (m) => {
+    return m.message.split("<div>").map((item, key) => {
+      if (key === 0 && item === "") return;
+      var _m = item.replaceAll("</div>", "");
+      return _m.split("<br>").map((phrase, index) => {
+        return <span key={_m + index + key}>{phrase}<br /></span>
+      })
+    })
+  }
+
   return (
     <Grid container className='rightMessage' direction={"row"} sx={{ flexFlow: "row" }}>
       <Grid item>
@@ -16,9 +26,7 @@ function MessageRight({ message }) {
           </Grid>
           <Grid item>
             <div className="messageText">
-              {message.message.split("<br>").map((item, key) => {
-                return <span key={key}>{item}<br /></span>
-              })}
+              {computeMessage(message)}
             </div>
           </Grid>
           <Grid item>

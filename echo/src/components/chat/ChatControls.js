@@ -30,10 +30,9 @@ function ChatControls({ onEmojiOn, roomId }) {
   newSelfMessageAudio.volume = 0.6;
 
   const sendChatMessage = (e) => {
-    if (document.getElementById("messageBox").value === "") return;
-    const message = document.getElementById("messageBox").value.replace(/\n/g, "<br>");
-    document.getElementById("messageBox").value = "";
-    ep.sendChatMessage({ roomId, userId: storage.get("id"), message, self: true, date: new Date().toISOString() });
+    console.log("about to send this message", message.html, inputRef.current.innerHTML)
+    ep.sendChatMessage({ roomId, userId: storage.get("id"), message: message.html, self: true, date: new Date().toISOString() });
+    setMessage({ html: "" });
   }
 
   useEffect(() => {
