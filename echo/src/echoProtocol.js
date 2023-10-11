@@ -357,6 +357,7 @@ class EchoProtocol {
     this.stopReceiving();
     this.stopReceivingVideo();
     this.mh.leaveRoom();
+    this.exitedFromRoom();
     if (this.socket) this.socket.emit("client.exit", { id });
   }
 
@@ -455,7 +456,6 @@ class EchoProtocol {
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
       this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
-      this.exitedFromRoom();
     }
   }
 

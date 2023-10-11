@@ -3,7 +3,7 @@ import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
 
-// import { ep } from "../../index";
+import { ep } from "../../index";
 // const api = require('../../api')
 
 function MainPage() {
@@ -15,7 +15,10 @@ function MainPage() {
   }
 
   useEffect(() => {
-  }, []);
+    ep.on("exitedFromRoom", (data) => {
+      setRoomId(0);
+    })
+  }, [roomId]);
 
   return (
     <motion.div

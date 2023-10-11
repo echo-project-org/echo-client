@@ -100,6 +100,11 @@ function RoomContent({ roomId }) {
     ep.on("gotVideoStream", (data) => {
       setContentSelected("screen");
     })
+
+    ep.on("exitedFromRoom", (data) => {
+      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaS");
+      setContentSelected("friends");
+    })
   }, [contentSelected]);
 
   const computeButtons = () => {
