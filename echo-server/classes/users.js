@@ -93,7 +93,6 @@ class User {
     }
 
     async receiveTransportConnect(data, cb) {
-        console.log("transportConnect", data);
         await this.receiveTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -102,7 +101,6 @@ class User {
     }
 
     async receiveTransportProduce(data, cb) {
-        console.log("transportProduce", data);
         if (this.audioProducer) {
             await this.audioProducer.close();
             this.audioProducer = null;
@@ -114,7 +112,6 @@ class User {
             appData: data.appData
         });
         this.audioProducerId = this.audioProducer.id;
-        console.log("producer", this.audioProducer.id)
 
         this.triggerEvent("userFullyConnectedToRoom", {
             id: this.id,
@@ -128,7 +125,6 @@ class User {
     }
 
     async sendTransportConnect(data, cb) {
-        console.log("sendTransportConnect", data);
         await this.sendTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -137,7 +133,6 @@ class User {
     }
 
     async receiveVideoTransportConnect(data, cb) {
-        console.log("receiveVideoTransportConnect", data);
         await this.receiveVideoTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -146,7 +141,6 @@ class User {
     }
 
     async receiveVideoTransportProduce(data, cb) {
-        console.log("receiveVideoTransportProduce", data);
         if (this.videoProducer) {
             await this.videoProducer.close();
             this.videoProducer = null;
@@ -158,7 +152,6 @@ class User {
             appData: data.appData
         });
         this.videoProducerId = this.videoProducer.id;
-        console.log("producer", this.videoProducer.id)
         this.isBroadcastingVideo = true;
 
         this.triggerEvent("videoBroadcastStarted", {
@@ -172,7 +165,6 @@ class User {
     }
 
     sendVideoTransportConnect(data, cb) {
-        console.log("sendVideoTransportConnect", data);
         this.sendVideoTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -181,7 +173,6 @@ class User {
     }
 
     async stopScreenSharing(data) {
-        console.log("User " + this.id + " stopScreenSharing");
         await this.videoProducer.close();
         this.isBroadcastingVideo = false;
         this.triggerEvent("videoBroadcastStop", {
@@ -191,7 +182,6 @@ class User {
     }
 
     async startReceivingVideo(data, cb) {
-        console.log("User " + this.id + " startReceivingVideo");
         this.videoConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
@@ -219,7 +209,6 @@ class User {
     }
 
     stopReceivingVideo() {
-        console.log("User " + this.id + " stopReceivingVideo");
         this.videoConsumers.forEach(async (consumer) => {
             await consumer.consumer.close();
         });
@@ -237,7 +226,6 @@ class User {
     }
 
     async subscribeAudio(data, cb) {
-        console.log("User " + this.id + " subscribeAudio" + data.id);
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
@@ -265,7 +253,6 @@ class User {
     }
 
     async unsubscribeAudio(data) {
-        console.log("User " + this.id + " unsubscribeAudio" + data.producerId);
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
                 await consumer.consumer.close();
@@ -277,9 +264,7 @@ class User {
         //resume stream
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
-                console.log("Prima if")
                 if (consumer.consumer.paused) {
-                    console.log("Dopo if")
                     await consumer.consumer.resume();
                 }
             }
@@ -306,7 +291,6 @@ class User {
     }
 
     registerEvent(event, cb) {
-        console.log("event", event, "registered")
         if (!this.events[event]) this.events[event] = {};
         this.events[event].cb = cb;
     }
@@ -362,7 +346,6 @@ class User {
 
     // update the audio state of the current user
     audioState(data) {
-        console.log("deaf request from", data)
         this.isDeaf = data.deaf;
         this.isMuted = data.muted;
     }

@@ -70,7 +70,6 @@ class Rooms {
 
         this.emitter.on('connection', (socket) => {
             const request = socket.request;
-            // console.log(request._query)
             const id = request._query["id"];
             if (!id) return reject("no-id-in-query");
             if (this.connectedClients.has(id)) {
@@ -87,7 +86,6 @@ class Rooms {
     }
 
     registerClientEvents(user) {
-        console.log("registering events for", user.id);
         user.registerEvent("join", (data) => {
             this.joinRoom(data);
         });
@@ -131,7 +129,6 @@ class Rooms {
         //Notify all users
         this.connectedClients.forEach((user, _) => {
             if (a.id !== user.id) {
-                console.log("Notifing", user.id, "about", a.id)
                 const userRoom = user.getCurrentRoom();
                 a.isConnected = userRoom === a.roomId;
                 user.userJoinedChannel({
@@ -147,7 +144,6 @@ class Rooms {
         let newUser = this.connectedClients.get(a.id);
         this.getUsersInRoom(a.roomId).forEach((user, id) => {
             if (newUser.id !== user.id) {
-                console.log("Notifing", newUser.id, "about", user.id)
                 const userRoom = user.getCurrentRoom();
                 const isBroadcatingVideo = user.isBroadcastingVideo;
                 let isConnected = userRoom === newUser.getCurrentRoom();
@@ -181,13 +177,11 @@ class Rooms {
     }
 
     sendChatMessage(data) {
-        console.log("got sendChatMessage event from user", data)
         if (this.connectedClients.has(data.id)) {
             data.roomId = Number(data.roomId);
             const room = this.rooms.get(data.roomId);
             if (room) {
                 room.users.forEach((user, id) => {
-                    console.log("sending message to connected clients in room", user.id)
                     user.receiveChatMessage(data);
                 });
             }
@@ -204,7 +198,6 @@ class Rooms {
     }
 
     async joinRoom(data) {
-        console.log("got join message", data)
         await this.addRoom(data.roomId);
         this.addUserToRoom(data);
     }
@@ -214,7 +207,6 @@ class Rooms {
         this.removeUserFromRooms(data.id);
         this.connectedClients.forEach((user, _) => {
             if (data.id !== user.id) {
-                console.log("Notifing", user.id, "about", data.id)
                 user.endConnection(data);
             }
         });
@@ -223,8 +215,6 @@ class Rooms {
 
     async addRoom(id) {
         if (!this.rooms.has(id)) {
-            console.log("creating room", id, typeof id)
-
             let r = await this.worker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });
             r.observer.on('close', () => {
                 console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup router closed"));
@@ -248,9 +238,7 @@ class Rooms {
     removeUserFromRooms(id) {
         if (this.connectedClients.has(id)) {
             this.rooms.forEach((room, _, arr) => {
-                console.log("checking room", room.id, "for user", id)
                 if (room.users.has(id)) {
-                    console.log("removing id", id, "from room", room.id);
                     room.users.delete(id);
                 }
             });
@@ -258,16 +246,12 @@ class Rooms {
     }
 
     exitRoom(data) {
-        console.log("exiting room", data.id)
         if (this.connectedClients.has(data.id)) {
             const user = this.connectedClients.get(data.id);
             const roomId = user.getCurrentRoom();
             if (this.rooms.has(roomId)) {
-                console.log("deleted user", data.id, "from room", roomId)
-
                 this.connectedClients.forEach((user, _) => {
                     if (data.id !== user.id) {
-                        console.log("Notifing", user.id, "about", data.id)
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
                         user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
@@ -311,7 +295,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created transport")
                     newUser.setReceiveTransport(transport, router.rtpCapabilities);
                 });
 
@@ -328,7 +311,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created send transport")
                     newUser.setSendTransport(transport, router.rtpCapabilities);
                 });
 
@@ -345,7 +327,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created receive video transport")
                     newUser.setReceiveVideoTransport(transport, router.rtpCapabilities);
                 });
 
@@ -362,7 +343,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created send video transport")
                     newUser.setSendVideoTransport(transport, router.rtpCapabilities);
                 });
             }
