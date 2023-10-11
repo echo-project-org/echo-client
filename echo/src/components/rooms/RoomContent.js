@@ -102,7 +102,6 @@ function RoomContent({ roomId }) {
     })
 
     ep.on("exitedFromRoom", (data) => {
-      console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaS");
       setContentSelected("friends");
     })
   }, [contentSelected]);

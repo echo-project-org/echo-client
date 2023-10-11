@@ -71,11 +71,9 @@ class EchoProtocol {
     this._startPing();
 
     this.socket.on("server.ready", (remoteId) => {
-      console.log("Websocker connection opened", remoteId);
     });
 
     this.socket.io.on("close", () => {
-      console.log("Websocket connection closed");
       this.rtcConnectionStateChange({ state: "disconnected" });
       this.stopTransmitting();
       this.stopReceiving();
@@ -93,7 +91,6 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
-      console.log("User", data.id, "joined your channel, starting listening audio", data);
       if (data.isConnected) this.startReceiving(data.id);
       this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
       this.updateUser({ id: data.id, field: "muted", value: data.muted });
@@ -106,13 +103,11 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userLeftChannel", (data) => {
-      console.log("User", data.id, "left your channel, stopping listening audio", data);
       if (data.isConnected) this.stopReceiving(data.id);
       this.userLeftChannel(data);
     });
 
     this.socket.on("server.sendAudioState", (data) => {
-      console.log("Got user audio state from server", data);
       if (!data.deaf || !data.mute) {
         this.updatedAudioState(data);
         //startReceiving();
@@ -124,12 +119,10 @@ class EchoProtocol {
     });
 
     this.socket.on("server.endConnection", (data) => {
-      console.log("User", data.id, "closed the connection");
       this.endConnection(data);
     });
 
     this.socket.on("server.userUpdated", (data) => {
-      console.log("User", data.id, "updated his data", data);
       this.updateUser(data);
       // update rooms cache chat with new user data
       const rooms = this.cachedRooms.values();
@@ -141,19 +134,16 @@ class EchoProtocol {
     });
 
     this.socket.on("server.videoBroadcastStarted", (data) => {
-      console.log("User", data.id, "started broadcasting video", data.streamId);
       this.updateUser({ id: data.id, field: "broadcastingVideo", value: true });
       this.videoBroadcastStarted(data);
     });
 
     this.socket.on("server.videoBroadcastStop", (data) => {
-      console.log("User", data.id, "stopped broadcasting video", data.streamId);
       this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
       this.videoBroadcastStop(data);
     });
 
     this.socket.on("server.receiveTransportCreated", (data) => {
-      console.log("Server created transport with id", data.id);
       if (this.mh) {
         //Server will receive and what client sends
         this.mh.createSendTransport(data);
@@ -161,7 +151,6 @@ class EchoProtocol {
     });
 
     this.socket.on("server.sendTransportCreated", (data) => {
-      console.log("Server created transport with id", data.id);
       if (this.mh) {
         //Client will receive and what server sends
         this.mh.createReceiveTransport(data);
@@ -169,7 +158,6 @@ class EchoProtocol {
     });
 
     this.socket.on("server.receiveVideoTransportCreated", (data) => {
-      console.log("Server created video transport with id", data.id);
       if (this.mh) {
         //Server will receive and what client sends
         this.mh.createSendVideoTransport(data);
@@ -177,7 +165,6 @@ class EchoProtocol {
     });
 
     this.socket.on("server.sendVideoTransportCreated", (data) => {
-      console.log("Server created video transport with id", data.id);
       if (this.mh) {
         //Client will receive and what server sends
         this.mh.createReceiveVideoTransport(data);
@@ -199,7 +186,6 @@ class EchoProtocol {
     if (room) {
       const user = this.cachedUsers.get(data.id);
       if (user) {
-        // console.log("got message chat from socket", data)
         data.userId = user.id;
         data.img = user.userImage;
         data.name = user.name;
@@ -364,7 +350,6 @@ class EchoProtocol {
   closeConnection(id = null) {
     if (this.socket) {
       if (!id) id = storage.get('id');
-      console.log("closing connection with socket")
       this.socket.emit("client.end", { id });
       clearInterval(this.currentConnectionStateInterval);
     }
@@ -406,10 +391,8 @@ class EchoProtocol {
     if (this.socket) {
       let remoteId = data.id;
       let a = this.mh.getRtpCapabilities()
-      console.log("Got rtp capabilities", a);
 
       this.socket.emit("client.subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
-        console.log("Got description from server", data);
         this.mh.consume({
           id: data.id,
           producerId: data.producerId,
@@ -463,7 +446,6 @@ class EchoProtocol {
     if (this.mh) {
       let a = this.mh.getRtpCapabilities()
       this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
-        console.log("Got description from server", description);
         this.mh.consumeVideo(description);
       });
     }
@@ -482,7 +464,6 @@ class EchoProtocol {
   getVideo(remoteId) {
     if (this.mh) {
       let stream = this.mh.getVideo(remoteId);
-      console.log("Got video stream", stream);
       return stream;
     } else {
       console.error("VideoRtc not initialized");
@@ -498,7 +479,6 @@ class EchoProtocol {
 
   stopVideoBroadcast(data) {
     if (this.socket) {
-      console.log("User", data.id, "stopped broadcasting video", data.streamId)
       this.socket.emit("client.stopVideoBroadcast", data);
     }
   }
@@ -598,7 +578,6 @@ class EchoProtocol {
 
   // chat messages function
   sendChatMessage(data) {
-    console.log("Sending chat message", data)
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
     if (typeof data.userId !== "string") data.userId = data.userId.toString();
     const room = this.cachedRooms.get(data.roomId);
