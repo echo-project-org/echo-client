@@ -63,14 +63,12 @@ function ScreenShareUserContainer({ user, selectUser }) {
     useEffect(() => {
         ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
             if (data.id === user.id) {
-                console.log("updating ui for video broadcast", data)
                 setBroadcastingVideo(true)
             }
         });
 
         ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
             if (data.id === user.id) {
-                console.log("updating ui for video broadcast stop", data)
                 setBroadcastingVideo(false)
             }
         });

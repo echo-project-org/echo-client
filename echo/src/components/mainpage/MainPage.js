@@ -10,7 +10,6 @@ function MainPage() {
   const [roomId, setRoomId] = useState(0);
 
   const updateCurrentRoom = (joiningId) => {
-    console.log("Changed room in main Main page", joiningId);
     setRoomId(joiningId);
   }
 

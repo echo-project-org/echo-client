@@ -64,7 +64,6 @@ function ScreenShareSelector() {
 
   };
   const deviceSelected = (deviceId) => {
-    console.log("device selected", deviceId)
     ep.startScreenSharing(deviceId);
     setScreenSharing(true);
     handleModalClose();

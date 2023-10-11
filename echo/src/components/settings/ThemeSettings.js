@@ -58,7 +58,6 @@ function ThemeSettings() {
   }
 
   // useEffect(() => {
-  //   console.log("background: " + background)
   //   theme.palette.background.main = background;
   //   theme.palette.primary.main = primary;
   //   theme.palette.secondary.main = secondary;

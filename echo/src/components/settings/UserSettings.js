@@ -247,7 +247,7 @@ function UserSettings() {
     ep.updatePersonalSettings({ id: storage.get("id"), field: "online", value: statusId });
     api.call("users/status", "POST", { id: storage.get("id"), status: statusId })
       .then((res) => { })
-      .catch((err) => { console.log(err); });
+      .catch((err) => { console.error(err); });
     setStatusHover(false);
   }
 

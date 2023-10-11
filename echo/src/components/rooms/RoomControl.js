@@ -30,7 +30,6 @@ function RoomControl({ state, setState, screenSharing }) {
   useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
   useEffect(() => {
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
-      console.log("Event rtcConnectionStateChange", data)
       switch (data.state) {
         case 'new': setRtcConnectionState("Not connected"); break;
         case 'disconnected': setRtcConnectionState("Not connected"); break;

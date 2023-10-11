@@ -23,7 +23,6 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
     setMuted(!muted);
   }
   const stopWaching = () => {
-    console.log("Stop watching")
     stopPlayback();
   }
 

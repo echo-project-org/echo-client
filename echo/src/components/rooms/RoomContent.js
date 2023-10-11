@@ -107,7 +107,6 @@ function RoomContent({ roomId }) {
   }, [contentSelected]);
 
   const computeButtons = () => {
-    // console.log(roomId)
     if (String(roomId) === "0") {
       // setContentSelected("friends");
       return [

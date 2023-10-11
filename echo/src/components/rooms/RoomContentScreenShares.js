@@ -28,7 +28,6 @@ function RoomContentScreenShares({ roomId }) {
 
   useEffect(() => {
     const users = ep.getUsersInRoom(roomId)
-    console.log("users", users)
     setUsers(users)
   }, [roomId])
 
@@ -43,23 +42,19 @@ function RoomContentScreenShares({ roomId }) {
     })
 
     ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
-      console.log("videoBroadcastStop", data.id, focusedUser)
       if (data.id === focusedUser) {
-        console.log("removing video player for stopped stream", data)
         setFocusedUser('undefined');
       }
     });
   }, [focusedUser])
 
   const selectUser = (user) => {
-    console.log("selectUser", user);
     if(focusedUser === user.id){
       return;
     }
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
-    console.log("stopPlayback", focusedUser)
     ep.stopReceivingVideo(focusedUser.id);
     setFocusedUser('undefined');
   }

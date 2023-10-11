@@ -13,8 +13,6 @@ function EmojiPicker({ show, style }) {
   // function for emoji selection
   function handleSelectEmoji(emojiData, event) {
     // setSelectEmoji(emojiData.unified);
-    // console.log(selectEmoji, "this is the selected emoji");
-    // console.log(emojiData);
     ep.emit("selectedEmoji", emojiData)
   }
 

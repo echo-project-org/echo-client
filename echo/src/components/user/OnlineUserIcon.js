@@ -9,7 +9,6 @@ import { ep } from "../../index";
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 function OnlineUserIcon({ user }) {
-  console.log(">>> [OnlineUserIcon] Re-rendering component", user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -23,7 +22,6 @@ function OnlineUserIcon({ user }) {
 
   useEffect(() => {
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
-      console.log(">>> [OnlineUserIcon] updatedAudioState", data)
       if (data.id === user.id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
@@ -38,14 +36,12 @@ function OnlineUserIcon({ user }) {
 
     ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
-        console.log("updating ui for video broadcast", data)
         setBroadcastingVideo(true)
       }
     });
 
     ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
-        console.log("updating ui for video broadcast stop", data)
         setBroadcastingVideo(false)
       }
     });
