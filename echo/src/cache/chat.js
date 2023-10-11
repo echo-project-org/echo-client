@@ -10,7 +10,6 @@ class Chat {
         this.messages.push(message);
         if (!message.insertDate && message.date) message.insertDate = new Date(message.date).toISOString();
         this.cached = true;
-        // console.log("[CACHE] Added message to cache", message)
         return message;
     }
 
@@ -22,7 +21,6 @@ class Chat {
     }
 
     get() {
-        console.log("[CACHE] Got messages from cache", this.messages);
         return this.messages;
     }
 

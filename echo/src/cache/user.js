@@ -36,7 +36,6 @@ class Users {
         if (!data) return console.error("[CACHE] Data is required to add a user to the cache");
         // data type check
         data = this.typeCheck(data);
-        console.log("[CACHE] Added user in cache", data)
 
         if (self) {
             storage.set("id", data.id);
@@ -103,8 +102,6 @@ class Users {
         value = this.typeCheck(value);
         if (!this.users[id]) return console.error(`[CACHE] User ${id} not found in cache`);
         this.users[id][field] = value;
-        console.log(typeof id, typeof field, typeof value)
-        console.log("[CACHE] Updated user in cache", id, field, value)
     }
 }
 

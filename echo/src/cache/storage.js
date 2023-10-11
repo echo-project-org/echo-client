@@ -42,7 +42,6 @@ class Storage extends LocalStorage {
     };
 
     this.request.onsuccess = function(event) {
-      console.log("Success!");
       this.db = event.target.result;
     };
 
@@ -62,7 +61,6 @@ class Storage extends LocalStorage {
       const objectStore = transaction.objectStore("echo");
       const request = objectStore.add({ id: key, data: value });
       request.onsuccess = function(event) {
-        console.log("Success!");
       };
     }
   }
@@ -75,7 +73,6 @@ class Storage extends LocalStorage {
       const objectStore = transaction.objectStore("echo");
       const request = objectStore.get(key);
       request.onsuccess = function(event) {
-        console.log("Success!");
         return request.result;
       };
     }
@@ -89,7 +86,6 @@ class Storage extends LocalStorage {
       const objectStore = transaction.objectStore("echo");
       const request = objectStore.clear();
       request.onsuccess = function(event) {
-        console.log("Success!");
       };
     }
   }
@@ -102,7 +98,6 @@ class Storage extends LocalStorage {
       const objectStore = transaction.objectStore("echo");
       const request = objectStore.delete(key);
       request.onsuccess = function(event) {
-        console.log("Success!");
       };
     }
   }

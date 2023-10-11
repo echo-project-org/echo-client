@@ -40,7 +40,6 @@ function Chat({ currentRoomId, onMouseDown }) {
         // get messages from api
         api.call("rooms/" + currentRoomId + "/messages")
           .then((res) => {
-            console.log("got messages from api", res.json)
             ep.setMessagesCache({ messages: res.json, roomId: currentRoomId });
           })
           .catch((err) => {
@@ -61,12 +60,10 @@ function Chat({ currentRoomId, onMouseDown }) {
 
   useEffect(() => {
     ep.on("receiveChatMessage", "Chat.receiveChatMessage", (newMessage) => {
-      console.log("Chat.receiveChatMessage", newMessage)
       // check if message contains <br>, if so replace with \n
       setMessages((routeMessages) => [newMessage, ...routeMessages]);
     });
     ep.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
-      console.log("Chat.messagesCacheUpdated", messages)
       setMessages([...messages]);
       setLoadingVisibility(false);
     });
