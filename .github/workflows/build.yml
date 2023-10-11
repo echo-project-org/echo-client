@@ -1,4 +1,4 @@
-name: Build and Release Electron App
+name: Build and Release Electron App For Windows
 
 on:
   push:
@@ -23,40 +23,52 @@ jobs:
           node-version: 18
 
       - name: Install dependencies for the React frontend
+        shell: pwsh
         run: npm install
         working-directory: ./echo
 
       - name: Build React Frontend
-        run: npm run build
         working-directory: ./echo
 
       - name: Install dependencies for the Electron app
-        run: npm install
         working-directory: ./electron
 
       - name: Build Electron App
         id: build_electron_app
+        shell: pwsh
         working-directory: ./electron
         run: |
-          $build_output = npm run make
-          echo "artifact_path=$(echo $build_output | Select-String -Pattern '\[DATA\] Artifacts available at: ' | ForEach-Object { $_.Matches.Value.Substring(29) })" >> $GITHUB_ENV
-          echo "Build Output: $build_output"
+          build_output=$(npm run make)
+          path_reg=$(echo "$build_output" | grep -oP '\[DATA\] Artifacts available at: \K.*')
+          echo $path_reg
+          ls $path_reg -la
+          echo "artifact_path=$path_reg" >> $GITHUB_OUTPUT
 
       - name: Extract version from package.json
         id: extract_version
+        shell: pwsh
         run: |
           $pkg_version = (Get-Content -Path .\echo\package.json | ConvertFrom-Json).version
           echo "Version: $pkg_version"
-          echo "version=$pkg_version" >> $GITHUB_ENV
+          echo "Working Directory: ${{ steps.build_electron_app.outputs.artifact_path }}"
+          echo "release_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
+
+      - name: Check if version is a pre-release
+        id: check_pre_release
+        shell: pwsh
+        run: |
+          pkg_version=$(cat ./echo/package.json | jq -r .version)
+          echo $pkg_version
+          echo "version=$pkg_version" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.extract_version.outputs.version }}
-          release_name: Release v${{ steps.extract_version.outputs.version }}
+          tag_name: v${{ steps.extract_version.outputs.release_version }}
+          release_name: Release v${{ steps.extract_version.outputs.release_version }}
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
 
       - name: Upload Executables
         id: upload-executables
@@ -66,7 +78,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: |
-            $env:artifact_path\*.exe
+            ${{ steps.build_electron_app.outputs.artifact_path }}/*.exe
           asset_name: echo-${{ steps.extract_version.outputs.version }}-executables.zip
           asset_content_type: application/zip
 
@@ -78,10 +90,15 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: |
-            $env:artifact_path\*.nupkg
+            ${{ steps.build_electron_app.outputs.artifact_path }}/*.nupkg
           asset_name: echo-${{ steps.extract_version.outputs.version }}.nupkg
           asset_content_type: application/zip
-
+        
+      - name: Create ZIP Archive of Pre-compiled Folder
+        shell: pwsh
+        working-directory: ./electron/out
+        run: 7z a -r -tzip pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip Echo-win32-x64
+        
       - name: Upload Source Code
         id: upload-source-code
         uses: actions/upload-release-asset@v1
@@ -89,6 +106,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .\electron\out\Echo-win32-x64
+          asset_path: ./electron/out/Echo-win32-x64
           asset_name: pre-compiled-${{ steps.extract_version.outputs.version }}.zip
           asset_content_type: application/zip
