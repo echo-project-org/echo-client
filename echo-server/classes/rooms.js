@@ -203,7 +203,6 @@ class Rooms {
     }
 
     endConnection(data) {
-        console.log("ending", data.id)
         this.removeUserFromRooms(data.id);
         this.connectedClients.forEach((user, _) => {
             if (data.id !== user.id) {

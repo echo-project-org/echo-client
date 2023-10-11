@@ -151,6 +151,14 @@ app.on('activate', () => {
 })
 
 ipcMain.on("exitApplication", (event, arg) => {
+  if (rtcInternals) {
+    rtcInternals.close();
+  }
+
+  if (mainWindow) {
+    mainWindow.close();
+  }
+  
   app.quit();
   // TODO: option that hides the app to tray instead of closing it
   // if (tray) {
