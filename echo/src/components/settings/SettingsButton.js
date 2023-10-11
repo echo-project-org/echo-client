@@ -7,7 +7,7 @@ import ThemeSettings from "./ThemeSettings";
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 
 const modalStyle = {
   position: "relative",
@@ -32,6 +32,11 @@ function SettingsButton() {
   const handleModalClose = () => setModalOpen(false);
 
   const handleClick = (event) => {
+    if(ep.getUser(storage.get('id')).currentRoom === '0'){
+      console.warn("User must must be in room to change settings");
+      return;
+    }
+
     ep.getSpeakerDevices().then((devices) => {
       setOutputDevices(devices)
     })

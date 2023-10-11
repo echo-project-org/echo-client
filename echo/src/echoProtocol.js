@@ -576,7 +576,11 @@ class EchoProtocol {
   }
 
   getUser(id) {
-    return this.cachedUsers.get(id);
+    if(id){
+      return this.cachedUsers.get(id);
+    } else {
+      return this.cachedUsers.get(storage.get("id"));
+    }
   }
 
   getUsersInRoom(roomId) {

@@ -36,25 +36,30 @@ function ScreenShareSelector() {
   }, [])
 
   const handleClick = (event) => {
-    if (screenSharing) {
-      ep.stopScreenSharing();
-      setScreenSharing(false);
-    } else {
-      ep.getVideoDevices().then((devices) => {
-        const screens = [];
-        const windows = [];
-        devices.forEach(device => {
-          if (device.id.includes("screen")) {
-            screens.push(device);
-          } else {
-            windows.push(device);
-          }
+    let user = ep.getUser();
+    if (user && user.currentRoom !== "0") {
+      if (screenSharing) {
+        ep.stopScreenSharing();
+        setScreenSharing(false);
+      } else {
+        ep.getVideoDevices().then((devices) => {
+          const screens = [];
+          const windows = [];
+          devices.forEach(device => {
+            if (device.id.includes("screen")) {
+              screens.push(device);
+            } else {
+              windows.push(device);
+            }
+          });
+          setWindowsDevices(windows);
+          setScreenDevices(screens);
         });
-        setWindowsDevices(windows);
-        setScreenDevices(screens);
-      });
 
-      handleModalOpen();
+        handleModalOpen();
+      }
+    } else {
+      console.warn("You must be in a room to share your screen")
     }
 
   };
