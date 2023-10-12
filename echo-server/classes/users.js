@@ -41,7 +41,7 @@ class User {
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => this.triggerEvent("join", data));
-        this.socket.on("client.end", (data) => this.triggerEvent("end", data));
+        this.socket.on("client.end", (data) => { this.clientDisconnected(data) });
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
         this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
@@ -106,6 +106,19 @@ class User {
         this.socket.on("client.stopReceivingVideo", (data) => {
             this.stopReceivingVideo(data);
         });
+    }
+
+    clientDisconnected(data) {
+        console.log("[USER-" + this.id + "] DISCONNECTED");
+        clearInterval(this.pingInterval);
+        clearInterval(this.crashCountdown);
+        
+        this.triggerEvent("exit", {
+            id: this.id,
+            roomId: this.currentRoom,
+            crashed: false,
+        });
+        this.triggerEvent("end", data);
     }
 
     pongReceived() {
