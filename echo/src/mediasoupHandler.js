@@ -72,23 +72,33 @@ class mediasoupHandler {
         this.sendTransport.close();
         this.sendTransport = null;
       }
-  
+
       if (this.rcvTransport) {
         this.rcvTransport.close();
         this.rcvTransport = null;
       }
-  
+
       if (this.videoSendTransport) {
         this.videoSendTransport.close();
         this.videoSendTransport = null;
       }
-  
+
       if (this.videoRcvTransport) {
         this.videoRcvTransport.close();
         this.videoRcvTransport = null;
       }
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  isFullyConnected() {
+    if (this.sendTransport) {
+      return (
+        this.sendTransport.connectionState === "connected"
+      )
+    } else {
+      return true;
     }
   }
 
@@ -593,7 +603,7 @@ class mediasoupHandler {
     if (deviceId === 'default') {
       return
     }
-    
+
     this.outputDeviceId = deviceId;
 
     if (this.inputStreams) {

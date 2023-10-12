@@ -572,8 +572,7 @@ class EchoProtocol {
   }
 
   isAudioFullyConnected() {
-    //return this.mh.isFullyConnected();
-    return true;
+    return this.mh.isFullyConnected();
   }
 
   // chat messages function
