@@ -61,33 +61,57 @@ const StyledContainerContent = styled(Container)(({ theme }) => ({
   },
 }));
 
+const ContentButtons = ({ roomId }) => {
+  if (String(roomId) === "0") {
+    return [
+      <ToggleButton value="friends" key="friends" disableRipple>
+        <PeopleAlt />
+      </ToggleButton>
+    ]
+  } else {
+    return [
+      <ToggleButton value="friends" key="friends" disableRipple>
+        <PeopleAlt />
+      </ToggleButton>,
+      <ToggleButton value="chat" key="chat" disableRipple>
+        <ChatBubble />
+      </ToggleButton>,
+      <ToggleButton value="screen" key="screen" disableRipple>
+        <Window />
+      </ToggleButton>,
+    ]
+  }
+}
+
+const InternalRoomContent = ({ contentSelected, roomId }) => {
+  switch (contentSelected) {
+    case "chat":
+      return <RoomContentChat roomId={roomId} key={0} />
+    case "screen":
+      return <RoomContentScreenShares roomId={roomId} key={1} />
+    case "friends":
+      return <RoomContentFriends key={2} />
+    default:
+      return <RoomContentChat roomId={roomId} key={0} />
+  }
+}
+
 function RoomContent({ roomId }) {
   // const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
   const [contentSelected, setContentSelected] = useState("friends");
   const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
   const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
 
-  const handleChange = (event, newAlignment) => {
-    if (newAlignment === null) return;
-    setContentSelected(newAlignment);
-  };
   const control = {
     value: contentSelected,
-    onChange: handleChange,
+    onChange: (event, clickedElement) => {
+      console.log(clickedElement)
+      if (clickedElement === null) return;
+      setContentSelected(clickedElement);
+    },
     exclusive: true,
   };
-  const computeRoomContent = () => {
-    switch (contentSelected) {
-      case "chat":
-        return <RoomContentChat roomId={roomId} key={0} />
-      case "screen":
-        return <RoomContentScreenShares roomId={roomId} key={1} />
-      case "friends":
-        return <RoomContentFriends key={2} />
-      default:
-        return <RoomContentChat roomId={roomId} key={0} />
-    }
-  }
+
   useEffect(() => {
     const roomData = ep.getRoom(roomId);
     if (roomData) {
@@ -105,29 +129,6 @@ function RoomContent({ roomId }) {
       setContentSelected("friends");
     })
   }, [contentSelected]);
-
-  const computeButtons = () => {
-    if (String(roomId) === "0") {
-      // setContentSelected("friends");
-      return [
-        <ToggleButton value="friends" key="friends" disableRipple>
-          <PeopleAlt />
-        </ToggleButton>
-      ]
-    } else {
-      return [
-        <ToggleButton value="friends" key="friends" disableRipple>
-          <PeopleAlt />
-        </ToggleButton>,
-        <ToggleButton value="chat" key="chat" disableRipple>
-          <ChatBubble />
-        </ToggleButton>,
-        <ToggleButton value="screen" key="screen" disableRipple>
-          <Window />
-        </ToggleButton>,
-      ]
-    }
-  }
 
   return (
     <Grid container direction={"row"}>
@@ -155,7 +156,7 @@ function RoomContent({ roomId }) {
               alignItems: "center",
             }}>
               <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
-                {computeButtons()}
+                <ContentButtons roomId={roomId} />
               </ToggleButtonGroup>
             </Grid>
           </Grid>
@@ -166,7 +167,7 @@ function RoomContent({ roomId }) {
         maxHeight: "calc(100vh - 5rem)",
       }}>
         <StyledContainerContent>
-          {computeRoomContent()}
+          <InternalRoomContent roomId={roomId} contentSelected={contentSelected} />
         </StyledContainerContent>
       </Grid>
     </Grid>

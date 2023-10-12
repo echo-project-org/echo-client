@@ -15,6 +15,17 @@ const deafSound = require("../../audio/deaf.mp3");
 const undeafSound = require("../../audio/undeaf.mp3");
 const leaveSound = require("../../audio/leave.mp3");
 
+const muteAudio = new Audio(muteSound);
+muteAudio.volume = 0.6;
+const unmuteAudio = new Audio(unmuteSound);
+unmuteAudio.volume = 0.6;
+const deafAudio = new Audio(deafSound);
+deafAudio.volume = 0.6;
+const undeafAudio = new Audio(undeafSound);
+undeafAudio.volume = 0.6;
+const leaveAudio = new Audio(leaveSound);
+leaveAudio.volume = 0.6;
+
 const api = require('../../api')
 
 function RoomControl({ state, setState, screenSharing }) {
@@ -49,16 +60,6 @@ function RoomControl({ state, setState, screenSharing }) {
       closeConnection();
     });
   }, []);
-  const muteAudio = new Audio(muteSound);
-  muteAudio.volume = 0.6;
-  const unmuteAudio = new Audio(unmuteSound);
-  unmuteAudio.volume = 0.6;
-  const deafAudio = new Audio(deafSound);
-  deafAudio.volume = 0.6;
-  const undeafAudio = new Audio(undeafSound);
-  undeafAudio.volume = 0.6;
-  const leaveAudio = new Audio(leaveSound);
-  leaveAudio.volume = 0.6;
 
   var interval = null;
   const updatePing = () => {

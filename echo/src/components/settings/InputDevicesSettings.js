@@ -4,6 +4,44 @@ import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-materia
 
 import { ep, storage } from "../../index";
 
+const CurrentDevice = ({ inputDevices, inputDevice, showList }) => {
+  var currentDevice = inputDevices.find(device => device.id === inputDevice);
+  if (!currentDevice) currentDevice = { name: "Default" };
+  return (
+    <Typography className="deviceSelectorText" sx={{ width: "100%" }}>
+      {showList ? <ArrowDropUp /> : <ArrowDropDown />}
+      {currentDevice.name}
+    </Typography>
+  )
+}
+  
+const DevicesSelectList = ({ inputDevices, handleInputDeviceChange, inputDevice, showList }) => {
+  inputDevices.forEach(device => {
+    const startIndex = device.name.indexOf('(', device.name.indexOf('(') + 1);
+    const endIndex = device.name.indexOf(')', startIndex);
+    if (startIndex !== -1 && endIndex !== -1) {
+      // Remove the second set of parentheses and trim the result
+      device.name = device.name.slice(0, startIndex) + device.name.slice(endIndex + 1).trim();
+    }
+  })
+
+  if (showList) {
+    return (
+      <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }}>
+        {
+          inputDevices.map((device, id) => (
+            <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseUp={handleInputDeviceChange} data-value={device.id} key={id}>
+              {device.id === inputDevice ? <CheckCircle fontSize="small" /> : <></>}
+              {device.name}
+            </Grid>
+          ))
+        }
+      </Grid>
+    )
+  }
+  return <></>
+}
+
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
   const [micVolume, setMicVolulme] = useState(100);
@@ -32,42 +70,6 @@ function InputDevicesSettings({ inputDevices }) {
   const deviceListToggle = (status = true) => {
     setShowList(status);
   }
-  const computeCurrentDevice = () => {
-    var currentDevice = inputDevices.find(device => device.id === inputDevice);
-    if (!currentDevice) currentDevice = { name: "Default" };
-    return (
-      <Typography className="deviceSelectorText" sx={{ width: "100%" }}>
-        {showList ? <ArrowDropUp /> : <ArrowDropDown />}
-        {currentDevice.name}
-      </Typography>
-    )
-  }
-  const computeSelectList = () => {
-    inputDevices.forEach(device => {
-      const startIndex = device.name.indexOf('(', device.name.indexOf('(') + 1);
-      const endIndex = device.name.indexOf(')', startIndex);
-      if (startIndex !== -1 && endIndex !== -1) {
-        // Remove the second set of parentheses and trim the result
-        device.name = device.name.slice(0, startIndex) + device.name.slice(endIndex + 1).trim();
-      }
-    })
-
-    if (showList) {
-      return (
-        <Grid container className="deviceSelectorContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }}>
-          {
-            inputDevices.map((device, id) => (
-              <Grid item className="deviceSelectorContainer-item" lg={12} xs={12} onMouseUp={handleInputDeviceChange} data-value={device.id} key={id}>
-                {device.id === inputDevice ? <CheckCircle fontSize="small" /> : <></>}
-                {device.name}
-              </Grid>
-            ))
-          }
-        </Grid>
-      )
-    }
-    return <></>
-  }
 
   return (
     <div className="settingsModalSubDiv noselect">
@@ -77,11 +79,11 @@ function InputDevicesSettings({ inputDevices }) {
       <div className="deviceSelector-root" onMouseUp={deviceListToggle}>
         <ClickAwayListener onClickAway={() => deviceListToggle(false)}>
           <div className="deviceSelectorContainer">
-            {computeCurrentDevice()}
+            <CurrentDevice inputDevices={inputDevices} inputDevice={inputDevice} showList={showList} />
           </div>
         </ClickAwayListener>
         <div className="deviceSelectorListContainer">
-          {computeSelectList()}
+          <DevicesSelectList inputDevices={inputDevices} handleInputDeviceChange={handleInputDeviceChange} inputDevice={inputDevice} showList={showList} />
         </div>
       </div>
       <div style={{ paddingRight: "2%", width: "95%" }}>

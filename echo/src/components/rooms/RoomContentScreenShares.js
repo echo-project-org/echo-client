@@ -21,6 +21,15 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   },
 }));
 
+const FocusedUser = ({ stopPlayback, focusedUser }) => {
+  if (focusedUser === 'undefined') return null;
+  return (
+    <Grid item xs={12}>
+      <ScreenShareControlIcons stopPlayback={stopPlayback} />
+    </Grid>
+  )
+}
+
 function RoomContentScreenShares({ roomId }) {
   const [users, setUsers] = useState([]);
   const [focusedUser, setFocusedUser] = useState('undefined');
@@ -58,18 +67,11 @@ function RoomContentScreenShares({ roomId }) {
     ep.stopReceivingVideo(focusedUser.id);
     setFocusedUser('undefined');
   }
-  const computeFocusedUser = () => {
-    return (
-      <Grid item xs={12}>
-        <ScreenShareControlIcons stopPlayback={stopPlayback} />
-      </Grid>
-    )
-  }
 
   return (
     <StyledContainer id="screenShareContainer">
       <Grid container gap={3} className="screenshareUserGridContainer noselect">
-        {focusedUser!=='undefined' ? computeFocusedUser() : null}
+        <FocusedUser stopPlayback={stopPlayback} focusedUser={focusedUser} />
         {
           users.map((user) => {
             return (

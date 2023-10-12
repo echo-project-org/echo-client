@@ -25,11 +25,9 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
   const stopWaching = () => {
     stopPlayback();
   }
-
   const enablePip = () => {
     setPip(true);
   }
-
   const disablePip = () => {
     setPip(false);
   }
