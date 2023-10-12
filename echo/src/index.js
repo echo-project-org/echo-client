@@ -5,7 +5,7 @@ import reportWebVitals from './reportWebVitals';
 
 import EchoProtocol from './echoProtocol';
 import Storage from './cache/storage';
-const ep = new EchoProtocol();
+let ep = new EchoProtocol();
 const storage = new Storage();
 export { ep, storage };
 

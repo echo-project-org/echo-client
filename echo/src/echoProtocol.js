@@ -62,9 +62,7 @@ class EchoProtocol {
 
     this.socket.io.on("close", () => {
       this.rtcConnectionStateChange({ state: "disconnected" });
-      this.stopTransmitting();
-      this.stopReceiving();
-      //this._startReconnectTry();
+      this.localUserCrashed({ id: storage.get("id") });
     })
 
     this.socket.io.on("error", (error) => {
@@ -271,7 +269,9 @@ class EchoProtocol {
   stopReceivingVideo(remoteId) {
     if (this.mh) {
       this.mh.stopConsumingVideo(remoteId);
-      this.socket.emit("client.stopReceivingVideo", { id: remoteId });
+      if(this.socket){
+        this.socket.emit("client.stopReceivingVideo", { id: remoteId });
+      }
     }
   }
 
@@ -353,6 +353,17 @@ class EchoProtocol {
     this.stopReceivingVideo();
     this.stopTransmitting();
     this.stopScreenSharing();
+
+    this.socket = null;
+    this.ping = 0;
+    this.pingInterval = null;
+    this.mh = null;
+
+    this.cachedUsers = new Users();
+    this.cachedRooms = new Map();
+
+    this.currentConnectionState = "";
+    this.currentConnectionStateInterval = null;
 
     if (this.socket) {
       this.socket.close();
@@ -695,6 +706,10 @@ EchoProtocol.prototype.exitedFromRoom = function (data) {
 
 EchoProtocol.prototype.gotVideoStream = function (data) {
   this.emit("gotVideoStream", data);
+}
+
+EchoProtocol.prototype.localUserCrashed = function (data) {
+  this.emit("localUserCrashed", data);
 }
 
 export default EchoProtocol;
