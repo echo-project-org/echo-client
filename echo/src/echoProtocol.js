@@ -24,18 +24,6 @@ class EchoProtocol {
     this.SERVER_URL = "https://echo.kuricki.com";
   }
 
-  // TODO: make resubscribe users to rooms on reconnect
-  _startReconnectTry() {
-    this.currentConnectionStateInterval = setInterval(() => {
-      if (this.currentConnectionState === "connected") {
-        clearInterval(this.currentConnectionStateInterval);
-        this.currentConnectionStateInterval = null;
-        return;
-      };
-      this.openConnection(storage.get("id"));
-    }, 5000);
-  }
-
   _makeIO(id) {
     this.socket = io(this.SERVER_URL, {
       path: "/socket.io",
@@ -67,7 +55,7 @@ class EchoProtocol {
 
     this.socket.io.on("error", (error) => {
       console.error(error);
-      alert("The audio server connection has errored out")
+      alert("Can't conect to the server! \nCheck your internet connection (or the server is down). \n\nIf your internet connection is working try pinging echo.kuricki.com, if it doesn't respond, contact Kury or Thundy :D");
       this.stopTransmitting();
       this.stopReceiving();
       if (this.socket) {
@@ -75,6 +63,7 @@ class EchoProtocol {
       }
       
       this.rtcConnectionStateChange({ state: "disconnected" });
+      this.localUserCrashed({ id: storage.get("id") });
     });
 
     this.socket.on("portalTurret.areYouStillThere?", (data) => {
