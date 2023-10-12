@@ -236,6 +236,8 @@ class Rooms {
 
     removeUserFromRooms(id) {
         if (this.connectedClients.has(id)) {
+            let user = this.connectedClients.get(id);
+            user.clearTransports();
             this.rooms.forEach((room, _, arr) => {
                 if (room.users.has(id)) {
                     room.users.delete(id);
@@ -253,7 +255,7 @@ class Rooms {
                     if (data.id !== user.id) {
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
-                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
+                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected, crashed: data.crashed===true });
                     }
                 })
 

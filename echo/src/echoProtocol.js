@@ -43,17 +43,6 @@ class EchoProtocol {
     });
   }
 
-  _startPing() {
-    this.pingInterval = setInterval(() => {
-      const start = Date.now();
-
-      this.socket.emit("client.ping", () => {
-        const duration = Date.now() - start;
-        this.ping = duration;
-      });
-    }, 5000);
-  }
-
   getPing() {
     return new Promise((resolve, reject) => {
       if (this.mh) {
@@ -67,8 +56,6 @@ class EchoProtocol {
   openConnection(id) {
     this._makeIO(id);
     this.startTransmitting(id);
-
-    this._startPing();
 
     this.socket.on("server.ready", (remoteId) => {
     });
@@ -90,6 +77,11 @@ class EchoProtocol {
       this._startReconnectTry();
     });
 
+    this.socket.on("portalTurret.areYouStillThere?", (data) => {
+      console.log("ping")
+      this.socket.emit("client.thereYouAre");
+    });
+
     this.socket.on("server.userJoinedChannel", (data) => {
       if (data.isConnected) this.startReceiving(data.id);
       this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
@@ -103,6 +95,10 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userLeftChannel", (data) => {
+      if(data.crashed) {
+        console.log("User " + data.id + " crashed");
+      }
+      
       if (data.isConnected) this.stopReceiving(data.id);
       this.userLeftChannel(data);
     });
@@ -211,7 +207,6 @@ class EchoProtocol {
   stopTransmitting() {
     if (this.mh) {
       this.mh.close();
-      this.mh = null;
     }
   }
 

@@ -20,10 +20,26 @@ class User {
         this.videoProducerId = null;
         this.videoProducer = null;
         this.videoConsumers = [];
+        this.crashCountdown = null;
+
+        this.pingInterval = setInterval(() => {
+            this.socket.emit("portalTurret.areYouStillThere?");
+            this.crashCountdown = setInterval(() => {
+                console.log("[USER-" + this.id + "] CRASH DETECTED, DISCONNECTING");
+
+                this.triggerEvent("exit", {
+                    id: this.id,
+                    roomId: this.currentRoom,
+                    crashed: true,
+                });
+                clearInterval(this.pingInterval);
+                clearInterval(this.crashCountdown);
+            }, 1000);
+        }, 5000);
 
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
-        this.socket.on("client.ping", (callback) => { callback(); });
+        this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => this.triggerEvent("join", data));
         this.socket.on("client.end", (data) => this.triggerEvent("end", data));
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
@@ -90,6 +106,11 @@ class User {
         this.socket.on("client.stopReceivingVideo", (data) => {
             this.stopReceivingVideo(data);
         });
+    }
+
+    pongReceived() {
+        console.log("pong received");
+        this.crashCountdown && clearInterval(this.crashCountdown);
     }
 
     async receiveTransportConnect(data, cb) {
