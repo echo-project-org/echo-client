@@ -11,6 +11,7 @@ const AuthenticatedUserButtons = ({ visibility }) => {
   const logout = async () => {
     storage.remove("id");
     storage.remove("name");
+    storage.set("lastEmail", storage.get("email"));
     storage.remove("email");
     storage.remove("userImage");
     storage.remove("token");

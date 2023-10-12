@@ -95,6 +95,7 @@ const Login = () => {
           type="text"
           className="input"
           placeholder="Email"
+          defaultValue={storage.get("lastEmail") || ""}
           onKeyDown={checkCredentials}
         />
         <input
