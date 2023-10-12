@@ -98,7 +98,7 @@ class EchoProtocol {
       if(data.crashed) {
         console.log("User " + data.id + " crashed");
       }
-      
+
       if (data.isConnected) this.stopReceiving(data.id);
       this.userLeftChannel(data);
     });
@@ -352,6 +352,7 @@ class EchoProtocol {
     this.stopReceiving();
     this.stopReceivingVideo();
     this.stopTransmitting();
+    this.stopScreenSharing();
 
     if (this.socket) {
       this.socket.close();
