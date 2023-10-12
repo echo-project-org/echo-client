@@ -68,14 +68,14 @@ class Rooms {
         });
 
 
-        this.emitter.on('connection', (socket) => {
+        this.emitter.on('connection', async (socket) => {
             const request = socket.request;
             const id = request._query["id"];
             if (!id) return reject("no-id-in-query");
             if (this.connectedClients.has(id)) {
                 //get the user
                 const user = this.connectedClients.get(id);
-                user.clearTransports();
+                await user.clearTransports();
             }
 
             const newUser = new User(socket, id);

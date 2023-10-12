@@ -454,7 +454,7 @@ class User {
         });
     }
 
-    clearTransports() {
+    async clearTransports() {
         //stop and clear all transports
         if (this.audioProducer) {
             this.audioProducer.close();
