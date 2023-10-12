@@ -151,11 +151,11 @@ app.on('activate', () => {
 })
 
 ipcMain.on("exitApplication", (event, arg) => {
-  if (rtcInternals) {
+  if (!rtcInternals.isDestroyed()) {
     rtcInternals.close();
   }
 
-  if (mainWindow) {
+  if (!mainWindow.isDestroyed()) {
     mainWindow.close();
   }
   
