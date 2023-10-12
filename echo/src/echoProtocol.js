@@ -70,9 +70,11 @@ class EchoProtocol {
       alert("The audio server connection has errored out")
       this.stopTransmitting();
       this.stopReceiving();
-      this.socket.close();
+      if (this.socket) {
+        this.socket.close();
+      }
+      
       this.rtcConnectionStateChange({ state: "disconnected" });
-      this._startReconnectTry();
     });
 
     this.socket.on("portalTurret.areYouStillThere?", (data) => {
@@ -93,7 +95,7 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userLeftChannel", (data) => {
-      if(data.crashed) {
+      if (data.crashed) {
         console.log("User " + data.id + " crashed");
       }
 
@@ -269,7 +271,7 @@ class EchoProtocol {
   stopReceivingVideo(remoteId) {
     if (this.mh) {
       this.mh.stopConsumingVideo(remoteId);
-      if(this.socket){
+      if (this.socket) {
         this.socket.emit("client.stopReceivingVideo", { id: remoteId });
       }
     }
@@ -563,7 +565,7 @@ class EchoProtocol {
   }
 
   getUser(id) {
-    if(id){
+    if (id) {
       return this.cachedUsers.get(id);
     } else {
       return this.cachedUsers.get(storage.get("id"));
