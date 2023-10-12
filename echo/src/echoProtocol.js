@@ -68,7 +68,9 @@ class EchoProtocol {
 
     this.socket.on("portalTurret.areYouStillThere?", (data) => {
       console.log("ping")
-      this.socket.emit("client.thereYouAre");
+      if(this.socket){
+        this.socket.emit("client.thereYouAre");
+      }
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
@@ -649,6 +651,13 @@ EchoProtocol.prototype.usersCacheUpdated = function (data) {
 }
 
 EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
+  if(data.state === 'failed'){
+    alert("Mediasoup connection failed. Websocket is working but your firewall might be blocking it.")
+    this.closeConnection();
+    this.localUserCrashed({ id: storage.get("id") });
+    return;
+  }
+
   this.currentConnectionState = data.state;
   this.emit("rtcConnectionStateChange", data);
 }

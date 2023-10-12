@@ -67,24 +67,28 @@ class mediasoupHandler {
 
   leaveRoom() {
     //close all tranports
-    if (this.sendTransport) {
-      this.sendTransport.close();
-      this.sendTransport = null;
-    }
-
-    if (this.rcvTransport) {
-      this.rcvTransport.close();
-      this.rcvTransport = null;
-    }
-
-    if (this.videoSendTransport) {
-      this.videoSendTransport.close();
-      this.videoSendTransport = null;
-    }
-
-    if (this.videoRcvTransport) {
-      this.videoRcvTransport.close();
-      this.videoRcvTransport = null;
+    try {
+      if (this.sendTransport) {
+        this.sendTransport.close();
+        this.sendTransport = null;
+      }
+  
+      if (this.rcvTransport) {
+        this.rcvTransport.close();
+        this.rcvTransport = null;
+      }
+  
+      if (this.videoSendTransport) {
+        this.videoSendTransport.close();
+        this.videoSendTransport = null;
+      }
+  
+      if (this.videoRcvTransport) {
+        this.videoRcvTransport.close();
+        this.videoRcvTransport = null;
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
