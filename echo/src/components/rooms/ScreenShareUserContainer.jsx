@@ -28,6 +28,7 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 
 function ScreenShareUserContainer({ user, selectUser }) {
   const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo)
+  const [talking, setTalking] = useState(false)
 
   useEffect(() => {
     ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
@@ -41,10 +42,16 @@ function ScreenShareUserContainer({ user, selectUser }) {
         setBroadcastingVideo(false)
       }
     });
+
+    ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
+      if (audioData.id === user.id) {
+        setTalking(audioData.talking);
+      }
+    });
   }, [user])
   if (broadcastingVideo) {
     return (
-      <Grid item className="screenshareUserContainer" key={user.id} onMouseDown={() => { selectUser(user); }}>
+      <Grid item className={talking ? "talking screenshareUserContainer" : "screenshareUserContainer"} key={user.id} onMouseDown={() => { selectUser(user); }}>
         <Container className="screenshareUser" sx={{ background: "red" }}></Container>
         <StyledAvatar className="screenshareUserAvatar" src={user.userImage} />
         <StyledTypography variant="h4">{user.name}</StyledTypography>
@@ -52,7 +59,7 @@ function ScreenShareUserContainer({ user, selectUser }) {
     );
   } else {
     return (
-      <Grid item className="screenshareUserContainer" key={user.id}>
+      <Grid item className={talking ? "talking screenshareUserContainer" : "screenshareUserContainer"} key={user.id}>
         <Container className="screenshareUser" sx={{ background: (user.userImage ? `url(${user.userImage})` : "white") }}></Container>
         <StyledAvatar className="screenshareUserAvatar" src={user.userImage} />
         <StyledTypography variant="h4">{user.name}</StyledTypography>
