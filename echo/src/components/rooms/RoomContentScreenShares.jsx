@@ -78,6 +78,11 @@ function RoomContentScreenShares({ roomId }) {
     if(focusedUser === user.id){
       return;
     }
+
+    if(focusedUser !== 'undefined'){
+      stopPlayback();
+    }
+    
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
