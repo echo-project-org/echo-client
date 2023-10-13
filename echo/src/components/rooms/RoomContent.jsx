@@ -8,7 +8,7 @@ import RoomContentScreenShares from "./RoomContentScreenShares";
 import RoomContentFriends from "./RoomContentFriends";
 
 import { ep } from "../../index";
-import RoomContentSelector from "./RoomContentSelector";
+import RoomContentSelector from "./RoomContentSelector.jsx";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
