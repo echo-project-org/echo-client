@@ -122,7 +122,6 @@ class User {
     }
 
     pongReceived() {
-        console.log("pong received");
         this.crashCountdown && clearInterval(this.crashCountdown);
     }
 
