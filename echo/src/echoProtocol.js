@@ -188,7 +188,6 @@ class EchoProtocol {
       this.stopTransmitting();
     }
 
-    let muted, deaf;
     let u = this.cachedUsers.get(storage.get("id"));
 
     this.mh = new mediasoupHandler(
@@ -203,7 +202,7 @@ class EchoProtocol {
       }
 
       if (u.deaf) {
-        this.deaf();
+        this.mh.deaf();
       }
     }
   }
