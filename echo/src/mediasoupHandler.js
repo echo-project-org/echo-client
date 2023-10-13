@@ -681,7 +681,7 @@ class mediasoupHandler {
     return {
       isTransmitting: true,
       isMuted: this.isMuted,
-      isDeaf: false,
+      isDeaf: this.isDeaf,
       volume: this.volume,
       deviceId: this.inputDeviceId,
       outputDeviceId: this.outputDeviceId,
