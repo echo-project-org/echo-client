@@ -1,4 +1,4 @@
-import { ep } from "./index";
+import { ep, storage } from "./index";
 const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 
@@ -19,6 +19,7 @@ class mediasoupHandler {
     this.streamIds = new Map();
 
     this.isMuted = false;
+    this.isDeaf = false;
     this.context = null;
     this.outStream = null;
     this.outGainNode = null;
@@ -306,6 +307,10 @@ class mediasoupHandler {
     gainNode.connect(deafNode);
     deafNode.connect(channelSplitter);
     deafNode.connect(dst);
+
+    if(this.isDeaf) {
+      deafNode.gain.value = 0.0;
+    }
 
     context.resume();
 
@@ -652,12 +657,14 @@ class mediasoupHandler {
   }
 
   deaf() {
+    this.isDeaf = true;
     this.inputStreams.forEach((stream) => {
       stream.deafNode.gain.value = 0.0;
     });
   }
 
   undeaf() {
+    this.isDeaf = false;
     this.inputStreams.forEach((stream) => {
       stream.deafNode.gain.value = 1.0;
     });

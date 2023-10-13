@@ -61,14 +61,14 @@ class EchoProtocol {
       if (this.socket) {
         this.socket.close();
       }
-      
+
       this.rtcConnectionStateChange({ state: "disconnected" });
       this.localUserCrashed({ id: storage.get("id") });
     });
 
     this.socket.on("portalTurret.areYouStillThere?", (data) => {
       console.log("ping")
-      if(this.socket){
+      if (this.socket) {
         this.socket.emit("client.thereYouAre");
       }
     });
@@ -187,12 +187,23 @@ class EchoProtocol {
     if (this.mh) {
       this.stopTransmitting();
     }
+
+    let muted, deaf;
+    let u = this.cachedUsers.get(id);
+
     this.mh = new mediasoupHandler(
       id,
       storage.get('inputAudioDeviceId'),
       storage.get('outputAudioDeviceId'),
     );
     await this.mh.init();
+    if(u.muted){
+      this.mh.mute();
+    }
+
+    if(u.deaf){
+      this.deaf();
+    }
   }
 
   stopTransmitting() {
@@ -650,7 +661,7 @@ EchoProtocol.prototype.usersCacheUpdated = function (data) {
 }
 
 EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
-  if(data.state === 'failed'){
+  if (data.state === 'failed') {
     alert("Mediasoup connection failed. Websocket is working but your firewall might be blocking it.")
     this.closeConnection();
     this.localUserCrashed({ id: storage.get("id") });
