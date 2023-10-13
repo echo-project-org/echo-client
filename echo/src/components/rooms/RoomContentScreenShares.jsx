@@ -57,6 +57,23 @@ function RoomContentScreenShares({ roomId }) {
     });
   }, [focusedUser])
 
+  useEffect(() => {
+    const updateUsers = () => {
+      setUsers(ep.getUsersInRoom(roomId));
+    }
+    ep.on("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel", (data) => {
+      if (data.roomId === roomId) {
+        updateUsers();
+      }
+    })
+
+    ep.on("userLeftChannel", "RoomContentScreenShares.userLeftChannel", (data) => {
+      if (data.roomId === roomId) {
+        updateUsers();
+      }
+    })
+  }, [users])
+
   const selectUser = (user) => {
     if(focusedUser === user.id){
       return;
