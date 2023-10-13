@@ -187,23 +187,12 @@ class EchoProtocol {
       this.stopTransmitting();
     }
 
-    let u = this.cachedUsers.get(storage.get("id"));
-
     this.mh = new mediasoupHandler(
       id,
       storage.get('inputAudioDeviceId'),
       storage.get('outputAudioDeviceId'),
     );
     await this.mh.init();
-    if (u) {
-      if (u.muted) {
-        this.mh.mute();
-      }
-
-      if (u.deaf) {
-        this.mh.deaf();
-      }
-    }
   }
 
   stopTransmitting() {

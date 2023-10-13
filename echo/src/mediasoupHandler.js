@@ -254,6 +254,10 @@ class mediasoupHandler {
 
     this.setOutVolume(this.volume);
 
+    if(this.isMuted){
+      this.mute();
+    }
+
     const audioTrack = dst.stream.getAudioTracks()[0];
     this.producer = await this.sendTransport.produce({
       track: audioTrack,
