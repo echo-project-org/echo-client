@@ -187,7 +187,12 @@ function App() {
               margin: "0",
               border: "none",
               borderLeft: "none"
-            }
+            },
+            ":not(:first-of-type)": {
+              margin: "0",
+              border: "none",
+              borderLeft: "none"
+            },
           },
         }
       },
