@@ -5,7 +5,7 @@ import { Emoji, EmojiStyle } from "emoji-picker-react";
 
 import MessageBoxButtons from './MessageBoxButtons';
 import UploadBoxButtons from './UploadBoxButtons';
-import ChatBox from './ChatBox';
+import ChatBox from './ChatBox.ts';
 
 import { ep, storage } from "../../index";
 
