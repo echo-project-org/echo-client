@@ -16,7 +16,7 @@ function OnlineUserIcon({ user }) {
   const [deaf, setDeaf] = useState(false);
   const [muted, setMuted] = useState(false);
   const [talking, setTalking] = useState(false);
-  const [broadcastingVideo, setBroadcastingVideo] = useState(false);
+  const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);
 
   const open = Boolean(anchorEl);
 

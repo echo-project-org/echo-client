@@ -77,6 +77,7 @@ class EchoProtocol {
       this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
       this.updateUser({ id: data.id, field: "muted", value: data.muted });
       this.updateUser({ id: data.id, field: "deaf", value: data.deaf });
+      this.updateUser({ id: data.id, field: "broadcastingVideo", value: data.broadcastingVideo });
       if (data.broadcastingVideo) {
         this.videoBroadcastStarted({ id: data.id, streamId: null });
       }
