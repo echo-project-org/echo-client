@@ -67,7 +67,6 @@ class EchoProtocol {
     });
 
     this.socket.on("portalTurret.areYouStillThere?", (data) => {
-      console.log("ping")
       if (this.socket) {
         this.socket.emit("client.thereYouAre");
       }

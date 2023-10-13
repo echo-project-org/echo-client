@@ -120,10 +120,10 @@ function RoomControl({ state, setState, screenSharing }) {
   const muteAndDeaf = () => { setMuted(true); setDeaf(true); computeAudio(false); }
 
   const muteMic = () => {
-    if(ep.getUser(storage.get('id')).currentRoom === '0'){
-      console.warn("User must must be in room to mute");
-      return;
-    }
+    // if(ep.getUser(storage.get('id')).currentRoom === '0'){
+    //   console.warn("User must must be in room to mute");
+    //   return;
+    // }
     if (muted) undeafOnMute();
     setMuted(!muted);
     if (!deaf) setWasMuted(true);
@@ -134,11 +134,10 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   const deafHeadphones = () => {
-    if(ep.getUser(storage.get('id')).currentRoom === '0'){
-      console.warn("User must must be in room to deafen");
-      return;
-    }
-
+    // if(ep.getUser(storage.get('id')).currentRoom === '0'){
+    //   console.warn("User must must be in room to deafen");
+    //   return;
+    // }
     if (!muted) muteOnDeaf()
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();

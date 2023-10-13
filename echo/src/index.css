@@ -20,15 +20,6 @@ body {
   height: 100%;
 }
 
-.utilitiesBar {
-  height: 3rem;
-  background-color: var(--mui-palette-background-main);
-  border-bottom: 1px solid var(--mui-palette-text-light);
-  display: flex;
-  flex-direction: row;
-  flex: 0 0 auto;
-}
-
 .logoContainer {
   height: fit-content;
 }

@@ -22,28 +22,6 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     maxHeight: "43.09px",
     top: "10%",
   },
-  [theme.breakpoints.up('lg')]: {
-    margin: "0 0 0 1rem",
-    width: "100%",
-    position: "relative",
-    display: "inline-flex",
-    maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: theme.palette.background.dark,
-    padding: "0 0 0 .6rem",
-    maxHeight: "43.09px",
-    top: "10%",
-  },
-  [theme.breakpoints.up('xl')]: {
-    margin: "0 0 0 1rem",
-    width: "100%",
-    position: "relative",
-    display: "inline-flex",
-    maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: theme.palette.background.dark,
-    padding: "0 0 0 .6rem",
-    maxHeight: "43.09px",
-    top: "10%",
-  },
 }));
 
 const StyledContainerContent = styled(Container)(({ theme }) => ({
@@ -89,13 +67,18 @@ function RoomContent({ roomId }) {
   }, [roomId]);
 
   useEffect(() => {
-    ep.on("gotVideoStream", (data) => {
+    ep.on("gotVideoStream", "RoomContent.gotVideoStream", (data) => {
       setContentSelected("screen");
     })
 
-    ep.on("exitedFromRoom", (data) => {
+    ep.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
       setContentSelected("friends");
-    })
+    });
+
+    return () => {
+      ep.releaseGroup("RoomContent.gotVideoStream");
+      ep.releaseGroup("RoomContent.exitedFromRoom");
+    }
   }, [contentSelected]);
 
   return (
