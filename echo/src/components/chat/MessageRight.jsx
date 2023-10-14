@@ -20,7 +20,7 @@ function MessageRight({ message }) {
       <Grid item>
         <Grid container direction={"row"} sx={{ flexFlow: "column" }}>
           <Grid item>
-            <Typography variant="body1" sx={{ fontWeight: "bold", fontSize: "1rem", textAlign: "left", color: "rgb(115, 24, 115)" }}>
+            <Typography variant="body1" sx={{ fontWeight: "bold", fontSize: "1rem", textAlign: "left", color: "var(--mui-palette-primary-main)" }}>
               {message.name}
             </Typography>
           </Grid>
