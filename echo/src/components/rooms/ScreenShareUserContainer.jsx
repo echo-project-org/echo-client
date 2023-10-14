@@ -3,6 +3,14 @@ import { Avatar, Container, Grid, Typography, styled, Badge } from '@mui/materia
 
 import { ep } from '../..';
 
+const startStreamSound = require("../../audio/streamstart.mp3");
+const endStreamSound = require("../../audio/streamend.mp3");
+
+const startStreamAudio = new Audio(startStreamSound);
+startStreamAudio.volume = 0.6;
+const endStreamAudio = new Audio(endStreamSound);
+endStreamAudio.volume = 0.6;
+
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     // put image in the center of parent div
@@ -31,16 +39,17 @@ function ScreenShareUserContainer({ user, selectUser }) {
   const [talking, setTalking] = useState(user.talking);
 
   useEffect(() => {
-    console.log("creating")
     ep.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
-        setBroadcastingVideo(true)
+        setBroadcastingVideo(true);
+        startStreamAudio.play();
       }
     });
 
     ep.on("videoBroadcastStop", "ScreenShareUserContainer.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
-        setBroadcastingVideo(false)
+        setBroadcastingVideo(false);
+        endStreamAudio.play();
       }
     });
 
@@ -52,7 +61,6 @@ function ScreenShareUserContainer({ user, selectUser }) {
     });
 
     return () => {
-      console.log("destroying")
       ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStarted");
       ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStop");
       ep.releaseGroup("ScreenShareUserContainer.audioStatsUpdate");
