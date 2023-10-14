@@ -41,20 +41,22 @@ function RoomContentScreenShares({ roomId }) {
   }, [roomId])
 
   useEffect(() => {
-    ep.on("gotVideoStream", (data) => {
+    ep.on("gotVideoStream", "RoomContentScreenShares.gotVideoStream", (data) => {
       setFocusedUser(data.user.id);
       var myDiv = document.getElementById('screenShareContainer');
-      // myDiv.innerHTML = variableLongText;
-      if(myDiv){
-        myDiv.scrollTop = (99999999999999 * -1);
-      }
-    })
+      if (myDiv) myDiv.scrollTop = (99999999999999 * -1);
+    });
 
-    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+    ep.on("videoBroadcastStop", "RoomContentScreenShares.videoBroadcastStop", (data) => {
       if (data.id === focusedUser) {
         setFocusedUser('undefined');
       }
     });
+
+    return () => {
+      ep.releaseGroup("RoomContentScreenShares.videoBroadcastStop");
+      ep.releaseGroup("RoomContentScreenShares.gotVideoStream");
+    }
   }, [focusedUser])
 
   useEffect(() => {
@@ -65,13 +67,18 @@ function RoomContentScreenShares({ roomId }) {
       if (data.roomId === roomId) {
         updateUsers();
       }
-    })
+    });
 
     ep.on("userLeftChannel", "RoomContentScreenShares.userLeftChannel", (data) => {
       if (data.roomId === roomId) {
         updateUsers();
       }
-    })
+    });
+
+    return () => {
+      ep.releaseGroup("RoomContentScreenShares.userJoinedChannel");
+      ep.releaseGroup("RoomContentScreenShares.userLeftChannel");
+    }
   }, [users])
 
   const selectUser = (user) => {

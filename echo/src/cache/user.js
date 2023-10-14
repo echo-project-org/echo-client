@@ -25,6 +25,10 @@ class Users {
             if (data.deaf === "true") data.deaf = true;
             else if (data.deaf === "false") data.deaf = false;
         }
+        if(data.talking && typeof data.talking !== "boolean") {
+            if (data.talking === "true") data.talking = true;
+            else if (data.talking === "false") data.talking = false;
+        }
         if(data.broadcastingVideo && typeof data.broadcastingVideo !== "boolean") {
             if (data.broadcastingVideo === "true") data.broadcastingVideo = true;
             else if (data.broadcastingVideo === "false") data.broadcastingVideo = false;
@@ -59,6 +63,7 @@ class Users {
             muted: data.muted || false,
             deaf: data.deaf || false,
             broadcastingVideo: data.broadcastingVideo || false,
+            talking: data.talking || false,
             self
         };
 
@@ -96,6 +101,7 @@ class Users {
     }
 
     update(id, field, value) {
+        console.log("[CACHE] Updating user", id, field, value)
         // data type check
         id = this.typeCheck(id);
         field = this.typeCheck(field);

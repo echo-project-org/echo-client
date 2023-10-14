@@ -27,28 +27,38 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 }));
 
 function ScreenShareUserContainer({ user, selectUser }) {
-  const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo)
-  const [talking, setTalking] = useState(false)
+  const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);
+  const [talking, setTalking] = useState(user.talking);
 
   useEffect(() => {
-    ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
+    console.log("creating")
+    ep.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true)
       }
     });
 
-    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+    ep.on("videoBroadcastStop", "ScreenShareUserContainer.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(false)
       }
     });
 
-    ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
+    ep.on("audioStatsUpdate", "ScreenShareUserContainer.audioStatsUpdate", (audioData) => {
+      console.log(audioData, user);
       if (audioData.id === user.id) {
         setTalking(audioData.talking);
       }
     });
-  }, [user])
+
+    return () => {
+      console.log("destroying")
+      ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStarted");
+      ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStop");
+      ep.releaseGroup("ScreenShareUserContainer.audioStatsUpdate");
+    }
+  }, [user]);
+
   if (broadcastingVideo) {
     return (
       <Grid item className={talking ? "talking screenshareUserContainer" : "screenshareUserContainer"} key={user.id} onMouseDown={() => { selectUser(user); }}>

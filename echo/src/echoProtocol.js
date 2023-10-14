@@ -690,6 +690,7 @@ EchoProtocol.prototype.needUserCacheUpdate = function (data) {
 }
 
 EchoProtocol.prototype.audioStatsUpdate = function (data) {
+  this.updateUser({ id: data.id, field: "talking", value: data.talking })
   this.emit("audioStatsUpdate", data);
 }
 
