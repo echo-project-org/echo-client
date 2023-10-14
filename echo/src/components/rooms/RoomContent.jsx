@@ -2,12 +2,9 @@ import "../../css/chat.css";
 
 import { useState, useEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
+import InternalRoomContent from "./InternalRoomContent.jsx";
 
-import RoomContentChat from "./RoomContentChat";
-import RoomContentScreenShares from "./RoomContentScreenShares";
-import RoomContentFriends from "./RoomContentFriends";
-
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
 import RoomContentSelector from "./RoomContentSelector.jsx";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -39,19 +36,6 @@ const StyledContainerContent = styled(Container)(({ theme }) => ({
   },
 }));
 
-const InternalRoomContent = ({ contentSelected, roomId }) => {
-  switch (contentSelected) {
-    case "chat":
-      return <RoomContentChat roomId={roomId} key={'chat'} />
-    case "screen":
-      return <RoomContentScreenShares roomId={roomId} key={'screen'} />
-    case "friends":
-      return <RoomContentFriends key={'friends'} />
-    default:
-      return <RoomContentChat roomId={roomId} key={'chat'} />
-  }
-}
-
 function RoomContent({ roomId }) {
   // const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
   const [contentSelected, setContentSelected] = useState("friends");
@@ -66,6 +50,11 @@ function RoomContent({ roomId }) {
     }
   }, [roomId]);
 
+  const setContentSelectedWrap = (content) => {
+    storage.set("lastContentSelected", content);
+    setContentSelected(content);
+  }
+
   useEffect(() => {
     ep.on("gotVideoStream", "RoomContent.gotVideoStream", (data) => {
       setContentSelected("screen");
@@ -75,9 +64,14 @@ function RoomContent({ roomId }) {
       setContentSelected("friends");
     });
 
+    ep.on("joinedRoom", "RoomContent.joinedRoom", (data) => {
+      setContentSelectedWrap(storage.get("lastContentSelected") || "chat");
+    });
+
     return () => {
       ep.releaseGroup("RoomContent.gotVideoStream");
       ep.releaseGroup("RoomContent.exitedFromRoom");
+      ep.releaseGroup("RoomContent.joinedRoom");
     }
   }, [contentSelected]);
 
@@ -106,7 +100,7 @@ function RoomContent({ roomId }) {
               justifyContent: "flex-end",
               alignItems: "center",
             }}>
-              <RoomContentSelector roomId={roomId} contentSelected={contentSelected} setContentSelected={setContentSelected} />
+              <RoomContentSelector roomId={roomId} contentSelected={contentSelected} setContentSelected={setContentSelectedWrap} />
             </Grid>
           </Grid>
         </StyledContainer>
