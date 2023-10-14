@@ -254,7 +254,7 @@ class mediasoupHandler {
 
     this.setOutVolume(this.volume);
 
-    if(this.isMuted){
+    if (this.isMuted) {
       this.mute();
     }
 
@@ -312,7 +312,7 @@ class mediasoupHandler {
     deafNode.connect(channelSplitter);
     deafNode.connect(dst);
 
-    if(this.isDeaf) {
+    if (this.isDeaf) {
       deafNode.gain.value = 0.0;
     }
 
@@ -449,7 +449,7 @@ class mediasoupHandler {
 
       analyser[i].fftSize = 1024;
       analyser[i].bufferLen = 1024;
-      analyser[i].smoothingTimeConstant = 0.2;
+      analyser[i].smoothingTimeConstant = 0.9;
       analyser[i].minCaptureFreq = 85;
       analyser[i].maxCaptureFreq = 255;
       analyser[i].noiseCaptureDuration = 1000;
@@ -495,7 +495,11 @@ class mediasoupHandler {
     //cancel previous time change
     this.vadNode.gain.cancelAndHoldAtTime(0);
     //ramp volume to new value in 1 second
-    this.vadNode.gain.linearRampToValueAtTime(volume, 1);
+    if (volume === 1.0) {
+      this.vadNode.gain.value = 1.0;
+    } else {
+      this.vadNode.gain.linearRampToValueAtTime(0, 1);
+    }
   }
 
   _findUserId(stream) {
