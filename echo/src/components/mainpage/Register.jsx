@@ -38,8 +38,7 @@ const Register = () => {
   }
 
   const checkCredentials = async (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
+    if (e.key !== "Enter" && e.target.localName !== "button") return;
 
     var name = document.getElementById('usernameBox').value;
     var psw = document.getElementById('passwordBox').value;

@@ -32,8 +32,7 @@ const Login = () => {
   }
 
   const checkCredentials = async (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
+    if (e.key !== "Enter" && e.target.localName !== "button") return;
 
     var email = document.getElementById('usernameBox').value
     var password = document.getElementById('passwordBox').value
