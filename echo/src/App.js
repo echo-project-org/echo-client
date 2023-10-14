@@ -168,9 +168,9 @@ function App() {
       MuiContainer: {
         styleOverrides: {
           root: {
-            maxWidth: "100%",
-            margin: 0,
-            padding: 0,
+            "@media (min-width: 600px)": {
+              padding: 0,
+            }
           }
         }
       },
