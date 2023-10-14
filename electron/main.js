@@ -18,7 +18,6 @@ const createRtcInternalsWindow = () => {
   })
 
   rtcInternals.loadURL("chrome://webrtc-internals");
-
   return rtcInternals;
 }
 
