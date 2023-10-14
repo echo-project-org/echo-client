@@ -320,6 +320,7 @@ class EchoProtocol {
     this.mh.startStatsInterval();
     // join the transmission on current room
     this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
+    this.joinedRoom();
   }
 
   sendAudioState(id, data) {
@@ -702,6 +703,10 @@ EchoProtocol.prototype.videoBroadcastStop = function (data) {
 
 EchoProtocol.prototype.exitedFromRoom = function (data) {
   this.emit("exitedFromRoom", data);
+}
+
+EchoProtocol.prototype.joinedRoom = function (data) {
+  this.emit("joinedRoom", data);
 }
 
 EchoProtocol.prototype.gotVideoStream = function (data) {
