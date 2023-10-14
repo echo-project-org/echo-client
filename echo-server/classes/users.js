@@ -108,6 +108,10 @@ class User {
         });
     }
 
+    getIsBroadcastingVideo() {
+        return this.isBroadcastingVideo;
+    }
+
     clientDisconnected(data) {
         console.log("[USER-" + this.id + "] DISCONNECTED");
         clearInterval(this.pingInterval);

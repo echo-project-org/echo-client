@@ -127,6 +127,7 @@ class Rooms {
 
     userFullyConnectedToRoom(a) {
         //Notify all users
+        let newUser = this.connectedClients.get(a.id);
         this.connectedClients.forEach((user, _) => {
             if (a.id !== user.id) {
                 const userRoom = user.getCurrentRoom();
@@ -137,15 +138,13 @@ class Rooms {
                     muted: a.muted,
                     deaf: a.deaf,
                     isConnected: a.isConnected,
+                    broadcastingVideo: newUser.getIsBroadcastingVideo(),
                 });
             }
         })
-
-        let newUser = this.connectedClients.get(a.id);
         this.getUsersInRoom(a.roomId).forEach((user, id) => {
             if (newUser.id !== user.id) {
                 const userRoom = user.getCurrentRoom();
-                const isBroadcatingVideo = user.isBroadcastingVideo;
                 let isConnected = userRoom === newUser.getCurrentRoom();
                 let audioState = user.getAudioState();
                 newUser.userJoinedChannel({
@@ -154,7 +153,7 @@ class Rooms {
                     isConnected: isConnected,
                     deaf: audioState.deaf,
                     muted: audioState.muted,
-                    broadcastingVideo: isBroadcatingVideo
+                    broadcastingVideo: user.getIsBroadcastingVideo(),
                 });
             }
         });
@@ -255,7 +254,7 @@ class Rooms {
                     if (data.id !== user.id) {
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
-                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected, crashed: data.crashed===true });
+                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected, crashed: data.crashed === true });
                     }
                 })
 
