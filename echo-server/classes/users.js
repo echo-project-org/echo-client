@@ -6,7 +6,7 @@ class User {
         this.currentRoom = 0;
         this.isDeaf = false;
         this.isMuted = false;
-        this.isTransmittingVideo = false;
+        this.isBroadcastingVideo = false;
         this.events = {};
 
         this.receiveTransport = null;
