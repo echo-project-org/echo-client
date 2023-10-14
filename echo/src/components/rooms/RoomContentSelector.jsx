@@ -11,24 +11,16 @@ function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
       setContentSelected(newAlignment)
     },
   }
-  if (String(roomId) === '0') {
-    return (
-      <ToggleButtonGroup>
-        <ToggleButton value="friends" key="friends" disableRipple>
-          <PeopleAlt />
-        </ToggleButton>
-      </ToggleButtonGroup>
-    )
-  }
+  
   return (
     <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
       <ToggleButton value="friends" key="friends" disableRipple>
         <PeopleAlt />
       </ToggleButton>,
-      <ToggleButton value="chat" key="chat" disableRipple>
+      <ToggleButton value="chat" key="chat" disableRipple disabled={String(roomId)==='0'}>
         <ChatBubble />
       </ToggleButton>,
-      <ToggleButton value="screen" key="screen" disableRipple>
+      <ToggleButton value="screen" key="screen" disableRipple disabled={String(roomId)==='0'}>
         <Window />
       </ToggleButton>
     </ToggleButtonGroup>
