@@ -538,7 +538,6 @@ class EchoProtocol {
     }
   }
 
-
   updateUser({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
       this.cachedUsers.update(id, field, value);

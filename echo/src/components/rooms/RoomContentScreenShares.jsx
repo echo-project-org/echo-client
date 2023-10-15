@@ -60,9 +60,6 @@ function RoomContentScreenShares({ roomId }) {
   }, [focusedUser])
 
   useEffect(() => {
-    const updateUsers = () => {
-      setUsers(ep.getUsersInRoom(roomId));
-    }
     ep.on("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel", (data) => {
       if (data.roomId === roomId) {
         updateUsers();
@@ -75,11 +72,20 @@ function RoomContentScreenShares({ roomId }) {
       }
     });
 
+    ep.on("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated", (_) => {
+      updateUsers();
+    });
+
     return () => {
       ep.off("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel");
       ep.off("userLeftChannel", "RoomContentScreenShares.userLeftChannel");
+      ep.off("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated");
     }
-  }, [users])
+  }, [users]);
+  
+  const updateUsers = () => {
+    setUsers(ep.getUsersInRoom(roomId));
+  }
 
   const selectUser = (user) => {
     if(focusedUser === user.id){

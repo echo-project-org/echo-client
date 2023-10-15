@@ -22,19 +22,20 @@ router.get("/image/:id", (req, res) => {
     if(!req.authenticator.checkAuth(req, res)) return;
 
     var { id } = req.params;
-    
-    // if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
-    // if (fs.existsSync("./images/" + id + ".png")) {
-    //     res.sendFile("./images/" + id + ".png", { root: __dirname + "/../" });
-    //     return;
-    // }
-    // if (fs.existsSync("./images/" + id)) {
-    //     res.sendFile("./images/" + id, { root: __dirname + "/../" });
-    //     return;
-    // }
+    // maybe good? IDK
+    if (id.includes(".")) id = id.split(".")[0];
+    // get image from file system
+    fs.readFile("./images/" + id + ".png", function (err, data) {
+        if (err) {
+            console.log(err);
+            res.status(400).send({ message: "Error reading image" });
+        } else {
+            res.writeHead(200, { "Content-Type": "image/png" });
+            res.end(data);
+        }
+    });
 
-
-    res.status(404).send("File not found");
+    // res.status(404).send("File not found");
 });
 
 router.post("/image", (req, res) => {
@@ -43,23 +44,21 @@ router.post("/image", (req, res) => {
     const { id, image } = req.body;
     if (!id || !image) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("UPDATE users SET img = ? WHERE id = ?", [image, id], (err, result, fields) => {
-        // console.log(err);
-        if (err) return res.status(400).send({ error: "You messed up the request." });
-        res.status(200).send({ message: "Image updated!" });
+    // save image (base64 of file) to file system
+    const base64Data = image.replace(/^data:image\/png;base64,/, "");
+    fs.writeFile("./images/" + id + ".png", base64Data, "base64", function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).send({ message: "Error saving image" });
+        } else {
+            const imgUrl = "https://echo.kuricki.com/api/users/image/" + id + ".png";
+            req.database.query("UPDATE users SET img = ? WHERE id = ?", [imgUrl, id], (err, result, fields) => {
+                // console.log(err);
+                if (err) return res.status(400).send({ error: "You messed up the request." });
+                res.status(200).send({ message: "Image updated!", url: imgUrl });
+            });
+        }
     });
-
-    // var { id, img } = req.body;
-    // if (id.endsWith(".png")) id = id.substring(0, id.length - 4);
-    // var base64Data = img.replace(/^data:image\/png;base64,/, "");
-    // fs.writeFile("./images/" + id + ".png", base64Data, "base64", function (err) {
-    //     if (err) {
-    //         console.log(err);
-    //         res.status(400).send("Error saving image");
-    //     } else {
-    //         res.status(200).send({ message: "Image saved!", image: "https://echo.kuricki.com/api/images/" + id });
-    //     }
-    // });
 });
 
 router.get("/rooms", (req, res) => {
