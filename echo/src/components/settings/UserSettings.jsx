@@ -54,6 +54,121 @@ const StyledTextField = styled(TextField)({
   }
 });
 
+const ComputeSelectList = ({ statusHover, changeStatus, statusSelectOn }) => {
+  if (statusHover)
+    return (
+      <Grid container className="selectContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <Circle style={{ color: "#44b700" }} />
+          Online
+        </Grid>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <DarkMode style={{ color: "#ff8800" }} />
+          Away
+        </Grid>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <DoNotDisturbOn style={{ color: "#fd4949" }} />
+          Do not disturb
+        </Grid>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <Circle style={{ color: "#f5e8da" }} />
+          Invisible
+        </Grid>
+      </Grid>
+    )
+}
+
+const ComputeCurrentStatus = ({}) => {
+  const online = storage.get("online");
+  switch (online) {
+    case "0":
+      return (
+        <Container className="statusText">
+          <Circle style={{ color: "#f5e8da" }} />
+          <p>Offline</p>
+        </Container>
+      );
+    case "1":
+      return (
+        <Container className="statusText">
+          <Circle style={{ color: "#44b700" }} />
+          <p>Online</p>
+        </Container>
+      );
+    case "2":
+      return (
+        <Container className="statusText">
+          <DarkMode style={{ color: "#ff8800" }} />
+          <p>Away</p>
+        </Container>
+      );
+    case "3":
+      return (
+        <Container className="statusText">
+          <DoNotDisturbOn style={{ color: "#fd4949" }} />
+          <p>Do not disturb</p>
+        </Container>
+      );
+    case "4":
+      return (
+        <Container className="statusText">
+          <Circle style={{ color: "#f5e8da" }} />
+          <p>Invisible</p>
+        </Container>
+      );
+    default:
+      return (
+        <Container className="statusText">
+          <Circle style={{ color: "#f5e8da" }} />
+          <p>Offline</p>
+        </Container>
+      );
+  }
+}
+
+const ComputeUserImage = ({ hover, uploadPicture, onAvatarHover, loading }) => {
+  if (hover) {
+    return (
+      <Fade in={hover} timeout={200}>
+        <div
+          style={{
+            backgroundColor: "rgba(0,0,0,.3)",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            zIndex: "1",
+            borderRadius: "50%",
+            cursor: "pointer"
+          }}
+          onMouseDown={uploadPicture}
+          onMouseLeave={onAvatarHover} >
+          <CameraAlt style={{ fontSize: "4rem", position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
+        </div>
+      </Fade>
+    )
+  }
+  if (loading) {
+    return (
+      <Fade in={loading} timeout={200}>
+        <div
+          style={{
+            backgroundColor: "rgba(0,0,0,.5)",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            zIndex: "1",
+            borderRadius: "50%",
+            cursor: "pointer"
+          }}
+        >            
+          <Loop style={{ fontSize: "4rem", position: "absolute", top: "25%", left: "25%" }} className='rotating' />
+        </div>
+      </Fade>
+    )
+  }
+  return null;
+}
+
 function UserSettings() {
   const [hover, setHover] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -104,118 +219,6 @@ function UserSettings() {
     };
     fileInput.click();
   }
-  const computeOnline = () => {
-    const online = storage.get("online");
-    switch (online) {
-      case "0":
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#f5e8da" }} />
-            <p>Offline</p>
-          </Container>
-        );
-      case "1":
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#44b700" }} />
-            <p>Online</p>
-          </Container>
-        );
-      case "2":
-        return (
-          <Container className="statusText">
-            <DarkMode style={{ color: "#ff8800" }} />
-            <p>Away</p>
-          </Container>
-        );
-      case "3":
-        return (
-          <Container className="statusText">
-            <DoNotDisturbOn style={{ color: "#fd4949" }} />
-            <p>Do not disturb</p>
-          </Container>
-        );
-      case "4":
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#f5e8da" }} />
-            <p>Invisible</p>
-          </Container>
-        );
-      default:
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#f5e8da" }} />
-            <p>Offline</p>
-          </Container>
-        );
-    }
-  }
-  const computeSelectList = () => {
-    if (statusHover)
-      return (
-        <Grid container className="selectContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <Circle style={{ color: "#44b700" }} />
-            Online
-          </Grid>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <DarkMode style={{ color: "#ff8800" }} />
-            Away
-          </Grid>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <DoNotDisturbOn style={{ color: "#fd4949" }} />
-            Do not disturb
-          </Grid>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <Circle style={{ color: "#f5e8da" }} />
-            Invisible
-          </Grid>
-        </Grid>
-      )
-  }
-  const computeDiv = () => {
-    if (hover) {
-      return (
-        <Fade in={hover} timeout={200}>
-          <div
-            style={{
-              backgroundColor: "rgba(0,0,0,.3)",
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              zIndex: "1",
-              borderRadius: "50%",
-              cursor: "pointer"
-            }}
-            onMouseDown={uploadPicture}
-            onMouseLeave={onAvatarHover} >
-            <CameraAlt style={{ fontSize: "4rem", position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
-          </div>
-        </Fade>
-      )
-    }
-    if (loading) {
-      return (
-        <Fade in={loading} timeout={200}>
-          <div
-            style={{
-              backgroundColor: "rgba(0,0,0,.5)",
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              zIndex: "1",
-              borderRadius: "50%",
-              cursor: "pointer"
-            }}
-          >            
-            <Loop style={{ fontSize: "4rem", position: "absolute", top: "25%", left: "25%" }} className='rotating' />
-          </div>
-        </Fade>
-      )
-    }
-    return null;
-  }
   const statusSelectOn = () => {
     setStatusHover(true);
   }
@@ -261,15 +264,15 @@ function UserSettings() {
             variant="dot"
             invisible
           >
-            {computeDiv()}
+            <ComputeUserImage hover={hover} uploadPicture={uploadPicture} onAvatarHover={onAvatarHover} loading={loading} />
             <StyledAvatar src={storage.get("userImage")} onMouseEnter={onAvatarHover} />
           </Badge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">
-              {computeOnline()}
+              <ComputeCurrentStatus />
             </div>
             <div className="selectContainer">
-              {computeSelectList()}
+              <ComputeSelectList statusHover={statusHover} changeStatus={changeStatus} statusSelectOn={statusSelectOn} />
             </div>
           </div>
         </Grid>
