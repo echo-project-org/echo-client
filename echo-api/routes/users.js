@@ -97,10 +97,19 @@ router.get("/status/:id", (req, res) => {
     const { id } = req.query;
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("SELECT online FROM users WHERE id = ?", [id], (err, result, fields) => {
+    req.database.query("SELECT online FROM users WHERE id = ?", [id], (err, user, fields) => {
         if (err) return res.status(400).send({ error: "You messed up the request." });
-        if (result.length > 0) {
-            res.status(200).send({ online: result[0].online });
+        if (user.length > 0) {
+            if (user[0].online === "1") {
+                req.database.query("SELECT status FROM user_status WHERE id = ?", [id], (err, result, fields) => {
+                    if (err) return res.status(400).send({ error: "You messed up the request." });
+                    if (result.length > 0) {
+                        res.status(200).send({ status: result[0].status });
+                    } else {
+                        res.status(404).send({ error: "User not found." });
+                    }
+                });
+            }
         } else {
             res.status(404).send({ error: "User not found." });
         }
@@ -115,17 +124,26 @@ router.post('/status', (req, res) => {
     const { id, status } = req.body;
     if (!id || !status) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("UPDATE users SET online = ? WHERE id = ?", [status, id], (err, result, fields) => {
-        if (err) console.log(err);
-        if (err) return res.status(500).send({ error: "You messed up the request." });
-        res.status(200).send({ message: "Status updated!" });
+    // remove user from any rooms
+    if (status == "0") {
+        // set online status of user to offline
+        req.database.query("UPDATE users SET online = 0 WHERE id = " + id, function (err, result, fields) {
+            if (err) console.log(err);
+        });        
 
-        // remove user from any rooms   
-        if (status == "0")
-            req.database.query("DELETE FROM room_users WHERE userId = " + id, function (err, result, fields) {
-                if (err) console.log(err);
-            });
-    });
+        // remove user from any rooms
+        req.database.query("DELETE FROM room_users WHERE userId = " + id, function (err, result, fields) {
+            if (err) console.log(err);
+        });
+        res.status(200).send({ message: "You are now offline!" });
+    } else {
+        // update user status
+        req.database.query("UPDATE user_status SET status = ? WHERE id = ?", [status, id], (err, result, fields) => {
+            if (err) console.log(err);
+            if (err) return res.status(500).send({ error: "You messed up the request." });
+            res.status(200).send({ message: "Status updated!" });
+        });
+    }
 });
 
 // update volume value of existing user
@@ -137,7 +155,7 @@ router.post('/volume', (req, res) => {
     const user = body.status;
     const volume = body.room;
 
-    con.query("INSERT INTO userVolumes (me, otherUser, volume) VALUES ('" + id + "', '" + user + "', '" + volume + "') ON DUPLICATE KEY UPDATE volume = " + volume, function (err, result, fields) {
+    req.database.query("INSERT INTO userVolumes (me, otherUser, volume) VALUES ('" + id + "', '" + user + "', '" + volume + "') ON DUPLICATE KEY UPDATE volume = " + volume, function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
         res.status(200).send({ message: "Volume updated!" });
     });
@@ -149,7 +167,7 @@ router.get('/volume/:name', (req, res) => {
     
     const { name } = req.params;
 
-    con.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + name + "'", function (err, result, fields) {
+    req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + name + "'", function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
@@ -174,7 +192,7 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
     const { nick1 } = req.params;
     const { nick2 } = req.params;
 
-    con.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + nick1 + "' AND otherUser = '" + nick2 + "'", function (err, result, fields) {
+    req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + nick1 + "' AND otherUser = '" + nick2 + "'", function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
