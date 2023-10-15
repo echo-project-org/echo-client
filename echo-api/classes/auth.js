@@ -98,7 +98,7 @@ class Auth {
 
   // check authentication
   checkAuth(req, res) {
-    // if (config.env == "dev") return true;
+    if (config.env == "dev") return true;
 
     if (req.headers.authorization && req.authenticator.checkToken(req.headers.authorization)) {
       return true;

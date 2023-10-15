@@ -40,12 +40,15 @@ router.post("/login", (req, res) => {
 
         if (result && result.length > 0) {
             const { token, refreshToken } = req.authenticator.generateToken(result[0].id);
+            req.database.query("UPDATE users SET online = ? WHERE id = ?", ["1", result[0].id], (err, result, fields) => {
+                if (err) console.error(err);
+            });
             return res.status(200).json({
                 id: result[0].id,
                 name: result[0].name,
                 email: result[0].email,
                 img: result[0].img,
-                online: result[0].online,
+                online: result[0].status,
                 token,
                 refreshToken
             });
