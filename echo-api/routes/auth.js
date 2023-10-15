@@ -12,6 +12,10 @@ router.post("/register", (req, res) => {
         if (err) return res.status(406).send({ message: "Username or email already exists." });
         
         if (result && result.affectedRows > 0) {
+            req.database.query("INSERT INTO user_status (id, status) VALUES (" + result.insertId + ", '1')", (err, result, fields) => {
+                if (err) console.error(err);
+            });
+
             return res.status(200).json({ message: "Account created successfully!" });
         }
 
@@ -24,7 +28,11 @@ router.post("/login", (req, res) => {
     
     if (!req.utils.checkEmail(email)) return res.status(406).send({ message: "Invalid email address. (Nice try...)" });
 
-    req.database.query("SELECT id, name, email, img, online FROM users WHERE password = '" + password + "'", (err, result, fields) => {
+    req.database.query(`
+        SELECT id, name, email, img, status FROM users
+        INNSER JOIN user_status ON userId = id
+        WHERE password = '${password}'
+    `, (err, result, fields) => {
         if (err) console.error(err);
         if (err) return res.status(400).send({ message: "You messed up the request." });
         // send wrong credentials if no user was found

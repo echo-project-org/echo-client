@@ -48,7 +48,7 @@ class Auth {
     var refreshToken = this.generateRandomString(64);
     // ad expiring date to token
     var expireDate = new Date();
-    console.log("generating token for user", user, config.tokenExpireInDays)
+    // console.log("generating token for user", user, config.tokenExpireInDays)
     expireDate.setDate(expireDate.getDate() + config.tokenExpireInDays);
     this.tokens.push({ token: token, user: user, expires: expireDate.getTime(), refreshToken: refreshToken });
     return { token: token, refreshToken: refreshToken };
@@ -62,10 +62,10 @@ class Auth {
     for (var i = 0; i < this.tokens.length; i++) {
       if (this._compare(this.tokens[i].token, token)) {
         if (this.tokens[i].expires > new Date().getTime()) {
-          console.log("Token valid for user", this.tokens[i].user)
+          // console.log("Token valid for user", this.tokens[i].user)
           return this.tokens[i].user;
         } else {
-          console.log("Token expired for user", this.tokens[i].user)
+          // console.log("Token expired for user", this.tokens[i].user)
           // remove the token if it is expired
           this.removeToken(token);
           return false;
@@ -98,14 +98,13 @@ class Auth {
 
   // check authentication
   checkAuth(req, res) {
-    if (config.env == "dev") return true;
+    // if (config.env == "dev") return true;
 
-    if (req.headers.authorization)
-      if (!req.authenticator.checkToken(req.headers.authorization)) {
-        res.status(401).send({ message: "Unauthorized" });
-        return false;
-      }
-    return true;
+    if (req.headers.authorization && req.authenticator.checkToken(req.headers.authorization)) {
+      return true;
+    }
+    res.status(401).send({ message: "Unauthorized" });
+    return false;
   }
 }
 
