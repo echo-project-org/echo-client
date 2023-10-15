@@ -54,8 +54,8 @@ function RoomContentScreenShares({ roomId }) {
     });
 
     return () => {
-      ep.releaseGroup("RoomContentScreenShares.videoBroadcastStop");
-      ep.releaseGroup("RoomContentScreenShares.gotVideoStream");
+      ep.off("gotVideoStream", "RoomContentScreenShares.gotVideoStream");
+      ep.off("videoBroadcastStop", "RoomContentScreenShares.videoBroadcastStop");
     }
   }, [focusedUser])
 
@@ -76,8 +76,8 @@ function RoomContentScreenShares({ roomId }) {
     });
 
     return () => {
-      ep.releaseGroup("RoomContentScreenShares.userJoinedChannel");
-      ep.releaseGroup("RoomContentScreenShares.userLeftChannel");
+      ep.off("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel");
+      ep.off("userLeftChannel", "RoomContentScreenShares.userLeftChannel");
     }
   }, [users])
 

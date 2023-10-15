@@ -69,9 +69,9 @@ function RoomContent({ roomId }) {
     });
 
     return () => {
-      ep.releaseGroup("RoomContent.gotVideoStream");
-      ep.releaseGroup("RoomContent.exitedFromRoom");
-      ep.releaseGroup("RoomContent.joinedRoom");
+      ep.off("gotVideoStream", "RoomContent.gotVideoStream");
+      ep.off("exitedFromRoom", "RoomContent.exitedFromRoom");
+      ep.off("joinedRoom", "RoomContent.joinedRoom");
     }
   }, [contentSelected]);
 

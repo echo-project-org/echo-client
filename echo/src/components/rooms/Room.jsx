@@ -24,9 +24,9 @@ function Room({ active, data }) {
     });
 
     return () => {
-      ep.releaseGroup('Room.userJoinedChannel');
-      ep.releaseGroup('Room.userLeftChannel');
-      ep.releaseGroup('Room.usersCacheUpdated');
+      ep.off("userJoinedChannel", "Room.userJoinedChannel");
+      ep.off("userLeftChannel", "Room.userLeftChannel");
+      ep.off("usersCacheUpdated", "Room.usersCacheUpdated");
     }
   }, []);
 

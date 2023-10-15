@@ -52,8 +52,10 @@ function OnlineUserIcon({ user }) {
     setMuted(user.muted);
 
     return () => {
-      ep.releaseGroup('OnlineUserIcon.updatedAudioState');
-      ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
+      ep.off("updatedAudioState", "OnlineUserIcon.updatedAudioState");
+      ep.off("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate");
+      ep.off("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted");
+      ep.off("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop");
     };
   }, [user]);
 
