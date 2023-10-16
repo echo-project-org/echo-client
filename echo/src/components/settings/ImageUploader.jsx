@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import AvatarEditor from 'react-avatar-editor'
-import { Button, Container, Grid, Zoom, styled } from "@mui/material";
+import { Button, Container, Grid, Typography, Zoom, styled, Slider, Stack } from "@mui/material";
+import { Mic } from '@mui/icons-material';
 
 import { storage, ep } from "../../index";
 
@@ -9,13 +10,13 @@ const api = require("../../api");
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     position: "fixed",
-    top: "25%",
-    left: "25%",
+    top: "20%",
+    left: "20%",
     backgroundColor: "#fff",
     textAlign: "center",
     position: "fixed",
-    maxWidth: "50%",
-    height: "50%",
+    maxWidth: "60%",
+    height: "60%",
     margin: "auto",
     backgroundColor: "var(--mui-palette-background-main)",
     boxShadow: "0 8px 15px 8px rgba(0,0,0,0.8)",
@@ -47,7 +48,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
     textAlign: "center",
     position: "fixed",
     maxWidth: "60%",
-    height: "55%",
+    height: "60%",
     margin: "auto",
     backgroundColor: "var(--mui-palette-background-main)",
     boxShadow: "0 8px 15px 8px rgba(0,0,0,0.8)",
@@ -59,8 +60,14 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 
 const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);
+  const [zoom, setZoom] = useState(0);
+
   if (!data) data = {};
   if (!data.image) data.image = storage.get("userImage");
+  
+  const handleZoomChange = (event, newValue) => {
+    setZoom(newValue);
+  };
 
   return (
     <Zoom in={open}>
@@ -68,13 +75,18 @@ const ImageUploader = ({ open, data }) => {
         <StyledContainer>
           <Grid container>
             <Grid item xs={12}>
+              <Typography variant="h3" component="h5">
+                Resize image
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
               <AvatarEditor
                 className='avatarEditor'
                 ref={imageEditorRef}
                 image={data.image}
                 border={10}
                 borderRadius={300}
-                scale={1}
+                scale={(zoom / 100) + 1}
               />
             </Grid>
             <Grid item xs={6} className='avatarEditorGrid'>
@@ -100,6 +112,22 @@ const ImageUploader = ({ open, data }) => {
               }}>
                 Cancel
               </Button>
+            </Grid>
+            <Grid item xs={12} className='avatarEditorGrid'>
+              <div style={{ width: "80%", margin: "auto" }}>
+                <Stack spacing={2} direction="row" alignItems="center">
+                  <Mic fontSize="medium" />
+                  <Slider
+                    sx={{ width: "100%" }}
+                    valueLabelDisplay="auto"
+                    valueLabelFormat={(v) => { return v + "%" }}
+                    aria-label="Volume"
+                    value={zoom}
+                    onChange={handleZoomChange}
+                    size='medium'
+                  />
+                </Stack>
+              </div>
             </Grid>
           </Grid>
         </StyledContainer>
