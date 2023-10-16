@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 import { Button, Container, Grid, Typography, Zoom, styled, Slider, Stack } from "@mui/material";
-import { Mic } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 
 import { storage, ep } from "../../index";
 
@@ -62,6 +62,10 @@ const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);
   const [zoom, setZoom] = useState(0);
 
+  useEffect(() => {
+    setZoom(0);
+  }, [open]);
+
   if (!data) data = {};
   if (!data.image) data.image = storage.get("userImage");
   
@@ -116,7 +120,7 @@ const ImageUploader = ({ open, data }) => {
             <Grid item xs={12} className='avatarEditorGrid'>
               <div style={{ width: "80%", margin: "auto" }}>
                 <Stack spacing={2} direction="row" alignItems="center">
-                  <Mic fontSize="medium" />
+                  <Search fontSize="medium" />
                   <Slider
                     sx={{ width: "100%" }}
                     valueLabelDisplay="auto"
