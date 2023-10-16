@@ -21,6 +21,7 @@ const modalStyle = {
   overflow: 'auto',
   border: '2px solid var(--mui-palette-background-light)',
   boxShadow: 24,
+  outline: 'none',
   p: 4,
   borderRadius: '.4rem',
 };

@@ -22,17 +22,20 @@ function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
     }
   }, [contentSelected]);
 
-  useEffect(() => {
-    ep.on("receiveChatMessage", "roomContentSelector.receiveChatMessage", (message) => {
-      console.log("receiveChatMessage", message, roomId)
-      if (contentSelected === 'chat') return;
+  const addMessage = (message) => {
+    console.log("addMessage", message, roomId, nNewMessages)
+    if (contentSelected === 'chat') return;
+    if (String(message.roomId) === String(roomId)) {
+      setNNewMessages(nNewMessages + 1);
+    }
+  }
 
-      if (String(message.roomId) === String(roomId)) {
-        setNNewMessages(nNewMessages + 1);
-      }
+  useEffect(() => {
+    ep.on("receiveChatMessage", "RoomContentSelector.receiveChatMessage", (message) => {
+      addMessage(message);
     });
 
-    ep.on("exitedFromRoom", "roomContentSelector.exitedFromRoom", (data) => {
+    ep.on("exitedFromRoom", "RoomContentSelector.exitedFromRoom", (data) => {
       setNNewMessages(0);
     });
 
