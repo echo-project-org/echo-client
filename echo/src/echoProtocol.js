@@ -177,6 +177,7 @@ class EchoProtocol {
         data.img = user.userImage;
         data.name = user.name;
         const newMessage = room.chat.add(data);
+        newMessage.roomId = data.roomId;
         this.receiveChatMessage(newMessage);
       }
       else this.needUserCacheUpdate({ id: data.id, call: { function: "reciveChatMessageFromSocket", args: data } });
