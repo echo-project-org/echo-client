@@ -7,7 +7,7 @@ function MessageRight({ message }) {
       if (key === 0 && item === "") return;
       var _m = item.replaceAll("</div>", "");
       return _m.split("<br>").map((phrase, index) => {
-        return <span key={_m + index + key}>{phrase}<br /></span>
+        return <div key={_m + index + key}>{phrase}<br /></div>
       })
     })
   }
