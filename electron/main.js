@@ -41,7 +41,7 @@ const createMainWindow = () => {
   if (app.isPackaged) {
     win.loadFile('index.html'); // prod
   } else {
-    win.loadURL('http://localhost:3000'); // dev
+    win.loadURL('http://localhost:4000'); // dev
   }
   /*
     win.setThumbarButtons([
