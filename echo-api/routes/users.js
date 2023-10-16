@@ -61,11 +61,11 @@ router.post("/image", (req, res) => {
     });
 });
 
-router.get("/rooms", (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
+// router.get("/rooms", (req, res) => {
+//     if(!req.authenticator.checkAuth(req, res)) return;
    
-    req.database.query("SELECT * FROM room_users")
-});
+//     req.database.query("SELECT * FROM room_users")
+// });
 
 // router.get("/friends/:id", (req, res) => {
 //     if(!req.authenticator.checkAuth(req, res)) return;

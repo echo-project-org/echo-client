@@ -12,7 +12,7 @@ router.post("/register", (req, res) => {
         if (err) return res.status(406).send({ message: "Username or email already exists." });
         
         if (result && result.affectedRows > 0) {
-            req.database.query("INSERT INTO user_status (id, status) VALUES (" + result.insertId + ", '1')", (err, result, fields) => {
+            req.database.query("INSERT INTO user_status (userId, status) VALUES (" + result.insertId + ", '1')", (err, result, fields) => {
                 if (err) console.error(err);
             });
 
