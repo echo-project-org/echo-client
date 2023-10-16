@@ -93,6 +93,7 @@ function ChatControls({ onEmojiOn, roomId }) {
   const handleChange = (e) => {
     if (e.target.value !== "<div><br></div>" && e.target.value.indexOf("<div>") !== 0) {
       // wrap the first text in a div
+      console.log("------------ target ---------------");
       e.target.value = e.target.value.split("<div>").map((word, wordIndex) => {
         console.log("word, wordIndex", word, wordIndex)
         if (wordIndex === 0) {
@@ -136,6 +137,16 @@ function ChatControls({ onEmojiOn, roomId }) {
             spellCheck={false}
             suppressContentEditableWarning={true}
             innerRef={inputRef}
+            onKeyDown={(e) => {
+              // console.log("onKeyDown", e.key, e.shiftKey)
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                // sendChatMessage();
+              } else if (e.key === "Enter" && e.shiftKey) {
+                e.preventDefault();
+                inputRef.current.innerHTML += "<div><br></div>";
+              }
+            }}
           />
         <div className="messageBoxButtons">
           <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />
