@@ -56,12 +56,10 @@ function SettingsButton() {
 
   useEffect(() => {
     ep.on("openUploader", (data) => {
-      console.log("openUploader", data);
       setOpenUploader(true);
       setUploaderData(data);
     });
     ep.on("closeUploader", () => {
-      console.log("closeUploader");
       setOpenUploader(false);
       setUploaderData(null);
     });
