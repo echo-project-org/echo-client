@@ -61,9 +61,9 @@ function ScreenShareUserContainer({ user, selectUser }) {
     });
 
     return () => {
-      ep.off("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted");
-      ep.off("videoBroadcastStop", "ScreenShareUserContainer.videoBroadcastStop");
-      ep.off("audioStatsUpdate", "ScreenShareUserContainer.audioStatsUpdate");
+      ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStarted");
+      ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStop");
+      ep.releaseGroup("ScreenShareUserContainer.audioStatsUpdate");
     }
   }, [user]);
 

@@ -68,8 +68,8 @@ function Chat({ currentRoomId, onMouseDown }) {
       setLoadingVisibility(false);
     });
     return () => {
-      ep.off("receiveChatMessage", "Chat.receiveChatMessage");
-      ep.off("messagesCacheUpdated", "Chat.messagesCacheUpdated");
+      ep.releaseGroup("Chat.receiveChatMessage");
+      ep.releaseGroup("Chat.messagesCacheUpdated");
     }
   }, []);
 

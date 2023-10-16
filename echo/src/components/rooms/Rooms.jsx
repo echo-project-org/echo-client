@@ -100,8 +100,8 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     });
 
     return () => {
-      ep.off("roomClicked", "Rooms.roomClicked");
-      ep.off("needUserCacheUpdate", "Rooms.needUserCacheUpdate");
+      ep.releaseGroup("Rooms.roomClicked");
+      ep.releaseGroup("Rooms.needUserCacheUpdate");
     }
   }, []);
 

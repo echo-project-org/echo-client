@@ -37,8 +37,8 @@ function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
     });
 
     return () => {
-      ep.off("receiveChatMessage", "roomContentSelector.receiveChatMessage");
-      ep.off("exitedFromRoom", "roomContentSelector.exitedFromRoom");
+      ep.releaseGroup("RoomContentSelector.receiveChatMessage");
+      ep.releaseGroup("RoomContentSelector.exitedFromRoom");
     }
   });
 

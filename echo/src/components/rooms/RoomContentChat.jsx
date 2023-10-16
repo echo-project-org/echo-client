@@ -24,7 +24,7 @@ function RoomContentChat({ roomId }) {
     });
 
     return () => {
-      ep.off("selectedEmoji", "RoomContentChat.selectedEmoji");
+      ep.releaseGroup("RoomContentChat.selectedEmoji");
     }
   }, []);
 

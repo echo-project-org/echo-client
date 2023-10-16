@@ -54,8 +54,8 @@ function ChatControls({ onEmojiOn, roomId }) {
     });
 
     return () => {
-      ep.off("receiveChatMessage", "ChatControls.receiveChatMessage");
-      ep.off("selectedEmoji", "ChatControls.selectedEmoji");
+      ep.releaseGroup("ChatControls.receiveChatMessage");
+      ep.releaseGroup("ChatControls.selectedEmoji");
     }
   }, [])
 
