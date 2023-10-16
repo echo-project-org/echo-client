@@ -208,3 +208,20 @@
   font-weight: 300;
   color: var(--mui-palette-text-light);
 }
+
+/* AVATAR SELECTOR */
+
+.avatarEditorContainer {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 3;
+  position: fixed;
+  top: 0;
+  left: 0;
+  max-width: 100% !important;
+  height: 100%;
+  margin: auto;
+  background-color: var(--mui-palette-background-main);
+  border: 1px solid var(--mui-palette-text-light);
+}

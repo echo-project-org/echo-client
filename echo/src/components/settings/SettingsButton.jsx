@@ -1,11 +1,12 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import UserSettings from "./UserSettings";
 import ThemeSettings from "./ThemeSettings";
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
+import ImageUploader from './ImageUploader';
 
 import { ep, storage } from "../../index";
 
@@ -28,11 +29,16 @@ function SettingsButton() {
   const [inputDevices, setInputDevices] = useState([]);
   const [outputDevices, setOutputDevices] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [openUploader, setOpenUploader] = useState(false);
+  const [uploaderData, setUploaderData] = useState(null);
   const handleModalOpen = () => setModalOpen(true);
-  const handleModalClose = () => setModalOpen(false);
+  const handleModalClose = () => {
+    setOpenUploader(false);
+    setModalOpen(false);
+  }
 
   const handleClick = (event) => {
-    if(ep.getUser(storage.get('id')).currentRoom === '0'){
+    if (ep.getUser(storage.get('id')).currentRoom === '0') {
       console.warn("User must must be in room to change settings");
       return;
     }
@@ -47,6 +53,23 @@ function SettingsButton() {
 
     handleModalOpen();
   };
+
+  useEffect(() => {
+    ep.on("openUploader", (data) => {
+      console.log("openUploader", data);
+      setOpenUploader(true);
+      setUploaderData(data);
+    });
+    ep.on("closeUploader", () => {
+      console.log("closeUploader");
+      setOpenUploader(false);
+      setUploaderData(null);
+    });
+    return () => {
+      ep.off("openUploader");
+      ep.off("closeUploader");
+    };
+  }, []);
 
   return (
     <>
@@ -66,6 +89,8 @@ function SettingsButton() {
               <Typography variant="h3">
                 Echo settings
               </Typography>
+
+              <ImageUploader open={openUploader} data={uploaderData} />
 
               <Grid container spacing={2}>
                 <Grid item lg={6} md={12} xs={12}>

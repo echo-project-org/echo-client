@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Divider } from '@mui/material'
+import { useState, useEffect, useRef } from 'react'
+import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Modal } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -9,17 +9,17 @@ var api = require('../../api');
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     height: '12rem',
-    width:'12rem',
+    width: '12rem',
     margin: "auto",
   },
   [theme.breakpoints.up('md')]: {
     height: '10rem',
-    width:'10rem',
+    width: '10rem',
     margin: "auto",
   },
   [theme.breakpoints.up('lg')]: {
     height: '8rem',
-    width:'8rem',
+    width: '8rem',
     margin: "auto",
   },
 }));
@@ -78,7 +78,7 @@ const ComputeSelectList = ({ statusHover, changeStatus, statusSelectOn }) => {
     )
 }
 
-const ComputeCurrentStatus = ({}) => {
+const ComputeCurrentStatus = ({ }) => {
   const online = storage.get("online");
   switch (online) {
     case "0":
@@ -160,7 +160,7 @@ const ComputeUserImage = ({ hover, uploadPicture, onAvatarHover, loading }) => {
             borderRadius: "50%",
             cursor: "pointer"
           }}
-        >            
+        >
           <Loop style={{ fontSize: "4rem", position: "absolute", top: "25%", left: "25%" }} className='rotating' />
         </div>
       </Fade>
@@ -181,6 +181,7 @@ function UserSettings() {
       setHover(true);
     }
   }
+
   const uploadPicture = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -204,16 +205,8 @@ function UserSettings() {
           const base64 = ctx.canvas.toDataURL();
 
           setLoading(true);
-          
-          api.call("users/image", "POST", { id: storage.get("id"), image: base64 })
-            .then((res) => {
-              storage.set("userImage", base64);
-              ep.updatePersonalSettings({ id: storage.get("id"), field: "userImage", value: base64 });
-              setLoading(false);
-            })
-            .catch(err => {
-              console.error(err);
-            });
+          ep.emit("openUploader", { image: base64 });
+          setLoading(false);
         }
       };
     };
