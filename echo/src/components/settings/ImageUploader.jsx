@@ -64,7 +64,7 @@ const ImageUploader = ({ open, data }) => {
 
   return (
     <Zoom in={open}>
-      <div className='imageUploaderBG'>
+      <div className={open ? "imageUploaderBG bgFadeIn" : "imageUploaderBG"}>
         <StyledContainer>
           <Grid container>
             <Grid item xs={12}>
