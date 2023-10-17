@@ -7,6 +7,7 @@ class User {
         this.isDeaf = false;
         this.isMuted = false;
         this.isBroadcastingVideo = false;
+        this.isPrivateCalling = false;
         this.events = {};
 
         this.receiveTransport = null;
@@ -121,6 +122,10 @@ class User {
         this.socket.on("client.hangupPrivateCall", (data) => {
             this.triggerEvent("hangupPrivateCall", data);
         });
+    }
+
+    setIsPrivateCalling(value) {
+        this.isPrivateCalling = value;
     }
 
     privateCallRinging(data) {

@@ -155,7 +155,7 @@ class Rooms {
                 display: "New room",
                 mediasoupRouter: r
             });
-            
+
             data.roomId = id;
             user.privateCallRinging(data);
             targetUser.someOneCallingMe(data);
@@ -166,12 +166,10 @@ class Rooms {
         if (this.connectedClients.has(data.id) && this.connectedClients.has(data.targetId)) {
             const user = this.connectedClients.get(data.id);
             const targetUser = this.connectedClients.get(data.targetId);
-
-            //notify the user that the call has been accepted
-            user.privateCallAccepted(data);
-
-            //get the private room
             const room = this.privateCallRooms.get(data.roomId);
+
+            user.privateCallAccepted(data);
+            //notify the user that the call has been accepted
 
             //add user to room
             room.users.set(user.id, user);
@@ -308,6 +306,9 @@ class Rooms {
                 targetUser.privateCallSetSendVideoTransport(transport, router.rtpCapabilities);
             }
             );
+
+            user.setIsPrivateCalling(true);
+            targetUser.setIsPrivateCalling(true);
         }
     }
 
@@ -317,7 +318,7 @@ class Rooms {
             const targetUser = this.connectedClients.get(data.targetId);
 
             //notify the user that the call has been accepted
-            targetUser.privateCallHangup(data);
+            targetUser.privateCallRejected(data);
 
             //clear the room
             this.privateCallRooms.delete(data.roomId);
@@ -334,11 +335,14 @@ class Rooms {
             const targetUser = this.connectedClients.get(data.targetId);
 
             //notify the user that the call has been accepted
-            user.privateCallHangup(data);
-            targetUser.privateCallHangup(data);
+            user.privateCallHangup({ id: data.id, targetId: data.targetId, roomId: data.roomId });
+            targetUser.privateCallHangup({ id: targetUser.id, targetId: user.id, roomId: data.roomId });
 
             //clear the room
             this.privateCallRooms.delete(data.roomId);
+
+            user.setIsPrivateCalling(false);
+            targetUser.setIsPrivateCalling(false);
 
             //clear transports
             user.clearTransports();
@@ -359,6 +363,12 @@ class Rooms {
     userFullyConnectedToRoom(a) {
         //Notify all users
         let newUser = this.connectedClients.get(a.id);
+        if(newUser.isPrivateCalling){
+            //user conneted to private call
+            //to something
+
+            return;
+        }
         this.connectedClients.forEach((user, _) => {
             if (a.id !== user.id) {
                 const userRoom = user.getCurrentRoom();
