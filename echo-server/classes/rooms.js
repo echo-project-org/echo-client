@@ -343,6 +343,9 @@ class Rooms {
             //clear the room
             this.privateCallRooms.delete(data.roomId);
 
+            user.setIsPrivateCalling(false);
+            targetUser.setIsPrivateCalling(false);
+
             //clear transports
             user.clearTransports();
             targetUser.clearTransports();

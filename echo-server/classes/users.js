@@ -145,7 +145,6 @@ class User {
     }
 
     privateCallHangup(data) {
-        this.isPrivateCalling = false;
         this.triggerEvent("server.privateCallHangup", data);
     }
 
