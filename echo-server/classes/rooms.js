@@ -155,7 +155,7 @@ class Rooms {
                 display: "New room",
                 mediasoupRouter: r
             });
-            
+
             data.roomId = id;
             user.privateCallRinging(data);
             targetUser.someOneCallingMe(data);
@@ -308,6 +308,9 @@ class Rooms {
                 targetUser.privateCallSetSendVideoTransport(transport, router.rtpCapabilities);
             }
             );
+
+            user.setIsPrivateCalling(true);
+            targetUser.setIsPrivateCalling(true);
         }
     }
 
