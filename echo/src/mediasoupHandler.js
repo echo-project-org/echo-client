@@ -655,15 +655,15 @@ class mediasoupHandler {
   mute() {
     if (this.outStream) {
       this.outStream.getTracks().forEach(track => track.enabled = false);
-      this.isMuted = true;
     }
+    this.isMuted = true;
   }
 
   unmute() {
     if (this.outStream) {
       this.outStream.getTracks().forEach(track => track.enabled = true);
-      this.isMuted = false;
     }
+    this.isMuted = false;
   }
 
   deaf() {
