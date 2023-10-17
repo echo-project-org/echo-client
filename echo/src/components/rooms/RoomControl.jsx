@@ -96,6 +96,8 @@ function RoomControl({ state, setState, screenSharing }) {
         })
         .catch(err => {
           console.error(err);
+          navigate("/");
+          storage.clear();
         });
     }
   }
