@@ -363,6 +363,12 @@ class Rooms {
     userFullyConnectedToRoom(a) {
         //Notify all users
         let newUser = this.connectedClients.get(a.id);
+        if(newUser.setIsPrivateCalling){
+            //user conneted to private call
+            //to something
+
+            return;
+        }
         this.connectedClients.forEach((user, _) => {
             if (a.id !== user.id) {
                 const userRoom = user.getCurrentRoom();
