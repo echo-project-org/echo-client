@@ -1,6 +1,7 @@
 import { storage } from './index';
 
 const API_URL = "https://echo.kuricki.com/api/";
+// const API_URL = "http://localhost:6980/api/";
 
 export async function call(path, method = "GET", body = null, forceString = true, forceContentType = false) {
   return new Promise((resolve, reject) => {
@@ -11,9 +12,10 @@ export async function call(path, method = "GET", body = null, forceString = true
     const options = {
       method: method,
       cache: 'no-cache',
+      cors: false,
       headers: {
         'Content-Type': forceContentType ? null : 'application/json',
-        "Authorization": "Bearer " + storage.get("token")
+        "Authorization": storage.get("token")
       },
       body: body ? (forceString ? JSON.stringify(body) : body) : null
     };

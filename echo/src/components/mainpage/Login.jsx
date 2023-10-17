@@ -53,7 +53,6 @@ const Login = () => {
               storage.set("userImage", data.json.img);
               storage.set("online", data.json.online);
               storage.set("token", data.json.token);
-              storage.set("refreshToken", data.json.refreshToken);
 
               navigate("/");
             })

@@ -16,7 +16,6 @@ const AuthenticatedUserButtons = ({ visibility }) => {
     storage.remove("userImage");
     storage.remove("token");
     storage.remove("online");
-    storage.remove("refreshToken");
     storage.remove("userImage");
 
     // EEEEEEEEWWWWWWWWWWWWWWW

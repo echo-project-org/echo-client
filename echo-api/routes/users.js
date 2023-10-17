@@ -2,9 +2,15 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 
-router.get("/:id", (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
+router.use((req, res, next) => {
+    const body = req.authenticator.checkToken(req, res);
+    if (!body) return res.status(401).send({ message: "You are not authorized to do this." });
+    if (body.scope !== "self") return res.status(401).send({ message: "You are not authorized to do this." });
 
+    next();
+});
+
+router.get("/:id", (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
@@ -19,8 +25,6 @@ router.get("/:id", (req, res) => {
 });
 
 router.get("/image/:id", (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-
     var { id } = req.params;
     // maybe good? IDK
     if (id.includes(".")) id = id.split(".")[0];
@@ -39,8 +43,6 @@ router.get("/image/:id", (req, res) => {
 });
 
 router.post("/image", (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-
     const { id, image } = req.body;
     if (!id || !image) return res.status(400).send({ message: "You messed up the request." });
 
@@ -61,38 +63,7 @@ router.post("/image", (req, res) => {
     });
 });
 
-// router.get("/rooms", (req, res) => {
-//     if(!req.authenticator.checkAuth(req, res)) return;
-   
-//     req.database.query("SELECT * FROM room_users")
-// });
-
-// router.get("/friends/:id", (req, res) => {
-//     if(!req.authenticator.checkAuth(req, res)) return;
-    
-//     const { id } = req.query;
-//     if (!id) return res.status(400).send({ message: "You messed up the request." });
-
-//     req.database.query("SELECT u.name, u.online, u.id FROM users u, userFriends uf WHERE uf.id = ? AND u.id = uf.otherId", [id], (err, result, fields) => {
-//         if (err) return res.status(400).send({ error: "You messed up the request." });
-
-//         var jsonOut = [];
-//         if (result.length > 0) {
-//             result.map((plate) => {
-//                 jsonOut.push({
-//                     id: plate.id,
-//                     name: plate.name,
-//                     online: plate.online,
-//                 });
-//             })
-//         }
-//         res.status(200).send(jsonOut);
-//     });
-// });
-
 router.get("/status/:id", (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-
     const { id } = req.query;
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
@@ -117,8 +88,6 @@ router.get("/status/:id", (req, res) => {
 
 // update user status
 router.post('/status', (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-    
     // const ip = req.header('x-forwarded-for') || req.socket.remoteAddress;
     const { id, status } = req.body;
     if (!id || !status) return res.status(400).send({ message: "You messed up the request." });
@@ -137,8 +106,6 @@ router.post('/status', (req, res) => {
 });
 
 router.post("/customStatus", (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-    
     const { id, status } = req.body;
     if (!id || !status) return res.status(400).send({ message: "You messed up the request." });
 
@@ -152,8 +119,6 @@ router.post("/customStatus", (req, res) => {
 
 // update volume value of existing user
 router.post('/volume', (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-    
     const body = req.body;
     const id = body.id;
     const user = body.status;
@@ -167,8 +132,6 @@ router.post('/volume', (req, res) => {
 
 // get personal volume levels from user id
 router.get('/volume/:name', (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-    
     const { name } = req.params;
 
     req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = ?", [name], function (err, result, fields) {
@@ -191,8 +154,6 @@ router.get('/volume/:name', (req, res) => {
 
 // get volume level of specific user
 router.get('/volume/:nick1/:nick2', (req, res) => {
-    if(!req.authenticator.checkAuth(req, res)) return;
-    
     const { nick1 } = req.params;
     const { nick2 } = req.params;
 
