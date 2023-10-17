@@ -155,7 +155,8 @@ class Rooms {
                 display: "New room",
                 mediasoupRouter: r
             });
-
+            
+            data.roomId = id;
             user.privateCallRinging(data);
             targetUser.someOneCallingMe(data);
         }
