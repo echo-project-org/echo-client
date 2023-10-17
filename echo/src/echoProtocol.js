@@ -157,6 +157,51 @@ class EchoProtocol {
         this.mh.createReceiveVideoTransport(data);
       }
     });
+
+    //private call stuff
+    this.socket.on("server.privateCallRinging", (data) => {
+      //the person im calling is ringing
+    });
+
+    this.socket.on("server.someoneCallingMe", (data) => {
+      //someone is calling me
+    });
+
+    this.socket.on("server.privateCallAccepted", (data) => {
+      //someone accepted my call
+    });
+
+    this.socket.on("server.privateCallRejected", (data) => {
+      //someone rejected my call
+    });
+
+    this.socket.on("server.privateCallHangup", (data) => {
+      //someone ended my call
+    });
+
+    this.socket.on("server.privateCallSetReceiveTransport", (data) => {
+      if (this.mh) {
+        this.mh.createSendTransport(data);
+      }
+    });
+
+    this.socket.on("server.privateCallSetSendTransport", (data) => {
+      if (this.mh) {
+        this.mh.createReceiveTransport(data);
+      }
+    });
+
+    this.socket.on("server.privateCallSetReceiveVideoTransport", (data) => {
+      if (this.mh) {
+        this.mh.createSendVideoTransport(data);
+      }
+    });
+
+    this.socket.on("server.privateCallSetSendVideoTransport", (data) => {
+      if (this.mh) {
+        this.mh.createReceiveVideoTransport(data);
+      }
+    });
   }
 
   endConnection(data) {
