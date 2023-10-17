@@ -106,6 +106,41 @@ class User {
         this.socket.on("client.stopReceivingVideo", (data) => {
             this.stopReceivingVideo(data);
         });
+
+        this.socker.on("client.startPrivateCall", (data) => {
+            this.triggerEvent("startPrivateCall", data);
+        });
+
+        this.socket.on("client.acceptPrivateCall", (data) => {
+            this.triggerEvent("acceptPrivateCall", data);
+        });
+
+        this.socket.on("client.rejectPrivateCall", (data) => {
+            this.triggerEvent("rejectPrivateCall", data);
+        });
+        this.socket.on("client.hangupPrivateCall", (data) => {
+            this.triggerEvent("hangupPrivateCall", data);
+        });
+    }
+
+    privateCallRinging(data) {
+        this.socket.emit("server.privateCallRinging", data);
+    }
+
+    someoneCallingMe(data) {
+        this.triggerEvent("server.someoneCallingMe", data);
+    }
+
+    privateCallAccepted(data) {
+        this.triggerEvent("server.privateCallAccepted", data);
+    }
+
+    privateCallRejected(data) {
+        this.triggerEvent("server.privateCallRejected", data);
+    }
+
+    privateCallHangup(data) {
+        this.triggerEvent("server.privateCallHangup", data);
     }
 
     getIsBroadcastingVideo() {
@@ -479,6 +514,51 @@ class User {
     setSendVideoTransport(transport, rtpCapabilities) {
         this.sendVideoTransport = transport;
         this.socket.emit("server.sendVideoTransportCreated", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    privateCallSetReceiveTransport(transport, rtpCapabilities) {
+        this.receiveTransport = transport;
+        this.socket.emit("server.privateCallSetReceiveTransport", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    privateCallSetSendTransport(transport, rtpCapabilities) {
+        this.sendTransport = transport;
+        this.socket.emit("server.privateCallSetSendTransport", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    privateCallSetReceiveVideoTransport(transport, rtpCapabilities) {
+        this.receiveVideoTransport = transport;
+        this.socket.emit("server.privateCallSetReceiveVideoTransport", {
             id: transport.id,
             iceParameters: transport.iceParameters,
             iceCandidates: transport.iceCandidates,
