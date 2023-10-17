@@ -16,7 +16,6 @@ class mediasoupHandler {
     this.producer = null;
     this.outChannelCount = 2;
     this.inputStreams = [];
-    this.streamIds = new Map();
 
     this.isMuted = false;
     this.isDeaf = false;
@@ -296,7 +295,6 @@ class mediasoupHandler {
       context.setSinkId(this.outputDeviceId);
     }
     let stream = new MediaStream([track])
-    this.streamIds.set(data.producerId, stream.id);
     let src = context.createMediaStreamSource(stream);
     let dst = context.destination;
 
@@ -326,6 +324,7 @@ class mediasoupHandler {
     audioElement.pause();
 
     this.inputStreams.push({
+      producerId: data.producerId,
       consumer,
       source: src,
       stream,
@@ -348,8 +347,6 @@ class mediasoupHandler {
           stream.consumer.close();
           stream.context.close();
           stream.stream.getTracks().forEach(track => track.stop());
-          stream.audioElement.remove();
-          this.streamIds.delete(senderId);
           this.inputStreams.splice(index, 1);
         }
       });
@@ -504,19 +501,6 @@ class mediasoupHandler {
     }
   }
 
-  _findUserId(stream) {
-    // find the userId from the streamId using streamIds
-    let userId = null;
-    for (const [key, value] of this.streamIds) {
-      if (value === stream.stream.id) {
-        userId = key;
-        break;
-      }
-    }
-
-    return userId;
-  }
-
   startStatsInterval() {
     if (this.statsInterval) {
       clearInterval(this.statsInterval);
@@ -531,13 +515,13 @@ class mediasoupHandler {
           if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
             this.hasSpoken = true;
             ep.audioStatsUpdate({
-              id: this._findUserId(stream),
+              id: stream.producerId,
               talking: this.hasSpoken,
             });
           } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
             this.hasSpoken = false;
             ep.audioStatsUpdate({
-              id: this._findUserId(stream),
+              id: stream.producerId,
               talking: this.hasSpoken,
             });
           }
