@@ -217,10 +217,20 @@
 .avatarEditor {
   margin-top: 5%;
   border: 3px solid var(--mui-palette-secondary-dark);
+  background-color: var(--mui-palette-background-main);
   border-radius: 1rem;
 }
 
 .avatarEditorGrid button {
   margin: 2rem;
   width: 80%;
+}
+
+.imageUploaderContentContainer {
+  background-color: var(--mui-palette-background-dark);
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-radius: 1rem;
 }
