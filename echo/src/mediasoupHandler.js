@@ -360,7 +360,6 @@ class mediasoupHandler {
         stream.context.close();
         stream.stream.getTracks().forEach(track => track.stop());
         stream.audioElement.remove();
-        this.streamIds.delete(stream.consumer.producerId);
       });
 
       this.inputStreams = [];
