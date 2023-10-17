@@ -491,11 +491,11 @@ class Rooms {
             const user = this.connectedClients.get(data.id);
             const roomId = user.getCurrentRoom();
             if (this.rooms.has(roomId)) {
-                this.connectedClients.forEach((user, _) => {
+                this.connectedClients.forEach((u, _) => {
                     if (data.id !== user.id) {
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
-                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected, crashed: data.crashed === true });
+                        u.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected, crashed: data.crashed === true });
                     }
                 })
 
