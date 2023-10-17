@@ -3,6 +3,7 @@ import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Modal 
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
+import CurrentStatus from '../user/CurrentStatus';
 
 var api = require('../../api');
 
@@ -76,54 +77,6 @@ const ComputeSelectList = ({ statusHover, changeStatus, statusSelectOn }) => {
         </Grid>
       </Grid>
     )
-}
-
-const ComputeCurrentStatus = ({ }) => {
-  const online = storage.get("online");
-  switch (online) {
-    case "0":
-      return (
-        <Container className="statusText">
-          <Circle style={{ color: "#f5e8da" }} />
-          <p>Offline</p>
-        </Container>
-      );
-    case "1":
-      return (
-        <Container className="statusText">
-          <Circle style={{ color: "#44b700" }} />
-          <p>Online</p>
-        </Container>
-      );
-    case "2":
-      return (
-        <Container className="statusText">
-          <DarkMode style={{ color: "#ff8800" }} />
-          <p>Away</p>
-        </Container>
-      );
-    case "3":
-      return (
-        <Container className="statusText">
-          <DoNotDisturbOn style={{ color: "#fd4949" }} />
-          <p>Do not disturb</p>
-        </Container>
-      );
-    case "4":
-      return (
-        <Container className="statusText">
-          <Circle style={{ color: "#f5e8da" }} />
-          <p>Invisible</p>
-        </Container>
-      );
-    default:
-      return (
-        <Container className="statusText">
-          <Circle style={{ color: "#f5e8da" }} />
-          <p>Offline</p>
-        </Container>
-      );
-  }
 }
 
 const ComputeUserImage = ({ hover, uploadPicture, onAvatarHover, loading }) => {
@@ -262,7 +215,7 @@ function UserSettings() {
           </Badge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">
-              <ComputeCurrentStatus />
+              <CurrentStatus />
             </div>
             <div className="selectContainer">
               <ComputeSelectList statusHover={statusHover} changeStatus={changeStatus} statusSelectOn={statusSelectOn} />
