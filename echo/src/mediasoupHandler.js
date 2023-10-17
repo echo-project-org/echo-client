@@ -629,7 +629,7 @@ class mediasoupHandler {
     }
 
     this.inputStreams.forEach((stream) => {
-      if (stream.consumer.producerId === userId) {
+      if (stream.producerId === userId) {
         stream.personalGainNode.gain.value = volume;
       }
     });
