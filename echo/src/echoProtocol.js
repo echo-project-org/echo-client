@@ -209,6 +209,30 @@ class EchoProtocol {
     this.userLeftChannel(data);
   }
 
+  startPrivateCall(data) {
+    if (this.socket) {
+      this.socket.emit("client.startPrivateCall", data);
+    }
+  }
+
+  acceptPrivateCall(data) {
+    if (this.socket) {
+      this.socket.emit("client.acceptPrivateCall", data);
+    }
+  }
+
+  rejectPrivateCall(data) {
+    if (this.socket) {
+      this.socket.emit("client.rejectPrivateCall", data);
+    }
+  }
+
+  hangupPrivateCall(data) {
+    if (this.socket) {
+      this.socket.emit("client.hangupPrivateCall", data);
+    }
+  }
+
   reciveChatMessageFromSocket(data) {
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
     if (typeof data.id !== "string") data.id = data.id.toString();
