@@ -64,10 +64,11 @@ function ChatControls({ onEmojiOn, roomId }) {
     const emojiFormat = "[emoji:" + pressedEmoji.unified + "]";
     const s = window.getSelection();
     // const r = s.getRangeAt(0);
+    if (!s.focusNode.parentElement.classList.contains("chatboxContent")) return
 
     // console.log("s before", s)
     // console.log('sfo:', s.focusOffset, 'sao:', s.anchorOffset, 'rso:', r.startOffset, 'reo:', r.endOffset, '»' + s.toString());
-    // console.log(s)
+    console.log(s)
 
     // maybe useless, but anyway...
     if (s.focusNode && s.focusNode.id === "chatInputText") {
@@ -84,6 +85,8 @@ function ChatControls({ onEmojiOn, roomId }) {
     const splittedRef = inputRef.current.innerHTML.split(emojiFormat);
     const newRef = splittedRef[0] + `&nbsp;<img src="${pressedEmoji.getImageUrl("twitter")}" draggable="false" alt="${pressedEmoji.emoji}" class="emoji" />&nbsp;` + splittedRef[1];
     inputRef.current.innerHTML = newRef;
+
+    console.log(s.focusNode.textContent);
 
     // set the new message
     setMessage({ html: inputRef.current.innerHTML, text: inputRef.current.innerText });
