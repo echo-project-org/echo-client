@@ -161,22 +161,38 @@ class EchoProtocol {
     //private call stuff
     this.socket.on("server.privateCallRinging", (data) => {
       //the person im calling is ringing
+      // data.id is my id
+      // data.targedId is the person im calling
+      // data.roomId is the private room id
+  
     });
 
     this.socket.on("server.someoneCallingMe", (data) => {
       //someone is calling me
+      //data.id is the person calling me
+      //data.targedId is my id
+      //data.roomId is the private room id
     });
 
     this.socket.on("server.privateCallAccepted", (data) => {
       //someone accepted my call
+      //data.id is my id
+      //data.targedId is the person im calling
+      //data.roomId is the private room id
     });
 
     this.socket.on("server.privateCallRejected", (data) => {
       //someone rejected my call
+      //data.id is my id
+      //data.targedId is the person im calling
+      //data.roomId is the private room id
     });
 
     this.socket.on("server.privateCallHangup", (data) => {
       //someone ended my call
+      //data.id who hanged up
+      //data.targetId is my id
+      //data.roomId is the private room id
     });
 
     this.socket.on("server.privateCallSetReceiveTransport", (data) => {

@@ -166,12 +166,10 @@ class Rooms {
         if (this.connectedClients.has(data.id) && this.connectedClients.has(data.targetId)) {
             const user = this.connectedClients.get(data.id);
             const targetUser = this.connectedClients.get(data.targetId);
-
-            //notify the user that the call has been accepted
-            user.privateCallAccepted(data);
-
-            //get the private room
             const room = this.privateCallRooms.get(data.roomId);
+
+            user.privateCallAccepted(data);
+            //notify the user that the call has been accepted
 
             //add user to room
             room.users.set(user.id, user);
@@ -320,7 +318,7 @@ class Rooms {
             const targetUser = this.connectedClients.get(data.targetId);
 
             //notify the user that the call has been accepted
-            targetUser.privateCallHangup(data);
+            targetUser.privateCallRejected(data);
 
             //clear the room
             this.privateCallRooms.delete(data.roomId);
@@ -337,8 +335,8 @@ class Rooms {
             const targetUser = this.connectedClients.get(data.targetId);
 
             //notify the user that the call has been accepted
-            user.privateCallHangup(data);
-            targetUser.privateCallHangup(data);
+            user.privateCallHangup({ id: data.id, targetId: data.targetId, roomId: data.roomId });
+            targetUser.privateCallHangup({ id: targetUser.id, targetId: user.id, roomId: data.roomId });
 
             //clear the room
             this.privateCallRooms.delete(data.roomId);
