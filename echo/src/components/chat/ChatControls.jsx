@@ -1,6 +1,6 @@
 import "../../css/chatinput.css";
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, createElement } from 'react'
 import { Emoji, EmojiStyle } from "emoji-picker-react";
 
 import MessageBoxButtons from './MessageBoxButtons';
@@ -63,64 +63,58 @@ function ChatControls({ onEmojiOn, roomId }) {
     if (pressedEmoji.unified === undefined) return;
     const emojiFormat = "[emoji:" + pressedEmoji.unified + "]";
     const s = window.getSelection();
-    const r = s.getRangeAt(0);
-    // if selection is the div@chatInputText, return
-    console.log("s before", s)
-    console.log('sfo:', s.focusOffset, 'sao:', s.anchorOffset, 'rso:', r.startOffset, 'reo:', r.endOffset, '»' + s.toString());
-    console.log(s.focusNode.innerHTML)
+    // const r = s.getRangeAt(0);
+
+    // console.log("s before", s)
+    // console.log('sfo:', s.focusOffset, 'sao:', s.anchorOffset, 'rso:', r.startOffset, 'reo:', r.endOffset, '»' + s.toString());
+    // console.log(s)
+
+    // maybe useless, but anyway...
     if (s.focusNode && s.focusNode.id === "chatInputText") {
       // add a div to the selection
       // s.focusNode.innerHTML = "<div><br></div>";
       return
     };
-    console.log("s after", s)
     var node = s.focusNode.textContent;
-    console.log("before", node)
     const cursorPosition = s.focusOffset;
-    console.log(cursorPosition);
     let textBeforeCursorPosition = node.substring(0, cursorPosition)
     let textAfterCursorPosition = node.substring(cursorPosition, node.length)
     s.focusNode.textContent = textBeforeCursorPosition + emojiFormat + textAfterCursorPosition;
-    console.log("after", node);
-    // set the new value to the focused child node
-    console.log(s.focusNode.textContent)
-    console.log(inputRef.current.innerHTML)
+
+    const splittedRef = inputRef.current.innerHTML.split(emojiFormat);
+    const newRef = splittedRef[0] + `&nbsp;<img src="${pressedEmoji.getImageUrl("twitter")}" draggable="false" alt="${pressedEmoji.emoji}" class="emoji" />&nbsp;` + splittedRef[1];
+    inputRef.current.innerHTML = newRef;
 
     // set the new message
-    setMessage({ html: inputRef.current.innerHTML });
+    setMessage({ html: inputRef.current.innerHTML, text: inputRef.current.innerText });
   }, [pressedEmoji])
 
   const handleChange = (e) => {
-    if (e.target.value !== "<div><br></div>" && e.target.value.indexOf("<div>") !== 0) {
+    // console.warn("handleChange", e.target.value, e.target.value.indexOf("<div>"))
+    if (e.target.value !== `<div class="chatboxContent"><br></div>` && e.target.value.indexOf(`<div class="chatboxContent">`) !== 0) {
       // wrap the first text in a div
-      console.log("------------ target ---------------");
-      e.target.value = e.target.value.split("<div>").map((word, wordIndex) => {
-        console.log("word, wordIndex", word, wordIndex)
-        if (wordIndex === 0) {
-          return "<div>" + word + "</div>";
-        } else {
-          if (!word.includes("</div>")) {
-            return "<div>" + word + "</div>";
-          } else {
-            return "<div>" + word;
-          }
-        }
+      // console.log("------------ target ---------------");
+      e.target.value = e.target.value.split(`<div class="chatboxContent">`).map((word, wordIndex) => {
+        // console.log("word, wordIndex", word, wordIndex)
+        // wrap all lines in a div and a span
+        return `<div class="chatboxContent">${word}</div>`;
       });
+      // check if all the text is incapsulated in a div, if so remove it
+      if (e.target.value.indexOf(`<div class="chatboxContent">`) === 0 && e.target.value.lastIndexOf("</div>") === e.target.value.length - 6) {
+        e.target.value = e.target.value.substring(5, e.target.value.length - 6);
+      }
+      // remove last div if is empy
+      if (typeof e.target.value !== "string") {
+        e.target.value = e.target.value[e.target.value.length - 1] === `<div class="chatboxContent"></div>` ? "" : e.target.value;
+      }
+      if (typeof e.target.value !== "string" && e.target.value) e.target.value = e.target.value.join("");
     }
-    // console.log("1", e.target.value)
-    // check if all the text is incapsulated in a div, if so remove it
-    if (e.target.value.indexOf("<div>") === 0 && e.target.value.lastIndexOf("</div>") === e.target.value.length - 6) {
-      e.target.value = e.target.value.substring(5, e.target.value.length - 6);
-    }
-    // console.log("2", e.target.value, e.target.value[e.target.value.length - 1])
-    // remove last div if is empy
-    if (typeof e.target.value !== "string") {
-      e.target.value = e.target.value[e.target.value.length - 1] === "<div></div>" ? "" : e.target.value;
-    }
-    // console.log("3", e.target.value)
-    if (typeof e.target.value !== "string" && e.target.value) e.target.value = e.target.value.join("");
-    setMessage({ html: e.target.value });
+    setMessage({ html: e.target.value, text: inputRef.current.innerText });
   }
+
+  useEffect(() => {
+    console.warn(message);
+  }, [message])
 
   return (
     <div className='chatControls'>
@@ -128,9 +122,11 @@ function ChatControls({ onEmojiOn, roomId }) {
         <div className="messageBoxButtons">
           <UploadBoxButtons onClick={() => { console.log("click upload") }} />
         </div>
+        <div
+          className='chatInputText'
+          id='chatInputText'
+        >
           <ChatBox
-            className='chatInputText'
-            id='chatInputText'
             html={message.html} // innerHTML of the editable div
             disabled={false} // use true to disable edition
             onChange={handleChange} // handle innerHTML change
@@ -139,15 +135,14 @@ function ChatControls({ onEmojiOn, roomId }) {
             innerRef={inputRef}
             onKeyDown={(e) => {
               // console.log("onKeyDown", e.key, e.shiftKey)
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                // sendChatMessage();
-              } else if (e.key === "Enter" && e.shiftKey) {
-                e.preventDefault();
-                inputRef.current.innerHTML += "<div><br></div>";
-              }
+              // if (e.key === "Enter" && !e.shiftKey) {
+              //   e.preventDefault();
+              // }
             }}
-          />
+          >
+            {/* <span></span> */}
+          </ChatBox>
+        </div>
         <div className="messageBoxButtons">
           <MessageBoxButtons onEmojiOn={onEmojiOn} onClick={sendChatMessage} />
         </div>

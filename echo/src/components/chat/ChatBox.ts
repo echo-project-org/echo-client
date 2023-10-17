@@ -9,11 +9,14 @@ function normalizeHtml(str: string): string {
 function replaceCaret(el: HTMLElement) {
   // Place the caret at the end of the element
   const target = document.createTextNode('');
+  // const target = document.createElement("div");
   el.appendChild(target);
+  // console.log("document.activeElement", document.activeElement)
   // do not move caret if element was not focused
   const isTargetFocused = document.activeElement === el;
   if (target !== null && target.nodeValue !== null && isTargetFocused) {
     var sel = window.getSelection();
+    // console.log("selection", sel)
     if (sel !== null) {
       var range = document.createRange();
       range.setStart(target, target.nodeValue.length);
@@ -50,7 +53,8 @@ export default class ContentEditable extends React.Component<Props> {
         onKeyUp: this.props.onKeyUp || this.emitChange,
         onKeyDown: this.props.onKeyDown || this.emitChange,
         contentEditable: !this.props.disabled,
-        dangerouslySetInnerHTML: { __html: html }
+        dangerouslySetInnerHTML: { __html: html },
+        style: { ...this.props.style, outline: "none" },
       },
       this.props.children);
   }
@@ -69,6 +73,9 @@ export default class ContentEditable extends React.Component<Props> {
     if (
       normalizeHtml(nextProps.html) !== normalizeHtml(el.innerHTML)
     ) {
+      console.log("--------- component should update ---------")
+      console.log("nextProps.html", nextProps.html, normalizeHtml(nextProps.html))
+      console.log("el.innerHTML", el.innerHTML, normalizeHtml(el.innerHTML))
       return true;
     }
 
@@ -88,6 +95,9 @@ export default class ContentEditable extends React.Component<Props> {
     // Perhaps React (whose VDOM gets outdated because we often prevent
     // rerendering) did not update the DOM. So we update it manually now.
     if (this.props.html !== el.innerHTML) {
+      console.log("----------------- component did update -----------------")
+      console.log("this.props.html", this.props.html)
+      console.log("el.innerHTML", el.innerHTML)
       el.innerHTML = this.props.html;
     }
     this.lastHtml = this.props.html;
