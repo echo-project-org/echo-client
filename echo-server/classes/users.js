@@ -108,7 +108,7 @@ class User {
             this.stopReceivingVideo(data);
         });
 
-        this.socker.on("client.startPrivateCall", (data) => {
+        this.socket.on("client.startPrivateCall", (data) => {
             this.triggerEvent("startPrivateCall", data);
         });
 
