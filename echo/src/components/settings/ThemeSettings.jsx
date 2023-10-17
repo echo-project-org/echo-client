@@ -65,7 +65,9 @@ function ThemeSettings() {
   // }, [background, primary, secondary, text]);
     
   return (
-    <Grid container className="settingsModalSubDiv">
+    <Grid container className="settingsModalSubDiv" sx={{
+      alignItems: "flex-start"
+    }}>
       <Grid item xs={12}>
         <div sx={{
           fontSize: "1.5rem",
