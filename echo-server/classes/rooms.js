@@ -363,7 +363,7 @@ class Rooms {
     userFullyConnectedToRoom(a) {
         //Notify all users
         let newUser = this.connectedClients.get(a.id);
-        if(newUser.setIsPrivateCalling){
+        if(newUser.isPrivateCalling){
             //user conneted to private call
             //to something
 
