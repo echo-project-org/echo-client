@@ -87,6 +87,11 @@ class mediasoupHandler {
         this.videoRcvTransport.close();
         this.videoRcvTransport = null;
       }
+
+      if(this.statsInterval){
+        clearInterval(this.statsInterval);
+        this.statsInterval = null;
+      }
     } catch (error) {
       console.error(error);
     }
@@ -546,7 +551,7 @@ class mediasoupHandler {
           });
         }
       }
-    }, 5);
+    }, 100);
   }
 
   setOutVolume(volume) {
@@ -667,7 +672,6 @@ class mediasoupHandler {
     this.leaveRoom();
     this.stopAudioBroadcast();
     this.stopConsuming();
-    clearInterval(this.statsInterval);
   }
 
   getAudioState() {
