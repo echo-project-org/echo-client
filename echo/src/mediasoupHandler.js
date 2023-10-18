@@ -16,6 +16,7 @@ class mediasoupHandler {
     this.producer = null;
     this.outChannelCount = 2;
     this.inputStreams = [];
+    this.hasSpokenLocal = false;
 
     this.isMuted = false;
     this.isDeaf = false;
@@ -342,6 +343,7 @@ class mediasoupHandler {
       deafNode,
       personalGainNode,
       audioElement,
+      hasSpoken: false,
       analyser: this.createAudioAnalyser(context, channelSplitter, src.channelCount),
     });
 
@@ -530,17 +532,17 @@ class mediasoupHandler {
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
-            this.hasSpoken = true;
+          if (!stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
+            stream.hasSpoken = true;
             ep.audioStatsUpdate({
               id: stream.producerId,
-              talking: this.hasSpoken,
+              talking: stream.hasSpoken,
             });
-          } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
-            this.hasSpoken = false;
+          } else if (stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
+            stream.hasSpoken = false;
             ep.audioStatsUpdate({
               id: stream.producerId,
-              talking: this.hasSpoken,
+              talking: stream.hasSpoken,
             });
           }
         });
