@@ -7,24 +7,7 @@ import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabl
 import SettingsButton from '../settings/SettingsButton';
 import ScreenShareSelector from '../settings/ScreenShareSelector';
 
-import { ep, storage } from "../../index";
-
-const muteSound = require("../../audio/mute.mp3");
-const unmuteSound = require("../../audio/unmute.mp3");
-const deafSound = require("../../audio/deaf.mp3");
-const undeafSound = require("../../audio/undeaf.mp3");
-const leaveSound = require("../../audio/leave.mp3");
-
-const muteAudio = new Audio(muteSound);
-muteAudio.volume = 0.6;
-const unmuteAudio = new Audio(unmuteSound);
-unmuteAudio.volume = 0.6;
-const deafAudio = new Audio(deafSound);
-deafAudio.volume = 0.6;
-const undeafAudio = new Audio(undeafSound);
-undeafAudio.volume = 0.6;
-const leaveAudio = new Audio(leaveSound);
-leaveAudio.volume = 0.6;
+import { ep, storage, ap } from "../../index";
 
 const api = require('../../api')
 
@@ -92,7 +75,7 @@ function RoomControl({ state, setState, screenSharing }) {
         .then(res => {
           ep.exitFromRoom(storage.get('id'));
           ep.updateUser({ id: storage.get('id'), field: "currentRoom", value: 0 });
-          leaveAudio.play();
+          ap.playLeaveSound();
         })
         .catch(err => {
           console.error(err);
@@ -104,15 +87,15 @@ function RoomControl({ state, setState, screenSharing }) {
   const computeAudio = (isDeaf) => {
     if (isDeaf)
       if (!muted) {
-        muteAudio.play();
+        ap.playMuteSound();
       } else {
-        unmuteAudio.play();
+        ap.playUnmuteSound();
       }
     else
       if (!deaf) {
-        deafAudio.play();
+        ap.playDeafSound();
       } else {
-        undeafAudio.play();
+        ap.playUndeafSound();
       }
   }
 

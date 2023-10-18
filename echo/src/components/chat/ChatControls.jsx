@@ -7,12 +7,9 @@ import MessageBoxButtons from './MessageBoxButtons';
 import UploadBoxButtons from './UploadBoxButtons';
 import ChatBox from './ChatBox.ts';
 
-import { ep, storage } from "../../index";
+import { ep, storage, ap } from "../../index";
 
 const api = require("../../api");
-
-const newMessageSound = require("../../audio/newmessage.mp3");
-const newSelfMessageSound = require("../../audio/newmessageself.mp3");
 
 function ChatControls({ onEmojiOn, roomId }) {
   const [message, setMessage] = useState({ html: "" });
@@ -24,11 +21,6 @@ function ChatControls({ onEmojiOn, roomId }) {
   // const [prevKey, setPrevKey] = useState("");
   const inputRef = useRef(null);
 
-  const newMessageAudio = new Audio(newMessageSound);
-  newMessageAudio.volume = 0.6;
-  const newSelfMessageAudio = new Audio(newSelfMessageSound);
-  newSelfMessageAudio.volume = 0.6;
-
   const sendChatMessage = (e) => {
     console.log("about to send this message", message.html, inputRef.current.innerHTML)
     ep.sendChatMessage({ roomId, userId: storage.get("id"), message: message.html, self: true, date: new Date().toISOString() });
@@ -38,13 +30,13 @@ function ChatControls({ onEmojiOn, roomId }) {
   useEffect(() => {
     ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
       if (String(data.userId) === storage.get("id")) {
-        newSelfMessageAudio.play();
+        ap.playNewSelfMessageSound();
         data.userId = Number(data.id);
         console.log("ChatControls.receiveChatMessage", data)
         // make api call after the server received it
         api.call("rooms/messages", "POST", data).then((res) => { }).catch((err) => { console.log(err); });
       } else {
-        newMessageAudio.play();
+        ap.playNewMessageSound();
       };
     });
 

@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Avatar, Container, Grid, Typography, styled, Badge } from '@mui/material'
 
-import { ep } from '../..';
-
-const startStreamSound = require("../../audio/streamstart.mp3");
-const endStreamSound = require("../../audio/streamend.mp3");
-
-const startStreamAudio = new Audio(startStreamSound);
-startStreamAudio.volume = 0.6;
-const endStreamAudio = new Audio(endStreamSound);
-endStreamAudio.volume = 0.6;
+import { ep, ap } from '../..';
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -42,14 +34,14 @@ function ScreenShareUserContainer({ user, selectUser }) {
     ep.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true);
-        startStreamAudio.play();
+        ap.playStartStreamSound();
       }
     });
 
     ep.on("videoBroadcastStop", "ScreenShareUserContainer.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(false);
-        endStreamAudio.play();
+        ap.playEndStreamSound();
       }
     });
 

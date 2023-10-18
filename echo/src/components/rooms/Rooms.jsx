@@ -2,15 +2,11 @@ import "../../css/rooms.css"
 import { useState, useEffect } from 'react';
 import Room from './Room';
 
-import { ep, storage } from "../../index";
+import { ep, storage, ap } from "../../index";
 
 const api = require("../../api");
-const joinSound = require("../../audio/join.mp3");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
-  const joinAudio = new Audio(joinSound);
-  joinAudio.volume = 0.6;
-
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
@@ -72,7 +68,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: joiningId })
         .then((res) => {
           if (res.ok) {
-            joinAudio.play();
+            ap.playJoinSound();
             setState(true);
           }
         })

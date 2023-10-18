@@ -10,7 +10,7 @@ import AudioPlayer from './audioPlayer';
 let ep = new EchoProtocol();
 const storage = new Storage();
 const ap = new AudioPlayer();
-export { ep, storage };
+export { ep, storage, ap };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
