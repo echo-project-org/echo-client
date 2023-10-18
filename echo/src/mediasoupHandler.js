@@ -606,6 +606,9 @@ class mediasoupHandler {
       this.testGainNode = this.testContext.createGain();
       this.testVadNode = this.testContext.createGain();
 
+      this.testVadNode.gain.value = this.vadNode.gain.value;
+      this.testGainNode.gain.value = this.outGainNode.gain.value;
+      
       src.connect(this.testGainNode);
       this.testGainNode.connect(this.testVadNode);
       this.testVadNode.connect(dst);
