@@ -32,6 +32,7 @@ class mediasoupHandler {
 
     this.testContext = null;
     this.testGainNode = null;
+    this.testVadNode = null;
 
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
@@ -500,11 +501,21 @@ class mediasoupHandler {
 
     //cancel previous time change
     this.vadNode.gain.cancelAndHoldAtTime(0);
+    if (this.testVadNode) {
+      this.testVadNode.gain.cancelAndHoldAtTime(0);
+    }
+
     //ramp volume to new value in 1 second
     if (volume === 1.0) {
       this.vadNode.gain.value = 1.0;
+      if (this.testVadNode) {
+        this.testVadNode.gain.value = 1.0;
+      }
     } else {
-      this.vadNode.gain.linearRampToValueAtTime(0, 1);
+      this.vadNode.gain.linearRampToValueAtTime(0.0, this.context.currentTime + 2);
+      if (this.testVadNode) {
+        this.testVadNode.gain.linearRampToValueAtTime(0.0, this.testContext.currentTime + 2);
+      }
     }
   }
 
@@ -560,6 +571,10 @@ class mediasoupHandler {
   setOutVolume(volume) {
     this.volume = volume;
     this.outGainNode.gain.value = volume;
+
+    if(this.testGainNode){
+      this.testGainNode.gain.value = volume;
+    }
   }
 
   setVadTreshold(threashold) {
@@ -585,10 +600,12 @@ class mediasoupHandler {
       let src = this.testContext.createMediaStreamSource(stream);
       let dst = this.testContext.destination;
 
-      let gainNode = this.testContext.createGain();
+      this.testGainNode = this.testContext.createGain();
+      this.testVadNode = this.testContext.createGain();
 
-      src.connect(gainNode);
-      gainNode.connect(dst);
+      src.connect(this.testGainNode);
+      this.testGainNode.connect(this.testVadNode);
+      this.testVadNode.connect(dst);
 
       this.testContext.resume();
 
@@ -605,6 +622,10 @@ class mediasoupHandler {
     if (this.testContext) {
       this.testContext.close();
       this.testContext = null;
+    }
+
+    if(this.testVadNode) {
+      this.testVadNode = null;
     }
   }
 
