@@ -27,6 +27,7 @@ class mediasoupHandler {
 
     this.analyser = null;
     this.talkingTreshold = 0.3;
+    this.talkingTresholdRemote = 0.3;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
@@ -532,13 +533,13 @@ class mediasoupHandler {
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          if (!stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
+          if (!stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTresholdRemote) {
             stream.hasSpoken = true;
             ep.audioStatsUpdate({
               id: stream.producerId,
               talking: stream.hasSpoken,
             });
-          } else if (stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
+          } else if (stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTresholdRemote) {
             stream.hasSpoken = false;
             ep.audioStatsUpdate({
               id: stream.producerId,
@@ -579,8 +580,8 @@ class mediasoupHandler {
     }
   }
 
-  setVadTreshold(threashold) {
-    this.talkingTreshold = threashold;
+  setVadTreshold(threshold) {
+    this.talkingTreshold = threshold;
   }
 
   setMicrophoneTest(value) {
