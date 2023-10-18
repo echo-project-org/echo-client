@@ -8,6 +8,7 @@ const leaveSound = require("./audio/leave.mp3");
 const joinSound = require("./audio/join.mp3");
 const startStreamSound = require("./audio/streamstart.mp3");
 const endStreamSound = require("./audio/streamend.mp3");
+const ringtoneSound = require("./audio/echoRingtone.flac");
 
 class AudioPlayer {
     constructor(volume = 0.6) {
@@ -21,6 +22,7 @@ class AudioPlayer {
         this.joinSound = new Audio(joinSound);
         this.startStreamSound = new Audio(startStreamSound);
         this.endStreamSound = new Audio(endStreamSound);
+        this.ringtoneSound = new Audio(ringtoneSound);
         this.volume = volume;
 
         this.newMessageSound.volume = volume;
@@ -33,6 +35,7 @@ class AudioPlayer {
         this.joinSound.volume = volume;
         this.startStreamSound.volume = volume;
         this.endStreamSound.volume = volume;
+        this.ringtoneSound.volume = volume;
     }
 
     setVolume(volume) {
@@ -47,6 +50,7 @@ class AudioPlayer {
         this.joinSound.volume = volume;
         this.startStreamSound.volume = volume;
         this.endStreamSound.volume = volume;
+        this.ringtoneSound.volume = volume;
     }
     
     playNewMessageSound() {
@@ -87,6 +91,16 @@ class AudioPlayer {
     
     playEndStreamSound() {
         this.endStreamSound.play();
+    }
+
+    startPlayingRingtone() {
+        this.ringtoneSound.loop = true;
+        this.ringtoneSound.play();
+    }
+
+    stopPlayingRingtone() {
+        this.ringtoneSound.loop = false;
+        this.ringtoneSound.pause();
     }
 }
 
