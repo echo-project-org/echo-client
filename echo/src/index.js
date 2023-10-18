@@ -5,8 +5,11 @@ import reportWebVitals from './reportWebVitals';
 
 import EchoProtocol from './echoProtocol';
 import Storage from './cache/storage';
+import AudioPlayer from './audioPlayer';
+
 let ep = new EchoProtocol();
 const storage = new Storage();
+const ap = new AudioPlayer();
 export { ep, storage };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
