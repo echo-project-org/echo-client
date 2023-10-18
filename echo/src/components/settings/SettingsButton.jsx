@@ -36,6 +36,7 @@ function SettingsButton() {
   const handleModalClose = () => {
     setOpenUploader(false);
     setModalOpen(false);
+    ep.setMicrophoneTest(false);
   }
 
   const handleClick = (event) => {

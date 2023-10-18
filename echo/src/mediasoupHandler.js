@@ -30,6 +30,9 @@ class mediasoupHandler {
     this.inputLevel = 0;
     this.outputLevel = 0;
 
+    this.testContext = null;
+    this.testGainNode = null;
+
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
     this.videoProducer = null;
@@ -88,7 +91,7 @@ class mediasoupHandler {
         this.videoRcvTransport = null;
       }
 
-      if(this.statsInterval){
+      if (this.statsInterval) {
         clearInterval(this.statsInterval);
         this.statsInterval = null;
       }
@@ -561,6 +564,48 @@ class mediasoupHandler {
 
   setVadTreshold(threashold) {
     this.talkingTreshold = threashold;
+  }
+
+  setMicrophoneTest(value) {
+    if (value) {
+      this.startListeningLocalStream();
+    } else {
+      this.stopListeningLocalStream();
+    }
+  }
+
+  startListeningLocalStream() {
+    if (this.outStream) {
+      this.testContext = new AudioContext();
+
+      if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
+        this.testContext.setSinkId(this.outputDeviceId);
+      }
+      let stream = new MediaStream([this.outStream.getAudioTracks()[0]])
+      let src = this.testContext.createMediaStreamSource(stream);
+      let dst = this.testContext.destination;
+
+      let gainNode = this.testContext.createGain();
+
+      src.connect(gainNode);
+      gainNode.connect(dst);
+
+      this.testContext.resume();
+
+      //Chrome bug fix
+      let audioElement = new Audio();
+
+      audioElement.srcObject = this.outStream;
+      audioElement.autoplay = true;
+      audioElement.pause();
+    }
+  }
+
+  stopListeningLocalStream() {
+    if (this.testContext) {
+      this.testContext.close();
+      this.testContext = null;
+    }
   }
 
   async setInputDevice(deviceId) {

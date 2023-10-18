@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
+import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip, FormControlLabel, Switch } from '@mui/material';
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle, RecordVoiceOver } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -45,6 +45,7 @@ const DevicesSelectList = ({ inputDevices, handleInputDeviceChange, inputDevice,
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
   const [micVolume, setMicVolulme] = useState(100);
+  const [micTest, setMicTest] = useState(false);
   const [vadTreshold, setVadTreshold] = useState(0);
   const [showList, setShowList] = useState(false);
 
@@ -53,8 +54,10 @@ function InputDevicesSettings({ inputDevices }) {
     ep.setMicrophoneVolume(storage.get('micVolume') || 1);
     ep.setMicrophoneDevice(storage.get('inputAudioDeviceId') || "default");
     ep.setVadTreshold(storage.get('vadTreshold') || 1);
+    ep.setMicrophoneTest(false);
     setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
     setVadTreshold(Math.floor(storage.get('vadTreshold') * 100) || 0);
+    setMicTest(false);
   }, []);
 
   const handleInputDeviceChange = (event) => {
@@ -76,6 +79,11 @@ function InputDevicesSettings({ inputDevices }) {
     setVadTreshold(newValue);
     ep.setVadTreshold(newValue / 100);
   };
+
+  const handleTestChange = (event) => {
+    setMicTest(event.target.checked);
+    ep.setMicrophoneTest(event.target.checked);
+  }
 
   const deviceListToggle = (status = true) => {
     setShowList(status);
@@ -126,6 +134,11 @@ function InputDevicesSettings({ inputDevices }) {
             onChange={handleVadTresholdChange}
             size='medium'
           />
+        </Stack>
+      </div>
+      <div style={{ paddingRight: "2%", width: "95%" }}>
+        <Stack spacing={2} direction="row" alignItems="center">
+          <FormControlLabel control={<Switch checked={micTest} onChange={handleTestChange} />} label="Test your input device" />
         </Stack>
       </div>
     </div>

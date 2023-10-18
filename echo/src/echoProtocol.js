@@ -164,7 +164,7 @@ class EchoProtocol {
       // data.id is my id
       // data.targedId is the person im calling
       // data.roomId is the private room id
-  
+
     });
 
     this.socket.on("server.someoneCallingMe", (data) => {
@@ -392,6 +392,12 @@ class EchoProtocol {
   setVadTreshold(treshold) {
     if (this.mh) {
       this.mh.setVadTreshold(treshold);
+    }
+  }
+
+  setMicrophoneTest(value) {
+    if (this.mh) {
+      this.mh.setMicrophoneTest(value);
     }
   }
 

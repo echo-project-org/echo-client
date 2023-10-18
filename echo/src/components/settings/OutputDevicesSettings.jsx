@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Slider, Typography, Grid, ClickAwayListener } from '@mui/material';
+import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -14,7 +14,7 @@ const CurrentDevice = ({ outputDevices, outputDevice, showList }) => {
     </Typography>
   )
 }
-  
+
 const DevicesSelectList = ({ outputDevices, handleOutputDeviceChange, outputDevice, showList }) => {
   outputDevices.forEach(device => {
     const startIndex = device.name.indexOf('(', device.name.indexOf('(') + 1);
@@ -88,7 +88,9 @@ function OutputDevicesSettings({ outputDevices }) {
       </div>
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
-          <VolumeUp fontSize="medium" />
+          <Tooltip title="Speaker volume" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+            <VolumeUp fontSize="medium" />
+          </Tooltip>
           <Slider
             sx={{ width: "95%" }}
             valueLabelDisplay="auto"
