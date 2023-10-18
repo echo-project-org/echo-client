@@ -25,7 +25,7 @@ class mediasoupHandler {
     this.vadNode = null;
 
     this.analyser = null;
-    this.talkingThreashold = 0.2;
+    this.talkingThreashold = 0.3;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
@@ -452,13 +452,13 @@ class mediasoupHandler {
 
       analyser[i].fftSize = 1024;
       analyser[i].bufferLen = 1024;
-      analyser[i].smoothingTimeConstant = 0.9;
+      analyser[i].smoothingTimeConstant = 0.8;
       analyser[i].minCaptureFreq = 85;
       analyser[i].maxCaptureFreq = 255;
       analyser[i].noiseCaptureDuration = 1000;
-      analyser[i].minNoiseLevel = 0.3;
-      analyser[i].maxNoiseLevel = 0.7;
-      analyser[i].avgNoiseMultiplier = 1.2;
+      analyser[i].minNoiseLevel = 0.1;
+      analyser[i].maxNoiseLevel = 0.5;
+      analyser[i].avgNoiseMultiplier = 1.0;
 
       // analyser[i].minDecibels = -100;
       // analyser[i].maxDecibels = 0;
