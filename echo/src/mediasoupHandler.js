@@ -551,7 +551,7 @@ class mediasoupHandler {
           });
         }
       }
-    }, 100);
+    }, 20);
   }
 
   setOutVolume(volume) {
