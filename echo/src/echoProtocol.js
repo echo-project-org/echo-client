@@ -389,6 +389,12 @@ class EchoProtocol {
     }
   }
 
+  setVadTreshold(treshold) {
+    if (this.mh) {
+      this.mh.setVadTreshold(treshold);
+    }
+  }
+
   setUserVolume(volume, remoteId) {
     this.mh.setPersonalVolume(remoteId, volume);
   }
