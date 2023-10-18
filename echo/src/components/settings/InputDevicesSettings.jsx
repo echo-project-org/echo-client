@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Slider, Typography, Grid, ClickAwayListener } from '@mui/material';
+import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle, RecordVoiceOver } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -98,7 +98,9 @@ function InputDevicesSettings({ inputDevices }) {
       </div>
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
-          <Mic fontSize="medium" />
+          <Tooltip title="Mic volume" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+            <Mic fontSize="medium" />
+          </Tooltip>
           <Slider
             sx={{ width: "95%" }}
             valueLabelDisplay="auto"
@@ -112,7 +114,9 @@ function InputDevicesSettings({ inputDevices }) {
       </div>
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
-          <RecordVoiceOver fontSize="medium" />
+          <Tooltip title="Voice activity detection" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
+            <RecordVoiceOver fontSize="medium" />
+          </Tooltip>
           <Slider
             sx={{ width: "95%" }}
             valueLabelDisplay="auto"
