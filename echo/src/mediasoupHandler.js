@@ -25,7 +25,7 @@ class mediasoupHandler {
     this.vadNode = null;
 
     this.analyser = null;
-    this.talkingThreashold = 0.3;
+    this.talkingTreshold = 0.3;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
@@ -516,13 +516,13 @@ class mediasoupHandler {
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
+          if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
             this.hasSpoken = true;
             ep.audioStatsUpdate({
               id: stream.producerId,
               talking: this.hasSpoken,
             });
-          } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
+          } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
             this.hasSpoken = false;
             ep.audioStatsUpdate({
               id: stream.producerId,
@@ -535,14 +535,14 @@ class mediasoupHandler {
       // local user's audio levels
       if (this.analyser) {
         let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outChannelCount);
-        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
+        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
           this.hasSpokenLocal = true;
           this.setVoiceDetectionVolume(1.0);
           ep.audioStatsUpdate({
             id: this.id,
             talking: this.hasSpokenLocal,
           });
-        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
+        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
           this.hasSpokenLocal = false;
           this.setVoiceDetectionVolume(0.0);
           ep.audioStatsUpdate({
@@ -557,6 +557,10 @@ class mediasoupHandler {
   setOutVolume(volume) {
     this.volume = volume;
     this.outGainNode.gain.value = volume;
+  }
+
+  setVadTreshold(threashold) {
+    this.talkingTreshold = threashold;
   }
 
   async setInputDevice(deviceId) {
