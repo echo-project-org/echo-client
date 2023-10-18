@@ -99,8 +99,9 @@ class AudioPlayer {
     }
 
     stopPlayingRingtone() {
-        this.ringtoneSound.loop = false;
         this.ringtoneSound.pause();
+        this.ringtoneSound.loop = false;
+        this.ringtoneSound.currentTime = 0;
     }
 }
 
