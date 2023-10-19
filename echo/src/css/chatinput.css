@@ -50,3 +50,13 @@
   position: relative;
   top: 1.5rem;
 }
+
+.chatboxContent {
+  display: flex;
+}
+
+.chatboxContent img {
+  width: 1.3rem !important;
+  height: 1.3rem !important;
+  display: inline-block;
+}

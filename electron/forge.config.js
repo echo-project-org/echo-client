@@ -4,7 +4,7 @@ const fs = require('fs');
 module.exports = {
   packagerConfig: {
     asar: true, // ?????
-    icon: 'images/icon'
+    icon: path.join(process.cwd(), 'images', 'icon.png')
   },
   rebuildConfig: {},
   makers: [

@@ -58,7 +58,6 @@ function ThemeSettings() {
   }
 
   // useEffect(() => {
-  //   console.log("background: " + background)
   //   theme.palette.background.main = background;
   //   theme.palette.primary.main = primary;
   //   theme.palette.secondary.main = secondary;
@@ -66,7 +65,9 @@ function ThemeSettings() {
   // }, [background, primary, secondary, text]);
     
   return (
-    <Grid container className="settingsModalSubDiv">
+    <Grid container className="settingsModalSubDiv" sx={{
+      alignItems: "flex-start"
+    }}>
       <Grid item xs={12}>
         <div sx={{
           fontSize: "1.5rem",

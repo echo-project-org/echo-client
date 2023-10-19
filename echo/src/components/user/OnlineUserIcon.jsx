@@ -9,7 +9,6 @@ import { ep } from "../../index";
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 function OnlineUserIcon({ user }) {
-  console.log(">>> [OnlineUserIcon] Re-rendering component", user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -17,13 +16,12 @@ function OnlineUserIcon({ user }) {
   const [deaf, setDeaf] = useState(false);
   const [muted, setMuted] = useState(false);
   const [talking, setTalking] = useState(false);
-  const [broadcastingVideo, setBroadcastingVideo] = useState(false);
+  const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);
 
   const open = Boolean(anchorEl);
 
   useEffect(() => {
     ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
-      console.log(">>> [OnlineUserIcon] updatedAudioState", data)
       if (data.id === user.id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
@@ -38,14 +36,12 @@ function OnlineUserIcon({ user }) {
 
     ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
-        console.log("updating ui for video broadcast", data)
         setBroadcastingVideo(true)
       }
     });
 
     ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
-        console.log("updating ui for video broadcast stop", data)
         setBroadcastingVideo(false)
       }
     });
@@ -56,8 +52,10 @@ function OnlineUserIcon({ user }) {
     setMuted(user.muted);
 
     return () => {
-      ep.releaseGroup('OnlineUserIcon.updatedAudioState');
-      ep.releaseGroup('OnlineUserIcon.audioStatsUpdate');
+      ep.releaseGroup("OnlineUserIcon.updatedAudioState");
+      ep.releaseGroup("OnlineUserIcon.audioStatsUpdate");
+      ep.releaseGroup("OnlineUserIcon.videoBroadcastStarted");
+      ep.releaseGroup("OnlineUserIcon.videoBroadcastStop");
     };
   }, [user]);
 

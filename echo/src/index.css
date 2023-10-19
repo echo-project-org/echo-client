@@ -20,15 +20,6 @@ body {
   height: 100%;
 }
 
-.utilitiesBar {
-  height: 3rem;
-  background-color: var(--mui-palette-background-main);
-  border-bottom: 1px solid var(--mui-palette-text-light);
-  display: flex;
-  flex-direction: row;
-  flex: 0 0 auto;
-}
-
 .logoContainer {
   height: fit-content;
 }
@@ -138,6 +129,7 @@ body {
   padding: 1rem;
   justify-content: center;
   align-items: center;
+  /* align-items: flex-start; */
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
@@ -179,8 +171,10 @@ body {
 }
 
 .screenShareThumbnail {
-  margin-top: 1rem;
-  max-width: 100%;
+  margin-top: .6rem;
+  padding: .4rem;
+  max-width: 95%;
+  aspect-ratio: 1.78;
 }
 
 .rotating {

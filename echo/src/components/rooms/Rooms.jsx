@@ -2,15 +2,11 @@ import "../../css/rooms.css"
 import { useState, useEffect } from 'react';
 import Room from './Room';
 
-import { ep, storage } from "../../index";
+import { ep, storage, ap } from "../../index";
 
 const api = require("../../api");
-const joinSound = require("../../audio/join.mp3");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
-  const joinAudio = new Audio(joinSound);
-  joinAudio.volume = 0.6;
-
   const [activeRoomId, setActiveRoomId] = useState(0);
   const [remoteRooms, setRemoteRooms] = useState([
     {
@@ -56,8 +52,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
 
       const joiningId = data.roomId;
       const currentRoom = ep.getUser(storage.get("id")).currentRoom;
-      // console.log("roomClicked in Rooms", joiningId, currentRoom, String(joiningId) === currentRoom)
-      // console.log("roomClicked in Rooms", typeof joiningId, typeof currentRoom)
       if (String(joiningId) === currentRoom) return;
       if (currentRoom !== 0) ep.exitFromRoom(storage.get("id"));
       // update audio state of the user
@@ -74,7 +68,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: joiningId })
         .then((res) => {
           if (res.ok) {
-            joinAudio.play();
+            ap.playJoinSound();
             setState(true);
           }
         })
@@ -84,7 +78,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     });
 
     ep.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (data) => {
-      console.log("Rooms.needUserCacheUpdate", data)
       const id = data.id;
       const func = data.call;
       
@@ -94,7 +87,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
             const data = res.json;
             ep.addUser({ id: data.id, name: data.name, img: data.img, online: data.online, roomId: data.roomId });
 
-            console.log("Rooms.needUserCacheUpdate in Rooms, calling function again", func)
             if (func) ep[func.function](func.args);
           }
         })
@@ -111,7 +103,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
 
   useEffect(() => {
     if (!connected) {
-      // console.log("------------------ resetting activeRoomId")
       setActiveRoomId(0);
     }
   }, [connected]);

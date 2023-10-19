@@ -1,7 +1,6 @@
 import { Button, ButtonGroup } from '@mui/material'
 import React from 'react'
 import { useNavigate } from "react-router-dom";
-
 import { ep, storage } from "../../index";
 
 var api = require('../../api');
@@ -12,11 +11,11 @@ const AuthenticatedUserButtons = ({ visibility }) => {
   const logout = async () => {
     storage.remove("id");
     storage.remove("name");
+    storage.set("lastEmail", storage.get("email"));
     storage.remove("email");
     storage.remove("userImage");
     storage.remove("token");
     storage.remove("online");
-    storage.remove("refreshToken");
     storage.remove("userImage");
 
     // EEEEEEEEWWWWWWWWWWWWWWW

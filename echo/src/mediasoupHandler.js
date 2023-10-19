@@ -2,8 +2,23 @@ import { ep } from "./index";
 const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 
+/**
+ * Class representing a mediasoup handler.
+ * @class
+ */
 class mediasoupHandler {
-  constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
+  /**
+   * MediasoupHandler class constructor.
+   * @constructor
+   * @param {string} id - The ID of the mediasoup handler.
+   * @param {string} [inputDeviceId='default'] - The ID of the input device.
+   * @param {string} [outputDeviceId='default'] - The ID of the output device.
+   * @param {number} [volume=1.0] - The volume level.
+   * @param {boolean} [noiseSuppression=false] - Whether noise suppression is enabled.
+   * @param {boolean} [echoCancellation=false] - Whether echo cancellation is enabled.
+   * @param {boolean} [autoGainControl=false] - Whether automatic gain control is enabled.
+   */
+  constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0, noiseSuppression = false, echoCancellation = false, autoGainControl = false) {
     this.id = id;
     this.inputDeviceId = inputDeviceId;
     this.outputDeviceId = outputDeviceId;
@@ -16,19 +31,25 @@ class mediasoupHandler {
     this.producer = null;
     this.outChannelCount = 2;
     this.inputStreams = [];
-    this.streamIds = new Map();
+    this.hasSpokenLocal = false;
 
     this.isMuted = false;
+    this.isDeaf = false;
     this.context = null;
     this.outStream = null;
     this.outGainNode = null;
     this.vadNode = null;
 
     this.analyser = null;
-    this.talkingThreashold = 0.2;
+    this.talkingTreshold = 0.3;
+    this.talkingTresholdRemote = 0.3;
     this.statsInterval = null;
     this.inputLevel = 0;
     this.outputLevel = 0;
+
+    this.testContext = null;
+    this.testGainNode = null;
+    this.testVadNode = null;
 
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
@@ -42,11 +63,12 @@ class mediasoupHandler {
         sampleRate: 48000,
         sampleSize: 16,
         volume: 1.0,
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
+        echoCancellation: echoCancellation,
+        noiseSuppression: noiseSuppression,
+        autoGainControl: autoGainControl,
         deviceId: this.inputDeviceId,
-        googNoiseSupression: false,
+        googNoiseSupression: noiseSuppression,
+        googAutoGainControl: autoGainControl,
       },
       video: false,
     }
@@ -65,36 +87,79 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Closes all transports and clears the stats interval.
+   * @function
+   * @name leaveRoom
+   * @memberof MediasoupHandler
+   * @instance
+   * @returns {void}
+   */
   leaveRoom() {
     //close all tranports
-    if (this.sendTransport) {
-      this.sendTransport.close();
-      this.sendTransport = null;
-    }
+    try {
+      if (this.sendTransport) {
+        this.sendTransport.close();
+        this.sendTransport = null;
+      }
 
-    if (this.rcvTransport) {
-      this.rcvTransport.close();
-      this.rcvTransport = null;
-    }
+      if (this.rcvTransport) {
+        this.rcvTransport.close();
+        this.rcvTransport = null;
+      }
 
-    if (this.videoSendTransport) {
-      this.videoSendTransport.close();
-      this.videoSendTransport = null;
-    }
+      if (this.videoSendTransport) {
+        this.videoSendTransport.close();
+        this.videoSendTransport = null;
+      }
 
-    if (this.videoRcvTransport) {
-      this.videoRcvTransport.close();
-      this.videoRcvTransport = null;
+      if (this.videoRcvTransport) {
+        this.videoRcvTransport.close();
+        this.videoRcvTransport = null;
+      }
+
+      if (this.statsInterval) {
+        clearInterval(this.statsInterval);
+        this.statsInterval = null;
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
+  /**
+   * Checks if the send transport is fully connected.
+   * @returns {boolean} Whether the send transport is fully connected or not.
+   */
+  isFullyConnected() {
+    if (this.sendTransport) {
+      return (
+        this.sendTransport.connectionState === "connected"
+      )
+    } else {
+      return true;
+    }
+  }
+
+  /**
+   * Creates a new receive transport for mediasoup based on the given data.
+   * @async
+   * @param {Object} data - The data required to create the receive transport.
+   * @param {string} data.id - The ID of the receive transport.
+   * @param {RTCIceParameters} data.iceParameters - The ICE parameters for the transport.
+   * @param {RTCIceCandidate[]} data.iceCandidates - The ICE candidates for the transport.
+   * @param {RTCDtlsParameters} data.dtlsParameters - The DTLS parameters for the transport.
+   * @param {RTCSctpParameters} data.sctpParameters - The SCTP parameters for the transport.
+   * @param {RTCIceServer[]} data.iceServers - The ICE servers for the transport.
+   * @param {string} data.iceTransportPolicy - The ICE transport policy for the transport.
+   * @param {Object} data.additionalSettings - Additional settings for the transport.
+   */
   async createReceiveTransport(data) {
     if (data) {
       if (!this.mediasoupDevice.loaded) {
         await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
       }
       if (this.mediasoupDevice && this.mediasoupDevice.loaded) {
-        console.log("Creating receive transport", data);
         this.rcvTransport = this.mediasoupDevice.createRecvTransport({
           id: data.id,
           iceParameters: data.iceParameters,
@@ -107,15 +172,27 @@ class mediasoupHandler {
         });
 
         this.rcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-          console.log("Receive transport connect");
           ep.receiveTransportConnect({ dtlsParameters }, cb, errback);
         });
       }
     }
   }
 
+  /**
+   * Creates a new send transport for mediasoup.
+   * @async
+   * @param {Object} data - The data required to create the send transport.
+   * @param {string} data.id - The ID of the send transport.
+   * @param {RTCIceParameters} data.iceParameters - The ICE parameters for the send transport.
+   * @param {RTCIceCandidate[]} data.iceCandidates - The ICE candidates for the send transport.
+   * @param {RTCDtlsParameters} data.dtlsParameters - The DTLS parameters for the send transport.
+   * @param {RTCSctpParameters} data.sctpParameters - The SCTP parameters for the send transport.
+   * @param {RTCIceServer[]} data.iceServers - The ICE servers for the send transport.
+   * @param {string} data.iceTransportPolicy - The ICE transport policy for the send transport.
+   * @param {Object} data.additionalSettings - Additional settings for the send transport.
+   * @returns {Promise<void>} - A Promise that resolves when the send transport is created.
+   */
   async createSendTransport(data) {
-    console.log("Creating send transport", data);
     if (!this.mediasoupDevice.loaded) {
       await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
     }
@@ -137,12 +214,10 @@ class mediasoupHandler {
     });
 
     this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-      console.log("Send transport connect");
       ep.sendTransportConnect({ dtlsParameters }, cb, errback);
     });
 
     this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      console.log("Send transport produce");
       ep.sendTransportProduce({
         id: this.id + "-audio",
         kind,
@@ -154,8 +229,21 @@ class mediasoupHandler {
     this.startAudioBroadcast();
   }
 
+  /**
+   * Creates a new receive video transport using the provided data.
+   * @async
+   * @param {Object} data - The data needed to create the transport.
+   * @param {string} data.id - The ID of the transport.
+   * @param {Object} data.iceParameters - The ICE parameters for the transport.
+   * @param {Array} data.iceCandidates - The ICE candidates for the transport.
+   * @param {Object} data.dtlsParameters - The DTLS parameters for the transport.
+   * @param {Object} data.sctpParameters - The SCTP parameters for the transport.
+   * @param {Array} data.iceServers - The ICE servers for the transport.
+   * @param {string} data.iceTransportPolicy - The ICE transport policy for the transport.
+   * @param {Object} data.additionalSettings - Additional settings for the transport.
+   * @param {Object} data.rtpCapabilities - The RTP capabilities for the transport.
+   */
   async createReceiveVideoTransport(data) {
-    console.log("Creating video receive transport", data);
     if (data) {
       if (!this.mediasoupDevice.loaded) {
         await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
@@ -173,15 +261,28 @@ class mediasoupHandler {
         });
 
         this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-          console.log("Receive video transport connect");
           ep.receiveVideoTransportConnect({ dtlsParameters }, cb, errback);
         });
       }
     }
   }
 
+  /**
+   * Creates a send transport for video.
+   * @async
+   * @function
+   * @param {Object} data - The data required to create the send transport.
+   * @param {string} data.id - The ID of the transport.
+   * @param {RTCIceParameters} data.iceParameters - The ICE parameters.
+   * @param {RTCIceCandidate[]} data.iceCandidates - The ICE candidates.
+   * @param {RTCDtlsParameters} data.dtlsParameters - The DTLS parameters.
+   * @param {RTCSctpParameters} data.sctpParameters - The SCTP parameters.
+   * @param {RTCIceServer[]} data.iceServers - The ICE servers.
+   * @param {string} data.iceTransportPolicy - The ICE transport policy.
+   * @param {Object} data.additionalSettings - Additional settings for the transport.
+   * @returns {Promise<void>} - Resolves when the transport is created.
+   */
   async createSendVideoTransport(data) {
-    console.log("Creating video send transport", data);
     if (!this.mediasoupDevice.loaded) {
       await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
     }
@@ -197,12 +298,10 @@ class mediasoupHandler {
     });
 
     this.videoSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-      console.log("Send video transport connect");
       ep.sendVideoTransportConnect({ dtlsParameters }, cb, errback);
     });
 
     this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      console.log("Send video transport produce");
       ep.sendVideoTransportProduce({
         id: this.id + "-video",
         kind,
@@ -213,18 +312,34 @@ class mediasoupHandler {
 
   }
 
+  /**
+   * Initializes the mediasoup device.
+   * @returns {Promise<void>}
+   */
   async init() {
     this.mediasoupDevice = new mediasoup.Device();
   }
 
+  /**
+   * Returns the RTP capabilities of the mediasoup device.
+   * @returns {RTCRtpCapabilities} The RTP capabilities of the mediasoup device.
+   */
   getRtpCapabilities() {
     if (this.mediasoupDevice) {
       return this.mediasoupDevice.rtpCapabilities;
     }
   }
 
+  /**
+   * Starts the audio broadcast by creating a media stream source and connecting it to a media stream destination.
+   * It then creates an audio analyser and sets the output volume.
+   * If the audio is muted, it mutes the output.
+   * Finally, it produces the audio track and sends it over the send transport.
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   async startAudioBroadcast() {
-    console.log("Starting audio broadcast");
     if (!this.mediasoupDevice.canProduce("audio")) {
       console.error("Cannot produce audio");
       return;
@@ -250,7 +365,10 @@ class mediasoupHandler {
 
     this.setOutVolume(this.volume);
 
-    console.log(dst.stream.getAudioTracks());
+    if (this.isMuted) {
+      this.mute();
+    }
+
     const audioTrack = dst.stream.getAudioTracks()[0];
     this.producer = await this.sendTransport.produce({
       track: audioTrack,
@@ -261,8 +379,12 @@ class mediasoupHandler {
     });
   }
 
+  /**
+   * Stops the audio broadcast by closing the producer and stopping all tracks in the output stream.
+   * Also calls the `stopAudioBroadcast` method of the `ep` object with the current instance's ID.
+   * @async
+   */
   async stopAudioBroadcast() {
-    console.log("Stopping audio broadcast");
     if (this.producer) {
       this.producer.close();
       this.producer = null;
@@ -275,8 +397,17 @@ class mediasoupHandler {
     ep.stopAudioBroadcast({ id: this.id });
   }
 
+  /**
+   * Consume a media stream and add it to the list of input streams.
+   * @async
+   * @param {Object} data - The data object containing the ID, producer ID, kind, and RTP parameters of the media stream.
+   * @param {string} data.id - The ID of the media stream.
+   * @param {string} data.producerId - The ID of the producer of the media stream.
+   * @param {string} data.kind - The kind of the media stream.
+   * @param {RTCRtpParameters} data.rtpParameters - The RTP parameters of the media stream.
+   * @returns {Promise<void>}
+   */
   async consume(data) {
-    console.log("Consuming audio", data)
     const consumer = await this.rcvTransport.consume({
       id: data.id,
       producerId: data.producerId,
@@ -291,7 +422,6 @@ class mediasoupHandler {
       context.setSinkId(this.outputDeviceId);
     }
     let stream = new MediaStream([track])
-    this.streamIds.set(data.producerId, stream.id);
     let src = context.createMediaStreamSource(stream);
     let dst = context.destination;
 
@@ -307,6 +437,10 @@ class mediasoupHandler {
     deafNode.connect(channelSplitter);
     deafNode.connect(dst);
 
+    if (this.isDeaf) {
+      deafNode.gain.value = 0.0;
+    }
+
     context.resume();
 
     //Chrome bug fix
@@ -317,6 +451,7 @@ class mediasoupHandler {
     audioElement.pause();
 
     this.inputStreams.push({
+      producerId: data.producerId,
       consumer,
       source: src,
       stream,
@@ -325,22 +460,27 @@ class mediasoupHandler {
       deafNode,
       personalGainNode,
       audioElement,
+      hasSpoken: false,
       analyser: this.createAudioAnalyser(context, channelSplitter, src.channelCount),
     });
 
     ep.resumeStream({ id: this.id, producerId: data.producerId });
   }
 
+  /**
+   * Stops consuming media from a specific sender or from all senders.
+   * @async
+   * @param {string} [senderId] - The ID of the sender to stop consuming from. If not provided, all senders will be stopped.
+   * @returns {Promise<void>}
+   */
   async stopConsuming(senderId) {
     if (senderId) {
       //Close specific sender
-      console.log("Stopping consuming", senderId);
       this.inputStreams.forEach((stream, index) => {
         if (stream.consumer.producerId === senderId) {
           stream.consumer.close();
           stream.context.close();
           stream.stream.getTracks().forEach(track => track.stop());
-          stream.audioElement.remove();
           this.inputStreams.splice(index, 1);
         }
       });
@@ -348,7 +488,6 @@ class mediasoupHandler {
       ep.unsubscribeAudio({ id: this.id, producerId: senderId });
     } else {
       //Close all senders
-      console.log("Stopping consuming all");
       this.inputStreams.forEach((stream) => {
         ep.unsubscribeAudio({ id: this.id, producerId: stream.consumer.producerId });
         stream.consumer.close();
@@ -361,8 +500,13 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Starts screen sharing if the device can produce video and a video source ID is available.
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   async startScreenShare() {
-    console.log("Starting screen share");
     if (!this.mediasoupDevice.canProduce("video")) {
       console.error("Cannot produce video");
       return;
@@ -385,6 +529,12 @@ class mediasoupHandler {
     });
   }
 
+  /**
+   * Stops the screen sharing by closing the video producer and stopping the tracks of the outgoing video stream.
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
   async stopScreenShare() {
     if (this.videoProducer) {
       this.videoProducer.close();
@@ -397,13 +547,25 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Checks if screen sharing is currently active.
+   * @returns {boolean} Whether screen sharing is active or not.
+   */
   isScreenSharing() {
     return this.videoProducer !== null;
   }
 
+  /**
+   * Consume a video stream from the remote producer and send it to the front-end.
+   * @async
+   * @param {Object} data - The data object containing the ID, producer ID, kind, and RTP parameters of the video stream.
+   * @param {string} data.id - The ID of the video stream.
+   * @param {string} data.producerId - The ID of the producer of the video stream.
+   * @param {string} data.kind - The kind of the video stream.
+   * @param {RTCRtpParameters} data.rtpParameters - The RTP parameters of the video stream.
+   * @returns {Promise<void>}
+   */
   async consumeVideo(data) {
-    console.log("Consuming video", data);
-
     this.videoConsumer = await this.videoRcvTransport.consume({
       id: data.id,
       producerId: data.producerId,
@@ -418,6 +580,11 @@ class mediasoupHandler {
     ep.sendVideoStreamToFrontEnd({ id: data.producerId, stream: this.inVideoStream });
   }
 
+  /**
+   * Stops consuming video for the given sender ID.
+   *
+   * @param {string} senderId - The ID of the sender whose video should be stopped.
+   */
   stopConsumingVideo(senderId) {
     if (this.videoConsumer) {
       this.videoConsumer.close();
@@ -430,10 +597,22 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Get the current video stream.
+   *
+   * @returns {MediaStream} The current video stream.
+   */
   getVideo() {
     return this.inVideoStream;
   }
 
+  /**
+   * Creates an audio analyser for the given context, splitter and channel count.
+   * @param {AudioContext} context - The audio context to use.
+   * @param {ChannelSplitterNode} splitter - The channel splitter to use.
+   * @param {number} channelCount - The number of channels to use.
+   * @returns {{analyser: Object, freqs: Object}} - An object containing the created analyser and frequency data.
+   */
   createAudioAnalyser(context, splitter, channelCount) {
     const analyser = {};
     const freqs = {};
@@ -445,13 +624,13 @@ class mediasoupHandler {
 
       analyser[i].fftSize = 1024;
       analyser[i].bufferLen = 1024;
-      analyser[i].smoothingTimeConstant = 0.2;
+      analyser[i].smoothingTimeConstant = 0.8;
       analyser[i].minCaptureFreq = 85;
       analyser[i].maxCaptureFreq = 255;
       analyser[i].noiseCaptureDuration = 1000;
-      analyser[i].minNoiseLevel = 0.3;
-      analyser[i].maxNoiseLevel = 0.7;
-      analyser[i].avgNoiseMultiplier = 1.2;
+      analyser[i].minNoiseLevel = 0.1;
+      analyser[i].maxNoiseLevel = 0.5;
+      analyser[i].avgNoiseMultiplier = 1.0;
 
       // analyser[i].minDecibels = -100;
       // analyser[i].maxDecibels = 0;
@@ -465,6 +644,13 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Calculates the audio levels for the given analyser, frequency data and channel count.
+   * @param {AnalyserNode[]} analyser - The analyser nodes to use for calculating audio levels.
+   * @param {Uint8Array[]} freqs - The frequency data arrays to use for calculating audio levels.
+   * @param {number} channelCount - The number of audio channels to calculate levels for.
+   * @returns {number[]} An array of audio levels, one for each channel.
+   */
   calculateAudioLevels(analyser, freqs, channelCount) {
     const audioLevels = [];
     for (let channelI = 0; channelI < channelCount; channelI++) {
@@ -478,10 +664,20 @@ class mediasoupHandler {
     return audioLevels;
   }
 
+  /**
+   * Rounds a number to one decimal place.
+   *
+   * @param {number} num - The number to round.
+   * @returns {number} The rounded number.
+   */
   _round(num) {
     return Math.round((num + Number.EPSILON) * 10) / 10;
   }
 
+  /**
+   * Sets the volume for voice detection.
+   * @param {number} volume - The volume to set, between 0.0 and 1.0.
+   */
   setVoiceDetectionVolume(volume) {
     if (volume > 1.0 || volume < 0.0) {
       console.error("Volume must be between 0.0 and 1.0", volume);
@@ -490,25 +686,29 @@ class mediasoupHandler {
 
     //cancel previous time change
     this.vadNode.gain.cancelAndHoldAtTime(0);
-    //ramp volume to new value in 1 second
-    this.vadNode.gain.linearRampToValueAtTime(volume, 1);
-  }
+    if (this.testVadNode) {
+      this.testVadNode.gain.cancelAndHoldAtTime(0);
+    }
 
-  _findUserId(stream) {
-    // find the userId from the streamId using streamIds
-    let userId = null;
-    for (const [key, value] of this.streamIds) {
-      if (value === stream.stream.id) {
-        userId = key;
-        break;
+    //ramp volume to new value in 1 second
+    if (volume === 1.0) {
+      this.vadNode.gain.value = 1.0;
+      if (this.testVadNode) {
+        this.testVadNode.gain.value = 1.0;
+      }
+    } else {
+      this.vadNode.gain.linearRampToValueAtTime(0.0, this.context.currentTime + 2);
+      if (this.testVadNode) {
+        this.testVadNode.gain.linearRampToValueAtTime(0.0, this.testContext.currentTime + 2);
       }
     }
-    console.log("found userId", userId, "for streamId", stream.stream.id)
-    return userId;
   }
 
+  /**
+   * Starts the stats interval to calculate audio levels for local and remote users.
+   * @returns {void}
+   */
   startStatsInterval() {
-    console.log(this.id, "starting stats interval")
     if (this.statsInterval) {
       clearInterval(this.statsInterval);
       this.statsInterval = null;
@@ -519,17 +719,17 @@ class mediasoupHandler {
       if (this.inputStreams) {
         this.inputStreams.forEach((stream) => {
           let audioInputLevels = this.calculateAudioLevels(stream.analyser.analyser, stream.analyser.freqs, stream.source.channelCount);
-          if (!this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
-            this.hasSpoken = true;
+          if (!stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTresholdRemote) {
+            stream.hasSpoken = true;
             ep.audioStatsUpdate({
-              id: this._findUserId(stream),
-              talking: this.hasSpoken,
+              id: stream.producerId,
+              talking: stream.hasSpoken,
             });
-          } else if (this.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
-            this.hasSpoken = false;
+          } else if (stream.hasSpoken && this._round(audioInputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTresholdRemote) {
+            stream.hasSpoken = false;
             ep.audioStatsUpdate({
-              id: this._findUserId(stream),
-              talking: this.hasSpoken,
+              id: stream.producerId,
+              talking: stream.hasSpoken,
             });
           }
         });
@@ -538,15 +738,14 @@ class mediasoupHandler {
       // local user's audio levels
       if (this.analyser) {
         let audioOutputLevels = this.calculateAudioLevels(this.analyser.analyser, this.analyser.freqs, this.outChannelCount);
-        //console.log("audioOutputLevels", audioOutputLevels, this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2))
-        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreashold) {
+        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
           this.hasSpokenLocal = true;
           this.setVoiceDetectionVolume(1.0);
           ep.audioStatsUpdate({
             id: this.id,
             talking: this.hasSpokenLocal,
           });
-        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingThreashold) {
+        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
           this.hasSpokenLocal = false;
           this.setVoiceDetectionVolume(0.0);
           ep.audioStatsUpdate({
@@ -555,20 +754,120 @@ class mediasoupHandler {
           });
         }
       }
-    }, 5);
+    }, 20);
   }
 
+  /**
+   * Sets the output volume for the audio stream.
+   * @param {number} volume - The desired volume level (0-1).
+   */
   setOutVolume(volume) {
     this.volume = volume;
-    this.outGainNode.gain.value = volume;
+    if (this.outGainNode) {
+      this.outGainNode.gain.value = volume;
+    }
+
+    if (this.testGainNode) {
+      this.testGainNode.gain.value = volume;
+    }
   }
 
+  /**
+   * Sets the talking threshold for the MediasoupHandler instance.
+   * @param {number} threshold - The new talking threshold value.
+   */
+  setVadTreshold(threshold) {
+    this.talkingTreshold = threshold;
+  }
+
+  /**
+   * Sets whether to start or stop listening to the local microphone stream.
+   * @param {boolean} value - Whether to start or stop listening to the local microphone stream.
+   */
+  setMicrophoneTest(value) {
+    if (value) {
+      this.startListeningLocalStream();
+    } else {
+      this.stopListeningLocalStream();
+    }
+  }
+
+
+  /**
+   * Starts listening to the local stream.
+   * @async
+   * @function
+   * @returns {Promise<void>}
+   */
+  async startListeningLocalStream() {
+    if (!this.outStream) {
+      this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+    }
+
+    this.testContext = new AudioContext();
+
+    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
+      this.testContext.setSinkId(this.outputDeviceId);
+    }
+    let stream = new MediaStream([this.outStream.getAudioTracks()[0]])
+    let src = this.testContext.createMediaStreamSource(stream);
+    let dst = this.testContext.destination;
+
+    this.testGainNode = this.testContext.createGain();
+    this.testVadNode = this.testContext.createGain();
+
+    if (this.vadNode) {
+      this.testVadNode.gain.value = this.vadNode.gain.value;
+    } else {
+      this.testVadNode.gain.value = 1;
+    }
+
+    if (this.outGainNode) {
+      this.testGainNode.gain.value = this.outGainNode.gain.value;
+    } else {
+      this.testGainNode.gain.value = 1;
+    }
+
+    src.connect(this.testGainNode);
+    this.testGainNode.connect(this.testVadNode);
+    this.testVadNode.connect(dst);
+
+    this.testContext.resume();
+
+    //Chrome bug fix
+    let audioElement = new Audio();
+
+    audioElement.srcObject = this.outStream;
+    audioElement.autoplay = true;
+    audioElement.pause();
+  }
+
+  /**
+   * Stops listening to the local stream.
+   * @returns {void}
+   */
+  stopListeningLocalStream() {
+    if (this.testContext) {
+      this.testContext.close();
+      this.testContext = null;
+    }
+
+    if (this.testVadNode) {
+      this.testVadNode = null;
+    }
+  }
+
+  /**
+   * Sets the input device for the mediasoup handler. If the device ID provided is the same as the current device ID, nothing happens.
+   * @async
+   * @param {string} deviceId - The ID of the input device to set.
+   * @returns {Promise<void>}
+   */
   async setInputDevice(deviceId) {
     if (deviceId === this.inputDeviceId || deviceId === 'default') {
       return;
     }
 
-    console.log("Setting microphone device to", deviceId);
     this.inputDeviceId = deviceId;
     this.constraints.audio.deviceId = deviceId;
 
@@ -602,16 +901,158 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Sets the echo cancellation value for the audio constraints and updates the media stream. If the value provided is the same as the current value, nothing happens.
+   * @async
+   * @param {boolean} value - The new value for echo cancellation.
+   * @returns {Promise<void>} - A Promise that resolves when the media stream is updated with the new constraints.
+   */
+  async setEchoCancellation(value) {
+    if (value === this.constraints.audio.echoCancellation) {
+      return;
+    }
+
+    this.constraints.audio.echoCancellation = value;
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+      if (this.producer) {
+        await this.producer.replaceTrack({ track: audioTrack });
+      }
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+    }
+  }
+
+
+  /**
+   * Sets the noise suppression value for the audio constraints and updates the audio stream if it is currently active. If the value provided is the same as the current value, nothing happens.
+   * @async
+   * @param {boolean} value - The new noise suppression value to set.
+   * @returns {Promise<void>}
+   */
+  async setNoiseSuppression(value) {
+    if (value === this.constraints.audio.googNoiseSupression) {
+      return;
+    }
+
+    this.constraints.audio.noiseSuppression = value;
+    this.constraints.audio.googNoiseSupression = value;
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+
+      if (this.producer) {
+        await this.producer.replaceTrack({ track: audioTrack });
+      }
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+    }
+  }
+
+  /**
+   * Sets the value of the auto gain control for the audio constraints. If the value provided is the same as the current value, nothing happens.
+   * @async
+   * @param {boolean} value - The value to set for the auto gain control.
+   * @returns {Promise<void>} - A Promise that resolves when the auto gain control is set.
+   */
+  async setAutoGainControl(value) {
+    if (value === this.constraints.audio.autoGainControl) {
+      return;
+    }
+
+    this.constraints.audio.autoGainControl = value;
+    this.constraints.audio.googAutoGainControl = value;
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+
+      if(this.producer){
+        await this.producer.replaceTrack({ track: audioTrack });
+      }
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+    }
+  }
+
+  /**
+   * Sets the screen share device to use for capturing video.
+   * @param {string} deviceId - The ID of the screen share device to use.
+   */
   setScreenShareDevice(deviceId) {
     this.videoSourceId = deviceId;
     this.videoConstraints.video.mandatory.chromeMediaSourceId = deviceId;
   }
 
+  /**
+   * Sets the output device ID for audio playback.
+   * @param {string} deviceId - The ID of the output device to use.
+   */
   setSpeakerDevice(deviceId) {
     if (deviceId === 'default') {
       return
     }
-    console.log("Setting speaker device to", deviceId);
+
     this.outputDeviceId = deviceId;
 
     if (this.inputStreams) {
@@ -621,6 +1062,10 @@ class mediasoupHandler {
     }
   }
 
+  /**
+   * Sets the speaker volume for the input streams.
+   * @param {number} volume - The volume level to set, between 0.0 and 1.0.
+   */
   setSpeakerVolume(volume) {
     if (volume > 1.0 || volume < 0.0) {
       console.error("Volume must be between 0.0 and 1.0", volume);
@@ -632,6 +1077,12 @@ class mediasoupHandler {
     });
   }
 
+  /**
+   * Sets the personal volume for a given user.
+   *
+   * @param {string} userId - The ID of the user.
+   * @param {number} volume - The volume to set, between 0.0 and 1.0.
+   */
   setPersonalVolume(userId, volume) {
     if (volume > 1.0 || volume < 0.0) {
       console.error("Volume must be between 0.0 and 1.0", volume);
@@ -639,50 +1090,80 @@ class mediasoupHandler {
     }
 
     this.inputStreams.forEach((stream) => {
-      if (stream.consumer.producerId === userId) {
+      if (stream.producerId === userId) {
         stream.personalGainNode.gain.value = volume;
       }
     });
   }
 
+  /**
+   * Mutes the outgoing stream by disabling all tracks.
+   */
   mute() {
     if (this.outStream) {
       this.outStream.getTracks().forEach(track => track.enabled = false);
-      this.isMuted = true;
     }
+    this.isMuted = true;
   }
 
+  /**
+   * Unmutes the outgoing stream by enabling all tracks.
+   */
   unmute() {
     if (this.outStream) {
       this.outStream.getTracks().forEach(track => track.enabled = true);
-      this.isMuted = false;
     }
+    this.isMuted = false;
   }
 
+  /**
+   * Mutes the incoming stream by setting the gain value of all deaf nodes to 0.0.
+   */
   deaf() {
+    this.isDeaf = true;
     this.inputStreams.forEach((stream) => {
       stream.deafNode.gain.value = 0.0;
     });
   }
 
+  /**
+   * Unmutes the incoming stream by setting the gain value of all deaf nodes to 1.0.
+   * @function
+   * @name mediasoupHandler#undeaf
+   * @returns {void}
+   */
   undeaf() {
+    this.isDeaf = false;
     this.inputStreams.forEach((stream) => {
       stream.deafNode.gain.value = 1.0;
     });
   }
 
+  /**
+   * Closes the mediasoup handler by leaving the room, stopping the audio broadcast, and stopping consumption.
+   */
   close() {
     this.leaveRoom();
     this.stopAudioBroadcast();
     this.stopConsuming();
-    clearInterval(this.statsInterval);
   }
 
+  /**
+   * Returns an object containing the current audio state.
+   * @returns {{
+   *   isTransmitting: boolean,
+   *   isMuted: boolean,
+   *   isDeaf: boolean,
+   *   volume: number,
+   *   deviceId: string,
+   *   outputDeviceId: string
+   * }} The current audio state.
+   */
   getAudioState() {
     return {
       isTransmitting: true,
       isMuted: this.isMuted,
-      isDeaf: false,
+      isDeaf: this.isDeaf,
       volume: this.volume,
       deviceId: this.inputDeviceId,
       outputDeviceId: this.outputDeviceId,
@@ -734,6 +1215,10 @@ class mediasoupHandler {
     })
   }
 
+  /**
+   * Retrieves the available video sources and filters out those with invalid thumbnail sizes.
+   * @returns {Promise<Array<Object>>} An array of video sources with valid thumbnail sizes.
+   */
   static async getVideoSources() {
     const srcs = await ipcRenderer.invoke("getVideoSources");
     return srcs.filter((src) => {
@@ -741,6 +1226,10 @@ class mediasoupHandler {
     });
   }
 
+  /**
+   * Returns a Promise that resolves to an object containing connection stats such as ping, bytes sent/received, packets sent/received, jitter, and packets lost.
+   * @returns {Promise<{ping: number, bytesSent: number, bytesReceived: number, packetsSent: number, packetsReceived: number, jitterIn: number, packetsLostIn: number}>} A Promise that resolves to an object containing connection stats.
+   */
   getConnectionStats() {
     return new Promise((resolve, reject) => {
       let ping = 0;

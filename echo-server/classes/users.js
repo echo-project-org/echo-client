@@ -6,7 +6,8 @@ class User {
         this.currentRoom = 0;
         this.isDeaf = false;
         this.isMuted = false;
-        this.isTransmittingVideo = false;
+        this.isBroadcastingVideo = false;
+        this.isPrivateCalling = false;
         this.events = {};
 
         this.receiveTransport = null;
@@ -20,12 +21,28 @@ class User {
         this.videoProducerId = null;
         this.videoProducer = null;
         this.videoConsumers = [];
+        this.crashCountdown = null;
+
+        this.pingInterval = setInterval(() => {
+            this.socket.emit("portalTurret.areYouStillThere?");
+            this.crashCountdown = setInterval(() => {
+                console.log("[USER-" + this.id + "] CRASH DETECTED, DISCONNECTING");
+
+                this.triggerEvent("exit", {
+                    id: this.id,
+                    roomId: this.currentRoom,
+                    crashed: true,
+                });
+                clearInterval(this.pingInterval);
+                clearInterval(this.crashCountdown);
+            }, 1000);
+        }, 5000);
 
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
-        this.socket.on("client.ping", (callback) => { callback(); });
+        this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => this.triggerEvent("join", data));
-        this.socket.on("client.end", (data) => this.triggerEvent("end", data));
+        this.socket.on("client.end", (data) => { this.clientDisconnected(data) });
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
         this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
@@ -90,10 +107,69 @@ class User {
         this.socket.on("client.stopReceivingVideo", (data) => {
             this.stopReceivingVideo(data);
         });
+
+        this.socket.on("client.startPrivateCall", (data) => {
+            this.triggerEvent("startPrivateCall", data);
+        });
+
+        this.socket.on("client.acceptPrivateCall", (data) => {
+            this.triggerEvent("acceptPrivateCall", data);
+        });
+
+        this.socket.on("client.rejectPrivateCall", (data) => {
+            this.triggerEvent("rejectPrivateCall", data);
+        });
+        this.socket.on("client.hangupPrivateCall", (data) => {
+            this.triggerEvent("hangupPrivateCall", data);
+        });
+    }
+
+    setIsPrivateCalling(value) {
+        this.isPrivateCalling = value;
+    }
+
+    privateCallRinging(data) {
+        this.socket.emit("server.privateCallRinging", data);
+    }
+
+    someoneCallingMe(data) {
+        this.triggerEvent("server.someoneCallingMe", data);
+    }
+
+    privateCallAccepted(data) {
+        this.triggerEvent("server.privateCallAccepted", data);
+    }
+
+    privateCallRejected(data) {
+        this.triggerEvent("server.privateCallRejected", data);
+    }
+
+    privateCallHangup(data) {
+        this.triggerEvent("server.privateCallHangup", data);
+    }
+
+    getIsBroadcastingVideo() {
+        return this.isBroadcastingVideo;
+    }
+
+    clientDisconnected(data) {
+        console.log("[USER-" + this.id + "] DISCONNECTED");
+        clearInterval(this.pingInterval);
+        clearInterval(this.crashCountdown);
+        
+        this.triggerEvent("exit", {
+            id: this.id,
+            roomId: this.currentRoom,
+            crashed: false,
+        });
+        this.triggerEvent("end", data);
+    }
+
+    pongReceived() {
+        this.crashCountdown && clearInterval(this.crashCountdown);
     }
 
     async receiveTransportConnect(data, cb) {
-        console.log("transportConnect", data);
         await this.receiveTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -102,7 +178,6 @@ class User {
     }
 
     async receiveTransportProduce(data, cb) {
-        console.log("transportProduce", data);
         if (this.audioProducer) {
             await this.audioProducer.close();
             this.audioProducer = null;
@@ -114,7 +189,6 @@ class User {
             appData: data.appData
         });
         this.audioProducerId = this.audioProducer.id;
-        console.log("producer", this.audioProducer.id)
 
         this.triggerEvent("userFullyConnectedToRoom", {
             id: this.id,
@@ -128,7 +202,6 @@ class User {
     }
 
     async sendTransportConnect(data, cb) {
-        console.log("sendTransportConnect", data);
         await this.sendTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -137,7 +210,6 @@ class User {
     }
 
     async receiveVideoTransportConnect(data, cb) {
-        console.log("receiveVideoTransportConnect", data);
         await this.receiveVideoTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -146,7 +218,6 @@ class User {
     }
 
     async receiveVideoTransportProduce(data, cb) {
-        console.log("receiveVideoTransportProduce", data);
         if (this.videoProducer) {
             await this.videoProducer.close();
             this.videoProducer = null;
@@ -158,7 +229,6 @@ class User {
             appData: data.appData
         });
         this.videoProducerId = this.videoProducer.id;
-        console.log("producer", this.videoProducer.id)
         this.isBroadcastingVideo = true;
 
         this.triggerEvent("videoBroadcastStarted", {
@@ -172,7 +242,6 @@ class User {
     }
 
     sendVideoTransportConnect(data, cb) {
-        console.log("sendVideoTransportConnect", data);
         this.sendVideoTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
@@ -181,7 +250,6 @@ class User {
     }
 
     async stopScreenSharing(data) {
-        console.log("User " + this.id + " stopScreenSharing");
         await this.videoProducer.close();
         this.isBroadcastingVideo = false;
         this.triggerEvent("videoBroadcastStop", {
@@ -191,7 +259,6 @@ class User {
     }
 
     async startReceivingVideo(data, cb) {
-        console.log("User " + this.id + " startReceivingVideo");
         this.videoConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
@@ -219,7 +286,6 @@ class User {
     }
 
     stopReceivingVideo() {
-        console.log("User " + this.id + " stopReceivingVideo");
         this.videoConsumers.forEach(async (consumer) => {
             await consumer.consumer.close();
         });
@@ -237,7 +303,6 @@ class User {
     }
 
     async subscribeAudio(data, cb) {
-        console.log("User " + this.id + " subscribeAudio" + data.id);
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.id) {
                 await consumer.consumer.close();
@@ -265,7 +330,6 @@ class User {
     }
 
     async unsubscribeAudio(data) {
-        console.log("User " + this.id + " unsubscribeAudio" + data.producerId);
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
                 await consumer.consumer.close();
@@ -277,9 +341,7 @@ class User {
         //resume stream
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
-                console.log("Prima if")
                 if (consumer.consumer.paused) {
-                    console.log("Dopo if")
                     await consumer.consumer.resume();
                 }
             }
@@ -306,7 +368,6 @@ class User {
     }
 
     registerEvent(event, cb) {
-        console.log("event", event, "registered")
         if (!this.events[event]) this.events[event] = {};
         this.events[event].cb = cb;
     }
@@ -362,7 +423,6 @@ class User {
 
     // update the audio state of the current user
     audioState(data) {
-        console.log("deaf request from", data)
         this.isDeaf = data.deaf;
         this.isMuted = data.muted;
     }
@@ -471,7 +531,52 @@ class User {
         });
     }
 
-    clearTransports() {
+    privateCallSetReceiveTransport(transport, rtpCapabilities) {
+        this.receiveTransport = transport;
+        this.socket.emit("server.privateCallSetReceiveTransport", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    privateCallSetSendTransport(transport, rtpCapabilities) {
+        this.sendTransport = transport;
+        this.socket.emit("server.privateCallSetSendTransport", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    privateCallSetReceiveVideoTransport(transport, rtpCapabilities) {
+        this.receiveVideoTransport = transport;
+        this.socket.emit("server.privateCallSetReceiveVideoTransport", {
+            id: transport.id,
+            iceParameters: transport.iceParameters,
+            iceCandidates: transport.iceCandidates,
+            dtlsParameters: transport.dtlsParameters,
+            sctpParameters: transport.sctpParameters,
+            iceServers: transport.iceServers,
+            iceTransportPolicy: transport.iceTransportPolicy,
+            additionalSettings: transport.additionalSettings,
+            rtpCapabilities: rtpCapabilities,
+        });
+    }
+
+    async clearTransports() {
         //stop and clear all transports
         if (this.audioProducer) {
             this.audioProducer.close();

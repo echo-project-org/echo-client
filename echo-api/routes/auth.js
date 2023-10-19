@@ -12,6 +12,10 @@ router.post("/register", (req, res) => {
         if (err) return res.status(406).send({ message: "Username or email already exists." });
         
         if (result && result.affectedRows > 0) {
+            req.database.query("INSERT INTO user_status (userId, status) VALUES (" + result.insertId + ", '1')", (err, result, fields) => {
+                if (err) console.error(err);
+            });
+
             return res.status(200).json({ message: "Account created successfully!" });
         }
 
@@ -24,22 +28,28 @@ router.post("/login", (req, res) => {
     
     if (!req.utils.checkEmail(email)) return res.status(406).send({ message: "Invalid email address. (Nice try...)" });
 
-    req.database.query("SELECT id, name, email, img, online FROM users WHERE password = '" + password + "'", (err, result, fields) => {
+    req.database.query(`
+        SELECT id, name, email, img, status FROM users
+        INNSER JOIN user_status ON userId = id
+        WHERE password = '${password}'
+    `, (err, result, fields) => {
         if (err) console.error(err);
         if (err) return res.status(400).send({ message: "You messed up the request." });
         // send wrong credentials if no user was found
         if (!result) return res.status(401).send({ message: "Wrong credentials." });
 
         if (result && result.length > 0) {
-            const { token, refreshToken } = req.authenticator.generateToken(result[0].id);
+            const token = req.authenticator.generateJWTToken(email);
+            req.database.query("UPDATE users SET online = ? WHERE id = ?", ["1", result[0].id], (err, result, fields) => {
+                if (err) console.error(err);
+            });
             return res.status(200).json({
                 id: result[0].id,
                 name: result[0].name,
                 email: result[0].email,
                 img: result[0].img,
-                online: result[0].online,
-                token,
-                refreshToken
+                online: result[0].status,
+                token
             });
         }
 

@@ -6,15 +6,13 @@ import { EmojiClickData, Emoji, EmojiStyle } from "emoji-picker-react";
 
 import { ep } from "../../index";
 
-function EmojiPicker({ show, style }) {
+function EmojiPicker({ show }) {
   // const [emojiPicker, setEmojiPicker] = useState(false);
   // const [selectEmoji, setSelectEmoji] = useState("");
 
   // function for emoji selection
   function handleSelectEmoji(emojiData, event) {
     // setSelectEmoji(emojiData.unified);
-    // console.log(selectEmoji, "this is the selected emoji");
-    // console.log(emojiData);
     ep.emit("selectedEmoji", emojiData)
   }
 
@@ -24,6 +22,14 @@ function EmojiPicker({ show, style }) {
   // }
 
   if (!show) return (<></>);
+
+  const style={
+    position: "absolute",
+    bottom: "5rem",
+    right: "1rem",
+    zIndex: "1000",
+    opacity: show ? "1" : "0",
+  }
 
   return (
     <div style={style}>

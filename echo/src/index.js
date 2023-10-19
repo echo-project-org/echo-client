@@ -5,9 +5,12 @@ import reportWebVitals from './reportWebVitals';
 
 import EchoProtocol from './echoProtocol';
 import Storage from './cache/storage';
-const ep = new EchoProtocol();
+import AudioPlayer from './audioPlayer';
+
+let ep = new EchoProtocol();
 const storage = new Storage();
-export { ep, storage };
+const ap = new AudioPlayer(storage.get('soundQueuesVolume') || 0.6);
+export { ep, storage, ap };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

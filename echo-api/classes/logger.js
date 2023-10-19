@@ -9,12 +9,12 @@ class Logger {
         this.logFile = path.join(this.path, "log.txt");
 
         this.log = this.log.bind(this);
-        console.log = this.log;
         this.checkFolder();
         this.checkFile();
         this.createStream();
 
         this.internalId = this.id();
+        console.log = this.log;
 
         console.log("------------------------- LOG STARTED -------------------------");
     }
@@ -36,7 +36,18 @@ class Logger {
     }
 
     createStream() {
+        // create write stream
         this.logStream = fs.createWriteStream(this.logFile, { flags: "a" });
+        // get size of logs.txt file
+        fs.stat(this.logFile, (err, stats) => {
+            if (err) console.error(err);
+            console.error("size of file is", stats.size, "bytes");
+            // check if file is bigger than 50MB
+            if (stats.size > 50000000) {
+                // rotate log file
+                this.rotate();
+            }
+        });
     }
 
     checkFolder() {
@@ -59,13 +70,15 @@ class Logger {
         // rename file
         const date = new Date();
         // create new log file and rename adding date as DD/MM/YYYY HH:MM:SS
-        const newFile = path.join(this.path, `log_${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.txt`);
+        const newFile = path.join(this.path, `log_${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.txt`);
         // print file rotation
         console.log(`Renaming log file to ${newFile}`);
         // end the stream of the current log file
-        logStream.end();
+        this.logStream.end();
         // rename the current log file to the new path
         fs.renameSync(this.logFile, newFile);
+        // create new stream after rename
+        this.createStream();
     }
     
     async log(...args) {

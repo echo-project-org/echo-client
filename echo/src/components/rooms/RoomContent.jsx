@@ -1,39 +1,14 @@
 import "../../css/chat.css";
 
 import { useState, useEffect } from 'react'
-import { Grid, Container, styled, Divider, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { ChatBubble, PeopleAlt, Window } from '@mui/icons-material';
+import { Grid, Container, styled, Divider } from '@mui/material';
+import InternalRoomContent from "./InternalRoomContent.jsx";
 
-import RoomContentChat from "./RoomContentChat";
-import RoomContentScreenShares from "./RoomContentScreenShares";
-import RoomContentFriends from "./RoomContentFriends";
-
-import { ep } from "../../index";
+import { ep, storage } from "../../index";
+import RoomContentSelector from "./RoomContentSelector.jsx";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
-    margin: "0 0 0 1rem",
-    width: "100%",
-    position: "relative",
-    display: "inline-flex",
-    maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: theme.palette.background.dark,
-    padding: "0 0 0 .6rem",
-    maxHeight: "43.09px",
-    top: "10%",
-  },
-  [theme.breakpoints.up('lg')]: {
-    margin: "0 0 0 1rem",
-    width: "100%",
-    position: "relative",
-    display: "inline-flex",
-    maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: theme.palette.background.dark,
-    padding: "0 0 0 .6rem",
-    maxHeight: "43.09px",
-    top: "10%",
-  },
-  [theme.breakpoints.up('xl')]: {
     margin: "0 0 0 1rem",
     width: "100%",
     position: "relative",
@@ -67,27 +42,6 @@ function RoomContent({ roomId }) {
   const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
   const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
 
-  const handleChange = (event, newAlignment) => {
-    if (newAlignment === null) return;
-    setContentSelected(newAlignment);
-  };
-  const control = {
-    value: contentSelected,
-    onChange: handleChange,
-    exclusive: true,
-  };
-  const computeRoomContent = () => {
-    switch (contentSelected) {
-      case "chat":
-        return <RoomContentChat roomId={roomId} key={0} />
-      case "screen":
-        return <RoomContentScreenShares roomId={roomId} key={1} />
-      case "friends":
-        return <RoomContentFriends key={2} />
-      default:
-        return <RoomContentChat roomId={roomId} key={0} />
-    }
-  }
   useEffect(() => {
     const roomData = ep.getRoom(roomId);
     if (roomData) {
@@ -96,35 +50,30 @@ function RoomContent({ roomId }) {
     }
   }, [roomId]);
 
+  const setContentSelectedWrap = (content) => {
+    storage.set("lastContentSelected", content);
+    setContentSelected(content);
+  }
+
   useEffect(() => {
-    ep.on("gotVideoStream", (data) => {
+    ep.on("gotVideoStream", "RoomContent.gotVideoStream", (data) => {
       setContentSelected("screen");
     })
-  }, [contentSelected]);
 
-  const computeButtons = () => {
-    // console.log(roomId)
-    if (String(roomId) === "0") {
-      // setContentSelected("friends");
-      return [
-        <ToggleButton value="friends" key="friends" disableRipple>
-          <PeopleAlt />
-        </ToggleButton>
-      ]
-    } else {
-      return [
-        <ToggleButton value="friends" key="friends" disableRipple>
-          <PeopleAlt />
-        </ToggleButton>,
-        <ToggleButton value="chat" key="chat" disableRipple>
-          <ChatBubble />
-        </ToggleButton>,
-        <ToggleButton value="screen" key="screen" disableRipple>
-          <Window />
-        </ToggleButton>,
-      ]
+    ep.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
+      setContentSelected("friends");
+    });
+
+    ep.on("joinedRoom", "RoomContent.joinedRoom", (data) => {
+      setContentSelectedWrap(storage.get("lastContentSelected") || "chat");
+    });
+
+    return () => {
+      ep.releaseGroup("RoomContent.gotVideoStream");
+      ep.releaseGroup("RoomContent.exitedFromRoom");
+      ep.releaseGroup("RoomContent.joinedRoom");
     }
-  }
+  }, [contentSelected]);
 
   return (
     <Grid container direction={"row"}>
@@ -151,9 +100,7 @@ function RoomContent({ roomId }) {
               justifyContent: "flex-end",
               alignItems: "center",
             }}>
-              <ToggleButtonGroup size="small" {...control} aria-label="Small sizes">
-                {computeButtons()}
-              </ToggleButtonGroup>
+              <RoomContentSelector roomId={roomId} contentSelected={contentSelected} setContentSelected={setContentSelectedWrap} />
             </Grid>
           </Grid>
         </StyledContainer>
@@ -163,7 +110,7 @@ function RoomContent({ roomId }) {
         maxHeight: "calc(100vh - 5rem)",
       }}>
         <StyledContainerContent>
-          {computeRoomContent()}
+          <InternalRoomContent roomId={roomId} contentSelected={contentSelected} />
         </StyledContainerContent>
       </Grid>
     </Grid>

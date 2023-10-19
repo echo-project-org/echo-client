@@ -1,25 +1,26 @@
-import { useState, useEffect } from 'react'
-import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Divider } from '@mui/material'
+import { useState, useEffect, useRef } from 'react'
+import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Modal } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
+import CurrentStatus from '../user/CurrentStatus';
 
 var api = require('../../api');
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     height: '12rem',
-    width:'12rem',
+    width: '12rem',
     margin: "auto",
   },
   [theme.breakpoints.up('md')]: {
     height: '10rem',
-    width:'10rem',
+    width: '10rem',
     margin: "auto",
   },
   [theme.breakpoints.up('lg')]: {
     height: '8rem',
-    width:'8rem',
+    width: '8rem',
     margin: "auto",
   },
 }));
@@ -54,6 +55,73 @@ const StyledTextField = styled(TextField)({
   }
 });
 
+const ComputeSelectList = ({ statusHover, changeStatus, statusSelectOn }) => {
+  if (statusHover)
+    return (
+      <Grid container className="selectContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <Circle style={{ color: "#44b700" }} />
+          Online
+        </Grid>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <DarkMode style={{ color: "#ff8800" }} />
+          Away
+        </Grid>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <DoNotDisturbOn style={{ color: "#fd4949" }} />
+          Do not disturb
+        </Grid>
+        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+          <Circle style={{ color: "#f5e8da" }} />
+          Invisible
+        </Grid>
+      </Grid>
+    )
+}
+
+const ComputeUserImage = ({ hover, uploadPicture, onAvatarHover, loading }) => {
+  if (hover) {
+    return (
+      <Fade in={hover} timeout={200}>
+        <div
+          style={{
+            backgroundColor: "rgba(0,0,0,.3)",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            zIndex: "1",
+            borderRadius: "50%",
+            cursor: "pointer"
+          }}
+          onMouseDown={uploadPicture}
+          onMouseLeave={onAvatarHover} >
+          <CameraAlt style={{ fontSize: "4rem", position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
+        </div>
+      </Fade>
+    )
+  }
+  if (loading) {
+    return (
+      <Fade in={loading} timeout={200}>
+        <div
+          style={{
+            backgroundColor: "rgba(0,0,0,.5)",
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            zIndex: "1",
+            borderRadius: "50%",
+            cursor: "pointer"
+          }}
+        >
+          <Loop style={{ fontSize: "4rem", position: "absolute", top: "25%", left: "25%" }} className='rotating' />
+        </div>
+      </Fade>
+    )
+  }
+  return null;
+}
+
 function UserSettings() {
   const [hover, setHover] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,6 +134,7 @@ function UserSettings() {
       setHover(true);
     }
   }
+
   const uploadPicture = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -89,132 +158,12 @@ function UserSettings() {
           const base64 = ctx.canvas.toDataURL();
 
           setLoading(true);
-          
-          api.call("users/image", "POST", { id: storage.get("id"), image: base64 })
-            .then((res) => {
-              storage.set("userImage", base64);
-              ep.updatePersonalSettings({ id: storage.get("id"), field: "userImage", value: base64 });
-              setLoading(false);
-            })
-            .catch(err => {
-              console.error(err);
-            });
+          ep.emit("openUploader", { image: base64 });
+          setLoading(false);
         }
       };
     };
     fileInput.click();
-  }
-  const computeOnline = () => {
-    const online = storage.get("online");
-    switch (online) {
-      case "0":
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#f5e8da" }} />
-            <p>Offline</p>
-          </Container>
-        );
-      case "1":
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#44b700" }} />
-            <p>Online</p>
-          </Container>
-        );
-      case "2":
-        return (
-          <Container className="statusText">
-            <DarkMode style={{ color: "#ff8800" }} />
-            <p>Away</p>
-          </Container>
-        );
-      case "3":
-        return (
-          <Container className="statusText">
-            <DoNotDisturbOn style={{ color: "#fd4949" }} />
-            <p>Do not disturb</p>
-          </Container>
-        );
-      case "4":
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#f5e8da" }} />
-            <p>Invisible</p>
-          </Container>
-        );
-      default:
-        return (
-          <Container className="statusText">
-            <Circle style={{ color: "#f5e8da" }} />
-            <p>Offline</p>
-          </Container>
-        );
-    }
-  }
-  const computeSelectList = () => {
-    if (statusHover)
-      return (
-        <Grid container className="selectContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <Circle style={{ color: "#44b700" }} />
-            Online
-          </Grid>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <DarkMode style={{ color: "#ff8800" }} />
-            Away
-          </Grid>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <DoNotDisturbOn style={{ color: "#fd4949" }} />
-            Do not disturb
-          </Grid>
-          <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
-            <Circle style={{ color: "#f5e8da" }} />
-            Invisible
-          </Grid>
-        </Grid>
-      )
-  }
-  const computeDiv = () => {
-    if (hover) {
-      return (
-        <Fade in={hover} timeout={200}>
-          <div
-            style={{
-              backgroundColor: "rgba(0,0,0,.3)",
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              zIndex: "1",
-              borderRadius: "50%",
-              cursor: "pointer"
-            }}
-            onMouseDown={uploadPicture}
-            onMouseLeave={onAvatarHover} >
-            <CameraAlt style={{ fontSize: "4rem", position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
-          </div>
-        </Fade>
-      )
-    }
-    if (loading) {
-      return (
-        <Fade in={loading} timeout={200}>
-          <div
-            style={{
-              backgroundColor: "rgba(0,0,0,.5)",
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              zIndex: "1",
-              borderRadius: "50%",
-              cursor: "pointer"
-            }}
-          >            
-            <Loop style={{ fontSize: "4rem", position: "absolute", top: "25%", left: "25%" }} className='rotating' />
-          </div>
-        </Fade>
-      )
-    }
-    return null;
   }
   const statusSelectOn = () => {
     setStatusHover(true);
@@ -245,9 +194,9 @@ function UserSettings() {
     statusId = String(statusId);
     storage.set("online", statusId);
     ep.updatePersonalSettings({ id: storage.get("id"), field: "online", value: statusId });
-    api.call("users/status", "POST", { id: storage.get("id"), status: statusId })
+    api.call("users/customStatus", "POST", { id: storage.get("id"), status: statusId })
       .then((res) => { })
-      .catch((err) => { console.log(err); });
+      .catch((err) => { console.error(err); });
     setStatusHover(false);
   }
 
@@ -261,15 +210,15 @@ function UserSettings() {
             variant="dot"
             invisible
           >
-            {computeDiv()}
+            <ComputeUserImage hover={hover} uploadPicture={uploadPicture} onAvatarHover={onAvatarHover} loading={loading} />
             <StyledAvatar src={storage.get("userImage")} onMouseEnter={onAvatarHover} />
           </Badge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">
-              {computeOnline()}
+              <CurrentStatus />
             </div>
             <div className="selectContainer">
-              {computeSelectList()}
+              <ComputeSelectList statusHover={statusHover} changeStatus={changeStatus} statusSelectOn={statusSelectOn} />
             </div>
           </div>
         </Grid>

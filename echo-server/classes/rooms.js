@@ -36,6 +36,8 @@ class Rooms {
         this.socket = null;
         this.worker = null;
 
+        this.privateCallRooms = new Map();
+
         console.log(colors.changeColor("green", "Listening for new client connections"));
 
         mediasoup.createWorker({
@@ -68,15 +70,14 @@ class Rooms {
         });
 
 
-        this.emitter.on('connection', (socket) => {
+        this.emitter.on('connection', async (socket) => {
             const request = socket.request;
-            // console.log(request._query)
             const id = request._query["id"];
             if (!id) return reject("no-id-in-query");
             if (this.connectedClients.has(id)) {
                 //get the user
                 const user = this.connectedClients.get(id);
-                user.clearTransports();
+                await user.clearTransports();
             }
 
             const newUser = new User(socket, id);
@@ -87,7 +88,6 @@ class Rooms {
     }
 
     registerClientEvents(user) {
-        console.log("registering events for", user.id);
         user.registerEvent("join", (data) => {
             this.joinRoom(data);
         });
@@ -115,6 +115,239 @@ class Rooms {
         user.registerEvent("userFullyConnectedToRoom", (data) => {
             this.userFullyConnectedToRoom(data);
         });
+        user.registerEvent("startPrivateCall", (data) => {
+            this.startPrivateCall(data);
+        });
+        user.registerEvent("acceptPrivateCall", (data) => {
+            this.acceptPrivateCall(data);
+        });
+        user.registerEvent("rejectPrivateCall", (data) => {
+            this.rejectPrivateCall(data);
+        });
+        user.registerEvent("hangupPrivateCall", (data) => {
+            this.hangupPrivateCall(data);
+        });
+    }
+
+    async startPrivateCall(data) {
+        if (this.connectedClients.has(data.id) && this.connectedClients.has(data.targetId)) {
+            const user = this.connectedClients.get(data.id);
+            const targetUser = this.connectedClients.get(data.targetId);
+            //create a new room
+            do {
+                let roomId = Math.floor(Math.random() * 1000000);
+            } while (this.rooms.has(roomId) || this.privateCallRooms.has(roomId));
+            //add private call room
+            let r = await this.worker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });
+            r.observer.on('close', () => {
+                console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup router closed"));
+            });
+
+            r.observer.on('newtransport', (transport) => {
+                console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup transport created with id " + transport.id));
+            });
+
+            this.privateCallRooms.set(id, {
+                id,
+                private: false,
+                users: new Map(),
+                password: null,
+                display: "New room",
+                mediasoupRouter: r
+            });
+
+            data.roomId = id;
+            user.privateCallRinging(data);
+            targetUser.someOneCallingMe(data);
+        }
+    }
+
+    async acceptPrivateCall(data) {
+        if (this.connectedClients.has(data.id) && this.connectedClients.has(data.targetId)) {
+            const user = this.connectedClients.get(data.id);
+            const targetUser = this.connectedClients.get(data.targetId);
+            const room = this.privateCallRooms.get(data.roomId);
+
+            user.privateCallAccepted(data);
+            //notify the user that the call has been accepted
+
+            //add user to room
+            room.users.set(user.id, user);
+            room.users.set(targetUser.id, targetUser);
+
+            //create receive transport
+            let router = room.mediasoupRouter;
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                user.privateCallSetReceiveTransport(transport, router.rtpCapabilities);
+            });
+
+            //create sender transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                user.privateCallSetSendTransport(transport, router.rtpCapabilities);
+            });
+
+            //create video receive transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                user.privateCallSetReceiveVideoTransport(transport, router.rtpCapabilities);
+            });
+
+            //create video sender transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                user.privateCallSetSendVideoTransport(transport, router.rtpCapabilities);
+            }
+            );
+
+            //create transport for target user
+            //create receive transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                targetUser.privateCallSetReceiveTransport(transport, router.rtpCapabilities);
+            });
+
+            //create sender transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                targetUser.privateCallSetSendTransport(transport, router.rtpCapabilities);
+            });
+
+            //create video receive transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                targetUser.privateCallSetReceiveVideoTransport(transport, router.rtpCapabilities);
+            });
+
+            //create video sender transport
+            router.createWebRtcTransport({
+                listenIps: [
+                    {
+                        ip: '0.0.0.0',
+                        announcedIp: 'echo.kuricki.com'
+                    },
+                ],
+                enableUdp: true,
+                enableTcp: true,
+                preferUdp: true,
+                appData: { peerId: user.id }
+            }).then((transport) => {
+                targetUser.privateCallSetSendVideoTransport(transport, router.rtpCapabilities);
+            }
+            );
+
+            user.setIsPrivateCalling(true);
+            targetUser.setIsPrivateCalling(true);
+        }
+    }
+
+    async rejectPrivateCall(data) {
+        if (this.connectedClients.has(data.id) && this.connectedClients.has(data.targetId)) {
+            const user = this.connectedClients.get(data.id);
+            const targetUser = this.connectedClients.get(data.targetId);
+
+            //notify the user that the call has been accepted
+            targetUser.privateCallRejected(data);
+
+            //clear the room
+            this.privateCallRooms.delete(data.roomId);
+
+            //clear transports
+            user.clearTransports();
+            targetUser.clearTransports();
+        }
+    }
+
+    async hangupPrivateCall(data) {
+        if (this.connectedClients.has(data.id) && this.connectedClients.has(data.targetId)) {
+            const user = this.connectedClients.get(data.id);
+            const targetUser = this.connectedClients.get(data.targetId);
+
+            //notify the user that the call has been accepted
+            user.privateCallHangup({ id: data.id, targetId: data.targetId, roomId: data.roomId });
+            targetUser.privateCallHangup({ id: targetUser.id, targetId: user.id, roomId: data.roomId });
+
+            //clear the room
+            this.privateCallRooms.delete(data.roomId);
+
+            user.setIsPrivateCalling(false);
+            targetUser.setIsPrivateCalling(false);
+
+            //clear transports
+            user.clearTransports();
+            targetUser.clearTransports();
+        }
     }
 
     updateUser(data) {
@@ -129,9 +362,15 @@ class Rooms {
 
     userFullyConnectedToRoom(a) {
         //Notify all users
+        let newUser = this.connectedClients.get(a.id);
+        if(newUser.isPrivateCalling){
+            //user conneted to private call
+            //to something
+
+            return;
+        }
         this.connectedClients.forEach((user, _) => {
             if (a.id !== user.id) {
-                console.log("Notifing", user.id, "about", a.id)
                 const userRoom = user.getCurrentRoom();
                 a.isConnected = userRoom === a.roomId;
                 user.userJoinedChannel({
@@ -140,16 +379,13 @@ class Rooms {
                     muted: a.muted,
                     deaf: a.deaf,
                     isConnected: a.isConnected,
+                    broadcastingVideo: newUser.getIsBroadcastingVideo(),
                 });
             }
         })
-
-        let newUser = this.connectedClients.get(a.id);
         this.getUsersInRoom(a.roomId).forEach((user, id) => {
             if (newUser.id !== user.id) {
-                console.log("Notifing", newUser.id, "about", user.id)
                 const userRoom = user.getCurrentRoom();
-                const isBroadcatingVideo = user.isBroadcastingVideo;
                 let isConnected = userRoom === newUser.getCurrentRoom();
                 let audioState = user.getAudioState();
                 newUser.userJoinedChannel({
@@ -158,7 +394,7 @@ class Rooms {
                     isConnected: isConnected,
                     deaf: audioState.deaf,
                     muted: audioState.muted,
-                    broadcastingVideo: isBroadcatingVideo
+                    broadcastingVideo: user.getIsBroadcastingVideo(),
                 });
             }
         });
@@ -181,13 +417,11 @@ class Rooms {
     }
 
     sendChatMessage(data) {
-        console.log("got sendChatMessage event from user", data)
         if (this.connectedClients.has(data.id)) {
             data.roomId = Number(data.roomId);
             const room = this.rooms.get(data.roomId);
             if (room) {
                 room.users.forEach((user, id) => {
-                    console.log("sending message to connected clients in room", user.id)
                     user.receiveChatMessage(data);
                 });
             }
@@ -204,17 +438,14 @@ class Rooms {
     }
 
     async joinRoom(data) {
-        console.log("got join message", data)
         await this.addRoom(data.roomId);
         this.addUserToRoom(data);
     }
 
     endConnection(data) {
-        console.log("ending", data.id)
         this.removeUserFromRooms(data.id);
         this.connectedClients.forEach((user, _) => {
             if (data.id !== user.id) {
-                console.log("Notifing", user.id, "about", data.id)
                 user.endConnection(data);
             }
         });
@@ -223,8 +454,6 @@ class Rooms {
 
     async addRoom(id) {
         if (!this.rooms.has(id)) {
-            console.log("creating room", id, typeof id)
-
             let r = await this.worker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });
             r.observer.on('close', () => {
                 console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup router closed"));
@@ -247,10 +476,10 @@ class Rooms {
 
     removeUserFromRooms(id) {
         if (this.connectedClients.has(id)) {
+            let user = this.connectedClients.get(id);
+            user.clearTransports();
             this.rooms.forEach((room, _, arr) => {
-                console.log("checking room", room.id, "for user", id)
                 if (room.users.has(id)) {
-                    console.log("removing id", id, "from room", room.id);
                     room.users.delete(id);
                 }
             });
@@ -258,19 +487,15 @@ class Rooms {
     }
 
     exitRoom(data) {
-        console.log("exiting room", data.id)
         if (this.connectedClients.has(data.id)) {
             const user = this.connectedClients.get(data.id);
             const roomId = user.getCurrentRoom();
             if (this.rooms.has(roomId)) {
-                console.log("deleted user", data.id, "from room", roomId)
-
-                this.connectedClients.forEach((user, _) => {
+                this.connectedClients.forEach((u, _) => {
                     if (data.id !== user.id) {
-                        console.log("Notifing", user.id, "about", data.id)
                         const userRoom = user.getCurrentRoom();
                         const isConnected = userRoom === roomId;
-                        user.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected });
+                        u.userLeftCurrentChannel({ id: data.id, roomId: roomId, isConnected, crashed: data.crashed === true });
                     }
                 })
 
@@ -311,7 +536,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created transport")
                     newUser.setReceiveTransport(transport, router.rtpCapabilities);
                 });
 
@@ -328,7 +552,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created send transport")
                     newUser.setSendTransport(transport, router.rtpCapabilities);
                 });
 
@@ -345,7 +568,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created receive video transport")
                     newUser.setReceiveVideoTransport(transport, router.rtpCapabilities);
                 });
 
@@ -362,7 +584,6 @@ class Rooms {
                     preferUdp: true,
                     appData: { peerId: newUser.id }
                 }).then((transport) => {
-                    console.log("created send video transport")
                     newUser.setSendVideoTransport(transport, router.rtpCapabilities);
                 });
             }

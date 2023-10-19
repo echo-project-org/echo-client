@@ -21,6 +21,15 @@ const StyledContainer = styled(Container)(({ theme }) => ({
   },
 }));
 
+const FocusedUser = ({ stopPlayback, focusedUser }) => {
+  if (focusedUser === 'undefined') return null;
+  return (
+    <Grid item xs={12}>
+      <ScreenShareControlIcons stopPlayback={stopPlayback} />
+    </Grid>
+  )
+}
+
 function RoomContentScreenShares({ roomId }) {
   const [users, setUsers] = useState([]);
   const [focusedUser, setFocusedUser] = useState('undefined');
@@ -28,53 +37,76 @@ function RoomContentScreenShares({ roomId }) {
 
   useEffect(() => {
     const users = ep.getUsersInRoom(roomId)
-    console.log("users", users)
     setUsers(users)
   }, [roomId])
 
   useEffect(() => {
-    ep.on("gotVideoStream", (data) => {
+    ep.on("gotVideoStream", "RoomContentScreenShares.gotVideoStream", (data) => {
       setFocusedUser(data.user.id);
       var myDiv = document.getElementById('screenShareContainer');
-      // myDiv.innerHTML = variableLongText;
-      if(myDiv){
-        myDiv.scrollTop = (99999999999999 * -1);
-      }
-    })
+      if (myDiv) myDiv.scrollTop = (99999999999999 * -1);
+    });
 
-    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
-      console.log("videoBroadcastStop", data.id, focusedUser)
+    ep.on("videoBroadcastStop", "RoomContentScreenShares.videoBroadcastStop", (data) => {
       if (data.id === focusedUser) {
-        console.log("removing video player for stopped stream", data)
         setFocusedUser('undefined');
       }
     });
+
+    return () => {
+      ep.releaseGroup("RoomContentScreenShares.gotVideoStream");
+      ep.releaseGroup("RoomContentScreenShares.videoBroadcastStop");
+    }
   }, [focusedUser])
 
+  useEffect(() => {
+    ep.on("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel", (data) => {
+      if (data.roomId === roomId) {
+        updateUsers();
+      }
+    });
+
+    ep.on("userLeftChannel", "RoomContentScreenShares.userLeftChannel", (data) => {
+      if (data.roomId === roomId) {
+        updateUsers();
+      }
+    });
+
+    ep.on("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated", (_) => {
+      updateUsers();
+    });
+
+    return () => {
+      ep.releaseGroup("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel");
+      ep.releaseGroup("userLeftChannel", "RoomContentScreenShares.userLeftChannel");
+      ep.releaseGroup("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated");
+    }
+  }, [users]);
+  
+  const updateUsers = () => {
+    setUsers(ep.getUsersInRoom(roomId));
+  }
+
   const selectUser = (user) => {
-    console.log("selectUser", user);
     if(focusedUser === user.id){
       return;
     }
+
+    if(focusedUser !== 'undefined'){
+      stopPlayback();
+    }
+    
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
-    console.log("stopPlayback", focusedUser)
     ep.stopReceivingVideo(focusedUser.id);
     setFocusedUser('undefined');
-  }
-  const computeFocusedUser = () => {
-    return (
-      <Grid item xs={12}>
-        <ScreenShareControlIcons stopPlayback={stopPlayback} />
-      </Grid>
-    )
   }
 
   return (
     <StyledContainer id="screenShareContainer">
       <Grid container gap={3} className="screenshareUserGridContainer noselect">
-        {focusedUser!=='undefined' ? computeFocusedUser() : null}
+        <FocusedUser stopPlayback={stopPlayback} focusedUser={focusedUser} />
         {
           users.map((user) => {
             return (

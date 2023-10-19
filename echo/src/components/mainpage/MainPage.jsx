@@ -3,19 +3,21 @@ import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
 
-// import { ep } from "../../index";
+import { ep } from "../../index";
 // const api = require('../../api')
 
 function MainPage() {
   const [roomId, setRoomId] = useState(0);
 
   const updateCurrentRoom = (joiningId) => {
-    console.log("Changed room in main Main page", joiningId);
     setRoomId(joiningId);
   }
 
   useEffect(() => {
-  }, []);
+    ep.on("exitedFromRoom", (data) => {
+      setRoomId(0);
+    })
+  }, [roomId]);
 
   return (
     <motion.div

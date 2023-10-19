@@ -18,7 +18,6 @@ const createRtcInternalsWindow = () => {
   })
 
   rtcInternals.loadURL("chrome://webrtc-internals");
-
   return rtcInternals;
 }
 
@@ -151,6 +150,16 @@ app.on('activate', () => {
 })
 
 ipcMain.on("exitApplication", (event, arg) => {
+  if (!app.isPackaged) {
+    if (!rtcInternals.isDestroyed()) {
+      rtcInternals.close();
+    }
+  }
+
+  if (!mainWindow.isDestroyed()) {
+    mainWindow.close();
+  }
+  
   app.quit();
   // TODO: option that hides the app to tray instead of closing it
   // if (tray) {

@@ -32,8 +32,7 @@ const Login = () => {
   }
 
   const checkCredentials = async (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
+    if (e.key !== "Enter" && e.target.localName !== "button") return;
 
     var email = document.getElementById('usernameBox').value
     var password = document.getElementById('passwordBox').value
@@ -54,7 +53,6 @@ const Login = () => {
               storage.set("userImage", data.json.img);
               storage.set("online", data.json.online);
               storage.set("token", data.json.token);
-              storage.set("refreshToken", data.json.refreshToken);
 
               navigate("/");
             })
@@ -95,6 +93,7 @@ const Login = () => {
           type="text"
           className="input"
           placeholder="Email"
+          defaultValue={storage.get("lastEmail") || ""}
           onKeyDown={checkCredentials}
         />
         <input

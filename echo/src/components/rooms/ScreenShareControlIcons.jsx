@@ -23,14 +23,11 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
     setMuted(!muted);
   }
   const stopWaching = () => {
-    console.log("Stop watching")
     stopPlayback();
   }
-
   const enablePip = () => {
     setPip(true);
   }
-
   const disablePip = () => {
     setPip(false);
   }
@@ -49,13 +46,14 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
       position: "relative",
       width: "100%",
       height: "100%",
+      aspectRatio: "1.78"
     }}>
       <ReactPlayer
         url={screenShareStream}
         playing={true}
         muted={muted}
-        width="100%"
-        height="100%"
+        width={"100%"}
+        height={"100%"}
         pip={pip}
         onDisablePIP={disablePip}
         config={{
@@ -78,11 +76,11 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         zIndex: "2",
         opacity: showControls ? "1" : "0",
       }}>
-        <Grid container direction='row' alignContent='center' justifyContent='start' style={{ padding: 16 }}>
+        {/* <Grid container direction='row' alignContent='center' justifyContent='start' style={{ padding: 16 }}>
           <Grid item>
             <Typography variant='h5' style={{ color: '#f5e8da' }}>Player</Typography>
           </Grid>
-        </Grid>
+        </Grid> */}
 
         <Grid container direction='row' alignItems='center' justifyContent='center' paddingBottom={"1rem"} zIndex={3} sx={{
           // align items to bottom of container

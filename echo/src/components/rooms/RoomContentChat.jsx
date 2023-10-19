@@ -24,7 +24,7 @@ function RoomContentChat({ roomId }) {
     });
 
     return () => {
-      ep.off("selectedEmoji", "RoomContentChat.selectedEmoji");
+      ep.releaseGroup("RoomContentChat.selectedEmoji");
     }
   }, []);
 
@@ -32,13 +32,7 @@ function RoomContentChat({ roomId }) {
     <>
       <Chat currentRoomId={roomId} onMouseDown={closeEmojiPicker} />
       <ChatControls onEmojiOn={handleEmojiPicker} roomId={roomId} />
-      <EmojiPicker show={emojiPicker} style={{
-        position: "absolute",
-        bottom: "5rem",
-        right: "1rem",
-        zIndex: "1000",
-      }}
-      />
+      <EmojiPicker show={emojiPicker} />
     </>
   )
 }

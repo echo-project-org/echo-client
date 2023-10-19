@@ -38,18 +38,14 @@
   display: flex;
   flex-direction: column;
   text-align: left;
+  width: 5rem;
 }
 
 .userInfo .userName {
   font-size: calc(0.8rem + 0.5vw);
   font-weight: 500;
-  margin-bottom: 0.2rem;
-}
-
-.userInfo .userStatus {
-  font-size: calc(0.6rem + 0.3vw);
-  font-weight: 400;
-  color: var(--mui-palette-text-secondary);
+  /* margin-bottom: 0.2rem; */
+  padding-left: 0.5rem;
 }
 
 .friend-container .buttonsContainer {

@@ -7,13 +7,7 @@ import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabl
 import SettingsButton from '../settings/SettingsButton';
 import ScreenShareSelector from '../settings/ScreenShareSelector';
 
-import { ep, storage } from "../../index";
-
-const muteSound = require("../../audio/mute.mp3");
-const unmuteSound = require("../../audio/unmute.mp3");
-const deafSound = require("../../audio/deaf.mp3");
-const undeafSound = require("../../audio/undeaf.mp3");
-const leaveSound = require("../../audio/leave.mp3");
+import { ep, storage, ap } from "../../index";
 
 const api = require('../../api')
 
@@ -30,7 +24,6 @@ function RoomControl({ state, setState, screenSharing }) {
   useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
   useEffect(() => {
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
-      console.log("Event rtcConnectionStateChange", data)
       switch (data.state) {
         case 'new': setRtcConnectionState("Not connected"); break;
         case 'disconnected': setRtcConnectionState("Not connected"); break;
@@ -45,17 +38,11 @@ function RoomControl({ state, setState, screenSharing }) {
     ep.on("exitedFromRoom", "RoomControl.exitedFromRoom", () => {
       setRtcConnectionState("Disconnected");
     });
+
+    ep.on("localUserCrashed", (data) => {
+      closeConnection();
+    });
   }, []);
-  const muteAudio = new Audio(muteSound);
-  muteAudio.volume = 0.6;
-  const unmuteAudio = new Audio(unmuteSound);
-  unmuteAudio.volume = 0.6;
-  const deafAudio = new Audio(deafSound);
-  deafAudio.volume = 0.6;
-  const undeafAudio = new Audio(undeafSound);
-  undeafAudio.volume = 0.6;
-  const leaveAudio = new Audio(leaveSound);
-  leaveAudio.volume = 0.6;
 
   var interval = null;
   const updatePing = () => {
@@ -88,25 +75,27 @@ function RoomControl({ state, setState, screenSharing }) {
         .then(res => {
           ep.exitFromRoom(storage.get('id'));
           ep.updateUser({ id: storage.get('id'), field: "currentRoom", value: 0 });
-          leaveAudio.play();
+          ap.playLeaveSound();
         })
         .catch(err => {
           console.error(err);
+          navigate("/");
+          storage.clear();
         });
     }
   }
   const computeAudio = (isDeaf) => {
     if (isDeaf)
       if (!muted) {
-        muteAudio.play();
+        ap.playMuteSound();
       } else {
-        unmuteAudio.play();
+        ap.playUnmuteSound();
       }
     else
       if (!deaf) {
-        deafAudio.play();
+        ap.playDeafSound();
       } else {
-        undeafAudio.play();
+        ap.playUndeafSound();
       }
   }
 
@@ -116,6 +105,10 @@ function RoomControl({ state, setState, screenSharing }) {
   const muteAndDeaf = () => { setMuted(true); setDeaf(true); computeAudio(false); }
 
   const muteMic = () => {
+    // if(ep.getUser(storage.get('id')).currentRoom === '0'){
+    //   console.warn("User must must be in room to mute");
+    //   return;
+    // }
     if (muted) undeafOnMute();
     setMuted(!muted);
     if (!deaf) setWasMuted(true);
@@ -126,6 +119,10 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   const deafHeadphones = () => {
+    // if(ep.getUser(storage.get('id')).currentRoom === '0'){
+    //   console.warn("User must must be in room to deafen");
+    //   return;
+    // }
     if (!muted) muteOnDeaf()
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();

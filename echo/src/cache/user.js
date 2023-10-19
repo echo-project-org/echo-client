@@ -25,6 +25,10 @@ class Users {
             if (data.deaf === "true") data.deaf = true;
             else if (data.deaf === "false") data.deaf = false;
         }
+        if(data.talking && typeof data.talking !== "boolean") {
+            if (data.talking === "true") data.talking = true;
+            else if (data.talking === "false") data.talking = false;
+        }
         if(data.broadcastingVideo && typeof data.broadcastingVideo !== "boolean") {
             if (data.broadcastingVideo === "true") data.broadcastingVideo = true;
             else if (data.broadcastingVideo === "false") data.broadcastingVideo = false;
@@ -36,7 +40,6 @@ class Users {
         if (!data) return console.error("[CACHE] Data is required to add a user to the cache");
         // data type check
         data = this.typeCheck(data);
-        console.log("[CACHE] Added user in cache", data)
 
         if (self) {
             storage.set("id", data.id);
@@ -60,6 +63,7 @@ class Users {
             muted: data.muted || false,
             deaf: data.deaf || false,
             broadcastingVideo: data.broadcastingVideo || false,
+            talking: data.talking || false,
             self
         };
 
@@ -97,14 +101,13 @@ class Users {
     }
 
     update(id, field, value) {
+        console.trace("[CACHE] Updating user", id, field, value)
         // data type check
         id = this.typeCheck(id);
         field = this.typeCheck(field);
         value = this.typeCheck(value);
         if (!this.users[id]) return console.error(`[CACHE] User ${id} not found in cache`);
         this.users[id][field] = value;
-        console.log(typeof id, typeof field, typeof value)
-        console.log("[CACHE] Updated user in cache", id, field, value)
     }
 }
 
