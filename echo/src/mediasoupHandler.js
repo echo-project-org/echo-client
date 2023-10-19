@@ -763,9 +763,11 @@ class mediasoupHandler {
    */
   setOutVolume(volume) {
     this.volume = volume;
-    this.outGainNode.gain.value = volume;
+    if (this.outGainNode) {
+      this.outGainNode.gain.value = volume;
+    }
 
-    if(this.testGainNode){
+    if (this.testGainNode) {
       this.testGainNode.gain.value = volume;
     }
   }
@@ -790,40 +792,45 @@ class mediasoupHandler {
     }
   }
 
+
   /**
-   * Starts listening to the local audio stream.
-   * @returns {void}
+   * Starts listening to the local stream.
+   * @async
+   * @function
+   * @returns {Promise<void>}
    */
-  startListeningLocalStream() {
-    if (this.outStream) {
-      this.testContext = new AudioContext();
-
-      if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
-        this.testContext.setSinkId(this.outputDeviceId);
-      }
-      let stream = new MediaStream([this.outStream.getAudioTracks()[0]])
-      let src = this.testContext.createMediaStreamSource(stream);
-      let dst = this.testContext.destination;
-
-      this.testGainNode = this.testContext.createGain();
-      this.testVadNode = this.testContext.createGain();
-
-      this.testVadNode.gain.value = this.vadNode.gain.value;
-      this.testGainNode.gain.value = this.outGainNode.gain.value;
-      
-      src.connect(this.testGainNode);
-      this.testGainNode.connect(this.testVadNode);
-      this.testVadNode.connect(dst);
-
-      this.testContext.resume();
-
-      //Chrome bug fix
-      let audioElement = new Audio();
-
-      audioElement.srcObject = this.outStream;
-      audioElement.autoplay = true;
-      audioElement.pause();
+  async startListeningLocalStream() {
+    if (!this.outStream) {
+      this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
     }
+
+    this.testContext = new AudioContext();
+
+    if (this.outputDeviceId !== 'default' && this.outputDeviceId) {
+      this.testContext.setSinkId(this.outputDeviceId);
+    }
+    let stream = new MediaStream([this.outStream.getAudioTracks()[0]])
+    let src = this.testContext.createMediaStreamSource(stream);
+    let dst = this.testContext.destination;
+
+    this.testGainNode = this.testContext.createGain();
+    this.testVadNode = this.testContext.createGain();
+
+    this.testVadNode.gain.value = this.vadNode.gain.value;
+    this.testGainNode.gain.value = this.outGainNode.gain.value;
+
+    src.connect(this.testGainNode);
+    this.testGainNode.connect(this.testVadNode);
+    this.testVadNode.connect(dst);
+
+    this.testContext.resume();
+
+    //Chrome bug fix
+    let audioElement = new Audio();
+
+    audioElement.srcObject = this.outStream;
+    audioElement.autoplay = true;
+    audioElement.pause();
   }
 
   /**
@@ -836,7 +843,7 @@ class mediasoupHandler {
       this.testContext = null;
     }
 
-    if(this.testVadNode) {
+    if (this.testVadNode) {
       this.testVadNode = null;
     }
   }
@@ -892,7 +899,7 @@ class mediasoupHandler {
    * @returns {Promise<void>} - A Promise that resolves when the media stream is updated with the new constraints.
    */
   async setEchoCancellation(value) {
-    if(value === this.constraints.audio.echoCancellation){
+    if (value === this.constraints.audio.echoCancellation) {
       return;
     }
 
@@ -926,7 +933,7 @@ class mediasoupHandler {
     }
   }
 
-  
+
   /**
    * Sets the noise suppression value for the audio constraints and updates the audio stream if it is currently active. If the value provided is the same as the current value, nothing happens.
    * @async
@@ -934,7 +941,7 @@ class mediasoupHandler {
    * @returns {Promise<void>}
    */
   async setNoiseSuppression(value) {
-    if(value === this.constraints.audio.googNoiseSupression){
+    if (value === this.constraints.audio.googNoiseSupression) {
       return;
     }
 
@@ -976,7 +983,7 @@ class mediasoupHandler {
    * @returns {Promise<void>} - A Promise that resolves when the auto gain control is set.
    */
   async setAutoGainControl(value) {
-    if(value === this.constraints.audio.autoGainControl){
+    if (value === this.constraints.audio.autoGainControl) {
       return;
     }
 

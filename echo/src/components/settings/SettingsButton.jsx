@@ -40,10 +40,10 @@ function SettingsButton() {
   }
 
   const handleClick = (event) => {
-    if (ep.getUser(storage.get('id')).currentRoom === '0') {
+/*     if (ep.getUser(storage.get('id')).currentRoom === '0') {
       console.warn("User must must be in room to change settings");
       return;
-    }
+    } */
 
     ep.getSpeakerDevices().then((devices) => {
       setOutputDevices(devices)
