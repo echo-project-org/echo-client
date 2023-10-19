@@ -45,19 +45,30 @@ const DevicesSelectList = ({ inputDevices, handleInputDeviceChange, inputDevice,
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
   const [micVolume, setMicVolulme] = useState(100);
+  const [echoCancellation, setEchoCancellation] = useState(false);
+  const [noiseSuppression, setNoiseSuppression] = useState(false);
+  const [autoGainControl, setAutoGainControl] = useState(false);
   const [micTest, setMicTest] = useState(false);
   const [vadTreshold, setVadTreshold] = useState(0);
   const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     setInputDevice(storage.get('inputAudioDeviceId') || "default");
+
     ep.setMicrophoneVolume(storage.get('micVolume') || 1);
     ep.setMicrophoneDevice(storage.get('inputAudioDeviceId') || "default");
     ep.setVadTreshold(storage.get('vadTreshold') || 1);
     ep.setMicrophoneTest(false);
+    ep.setEchoCancellation(storage.get('echoCancellation') === 'true' || false);
+    ep.setNoiseSuppression(storage.get('noiseSuppression') === 'true' || false);
+    ep.setAutoGainControl(storage.get('autoGainControl') === 'true' || false);
+    console.log(storage.get('echoCancellation') === 'true');
     setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
     setVadTreshold(Math.floor(storage.get('vadTreshold') * 100) || 0);
     setMicTest(false);
+    setEchoCancellation(storage.get('echoCancellation') === 'true' || false);
+    setNoiseSuppression(storage.get('noiseSuppression') === 'true' || false);
+    setAutoGainControl(storage.get('autoGainControl') === 'true' || false);
   }, []);
 
   const handleInputDeviceChange = (event) => {
@@ -83,6 +94,25 @@ function InputDevicesSettings({ inputDevices }) {
   const handleTestChange = (event) => {
     setMicTest(event.target.checked);
     ep.setMicrophoneTest(event.target.checked);
+  }
+
+  const handleEchoCancellationChange = (event) => {
+    console.log(event.target.checked)
+    setEchoCancellation(event.target.checked);
+    ep.setEchoCancellation(event.target.checked);
+    storage.set('echoCancellation', event.target.checked);
+  }
+
+  const handleNoiseSuppressionChange = (event) => {
+    setNoiseSuppression(event.target.checked);
+    ep.setNoiseSuppression(event.target.checked);
+    storage.set('noiseSuppression', event.target.checked);
+  }
+
+  const handleAutoGainControlChange = (event) => {
+    setAutoGainControl(event.target.checked);
+    ep.setAutoGainControl(event.target.checked);
+    storage.set('autoGainControl', event.target.checked);
   }
 
   const deviceListToggle = (status = true) => {
@@ -139,6 +169,9 @@ function InputDevicesSettings({ inputDevices }) {
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
           <FormControlLabel control={<Switch checked={micTest} onChange={handleTestChange} />} label="Test your input device" />
+          <FormControlLabel control={<Switch checked={echoCancellation} onChange={handleEchoCancellationChange} />} label="Echo cancellation" />
+          <FormControlLabel control={<Switch checked={noiseSuppression} onChange={handleNoiseSuppressionChange} />} label="Noise suppression" />
+          <FormControlLabel control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Auto gain control" />
         </Stack>
       </div>
     </div>
