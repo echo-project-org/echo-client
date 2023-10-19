@@ -714,7 +714,7 @@ class mediasoupHandler {
       return;
     }
 
-    this.noiseSuppression = value;
+    this.constraints.audio.noiseSuppression = value;
     this.constraints.audio.googNoiseSupression = value;
     if (this.outStream) {
       let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
