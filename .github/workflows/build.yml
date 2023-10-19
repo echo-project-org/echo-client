@@ -7,7 +7,7 @@ on:
       - dev
 
 jobs:
-  build-and-release:
+  build-and-release-windows:
     runs-on: windows-latest
 
     if: contains(github.event.head_commit.message, 'Create new release')
@@ -89,7 +89,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\Echo-0.0.0 Setup.exe"
-          asset_name: echo-installer-${{ steps.extract_version.outputs.release_version }}.exe
+          asset_name: echo-installer-win-${{ steps.extract_version.outputs.release_version }}.exe
           asset_content_type: application/zip
 
       - name: Upload Package
@@ -100,7 +100,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-0.0.0-full.nupkg"
-          asset_name: echo-${{ steps.extract_version.outputs.release_version }}.nupkg
+          asset_name: echo-win-${{ steps.extract_version.outputs.release_version }}-full.nupkg
           asset_content_type: application/zip
         
       - name: Create ZIP Archive of Pre-compiled Folder
@@ -118,3 +118,41 @@ jobs:
           asset_path: ./electron/out/pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip
           asset_name: pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip
           asset_content_type: application/zip
+  
+  build-and-release-linux:
+    runs-on: ubuntu-latest
+
+    # wait for prev job to finish
+    needs: build-and-release-windows
+
+    # disable this step for now
+    if: false
+    # if: contains(github.event.head_commit.message, 'Create new release')
+
+    env:
+      CI: false
+      GITHUB_TOKEN: ${{ secrets.zth_token }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies for the React frontend
+        shell: pwsh
+        run: npm install
+        working-directory: ./echo
+
+      - name: Build React Frontend
+        shell: pwsh
+        run: npm run build
+        working-directory: ./echo
+
+      - name: Install dependencies for the Electron app
+        shell: pwsh
+        run: npm install
+        working-directory: ./electron
