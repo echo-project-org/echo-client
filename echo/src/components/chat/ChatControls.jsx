@@ -12,19 +12,19 @@ import { ep, storage, ap } from "../../index";
 const api = require("../../api");
 
 function ChatControls({ onEmojiOn, roomId }) {
-  const [message, setMessage] = useState({ html: "" });
-  // const message = useRef('');
+  const [message, setMessage] = useState("");
+  const [messageHtml, setMessageHtml] = useState("");
   const [pressedEmoji, setPressedEmoji] = useState({});
-  // const [selectionPosition, setSelectionPosition] = useState(0);
-  // const [focusedChatLine, setFocusedChatLine] = useState(0);
-  // const [chatLines, setChatLines] = useState([{ position: 0, message: "" }]);
-  // const [prevKey, setPrevKey] = useState("");
   const inputRef = useRef(null);
 
   const sendChatMessage = (e) => {
-    console.log("about to send this message", message.html, inputRef.current.innerHTML)
-    ep.sendChatMessage({ roomId, userId: storage.get("id"), message: message.html, self: true, date: new Date().toISOString() });
-    setMessage({ html: "" });
+    console.log("about to send this message", message.text, message.html)
+    if (!message.text) return;
+    if (message.text === "\n") return;
+    if (message.text.length === 0) return;
+    ep.sendChatMessage({ roomId, userId: storage.get("id"), message, self: true, date: new Date().toISOString() });
+    setMessage("");
+    setMessageHtml("");
   }
 
   useEffect(() => {
@@ -73,15 +73,14 @@ function ChatControls({ onEmojiOn, roomId }) {
     let textBeforeCursorPosition = node.substring(0, cursorPosition)
     let textAfterCursorPosition = node.substring(cursorPosition, node.length)
     s.focusNode.textContent = textBeforeCursorPosition + emojiFormat + textAfterCursorPosition;
+    setMessage(s.focusNode.textContent);
 
     const splittedRef = inputRef.current.innerHTML.split(emojiFormat);
     const newRef = splittedRef[0] + `&nbsp;<img src="${pressedEmoji.getImageUrl("twitter")}" draggable="false" alt="${pressedEmoji.emoji}" class="emoji" />&nbsp;` + splittedRef[1];
     inputRef.current.innerHTML = newRef;
 
-    console.log(s.focusNode.textContent);
-
     // set the new message
-    setMessage({ html: inputRef.current.innerHTML, text: inputRef.current.innerText });
+    setMessageHtml(inputRef.current.innerHTML);
   }, [pressedEmoji])
 
   const handleChange = (e) => {
@@ -104,12 +103,13 @@ function ChatControls({ onEmojiOn, roomId }) {
       }
       if (typeof e.target.value !== "string" && e.target.value) e.target.value = e.target.value.join("");
     }
-    setMessage({ html: e.target.value, text: inputRef.current.innerText });
+    setMessageHtml(e.target.value);
   }
 
   useEffect(() => {
     console.warn(message);
-  }, [message])
+    console.warn(messageHtml);
+  }, [message, messageHtml])
 
   return (
     <div className='chatControls'>
@@ -122,17 +122,17 @@ function ChatControls({ onEmojiOn, roomId }) {
           id='chatInputText'
         >
           <ChatBox
-            html={message.html} // innerHTML of the editable div
+            html={messageHtml} // innerHTML of the editable div
             disabled={false} // use true to disable edition
             onChange={handleChange} // handle innerHTML change
             spellCheck={false}
             suppressContentEditableWarning={true}
             innerRef={inputRef}
             onKeyDown={(e) => {
-              // console.log("onKeyDown", e.key, e.shiftKey)
-              // if (e.key === "Enter" && !e.shiftKey) {
-              //   e.preventDefault();
-              // }
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+              }
             }}
           >
             {/* <span></span> */}
