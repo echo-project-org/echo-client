@@ -935,12 +935,17 @@ class mediasoupHandler {
       this.setOutVolume(this.volume);
 
       const audioTrack = dst.stream.getAudioTracks()[0];
-      if (this.producer) {
+
+      if (this.producer && !this.producer.closed) {
         await this.producer.replaceTrack({ track: audioTrack });
       }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
+
+      if (this.testContext) {
+        this.startListeningLocalStream();
+      }
     }
   }
 
@@ -981,12 +986,16 @@ class mediasoupHandler {
 
       const audioTrack = dst.stream.getAudioTracks()[0];
 
-      if (this.producer) {
+      if (this.producer && !this.producer.closed) {
         await this.producer.replaceTrack({ track: audioTrack });
       }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
+
+      if (this.testContext) {
+        this.startListeningLocalStream();
+      }
     }
   }
 
@@ -1026,12 +1035,16 @@ class mediasoupHandler {
 
       const audioTrack = dst.stream.getAudioTracks()[0];
 
-      if(this.producer){
+      if (this.producer && !this.producer.closed) {
         await this.producer.replaceTrack({ track: audioTrack });
       }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
+
+      if (this.testContext) {
+        this.startListeningLocalStream();
+      }
     }
   }
 
@@ -1060,6 +1073,10 @@ class mediasoupHandler {
         stream.context.setSinkId(deviceId);
       });
     }
+
+    if (this.testContext) {
+      this.testContext.setSinkId(deviceId);
+    }
   }
 
   /**
@@ -1075,6 +1092,10 @@ class mediasoupHandler {
     this.inputStreams.forEach((stream) => {
       stream.gainNode.gain.value = volume;
     });
+
+    if (this.testGainNode) {
+      this.testGainNode.gain.value = volume;
+    }
   }
 
   /**
