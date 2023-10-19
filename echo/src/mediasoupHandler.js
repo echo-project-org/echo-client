@@ -816,8 +816,17 @@ class mediasoupHandler {
     this.testGainNode = this.testContext.createGain();
     this.testVadNode = this.testContext.createGain();
 
-    this.testVadNode.gain.value = this.vadNode.gain.value;
-    this.testGainNode.gain.value = this.outGainNode.gain.value;
+    if (this.vadNode) {
+      this.testVadNode.gain.value = this.vadNode.gain.value;
+    } else {
+      this.testVadNode.gain.value = 1;
+    }
+
+    if (this.outGainNode) {
+      this.testGainNode.gain.value = this.outGainNode.gain.value;
+    } else {
+      this.testGainNode.gain.value = 1;
+    }
 
     src.connect(this.testGainNode);
     this.testGainNode.connect(this.testVadNode);
@@ -926,7 +935,9 @@ class mediasoupHandler {
       this.setOutVolume(this.volume);
 
       const audioTrack = dst.stream.getAudioTracks()[0];
-      await this.producer.replaceTrack({ track: audioTrack });
+      if (this.producer) {
+        await this.producer.replaceTrack({ track: audioTrack });
+      }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
@@ -969,7 +980,10 @@ class mediasoupHandler {
       this.setOutVolume(this.volume);
 
       const audioTrack = dst.stream.getAudioTracks()[0];
-      await this.producer.replaceTrack({ track: audioTrack });
+
+      if (this.producer) {
+        await this.producer.replaceTrack({ track: audioTrack });
+      }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
@@ -1011,7 +1025,10 @@ class mediasoupHandler {
       this.setOutVolume(this.volume);
 
       const audioTrack = dst.stream.getAudioTracks()[0];
-      await this.producer.replaceTrack({ track: audioTrack });
+
+      if(this.producer){
+        await this.producer.replaceTrack({ track: audioTrack });
+      }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
