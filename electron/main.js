@@ -24,7 +24,7 @@ autoUpdater.on('update-available', () => {
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
     autoUpdater.quitAndInstall();
   })
-})
+});
 
 autoUpdater.on('update-not-available', () => {
   console.log("No updates available")
