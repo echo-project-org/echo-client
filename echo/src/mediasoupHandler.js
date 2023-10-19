@@ -3,7 +3,7 @@ const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 
 class mediasoupHandler {
-  constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0) {
+  constructor(id, inputDeviceId = 'default', outputDeviceId = 'default', volume = 1.0, noiseSuppression = false, echoCancellation = false, autoGainControl = false) {
     this.id = id;
     this.inputDeviceId = inputDeviceId;
     this.outputDeviceId = outputDeviceId;
@@ -48,11 +48,11 @@ class mediasoupHandler {
         sampleRate: 48000,
         sampleSize: 16,
         volume: 1.0,
-        echoCancellation: false,
+        echoCancellation: echoCancellation,
         noiseSuppression: false,
-        autoGainControl: false,
+        autoGainControl: autoGainControl,
         deviceId: this.inputDeviceId,
-        googNoiseSupression: false,
+        googNoiseSupression: noiseSuppression,
       },
       video: false,
     }
@@ -670,6 +670,111 @@ class mediasoupHandler {
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
 
+    }
+  }
+
+  async setEchoCancellation(value) {
+    if(value === this.constraints.audio.echoCancellation){
+      return;
+    }
+
+    this.constraints.audio.echoCancellation = value;
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+      await this.producer.replaceTrack({ track: audioTrack });
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+    }
+  }
+
+  async setNoiseSuppression(value) {
+    if(value === this.constraints.audio.googNoiseSupression){
+      return;
+    }
+
+    this.constraints.audio.googNoiseSupression = value;
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+      await this.producer.replaceTrack({ track: audioTrack });
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
+    }
+  }
+
+  async setAutoGainControl(value) {
+    if(value === this.constraints.audio.autoGainControl){
+      return;
+    }
+
+    this.constraints.audio.autoGainControl = value;
+    if (this.outStream) {
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.context = new AudioContext();
+
+      const src = this.context.createMediaStreamSource(newStream);
+      const dst = this.context.createMediaStreamDestination();
+      this.outChannelCount = src.channelCount;
+
+      this.outGainNode = this.context.createGain();
+      this.vadNode = this.context.createGain();
+      this.channelSplitter = this.context.createChannelSplitter(this.outChannelCount);
+
+      src.connect(this.outGainNode);
+      this.outGainNode.connect(this.channelSplitter);
+      this.outGainNode.connect(this.vadNode);
+      this.vadNode.connect(dst);
+
+      this.analyser = this.createAudioAnalyser(this.context, this.channelSplitter, this.outChannelCount);
+
+      this.setOutVolume(this.volume);
+
+      const audioTrack = dst.stream.getAudioTracks()[0];
+      await this.producer.replaceTrack({ track: audioTrack });
+
+      this.outStream.getTracks().forEach(track => track.stop());
+      this.outStream = newStream;
     }
   }
 

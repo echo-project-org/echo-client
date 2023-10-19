@@ -278,6 +278,10 @@ class EchoProtocol {
       id,
       storage.get('inputAudioDeviceId'),
       storage.get('outputAudioDeviceId'),
+      storage.get('micVolume'),
+      storage.get('noiseSuppression') === 'true' || false,
+      storage.get('echoCancellation') === 'true' || false,
+      storage.get('autoGainControl') === 'true' || false,
     );
     await this.mh.init();
   }
@@ -380,6 +384,24 @@ class EchoProtocol {
   setMicrophoneDevice(deviceId) {
     if (this.mh) {
       this.mh.setInputDevice(deviceId);
+    }
+  }
+
+  setEchoCancellation(value) {
+    if (this.mh) {
+      this.mh.setEchoCancellation(value);
+    }
+  }
+
+  setNoiseSuppression(value) {
+    if (this.mh) {
+      this.mh.setNoiseSuppression(value);
+    }
+  }
+
+  setAutoGainControl(value) {
+    if (this.mh) {
+      this.mh.setAutoGainControl(value);
     }
   }
 
