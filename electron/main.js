@@ -8,9 +8,10 @@ autoUpdater.checkForUpdates();
 
 setInterval(() => {
   console.log("Checking for updates")
+  console.log(url);
   autoUpdater.checkForUpdates()
 }, 60000)
-  
+
 autoUpdater.on('update-available', () => {
   const dialogOpts = {
     type: 'info',
@@ -23,6 +24,10 @@ autoUpdater.on('update-available', () => {
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
     autoUpdater.quitAndInstall();
   })
+})
+
+autoUpdater.on('update-not-available', () => {
+  console.log("No updates available")
 })
 
 autoUpdater.on('error', (message) => {

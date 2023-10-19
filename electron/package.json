@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
+    "rpmbuild": "^0.0.23",
     "wait-on": "^7.0.1"
   }
 }
