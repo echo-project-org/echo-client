@@ -401,6 +401,10 @@ class mediasoupHandler {
    * Consume a media stream and add it to the list of input streams.
    * @async
    * @param {Object} data - The data object containing the ID, producer ID, kind, and RTP parameters of the media stream.
+   * @param {string} data.id - The ID of the media stream.
+   * @param {string} data.producerId - The ID of the producer of the media stream.
+   * @param {string} data.kind - The kind of the media stream.
+   * @param {RTCRtpParameters} data.rtpParameters - The RTP parameters of the media stream.
    * @returns {Promise<void>}
    */
   async consume(data) {
@@ -555,6 +559,10 @@ class mediasoupHandler {
    * Consume a video stream from the remote producer and send it to the front-end.
    * @async
    * @param {Object} data - The data object containing the ID, producer ID, kind, and RTP parameters of the video stream.
+   * @param {string} data.id - The ID of the video stream.
+   * @param {string} data.producerId - The ID of the producer of the video stream.
+   * @param {string} data.kind - The kind of the video stream.
+   * @param {RTCRtpParameters} data.rtpParameters - The RTP parameters of the video stream.
    * @returns {Promise<void>}
    */
   async consumeVideo(data) {
@@ -656,6 +664,12 @@ class mediasoupHandler {
     return audioLevels;
   }
 
+  /**
+   * Rounds a number to one decimal place.
+   *
+   * @param {number} num - The number to round.
+   * @returns {number} The rounded number.
+   */
   _round(num) {
     return Math.round((num + Number.EPSILON) * 10) / 10;
   }
