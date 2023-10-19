@@ -171,7 +171,7 @@ function InputDevicesSettings({ inputDevices }) {
           <FormControlLabel control={<Switch checked={micTest} onChange={handleTestChange} />} label="Test your input device" />
           <FormControlLabel control={<Switch checked={echoCancellation} onChange={handleEchoCancellationChange} />} label="Echo cancellation" />
           <FormControlLabel control={<Switch checked={noiseSuppression} onChange={handleNoiseSuppressionChange} />} label="Noise suppression" />
-          <FormControlLabel control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Audio gain control" />
+          <FormControlLabel control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Auto gain control" />
         </Stack>
       </div>
     </div>
