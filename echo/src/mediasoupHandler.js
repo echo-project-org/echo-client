@@ -49,10 +49,11 @@ class mediasoupHandler {
         sampleSize: 16,
         volume: 1.0,
         echoCancellation: echoCancellation,
-        noiseSuppression: false,
+        noiseSuppression: noiseSuppression,
         autoGainControl: autoGainControl,
         deviceId: this.inputDeviceId,
         googNoiseSupression: noiseSuppression,
+        googAutoGainControl: autoGainControl,
       },
       video: false,
     }
@@ -713,6 +714,7 @@ class mediasoupHandler {
       return;
     }
 
+    this.noiseSuppression = value;
     this.constraints.audio.googNoiseSupression = value;
     if (this.outStream) {
       let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
@@ -749,6 +751,7 @@ class mediasoupHandler {
     }
 
     this.constraints.audio.autoGainControl = value;
+    this.constraints.audio.googAutoGainControl = value;
     if (this.outStream) {
       let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
       this.context = new AudioContext();
