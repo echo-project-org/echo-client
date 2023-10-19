@@ -8,7 +8,7 @@ import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 import ImageUploader from './ImageUploader';
 
-import { ep, storage } from "../../index";
+import { ep } from "../../index";
 
 const modalStyle = {
   position: "relative",
