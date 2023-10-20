@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { MenuItem } from '@mui/material'
+import { Menu, MenuItem } from '@mui/material'
 import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove } from '@mui/icons-material'
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { ep, storage } from "../../index";
@@ -16,7 +16,12 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
             case "requested":
                 return <MenuItem disabled={true}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Request sent</MenuItem>
             case 'pending':
-                return <MenuItem onClick={handleFriendAccept}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Accept</MenuItem>
+                return (
+                    <>
+                        <MenuItem onClick={handleFriendAccept}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Accept</MenuItem>
+                        <MenuItem onClick={handleFriendReject}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Reject</MenuItem>
+                    </>
+                )
             case "accepted":
                 return <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
             default:
@@ -51,6 +56,13 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
         api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
         ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
         ep.updateFriends({ id: user.id, requested: true, accepted: true });
+        handleClose();
+    }
+
+    const handleFriendReject = () => {
+        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
+        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+        ep.removeFriend({ id: user.id });
         handleClose();
     }
 
