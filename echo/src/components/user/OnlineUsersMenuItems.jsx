@@ -14,7 +14,7 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
             case "no":
                 return <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
             case "requested":
-                return <MenuItem><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Request sent</MenuItem>
+                return <MenuItem disabled={true}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Request sent</MenuItem>
             case 'pending':
                 return <MenuItem onClick={handleFriendAccept}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Accept</MenuItem>
             case "accepted":
@@ -23,7 +23,6 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
                 return null;
         }
     }
-
 
     const startWatchingBroadcast = () => {
         ep.startReceivingVideo(user.id);
@@ -51,6 +50,21 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
         //notify api or whatever needs to be updated
         handleClose();
     }
+
+    useEffect(() => {
+        let f = ep.getFriend(user.id);
+        if (f) {
+            if (f.accepted && f.requested) {
+                setFriendStatus('accepted');
+            } else if (!f.accepted && f.requested) {
+                setFriendStatus('requested');
+            } else if (f.accepted && !f.requested) {
+                setFriendStatus('pending');
+            }
+        } else {
+            setFriendStatus('no');
+        }
+    }, [friendStatus, user.id]);
 
     if (storage.get("id") !== user.id) {
         return (
