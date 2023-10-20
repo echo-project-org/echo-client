@@ -30,8 +30,6 @@ class Friends {
         data = this.typeCheck(data);
 
         if (!data.id) return console.error("[CACHE] ID is required to add a friend to the cache");
-        if (!data.accepted) return console.error("[CACHE] Accepted is required to add a friend to the cache");
-        if (!data.requested) return console.error("[CACHE] Requested is required to add a friend to the cache");
 
         if (this.friends[data.id]) return console.warn(`[CACHE] Friend ${data.id} already exists in cache`);
 
