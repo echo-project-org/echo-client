@@ -874,6 +874,14 @@ class mediasoupHandler {
     if (this.testVadNode) {
       this.testVadNode = null;
     }
+
+    if (this.testGainNode) {
+      this.testGainNode = null;
+    }
+
+    if (this.testAnalyser) {
+      this.testAnalyser = null;
+    }
   }
 
   /**
