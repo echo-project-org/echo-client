@@ -3,6 +3,7 @@ import Emitter from "wildemitter";
 
 import Users from "./cache/user";
 import Room from "./cache/room";
+import Friends from "./cache/friends";
 
 import { storage } from "./index";
 
@@ -17,6 +18,7 @@ class EchoProtocol {
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
+    this.cachedFriends = new Friends();
 
     this.currentConnectionState = "";
     this.currentConnectionStateInterval = null;
@@ -220,7 +222,7 @@ class EchoProtocol {
     });
 
     this.socket.on("server.friendAction", (data) => {
-        this.receivedFriendAction(data);
+      this.addFriend(data);
     });
   }
 
@@ -675,6 +677,21 @@ class EchoProtocol {
     else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
   }
 
+  addFriend(friend) {
+    this.cachedFriends.add(friend);
+    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+  }
+
+  updateFriends({ id, field, value }) {
+    this.cachedFriends.update(id, field, value);
+    this.friendCacheUpdated(this.cachedFriends.get(id));
+  }
+
+  removeFriend(friend) {
+    this.cachedFriends.remove(friend);
+    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+  }
+
   getRoom(id) {
     if (typeof id !== "string") id = id.toString();
     return this.cachedRooms.get(id);
@@ -847,8 +864,8 @@ EchoProtocol.prototype.localUserCrashed = function (data) {
   this.emit("localUserCrashed", data);
 }
 
-EchoProtocol.prototype.receivedFriendAction = function (data) {
-  this.emit("receivedFriendAction", data);
+EchoProtocol.prototype.friendCacheUpdated = function (data) {
+  this.emit("friendCacheUpdated", data);
 }
 
 export default EchoProtocol;
