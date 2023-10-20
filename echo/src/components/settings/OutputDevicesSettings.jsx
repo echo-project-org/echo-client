@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
-import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle, Headphones } from '@mui/icons-material';
+import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
-import { ep, storage, ap } from "../../index";
+import { ep, storage } from "../../index";
 
 const CurrentDevice = ({ outputDevices, outputDevice, showList }) => {
   var currentDevice = outputDevices.find(device => device.id === outputDevice);
@@ -45,16 +45,13 @@ const DevicesSelectList = ({ outputDevices, handleOutputDeviceChange, outputDevi
 function OutputDevicesSettings({ outputDevices }) {
   const [outputDevice, setOutputDevice] = useState('default');
   const [soundVolume, setSoundVolulme] = useState(100);
-  const [soundQueuesVolume, setSoundQueuesVolume] = useState(60);
   const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     setOutputDevice(storage.get('outputAudioDeviceId') || "default");
+    setSoundVolulme(Math.floor(storage.get('audioVolume') * 100) || 100);
     ep.setSpeakerDevice(storage.get('outputAudioDeviceId') || "default");
     ep.setSpeakerVolume(storage.get('audioVolume') || 1);
-    ap.setVolume(storage.get('soundQueuesVolume') || 0.6);
-    setSoundVolulme(Math.floor(storage.get('audioVolume') * 100) || 100);
-    setSoundQueuesVolume(Math.floor(storage.get('soundQueuesVolume') * 100) || 60);
   }, []);
 
   const handleOutputDeviceChange = (event) => {
@@ -69,13 +66,6 @@ function OutputDevicesSettings({ outputDevices }) {
     setSoundVolulme(newValue);
     ep.setSpeakerVolume(newValue / 100);
   };
-
-  const handleSoundQueuesVolumeChange = (event, newValue) => {
-    //set user volume
-    storage.set('soundQueuesVolume', newValue / 100);
-    setSoundQueuesVolume(newValue);
-    ap.setVolume(newValue / 100);
-  }
 
   const deviceListToggle = (status = true) => {
     setShowList(status);
@@ -108,22 +98,6 @@ function OutputDevicesSettings({ outputDevices }) {
             aria-label="Volume"
             value={soundVolume}
             onChange={handleSoundVolumeChange}
-            size='medium'
-          />
-        </Stack>
-      </div>
-      <div style={{ paddingRight: "2%", width: "95%" }}>
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Tooltip title="Sound queues volume" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <Headphones fontSize="medium" />
-          </Tooltip>
-          <Slider
-            sx={{ width: "95%" }}
-            valueLabelDisplay="auto"
-            valueLabelFormat={(v) => { return v + "%" }}
-            aria-label="Volume"
-            value={soundQueuesVolume}
-            onChange={handleSoundQueuesVolumeChange}
             size='medium'
           />
         </Stack>
