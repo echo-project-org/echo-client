@@ -175,8 +175,9 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
 });
 
 // get friends of user
-router.get('/friends/:id', (req, res) => {
-    const { id } = req.params;
+router.get('/friends/', (req, res) => {
+    const body = req.body;
+    const id = body.id;
 
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
@@ -198,8 +199,9 @@ router.get('/friends/:id', (req, res) => {
 })
 
 // get friend requests of user
-router.get('/frieds/requests/:id', (req, res) => {
-    const { id } = req.params;
+router.get('/frieds/requests/', (req, res) => {
+    const body = req.body;
+    const id = body.id;
 
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
