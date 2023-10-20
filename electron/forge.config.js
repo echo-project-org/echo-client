@@ -11,8 +11,34 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        bin: "Echo"
+        bin: "Echo",
+        authors: 'Kury & zThundy',
+        owners: 'Kury & zThundy',
+        description: "Echo is a simple and secure messaging app that uses end-to-end encryption to keep your messages from being read by anyone but you and your intended recipients.",
+        setupMsi: "EchoSetup.msi",
+        setupExe: "EchoSetup.exe",
+        setupIcon: path.join(process.cwd(), 'images', 'icon.ico'),
+        iconUrl: path.join(process.cwd(), 'images', 'icon.ico'),
+        noMsi: false,
+        noDelta: false,
+        remoteReleases: "https://download.kuricki.com/updates/latest/",
       },
+    },
+    // {
+    //   name: "@electron-forge/electron-wix",
+    //   config: {
+    //     language: 1033,
+    //     manufacturer: "Kury & zThundy",
+    //   }
+    // },
+    {
+      name: '@electron-forge/maker-flatpak',
+      config: {
+        options: {
+          categories: ['Video'],
+          mimeType: ['video/h264']
+        }
+      }
     },
     {
       name: '@electron-forge/maker-dmg',
