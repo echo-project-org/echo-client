@@ -18,12 +18,19 @@ function ChatControls({ onEmojiOn, roomId }) {
   const inputRef = useRef(null);
 
   const sendChatMessage = (e) => {
-    console.log("about to send this message", message.text, message.html)
-    if (!message.text) return;
-    if (message.text === "\n") return;
-    if (message.text.length === 0) return;
-    ep.sendChatMessage({ roomId, userId: storage.get("id"), message, self: true, date: new Date().toISOString() });
-    setMessage("");
+    console.log("about to send this message", message, messageHtml)
+    if (!message) return;
+    if (message === "\n") return;
+    if (message.length === 0) return;
+    setMessage((prev) => {
+      console.log("prev", prev)
+      if (!prev) return;
+      if (prev === "\n") return;
+      if (prev.length === 0) return;
+      console.log("sendChatMessage", prev)
+      ep.sendChatMessage({ roomId, userId: storage.get("id"), message: prev, self: true, date: new Date().toISOString() });
+      return "";
+    });
     setMessageHtml("");
   }
 
@@ -73,7 +80,7 @@ function ChatControls({ onEmojiOn, roomId }) {
     let textBeforeCursorPosition = node.substring(0, cursorPosition)
     let textAfterCursorPosition = node.substring(cursorPosition, node.length)
     s.focusNode.textContent = textBeforeCursorPosition + emojiFormat + textAfterCursorPosition;
-    setMessage(s.focusNode.textContent);
+    setMessage((prev) => prev + " " + emojiFormat + " ");
 
     const splittedRef = inputRef.current.innerHTML.split(emojiFormat);
     const newRef = splittedRef[0] + `&nbsp;<img src="${pressedEmoji.getImageUrl("twitter")}" draggable="false" alt="${pressedEmoji.emoji}" class="emoji" />&nbsp;` + splittedRef[1];
@@ -84,6 +91,7 @@ function ChatControls({ onEmojiOn, roomId }) {
   }, [pressedEmoji])
 
   const handleChange = (e) => {
+    console.trace("handleChange", e, e.nativeEvent.inputType)
     // console.warn("handleChange", e.target.value, e.target.value.indexOf("<div>"))
     if (e.target.value !== `<div class="chatboxContent"><br></div>` && e.target.value.indexOf(`<div class="chatboxContent">`) !== 0) {
       // wrap the first text in a div
@@ -104,6 +112,18 @@ function ChatControls({ onEmojiOn, roomId }) {
       if (typeof e.target.value !== "string" && e.target.value) e.target.value = e.target.value.join("");
     }
     setMessageHtml(e.target.value);
+    setMessage((prev) => {
+      if (e.nativeEvent.target.innerText !== prev) return console.warn("handleChange", e.nativeEvent.target.innerText, prev);
+
+      if (e.nativeEvent.target.innerText === "\n" || e.nativeEvent.target.innerText === "") return "";
+      if (e.nativeEvent.inputType === "insertLineBreak") return prev + "\n";
+      if (e.nativeEvent.inputType === "deleteContentBackward") return prev.substring(0, prev.length - 1);
+      if (e.nativeEvent.inputType === "insertFromPaste") {
+        return e.nativeEvent.target.innerText;
+      }
+
+      return prev + e.nativeEvent.data;
+    });
   }
 
   useEffect(() => {
@@ -133,6 +153,10 @@ function ChatControls({ onEmojiOn, roomId }) {
                 e.preventDefault();
                 sendChatMessage();
               }
+            }}
+            style={{
+              maxHeight: "15rem",
+              overflow: "auto"
             }}
           >
             {/* <span></span> */}
