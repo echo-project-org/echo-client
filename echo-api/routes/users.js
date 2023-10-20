@@ -154,10 +154,9 @@ router.get('/volume/:name', (req, res) => {
 
 // get volume level of specific user
 router.get('/volume/:nick1/:nick2', (req, res) => {
-    const { nick1 } = req.params;
-    const { nick2 } = req.params;
+    const { nick1, nick2 } = req.params;
 
-    req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + nick1 + "' AND otherUser = '" + nick2 + "'", function (err, result, fields) {
+    req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = ? AND otherUser = ?", [nick1, nick2], function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
@@ -177,8 +176,7 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
 
 // add user as friend
 router.post('/friend/:id/:newFriendId', (req, res) => {
-    const { id } = req.params;
-    const { newFriendId } = req.params;
+    const { id, newFriendId } = req.params;
 
     req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, newFriendId], function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
