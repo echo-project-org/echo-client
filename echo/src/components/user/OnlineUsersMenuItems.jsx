@@ -6,27 +6,49 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { ep, storage } from "../../index";
 
 const api = require('../../api');
-
 function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
-    const [isFriend, setIsFriend] = useState(true);
+    const [friendStatus, setFriendStatus] = useState('no');
+
+    const friendButton = (friendStatus) => {
+        switch (friendStatus) {
+            case "no":
+                return <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
+            case "requested":
+                return <MenuItem><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Request sent</MenuItem>
+            case 'pending':
+                return <MenuItem onClick={handleFriendAccept}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Accept</MenuItem>
+            case "accepted":
+                return <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
+            default:
+                return null;
+        }
+    }
+
 
     const startWatchingBroadcast = () => {
         ep.startReceivingVideo(user.id);
     }
 
     const handleFriendAdd = () => {
-        setIsFriend(true);
+        setFriendStatus('requested');
         //notify api or whatever needs to be updated
         api.call("users/friend/request", 'POST', { id: storage.get("id"), friendId: user.id, operation: 'add' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add'});
+        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+        ep.addFriend({ id: user.id, requested: true, accepted: false })
         handleClose();
     }
 
     const handleFriendRemove = () => {
-        setIsFriend(false);
+        setFriendStatus('no');
         //notify api or whatever needs to be updated
-        api.call("users/friend/request", "POST",{ id: storage.get("id"), friendId: user.id, operation: 'remove' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove'});
+        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
+        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+        ep.removeFriend({ id: user.id });
+        handleClose();
+    }
+
+    const handleFriendAccept = () => {
+        //notify api or whatever needs to be updated
         handleClose();
     }
 
@@ -35,12 +57,7 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
             <>
                 {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
                 <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem>
-                {
-                    isFriend ?
-                        <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
-                        :
-                        <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
-                }
+                {friendButton(friendStatus)}
                 <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem>
                 <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem>
             </>
