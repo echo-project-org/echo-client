@@ -8,14 +8,18 @@ import { ChatBubble, Call } from "@mui/icons-material";
 import { ep, storage } from "../../index";
 import CurrentStatus from "../user/CurrentStatus";
 
-function RoomContentFriends({  }) {
+function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);
+  const [pending, setPending] = useState([]);
+  const [requested, setRequested] = useState([]);
 
   useEffect(() => {
     setFriends(ep.getUsersInRoom(1))
 
-    ep.on("usersCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
-      setFriends(ep.getUsersInRoom(1))
+    ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
+      setFriends(ep.getFriends());
+      setPending(ep.getFriendRequested());
+      setRequested(ep.getFriendRequests());
     });
 
     return () => {
