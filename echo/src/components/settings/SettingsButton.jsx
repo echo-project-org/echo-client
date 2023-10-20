@@ -87,7 +87,7 @@ function SettingsButton() {
         <Zoom in={modalOpen}>
           <Box sx={modalStyle}>
             <div className='modalDiv'>
-              <Typography variant="h3">
+              <Typography variant="h3" className="noselect">
                 Echo settings
               </Typography>
 

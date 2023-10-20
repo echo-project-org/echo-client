@@ -74,7 +74,7 @@ function InputDevicesSettings({ inputDevices }) {
 
   return (
     <div className="settingsModalSubDiv noselect">
-      <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         Input device
       </Typography>
       <div className="deviceSelector-root" onMouseUp={deviceListToggle}>

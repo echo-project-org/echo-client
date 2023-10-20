@@ -201,7 +201,7 @@ function UserSettings() {
 
   return (
     <div className="settingsModalSubDiv">
-      <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         User settings
       </Typography>
       <StyledGridContainer container direction={"row"} alignItems={"center"}>
