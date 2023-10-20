@@ -48,6 +48,9 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
 
     const handleFriendAccept = () => {
         //notify api or whatever needs to be updated
+        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
+        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+        ep.updateFriends({ id: user.id, requested: true, accepted: true });
         handleClose();
     }
 
