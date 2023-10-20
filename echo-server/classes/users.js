@@ -122,6 +122,14 @@ class User {
         this.socket.on("client.hangupPrivateCall", (data) => {
             this.triggerEvent("hangupPrivateCall", data);
         });
+
+        this.socket.on("client.friendAction", (data) => {
+            this.triggerEvent("friendAction", data);
+        });
+    }
+
+    friendAction(data) {
+        this.socket.emit("server.friendAction", data);
     }
 
     setIsPrivateCalling(value) {
