@@ -76,7 +76,7 @@ function ExtraAudioSettings() {
             <RecordVoiceOver fontSize="medium" />
           </Tooltip>
           <Slider
-            sx={{ width: "95%" }}
+            sx={{ width: "100%" }}
             valueLabelDisplay="auto"
             valueLabelFormat={(v) => { return v + "%" }}
             aria-label="Volume"
@@ -92,7 +92,7 @@ function ExtraAudioSettings() {
             <Headphones fontSize="medium" />
           </Tooltip>
           <Slider
-            sx={{ width: "95%" }}
+            sx={{ width: "100%" }}
             valueLabelDisplay="auto"
             valueLabelFormat={(v) => { return v + "%" }}
             aria-label="Volume"
