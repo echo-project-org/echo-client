@@ -172,27 +172,6 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
             res.status(200).send(jsonOut);
         }
     });
-})
-
-// add user as friend
-router.post('/friend/:id/:newFriendId', (req, res) => {
-    const { id, newFriendId } = req.params;
-
-    req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, newFriendId], function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
-        res.status(200).send({ message: "Friend added!" });
-    });
-});
-
-// remove user as friend
-router.post('/friend/remove/:id/:friendId', (req, res) => {
-    const { id } = req.params;
-    const { friendId } = req.params;
-
-    req.database.query("DELETE FROM user_friends WHERE id = ? AND otherId = ? || id= ? AND otherId = ?", [id, friendId, friendId, id], function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
-        res.status(200).send({ message: "Friend removed!" });
-    });
 });
 
 // get friends of user
@@ -235,6 +214,29 @@ router.get('/frieds/requests/:id', (req, res) => {
             res.status(200).send(jsonOut);
         }
     });
+});
+
+// operation on friend request
+router.post('/friend/request', (req, res) => {
+    const body = req.body;
+    const id = body.id;
+    const friendId = body.friendId;
+    const operation = body.operation;
+
+    switch(operation) {
+        case "add":
+            req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, friendId], function (err, result, fields) {
+                if (err) return res.status(400).send({ error: "You messed up the request." });
+                res.status(200).send({ message: "Friend added!" });
+            });
+            break;
+        case "remove":
+            req.database.query("DELETE FROM user_friends WHERE id = ? AND otherId = ? || id= ? AND otherId = ?", [id, friendId, friendId, id], function (err, result, fields) {
+                if (err) return res.status(400).send({ error: "You messed up the request." });
+                res.status(200).send({ message: "Friend removed!" });
+            });
+            break;
+    }
 });
 
 module.exports = router;
