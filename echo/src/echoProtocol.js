@@ -692,6 +692,10 @@ class EchoProtocol {
     this.friendCacheUpdated(this.cachedFriends.get(friend.id));
   }
 
+  getFriend(id) {
+    return this.cachedFriends.get(id);
+  }
+
   getRoom(id) {
     if (typeof id !== "string") id = id.toString();
     return this.cachedRooms.get(id);
