@@ -218,6 +218,10 @@ class EchoProtocol {
         this.mh.createReceiveVideoTransport(data);
       }
     });
+
+    this.socket.on("server.friendAction", (data) => {
+        this.receivedFriendAction(data);
+    });
   }
 
   endConnection(data) {
@@ -757,6 +761,12 @@ class EchoProtocol {
       else reject("Room not found in cache");
     });
   }
+
+  sendFriendAction(data) {
+    if (this.socket) {
+      this.socket.emit("client.friendAction", data);
+    }
+  }
 }
 
 Emitter.mixin(EchoProtocol);
@@ -835,6 +845,10 @@ EchoProtocol.prototype.gotVideoStream = function (data) {
 
 EchoProtocol.prototype.localUserCrashed = function (data) {
   this.emit("localUserCrashed", data);
+}
+
+EchoProtocol.prototype.receivedFriendAction = function (data) {
+  this.emit("receivedFriendAction", data);
 }
 
 export default EchoProtocol;
