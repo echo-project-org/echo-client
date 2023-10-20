@@ -222,7 +222,25 @@ class EchoProtocol {
     });
 
     this.socket.on("server.friendAction", (data) => {
-      this.addFriend(data);
+      if (data.operation === "add") {
+        if (this.cachedFriends.has(data.id)) {
+          this.updateFriends({
+            id: data.id,
+            field: "accepted",
+            value: data.requested
+          })
+
+          this.updateFriends({
+            id: data.id,
+            field: "requested",
+            value: data.accepted
+          });
+        } else {
+          this.addFriend(data);
+        }
+      } else if (data.operation === "remove") {
+        this.removeFriend(data);
+      }
     });
   }
 
