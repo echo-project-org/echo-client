@@ -12,6 +12,20 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
         ep.startReceivingVideo(user.id);
     }
 
+    const handleFriendAdd = () => {
+        setIsFriend(true);
+        //notify api or whatever needs to be updated
+
+        handleClose();
+    }
+
+    const handleFriendRemove = () => {
+        setIsFriend(false);
+        //notify api or whatever needs to be updated
+
+        handleClose();
+    }
+
     if (storage.get("id") !== user.id) {
         return (
             <>
@@ -19,9 +33,9 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
                 <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem>
                 {
                     isFriend ?
-                        <MenuItem onClick={handleClose}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
+                        <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
                         :
-                        <MenuItem onClick={handleClose}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
+                        <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
                 }
                 <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem>
                 <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem>
