@@ -1,8 +1,8 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { Menu, MenuItem } from '@mui/material'
-import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove } from '@mui/icons-material'
-import ScreenShareIcon from '@mui/icons-material/ScreenShare';
+import { MenuItem } from '@mui/material'
+import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove, ScreenShare } from '@mui/icons-material'
+
 import { ep, storage } from "../../index";
 
 const api = require('../../api');
@@ -85,7 +85,7 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
   if (storage.get("id") !== user.id) {
     return (
       <>
-        {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
+        {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShare fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
         <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem>
         <FriendButton user={user} handleClose={handleClose} />
         <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem>
@@ -95,7 +95,7 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
   } else {
     return (
       <>
-        {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
+        {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShare fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
         <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem>
       </>
     )
