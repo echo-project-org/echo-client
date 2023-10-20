@@ -5,8 +5,10 @@ import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove } from '@m
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { ep, storage } from "../../index";
 
+const api = require('../../api');
+
 function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
-    const [isFriend, setIsFriend] = useState(false);
+    const [isFriend, setIsFriend] = useState(true);
 
     const startWatchingBroadcast = () => {
         ep.startReceivingVideo(user.id);
@@ -15,14 +17,16 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
     const handleFriendAdd = () => {
         setIsFriend(true);
         //notify api or whatever needs to be updated
-
+        api.call("users/friend/request", 'POST', { id: storage.get("id"), friendId: user.id, operation: 'add' });
+        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add'});
         handleClose();
     }
 
     const handleFriendRemove = () => {
         setIsFriend(false);
         //notify api or whatever needs to be updated
-
+        api.call("users/friend/request", "POST",{ id: storage.get("id"), friendId: user.id, operation: 'remove' });
+        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove'});
         handleClose();
     }
 
