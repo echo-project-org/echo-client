@@ -127,6 +127,13 @@ class Rooms {
         user.registerEvent("hangupPrivateCall", (data) => {
             this.hangupPrivateCall(data);
         });
+        user.registerEvent("friendAction", (data) => {
+            //find the user
+            if (this.connectedClients.has(data.targetId)) {
+                const user = this.connectedClients.get(data.targetId);
+                user.friendAction(data);
+            }
+        });
     }
 
     async startPrivateCall(data) {
