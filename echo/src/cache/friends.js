@@ -42,6 +42,12 @@ class Friends {
         }
     }
 
+    remove(id) {
+        id = this.typeCheck(id);
+        if (!this.friends[id]) return console.error(`[CACHE] Friend ${id} does not exist in cache`);
+        delete this.friends[id];
+    }
+
     getAll() {
         return this.friends;
     }
@@ -75,3 +81,5 @@ class Friends {
         this.users[id][field] = value;
     }
 }
+
+export default Friends;
