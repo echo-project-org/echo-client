@@ -58,6 +58,7 @@ class Friends {
     }
 
     getNotAccepted() {
+        //friends requests that I have sent but have not been accepted yet
         let notAccepted = [];
         for (let id in this.friends) {
             if (!this.friends[id].accepted) notAccepted.push(this.friends[id]);
@@ -66,6 +67,7 @@ class Friends {
     }
 
     getRequested() {
+        //friends requests that I have received but have not accepted yet
         let requested = [];
         for (let id in this.friends) {
             if (this.friends[id].requested) requested.push(this.friends[id]);
