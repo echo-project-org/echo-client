@@ -714,6 +714,18 @@ class EchoProtocol {
     return this.cachedFriends.get(id);
   }
 
+  getFriends() {
+    return this.cachedFriends.getAccepted();
+  }
+
+  getFriendRequests() {
+    return this.cachedFriends.getNotAccepted();
+  }
+
+  getFriendRequested() {
+    return this.cachedFriends.getRequested();
+  }
+
   getRoom(id) {
     if (typeof id !== "string") id = id.toString();
     return this.cachedRooms.get(id);
