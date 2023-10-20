@@ -75,6 +75,15 @@ class Friends {
         return requested;
     }
 
+    getAccepted() {
+        //actual friends
+        let accepted = [];
+        for (let id in this.friends) {
+            if (this.friends[id].accepted && this.friends[id].requested) accepted.push(this.friends[id]);
+        }
+        return accepted;
+    }
+
     update(id, field, value) {
         id = this.typeCheck(id);
         field = this.typeCheck(field);
