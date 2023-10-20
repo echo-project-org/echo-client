@@ -219,7 +219,7 @@ router.get('/friends/:id', (req, res) => {
 })
 
 // get friend requests of user
-router.get('/friendRequests/:id', (req, res) => {
+router.get('/frieds/requests/:id', (req, res) => {
     const { id } = req.params;
 
     req.database.query("SELECT id FROM user_friends WHERE otherId = ? && id NOT IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
