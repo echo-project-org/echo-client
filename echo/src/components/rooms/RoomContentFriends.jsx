@@ -8,13 +8,25 @@ import { ChatBubble, Call } from "@mui/icons-material";
 import { ep, storage } from "../../index";
 import CurrentStatus from "../user/CurrentStatus";
 
+const api = require('../../api');
+
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);
   const [pending, setPending] = useState([]);
   const [requested, setRequested] = useState([]);
 
+  api.call("users/friends", "POST", { id: storage.get("id") }).then((res) => {
+    res.json.forEach((user) => {
+      ep.addFriend({ id: user.id, accepted: true, requested: true });
+    });
+  }).catch((err) => {
+    console.error(err);
+  });
+
   useEffect(() => {
-    setFriends(ep.getUsersInRoom(1))
+    setFriends(ep.getFriends());
+    setPending(ep.getFriendRequested());
+    setRequested(ep.getFriendRequests());
 
     ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
       setFriends(ep.getFriends());
