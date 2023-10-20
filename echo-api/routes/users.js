@@ -178,6 +178,8 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
 router.get('/friends/:id', (req, res) => {
     const { id } = req.params;
 
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
+
     req.database.query("SELECT otherId FROM user_friends WHERE id = ?", [id], function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
@@ -198,6 +200,8 @@ router.get('/friends/:id', (req, res) => {
 // get friend requests of user
 router.get('/frieds/requests/:id', (req, res) => {
     const { id } = req.params;
+
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
 
     req.database.query("SELECT id FROM user_friends WHERE otherId = ? AND id NOT IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
@@ -223,6 +227,8 @@ router.post('/friend/request', (req, res) => {
     const friendId = body.friendId;
     const operation = body.operation;
 
+    if (!id || !friendId || !operation) return res.status(400).send({ message: "You messed up the request." });
+
     switch(operation) {
         case "add":
             req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, friendId], function (err, result, fields) {
@@ -235,6 +241,9 @@ router.post('/friend/request', (req, res) => {
                 if (err) return res.status(400).send({ error: "You messed up the request." });
                 res.status(200).send({ message: "Friend removed!" });
             });
+            break;
+        default:
+            res.status(404).send({ message: "Unknown operation." });
             break;
     }
 });
