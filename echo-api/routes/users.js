@@ -197,4 +197,24 @@ router.post('/friend/remove/:id/:friendId', (req, res) => {
     });
 });
 
+// get friends of user
+router.get('/friends/:id', (req, res) => {
+    const { id } = req.params;
+
+    req.database.query("SELECT otherId FROM user_friends WHERE id = ?", [id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function(friends) {        
+                jsonOut.push({
+                    "id" : friends.otherId,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+})
 module.exports = router;
