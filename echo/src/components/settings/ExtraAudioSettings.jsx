@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Stack, Slider, Tooltip, FormControlLabel, Switch } from '@mui/material';
+import { Stack, Slider, Tooltip, FormControlLabel, Switch, Typography } from '@mui/material';
 import { RecordVoiceOver, Headphones } from '@mui/icons-material';
 
 import { storage, ep, ap } from "../../index";
@@ -67,6 +67,9 @@ function ExtraAudioSettings() {
 
   return (
     <div className="settingsModalSubDiv noselect">
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
+        Extra audio settings
+      </Typography>
       <div style={{ width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
           <Tooltip title="Voice activity detection" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
