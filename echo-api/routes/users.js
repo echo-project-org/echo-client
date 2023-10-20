@@ -175,4 +175,26 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
     });
 })
 
+// add user as friend
+router.post('/friend/:id/:newFriendId', (req, res) => {
+    const { id } = req.params;
+    const { newFriendId } = req.params;
+
+    req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, newFriendId], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+        res.status(200).send({ message: "Friend added!" });
+    });
+});
+
+// remove user as friend
+router.post('/friend/remove/:id/:friendId', (req, res) => {
+    const { id } = req.params;
+    const { friendId } = req.params;
+
+    req.database.query("DELETE FROM user_friends WHERE id = ? AND otherId = ? || id= ? AND otherId = ?", [id, friendId, friendId, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+        res.status(200).send({ message: "Friend removed!" });
+    });
+});
+
 module.exports = router;
