@@ -13,6 +13,14 @@ function RoomContentFriends({  }) {
 
   useEffect(() => {
     setFriends(ep.getUsersInRoom(1))
+
+    ep.on("usersCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
+      setFriends(ep.getUsersInRoom(1))
+    });
+
+    return () => {
+      ep.releaseGroup("RoomContentFriends.usersCacheUpdated");
+    }
   }, []);
 
   return (
