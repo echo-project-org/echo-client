@@ -102,7 +102,18 @@ jobs:
           asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-0.0.0-full.nupkg"
           asset_name: echo-win-${{ steps.extract_version.outputs.release_version }}-full.nupkg
           asset_content_type: application/zip
-        
+
+      - name: Upload RELEASES
+        id: upload-releases
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-0.0.0-full.nupkg"
+          asset_name: RELEASES
+          asset_content_type: application/zip
+      
       - name: Create ZIP Archive of Pre-compiled Folder
         shell: pwsh
         working-directory: ./electron/out

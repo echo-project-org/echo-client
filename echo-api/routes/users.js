@@ -175,4 +175,68 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
     });
 })
 
+// add user as friend
+router.post('/friend/:id/:newFriendId', (req, res) => {
+    const { id } = req.params;
+    const { newFriendId } = req.params;
+
+    req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, newFriendId], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+        res.status(200).send({ message: "Friend added!" });
+    });
+});
+
+// remove user as friend
+router.post('/friend/remove/:id/:friendId', (req, res) => {
+    const { id } = req.params;
+    const { friendId } = req.params;
+
+    req.database.query("DELETE FROM user_friends WHERE id = ? AND otherId = ? || id= ? AND otherId = ?", [id, friendId, friendId, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+        res.status(200).send({ message: "Friend removed!" });
+    });
+});
+
+// get friends of user
+router.get('/friends/:id', (req, res) => {
+    const { id } = req.params;
+
+    req.database.query("SELECT otherId FROM user_friends WHERE id = ?", [id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function(friends) {        
+                jsonOut.push({
+                    "id" : friends.otherId,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+})
+
+// get friend requests of user
+router.get('/friendRequests/:id', (req, res) => {
+    const { id } = req.params;
+
+    req.database.query("SELECT id FROM user_friends WHERE otherId = ? && id NOT IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function(friends) {        
+                jsonOut.push({
+                    "id" : friends.id,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+});
+
 module.exports = router;

@@ -50,6 +50,7 @@ class mediasoupHandler {
     this.testContext = null;
     this.testGainNode = null;
     this.testVadNode = null;
+    this.testSplitter = null;
 
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
@@ -686,19 +687,22 @@ class mediasoupHandler {
 
     //cancel previous time change
     this.vadNode.gain.cancelAndHoldAtTime(0);
-    if (this.testVadNode) {
-      this.testVadNode.gain.cancelAndHoldAtTime(0);
-    }
 
     //ramp volume to new value in 1 second
     if (volume === 1.0) {
       this.vadNode.gain.value = 1.0;
-      if (this.testVadNode) {
-        this.testVadNode.gain.value = 1.0;
-      }
     } else {
       this.vadNode.gain.linearRampToValueAtTime(0.0, this.context.currentTime + 2);
-      if (this.testVadNode) {
+    }
+  }
+
+  setTestVoiceDetectionVolume(volume) {
+    if(this.testVadNode){
+      this.testVadNode.gain.cancelAndHoldAtTime(0);
+
+      if(volume === 1.0) {
+        this.testVadNode.gain.value = 1.0;
+      } else {
         this.testVadNode.gain.linearRampToValueAtTime(0.0, this.testContext.currentTime + 2);
       }
     }
@@ -752,6 +756,17 @@ class mediasoupHandler {
             id: this.id,
             talking: this.hasSpokenLocal,
           });
+        }
+      }
+
+      if(this.testAnalyser) {
+        let audioOutputLevels = this.calculateAudioLevels(this.testAnalyser.analyser, this.testAnalyser.freqs, this.outChannelCount);
+        if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
+          this.hasSpokenLocal = true;
+          this.setTestVoiceDetectionVolume(1.0);
+        } else if (this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) < this.talkingTreshold) {
+          this.hasSpokenLocal = false;
+          this.setTestVoiceDetectionVolume(0.0);
         }
       }
     }, 20);
@@ -815,6 +830,9 @@ class mediasoupHandler {
 
     this.testGainNode = this.testContext.createGain();
     this.testVadNode = this.testContext.createGain();
+    this.testSplitter = this.testContext.createChannelSplitter(this.outChannelCount);
+
+    this.testAnalyser = this.createAudioAnalyser(this.testContext, this.testSplitter, this.outChannelCount);
 
     if (this.vadNode) {
       this.testVadNode.gain.value = this.vadNode.gain.value;
@@ -830,6 +848,7 @@ class mediasoupHandler {
 
     src.connect(this.testGainNode);
     this.testGainNode.connect(this.testVadNode);
+    this.testGainNode.connect(this.testSplitter);
     this.testVadNode.connect(dst);
 
     this.testContext.resume();
@@ -854,6 +873,14 @@ class mediasoupHandler {
 
     if (this.testVadNode) {
       this.testVadNode = null;
+    }
+
+    if (this.testGainNode) {
+      this.testGainNode = null;
+    }
+
+    if (this.testAnalyser) {
+      this.testAnalyser = null;
     }
   }
 
@@ -935,12 +962,17 @@ class mediasoupHandler {
       this.setOutVolume(this.volume);
 
       const audioTrack = dst.stream.getAudioTracks()[0];
-      if (this.producer) {
+
+      if (this.producer && !this.producer.closed) {
         await this.producer.replaceTrack({ track: audioTrack });
       }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
+
+      if (this.testContext) {
+        this.startListeningLocalStream();
+      }
     }
   }
 
@@ -981,12 +1013,16 @@ class mediasoupHandler {
 
       const audioTrack = dst.stream.getAudioTracks()[0];
 
-      if (this.producer) {
+      if (this.producer && !this.producer.closed) {
         await this.producer.replaceTrack({ track: audioTrack });
       }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
+
+      if (this.testContext) {
+        this.startListeningLocalStream();
+      }
     }
   }
 
@@ -1026,12 +1062,16 @@ class mediasoupHandler {
 
       const audioTrack = dst.stream.getAudioTracks()[0];
 
-      if(this.producer){
+      if (this.producer && !this.producer.closed) {
         await this.producer.replaceTrack({ track: audioTrack });
       }
 
       this.outStream.getTracks().forEach(track => track.stop());
       this.outStream = newStream;
+
+      if (this.testContext) {
+        this.startListeningLocalStream();
+      }
     }
   }
 
@@ -1060,6 +1100,10 @@ class mediasoupHandler {
         stream.context.setSinkId(deviceId);
       });
     }
+
+    if (this.testContext) {
+      this.testContext.setSinkId(deviceId);
+    }
   }
 
   /**
@@ -1075,6 +1119,10 @@ class mediasoupHandler {
     this.inputStreams.forEach((stream) => {
       stream.gainNode.gain.value = volume;
     });
+
+    if (this.testGainNode) {
+      this.testGainNode.gain.value = volume;
+    }
   }
 
   /**

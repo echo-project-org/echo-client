@@ -31,6 +31,7 @@
   "dependencies": {
     "@electron-forge/maker-flatpak": "^6.4.2",
     "electron-squirrel-startup": "^1.0.0",
+    "rpmbuild": "^0.0.23",
     "wait-on": "^7.0.1"
   }
 }

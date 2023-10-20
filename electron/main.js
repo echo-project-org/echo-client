@@ -1,6 +1,39 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, autoUpdater, dialog } = require('electron')
 const path = require('path')
 
+const server = 'https://download.kuricki.com'
+const url = `${server}/update/${process.platform}/${app.getVersion()}`
+/* autoUpdater.setFeedURL({ url })
+autoUpdater.checkForUpdates();
+
+setInterval(() => {
+  console.log("Checking for updates")
+  console.log(url);
+  autoUpdater.checkForUpdates()
+}, 60000) */
+
+autoUpdater.on('update-available', () => {
+  const dialogOpts = {
+    type: 'info',
+    buttons: ['Restart and update'],
+    title: 'Echo update',
+    message: 'New version available',
+    detail: 'A new version of Echo is available. Please update the app.'
+  }
+
+  dialog.showMessageBox(dialogOpts).then((returnValue) => {
+    autoUpdater.quitAndInstall();
+  })
+})
+
+autoUpdater.on('update-not-available', () => {
+  console.log("No updates available")
+})
+
+autoUpdater.on('error', (message) => {
+  console.error("Error while checking for updates")
+  console.error(message)
+})
 var mainWindow;
 var rtcInternals;
 
@@ -59,7 +92,8 @@ const createMainWindow = () => {
   return win;
 }
 
-let tray = null
+let tray = null;
+
 
 app.whenReady().then(() => {
   mainWindow = createMainWindow()
