@@ -6,99 +6,100 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { ep, storage } from "../../index";
 
 const api = require('../../api');
-function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
-    const [friendStatus, setFriendStatus] = useState('no');
 
-    const friendButton = (friendStatus) => {
-        switch (friendStatus) {
-            case "no":
-                return <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
-            case "requested":
-                return <MenuItem disabled={true}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Request sent</MenuItem>
-            case 'pending':
-                return (
-                    <>
-                        <MenuItem onClick={handleFriendAccept}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Accept</MenuItem>
-                        <MenuItem onClick={handleFriendReject}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Reject</MenuItem>
-                    </>
-                )
-            case "accepted":
-                return <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
-            default:
-                return null;
-        }
-    }
+function FriendButton({ user, handleClose }) {
+  const [friendStatus, setFriendStatus] = useState('no');
 
-    const startWatchingBroadcast = () => {
-        ep.startReceivingVideo(user.id);
-    }
+  const handleFriendAdd = () => {
+    setFriendStatus('requested');
+    //notify api or whatever needs to be updated
+    api.call("users/friend/request", 'POST', { id: storage.get("id"), friendId: user.id, operation: 'add' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+    ep.addFriend({ id: user.id, requested: true, accepted: false })
+    handleClose();
+  }
 
-    const handleFriendAdd = () => {
+  const handleFriendRemove = () => {
+    setFriendStatus('no');
+    //notify api or whatever needs to be updated
+    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    ep.removeFriend({ id: user.id });
+    handleClose();
+  }
+
+  const handleFriendAccept = () => {
+    //notify api or whatever needs to be updated
+    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+    ep.updateFriends({ id: user.id, requested: true, accepted: true });
+    handleClose();
+  }
+
+  const handleFriendReject = () => {
+    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    ep.removeFriend({ id: user.id });
+    handleClose();
+  }
+
+  useEffect(() => {
+    let f = ep.getFriend(user.id);
+    if (f) {
+      if (f.accepted && f.requested) {
+        setFriendStatus('accepted');
+      } else if (!f.accepted && f.requested) {
         setFriendStatus('requested');
-        //notify api or whatever needs to be updated
-        api.call("users/friend/request", 'POST', { id: storage.get("id"), friendId: user.id, operation: 'add' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
-        ep.addFriend({ id: user.id, requested: true, accepted: false })
-        handleClose();
-    }
-
-    const handleFriendRemove = () => {
-        setFriendStatus('no');
-        //notify api or whatever needs to be updated
-        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
-        ep.removeFriend({ id: user.id });
-        handleClose();
-    }
-
-    const handleFriendAccept = () => {
-        //notify api or whatever needs to be updated
-        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
-        ep.updateFriends({ id: user.id, requested: true, accepted: true });
-        handleClose();
-    }
-
-    const handleFriendReject = () => {
-        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
-        ep.removeFriend({ id: user.id });
-        handleClose();
-    }
-
-    useEffect(() => {
-        let f = ep.getFriend(user.id);
-        if (f) {
-            if (f.accepted && f.requested) {
-                setFriendStatus('accepted');
-            } else if (!f.accepted && f.requested) {
-                setFriendStatus('requested');
-            } else if (f.accepted && !f.requested) {
-                setFriendStatus('pending');
-            }
-        } else {
-            setFriendStatus('no');
-        }
-    }, [friendStatus, user.id]);
-
-    if (storage.get("id") !== user.id) {
-        return (
-            <>
-                {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
-                <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem>
-                {friendButton(friendStatus)}
-                <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem>
-                <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem>
-            </>
-        )
+      } else if (f.accepted && !f.requested) {
+        setFriendStatus('pending');
+      }
     } else {
-        return (
-            <>
-                {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
-                <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem>
-            </>
-        )
+      setFriendStatus('no');
     }
+  }, [friendStatus, user.id]);
+
+  switch (friendStatus) {
+    case "no":
+      return <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Ad friend</MenuItem>
+    case "requested":
+      return <MenuItem disabled={true}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Request sent</MenuItem>
+    case 'pending':
+      return (
+        <>
+          <MenuItem onClick={handleFriendAccept}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Accept</MenuItem>
+          <MenuItem onClick={handleFriendReject}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Reject</MenuItem>
+        </>
+      )
+    case "accepted":
+      return <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
+    default:
+      return null;
+  }
+}
+
+function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
+  const startWatchingBroadcast = () => {
+    ep.startReceivingVideo(user.id);
+  }
+
+  if (storage.get("id") !== user.id) {
+    return (
+      <>
+        {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
+        <MenuItem onClick={handleClose}><Message fontSize="10px" style={{ marginRight: ".3rem" }} />Send message</MenuItem>
+        <FriendButton user={user} handleClose={handleClose} />
+        <MenuItem onClick={handleClose}><DoDisturb fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Kick</MenuItem>
+        <MenuItem onClick={handleClose}><Gavel fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Ban</MenuItem>
+      </>
+    )
+  } else {
+    return (
+      <>
+        {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShareIcon fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}
+        <MenuItem onClick={handleClose}><Settings fontSize="10px" style={{ marginRight: ".3rem" }} /> Settings</MenuItem>
+      </>
+    )
+  }
 }
 
 export default OnlineUsersMenuItems
