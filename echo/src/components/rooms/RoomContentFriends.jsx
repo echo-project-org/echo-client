@@ -29,6 +29,14 @@ function RoomContentFriends({ }) {
     api.call("users/friends/requests/" + storage.get('id'), "GET").then((res) => {
       res.json.forEach((user) => {
         if (user.id) {
+          ep.addFriend({ id: user.id, accepted: true, requested: false });
+        }
+      });
+    });
+
+    api.call("users/friends/sentRequests/" + storage.get('id'), "GET").then((res) => {
+      res.json.forEach((user) => {
+        if (user.id) {
           ep.addFriend({ id: user.id, accepted: false, requested: true });
         }
       });
@@ -96,6 +104,30 @@ function RoomContentFriends({ }) {
                     <Button>
                       <PersonAdd />
                     </Button>
+                    <Button>
+                      <PersonRemove />
+                    </Button>
+                  </Container>
+                </Grid>
+              </Grid>
+            )
+          })
+        }
+        {
+          pending.map((user, index) => {
+            //Request sent to user
+            if (!user) { return console.error("User null"); }
+            return (
+              <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
+                <Grid item xs={1}>
+                  <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
+                </Grid>
+                <Grid item xs={3} className="userInfo">
+                  <span className="userName">{user.name}</span>
+                  <CurrentStatus icon={false} align={"left"} height={"2rem"} />
+                </Grid>
+                <Grid item xs={8}>
+                  <Container className="buttonsContainer">
                     <Button>
                       <PersonRemove />
                     </Button>
