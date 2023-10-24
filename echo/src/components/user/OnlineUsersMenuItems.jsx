@@ -59,7 +59,7 @@ function FriendButton({ user, handleClose }) {
           <MenuItem onClick={handleFriendReject}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} /> Reject</MenuItem>
         </>
       )
-    case "accepted":
+    case "friend":
       return <MenuItem onClick={handleFriendRemove}><PersonRemove fontSize="10px" style={{ marginRight: ".3rem", color: "red" }} />Remove friend</MenuItem>
     default:
       return null;

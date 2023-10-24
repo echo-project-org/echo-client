@@ -721,7 +721,7 @@ class EchoProtocol {
   }
 
   getFriendStatus(id) {
-    let f = this.getFriend(id);
+    let f = this.cachedFriends.get(id);
     if (f) {
       if (f.requested && f.accepted) {
         return "friend"
@@ -729,6 +729,8 @@ class EchoProtocol {
         return "requested"
       } else if (!f.requested && f.accepted) {
         return "pending"
+      } else {
+        return "no"
       }
     } else {
       return "no"
