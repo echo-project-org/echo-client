@@ -44,18 +44,7 @@ function FriendButton({ user, handleClose }) {
   }
 
   useEffect(() => {
-    let f = ep.getFriend(user.id);
-    if (f) {
-      if (f.accepted && f.requested) {
-        setFriendStatus('accepted');
-      } else if (!f.accepted && f.requested) {
-        setFriendStatus('requested');
-      } else if (f.accepted && !f.requested) {
-        setFriendStatus('pending');
-      }
-    } else {
-      setFriendStatus('no');
-    }
+    setFriendStatus(ep.getFriendStatus(user.id));
   }, [friendStatus, user.id]);
 
   switch (friendStatus) {

@@ -720,6 +720,21 @@ class EchoProtocol {
     }
   }
 
+  getFriendStatus(id) {
+    let f = this.getFriend(id);
+    if (f) {
+      if (f.requested && f.accepted) {
+        return "friend"
+      } else if (f.requested && f.accepted) {
+        return "requested"
+      } else {
+        return "pending"
+      }
+    } else {
+      return "no"
+    }
+  }
+
   getFriends() {
     let friends = this.cachedFriends.getAccepted();
     let usersFriends = [];
