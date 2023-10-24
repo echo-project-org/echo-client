@@ -180,7 +180,7 @@ router.get('/friends/:id', (req, res) => {
 
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("SELECT otherId FROM user_friends WHERE id = ?", [id], function (err, result, fields) {
+    req.database.query("SELECT otherId FROM user_friends WHERE id = ? AND id IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
