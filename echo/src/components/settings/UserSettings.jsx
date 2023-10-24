@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Container, Modal } from '@mui/material'
+import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Typography } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
@@ -33,7 +33,6 @@ const StyledGridContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.up('lg')]: {
     justifyContent: "center",
     alignItems: "center",
-    // columnGap: ".1rem"
   },
 }));
 
@@ -202,6 +201,9 @@ function UserSettings() {
 
   return (
     <div className="settingsModalSubDiv">
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
+        User settings
+      </Typography>
       <StyledGridContainer container direction={"row"} alignItems={"center"}>
         <Grid item lg={2} md={6} xs={6} sx={{ textAlign: "center" }}>
           <Badge

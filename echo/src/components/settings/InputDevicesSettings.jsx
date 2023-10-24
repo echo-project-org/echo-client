@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip, FormControlLabel, Switch } from '@mui/material';
-import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle, RecordVoiceOver } from '@mui/icons-material';
+import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
 
@@ -45,30 +45,14 @@ const DevicesSelectList = ({ inputDevices, handleInputDeviceChange, inputDevice,
 function InputDevicesSettings({ inputDevices }) {
   const [inputDevice, setInputDevice] = useState('default');
   const [micVolume, setMicVolulme] = useState(100);
-  const [echoCancellation, setEchoCancellation] = useState(false);
-  const [noiseSuppression, setNoiseSuppression] = useState(false);
-  const [autoGainControl, setAutoGainControl] = useState(false);
-  const [micTest, setMicTest] = useState(false);
-  const [vadTreshold, setVadTreshold] = useState(0);
   const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     setInputDevice(storage.get('inputAudioDeviceId') || "default");
+    setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
 
     ep.setMicrophoneVolume(storage.get('micVolume') || 1);
     ep.setMicrophoneDevice(storage.get('inputAudioDeviceId') || "default");
-    ep.setVadTreshold(storage.get('vadTreshold') || 1);
-    ep.setMicrophoneTest(false);
-    ep.setEchoCancellation(storage.get('echoCancellation') === 'true' || false);
-    ep.setNoiseSuppression(storage.get('noiseSuppression') === 'true' || false);
-    ep.setAutoGainControl(storage.get('autoGainControl') === 'true' || false);
-    console.log(storage.get('echoCancellation') === 'true');
-    setMicVolulme(Math.floor(storage.get('micVolume') * 100) || 100);
-    setVadTreshold(Math.floor(storage.get('vadTreshold') * 100) || 0);
-    setMicTest(false);
-    setEchoCancellation(storage.get('echoCancellation') === 'true' || false);
-    setNoiseSuppression(storage.get('noiseSuppression') === 'true' || false);
-    setAutoGainControl(storage.get('autoGainControl') === 'true' || false);
   }, []);
 
   const handleInputDeviceChange = (event) => {
@@ -84,44 +68,13 @@ function InputDevicesSettings({ inputDevices }) {
     ep.setMicrophoneVolume(newValue / 100);
   };
 
-  const handleVadTresholdChange = (event, newValue) => {
-    //set user volume
-    storage.set('vadTreshold', newValue / 100);
-    setVadTreshold(newValue);
-    ep.setVadTreshold(newValue / 100);
-  };
-
-  const handleTestChange = (event) => {
-    setMicTest(event.target.checked);
-    ep.setMicrophoneTest(event.target.checked);
-  }
-
-  const handleEchoCancellationChange = (event) => {
-    console.log(event.target.checked)
-    setEchoCancellation(event.target.checked);
-    ep.setEchoCancellation(event.target.checked);
-    storage.set('echoCancellation', event.target.checked);
-  }
-
-  const handleNoiseSuppressionChange = (event) => {
-    setNoiseSuppression(event.target.checked);
-    ep.setNoiseSuppression(event.target.checked);
-    storage.set('noiseSuppression', event.target.checked);
-  }
-
-  const handleAutoGainControlChange = (event) => {
-    setAutoGainControl(event.target.checked);
-    ep.setAutoGainControl(event.target.checked);
-    storage.set('autoGainControl', event.target.checked);
-  }
-
   const deviceListToggle = (status = true) => {
     setShowList(status);
   }
 
   return (
     <div className="settingsModalSubDiv noselect">
-      <Typography variant="h6" component="h2" sx={{ width: "95%" }}>
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         Input device
       </Typography>
       <div className="deviceSelector-root" onMouseUp={deviceListToggle}>
@@ -134,6 +87,7 @@ function InputDevicesSettings({ inputDevices }) {
           <DevicesSelectList inputDevices={inputDevices} handleInputDeviceChange={handleInputDeviceChange} inputDevice={inputDevice} showList={showList} />
         </div>
       </div>
+
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems="center">
           <Tooltip title="Mic volume" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -148,30 +102,6 @@ function InputDevicesSettings({ inputDevices }) {
             onChange={handleMicVolumeChange}
             size='medium'
           />
-        </Stack>
-      </div>
-      <div style={{ paddingRight: "2%", width: "95%" }}>
-        <Stack spacing={2} direction="row" alignItems="center">
-          <Tooltip title="Voice activity detection" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-            <RecordVoiceOver fontSize="medium" />
-          </Tooltip>
-          <Slider
-            sx={{ width: "95%" }}
-            valueLabelDisplay="auto"
-            valueLabelFormat={(v) => { return v + "%" }}
-            aria-label="Volume"
-            value={vadTreshold}
-            onChange={handleVadTresholdChange}
-            size='medium'
-          />
-        </Stack>
-      </div>
-      <div style={{ paddingRight: "2%", width: "95%" }}>
-        <Stack spacing={2} direction="row" alignItems="center">
-          <FormControlLabel control={<Switch checked={micTest} onChange={handleTestChange} />} label="Test your input device" />
-          <FormControlLabel control={<Switch checked={echoCancellation} onChange={handleEchoCancellationChange} />} label="Echo cancellation" />
-          <FormControlLabel control={<Switch checked={noiseSuppression} onChange={handleNoiseSuppressionChange} />} label="Noise suppression" />
-          <FormControlLabel control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Auto gain control" />
         </Stack>
       </div>
     </div>

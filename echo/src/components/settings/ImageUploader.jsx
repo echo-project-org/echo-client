@@ -49,7 +49,7 @@ const ImageUploader = ({ open, data }) => {
         <StyledContainer>
           <Grid container>
             <Grid item xs={12}>
-              <Typography variant="h3" component="h5">
+              <Typography variant="h3" component="h5" className="noselect">
                 Resize image
               </Typography>
             </Grid>

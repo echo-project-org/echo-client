@@ -139,10 +139,10 @@ router.get('/volume/:name', (req, res) => {
 
         var jsonOut = [];
         if (result.length > 0) {
-            result.map(function(volumes) {        
-                jsonOut.push({ 
-                    "name" : volumes.otherUser,
-                    "volume" : volumes.volume,
+            result.map(function (volumes) {
+                jsonOut.push({
+                    "name": volumes.otherUser,
+                    "volume": volumes.volume,
                 });
             })
             res.status(200).send(jsonOut);
@@ -154,18 +154,40 @@ router.get('/volume/:name', (req, res) => {
 
 // get volume level of specific user
 router.get('/volume/:nick1/:nick2', (req, res) => {
-    const { nick1 } = req.params;
-    const { nick2 } = req.params;
+    const { nick1, nick2 } = req.params;
 
-    req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = '" + nick1 + "' AND otherUser = '" + nick2 + "'", function (err, result, fields) {
+    req.database.query("SELECT otherUser, volume FROM userVolumes WHERE me = ? AND otherUser = ?", [nick1, nick2], function (err, result, fields) {
         if (err) return res.status(400).send({ error: "You messed up the request." });
 
         var jsonOut = [];
         if (result.length > 0) {
-            result.map(function(volumes) {        
+            result.map(function (volumes) {
                 jsonOut.push({
-                    "name" : volumes.otherUser,
-                    "volume" : volumes.volume,
+                    "name": volumes.otherUser,
+                    "volume": volumes.volume,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+});
+
+// get friends of user
+router.get('/friends/:id', (req, res) => {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
+
+    req.database.query("SELECT otherId FROM user_friends WHERE id = ? AND id IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function (friends) {
+                jsonOut.push({
+                    "id": friends.otherId,
                 });
             })
             res.status(200).send(jsonOut);
@@ -174,5 +196,78 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
         }
     });
 })
+
+// get friend requests of user
+router.get('/friends/requests/:id', (req, res) => {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
+
+    req.database.query("SELECT id FROM user_friends WHERE otherId = ? AND id NOT IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function (friends) {
+                jsonOut.push({
+                    "id": friends.id,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+});
+
+router.get('/friends/sentRequests/:id', (req, res) => {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
+
+    req.database.query("SELECT otherId as id FROM user_friends WHERE id = ? AND id NOT IN (SELECT id WHERE otherId = ?)", [id, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function (friends) {
+                jsonOut.push({
+                    "id": friends.id,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+});
+
+// operation on friend request
+router.post('/friend/request', (req, res) => {
+    const body = req.body;
+    const id = body.id;
+    const friendId = body.friendId;
+    const operation = body.operation;
+
+    if (!id || !friendId || !operation) return res.status(400).send({ message: "You messed up the request." });
+
+    switch (operation) {
+        case "add":
+            req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, friendId], function (err, result, fields) {
+                if (err) return res.status(400).send({ error: "You messed up the request." });
+                res.status(200).send({ message: "Friend added!" });
+            });
+            break;
+        case "remove":
+            req.database.query("DELETE FROM user_friends WHERE id = ? AND otherId = ? || id= ? AND otherId = ?", [id, friendId, friendId, id], function (err, result, fields) {
+                if (err) return res.status(400).send({ error: "You messed up the request." });
+                res.status(200).send({ message: "Friend removed!" });
+            });
+            break;
+        default:
+            res.status(404).send({ message: "Unknown operation." });
+            break;
+    }
+});
 
 module.exports = router;

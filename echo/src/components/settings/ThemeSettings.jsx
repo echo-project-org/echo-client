@@ -69,7 +69,7 @@ function ThemeSettings() {
       alignItems: "flex-start"
     }}>
       <Grid item xs={12}>
-        <div sx={{
+        <div className="noselect" sx={{
           fontSize: "1.5rem",
           fontWeight: "bold",
           textAlign: "center",

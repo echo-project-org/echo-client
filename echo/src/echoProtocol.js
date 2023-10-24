@@ -3,6 +3,7 @@ import Emitter from "wildemitter";
 
 import Users from "./cache/user";
 import Room from "./cache/room";
+import Friends from "./cache/friends";
 
 import { storage } from "./index";
 
@@ -17,6 +18,7 @@ class EchoProtocol {
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
+    this.cachedFriends = new Friends();
 
     this.currentConnectionState = "";
     this.currentConnectionStateInterval = null;
@@ -216,6 +218,28 @@ class EchoProtocol {
     this.socket.on("server.privateCallSetSendVideoTransport", (data) => {
       if (this.mh) {
         this.mh.createReceiveVideoTransport(data);
+      }
+    });
+
+    this.socket.on("server.friendAction", (data) => {
+      if (data.operation === "add") {
+        if (this.cachedFriends.has(data.id)) {
+          this.updateFriends({
+            id: data.id,
+            field: "accepted",
+            value: data.requested
+          })
+
+          this.updateFriends({
+            id: data.id,
+            field: "requested",
+            value: data.accepted
+          });
+        } else {
+          this.addFriend(data);
+        }
+      } else if (data.operation === "remove") {
+        this.removeFriend(data);
       }
     });
   }
@@ -671,6 +695,93 @@ class EchoProtocol {
     else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
   }
 
+  addFriend(friend) {
+    this.cachedFriends.add(friend);
+    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+  }
+
+  updateFriends({ id, field, value }) {
+    this.cachedFriends.update(id, field, value);
+    this.friendCacheUpdated(this.cachedFriends.get(id));
+  }
+
+  removeFriend(friend) {
+    this.cachedFriends.remove(friend);
+    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+  }
+
+  getFriend(id) {
+    let friend = this.cachedFriends.get(id);
+    let userFriend = this.cachedUsers.get(id);
+    if (friend && userFriend) {
+      return userFriend;
+    } else {
+      console.warn("Friend not found in cache, probably offline and we don't handle it")
+    }
+  }
+
+  getFriendStatus(id) {
+    let f = this.cachedFriends.get(id);
+    if (f) {
+      if (f.requested && f.accepted) {
+        return "friend"
+      } else if (f.requested && !f.accepted) {
+        return "requested"
+      } else if (!f.requested && f.accepted) {
+        return "pending"
+      } else {
+        return "no"
+      }
+    } else {
+      return "no"
+    }
+  }
+
+  getFriends() {
+    let friends = this.cachedFriends.getAccepted();
+    let usersFriends = [];
+    friends.forEach((friend) => {
+      let f = this.cachedUsers.get(friend.id)
+      if (f) {
+        usersFriends.push(f);
+      } else {
+        console.warn("Friend not found in cache, probably offline and we don't handle it")
+      }
+    });
+
+    return usersFriends;
+  }
+
+  getFriendRequests() {
+    let friends = this.cachedFriends.getRequested();
+    let usersFriends = [];
+    friends.forEach((friend) => {
+      let f = this.cachedUsers.get(friend.id)
+      if (f) {
+        usersFriends.push(f);
+      } else {
+        console.warn("Friend not found in cache, probably offline and we don't handle it")
+      }
+    });
+
+    return usersFriends;
+  }
+
+  getFriendRequested() {
+    let friends = this.cachedFriends.getNotAccepted();
+    let usersFriends = [];
+    friends.forEach((friend) => {
+      let f = this.cachedUsers.get(friend.id)
+      if (f) {
+        usersFriends.push(f);
+      } else {
+        console.warn("Friend not found in cache, probably offline and we don't handle it")
+      }
+    });
+
+    return usersFriends;
+  }
+
   getRoom(id) {
     if (typeof id !== "string") id = id.toString();
     return this.cachedRooms.get(id);
@@ -757,6 +868,12 @@ class EchoProtocol {
       else reject("Room not found in cache");
     });
   }
+
+  sendFriendAction(data) {
+    if (this.socket) {
+      this.socket.emit("client.friendAction", data);
+    }
+  }
 }
 
 Emitter.mixin(EchoProtocol);
@@ -835,6 +952,10 @@ EchoProtocol.prototype.gotVideoStream = function (data) {
 
 EchoProtocol.prototype.localUserCrashed = function (data) {
   this.emit("localUserCrashed", data);
+}
+
+EchoProtocol.prototype.friendCacheUpdated = function (data) {
+  this.emit("friendCacheUpdated", data);
 }
 
 export default EchoProtocol;

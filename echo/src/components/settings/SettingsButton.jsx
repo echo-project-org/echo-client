@@ -7,6 +7,7 @@ import ThemeSettings from "./ThemeSettings";
 import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 import ImageUploader from './ImageUploader';
+import ExtraAudioSettings from './ExtraAudioSettings';
 
 import { ep } from "../../index";
 
@@ -86,7 +87,7 @@ function SettingsButton() {
         <Zoom in={modalOpen}>
           <Box sx={modalStyle}>
             <div className='modalDiv'>
-              <Typography variant="h3">
+              <Typography variant="h3" className="noselect">
                 Echo settings
               </Typography>
 
@@ -98,6 +99,9 @@ function SettingsButton() {
                 </Grid>
                 <Grid item lg={6} md={12} xs={12}>
                   <OutputDevicesSettings outputDevices={outputDevices} />
+                </Grid>
+                <Grid item xs={12}>
+                  <ExtraAudioSettings />
                 </Grid>
                 <Grid item xs={12}>
                   <UserSettings />
