@@ -725,9 +725,9 @@ class EchoProtocol {
     if (f) {
       if (f.requested && f.accepted) {
         return "friend"
-      } else if (f.requested && f.accepted) {
+      } else if (f.requested && !f.accepted) {
         return "requested"
-      } else {
+      } else if (!f.requested && f.accepted) {
         return "pending"
       }
     } else {
