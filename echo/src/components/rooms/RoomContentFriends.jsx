@@ -3,7 +3,7 @@ import "../../css/friends.css";
 import { useEffect, useState } from "react";
 
 import { Avatar, Grid, Container, Button } from "@mui/material";
-import { ChatBubble, Call } from "@mui/icons-material";
+import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
 
 import { ep, storage } from "../../index";
 import CurrentStatus from "../user/CurrentStatus";
@@ -24,6 +24,14 @@ function RoomContentFriends({ }) {
       });
     }).catch((err) => {
       console.error(err);
+    });
+
+    api.call("users/friends/requests/" + storage.get('id'), "GET").then((res) => {
+      res.json.forEach((user) => {
+        if (user.id) {
+          ep.addFriend({ id: user.id, accepted: false, requested: true });
+        }
+      });
     });
 
     setFriends(ep.getFriends());
@@ -63,6 +71,33 @@ function RoomContentFriends({ }) {
                     </Button>
                     <Button>
                       <Call />
+                    </Button>
+                  </Container>
+                </Grid>
+              </Grid>
+            )
+          })
+        }
+        {
+          requested.map((user, index) => {
+            //Request sent by user
+            if (!user) { return console.error("User null"); }
+            return (
+              <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
+                <Grid item xs={1}>
+                  <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
+                </Grid>
+                <Grid item xs={3} className="userInfo">
+                  <span className="userName">{user.name}</span>
+                  <CurrentStatus icon={false} align={"left"} height={"2rem"} />
+                </Grid>
+                <Grid item xs={8}>
+                  <Container className="buttonsContainer">
+                    <Button>
+                      <PersonAdd />
+                    </Button>
+                    <Button>
+                      <PersonRemove />
                     </Button>
                   </Container>
                 </Grid>
