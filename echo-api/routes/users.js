@@ -198,9 +198,8 @@ router.get('/friends/:id', (req, res) => {
 })
 
 // get friend requests of user
-router.get('/frieds/requests/', (req, res) => {
-    const body = req.body;
-    const id = body.id;
+router.get('/friends/requests/:id', (req, res) => {
+    const { id } = req.params;
 
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
