@@ -3,14 +3,14 @@ const path = require('path')
 
 const server = 'https://download.kuricki.com'
 const url = `${server}/update/${process.platform}/${app.getVersion()}`
-/* autoUpdater.setFeedURL({ url })
+autoUpdater.setFeedURL({ url })
 autoUpdater.checkForUpdates();
 
 setInterval(() => {
   console.log("Checking for updates")
   console.log(url);
   autoUpdater.checkForUpdates()
-}, 60000) */
+}, 60000)
 
 autoUpdater.on('update-available', () => {
   const dialogOpts = {
