@@ -139,10 +139,10 @@ router.get('/volume/:name', (req, res) => {
 
         var jsonOut = [];
         if (result.length > 0) {
-            result.map(function(volumes) {        
-                jsonOut.push({ 
-                    "name" : volumes.otherUser,
-                    "volume" : volumes.volume,
+            result.map(function (volumes) {
+                jsonOut.push({
+                    "name": volumes.otherUser,
+                    "volume": volumes.volume,
                 });
             })
             res.status(200).send(jsonOut);
@@ -161,10 +161,10 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
 
         var jsonOut = [];
         if (result.length > 0) {
-            result.map(function(volumes) {        
+            result.map(function (volumes) {
                 jsonOut.push({
-                    "name" : volumes.otherUser,
-                    "volume" : volumes.volume,
+                    "name": volumes.otherUser,
+                    "volume": volumes.volume,
                 });
             })
             res.status(200).send(jsonOut);
@@ -175,9 +175,8 @@ router.get('/volume/:nick1/:nick2', (req, res) => {
 });
 
 // get friends of user
-router.get('/friends/', (req, res) => {
-    const body = req.body;
-    const id = body.id;
+router.get('/friends/:id', (req, res) => {
+    const { id } = req.params;
 
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
@@ -186,9 +185,9 @@ router.get('/friends/', (req, res) => {
 
         var jsonOut = [];
         if (result.length > 0) {
-            result.map(function(friends) {        
+            result.map(function (friends) {
                 jsonOut.push({
-                    "id" : friends.otherId,
+                    "id": friends.otherId,
                 });
             })
             res.status(200).send(jsonOut);
@@ -210,9 +209,9 @@ router.get('/frieds/requests/', (req, res) => {
 
         var jsonOut = [];
         if (result.length > 0) {
-            result.map(function(friends) {        
+            result.map(function (friends) {
                 jsonOut.push({
-                    "id" : friends.id,
+                    "id": friends.id,
                 });
             })
             res.status(200).send(jsonOut);
@@ -231,7 +230,7 @@ router.post('/friend/request', (req, res) => {
 
     if (!id || !friendId || !operation) return res.status(400).send({ message: "You messed up the request." });
 
-    switch(operation) {
+    switch (operation) {
         case "add":
             req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, friendId], function (err, result, fields) {
                 if (err) return res.status(400).send({ error: "You messed up the request." });
