@@ -7,6 +7,7 @@ import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
 
 import { ep, storage } from "../../index";
 import CurrentStatus from "../user/CurrentStatus";
+import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
 const api = require('../../api');
 
@@ -62,83 +63,30 @@ function RoomContentFriends({ }) {
       <Container className="friends-list-overflow">
         {
           friends.map((user, index) => {
-            if (!user) { return console.error("User null"); }
+            //Friends
             return (
-              <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
-                <Grid item xs={1}>
-                  <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
-                </Grid>
-                <Grid item xs={3} className="userInfo">
-                  <span className="userName">{user.name}</span>
-                  <CurrentStatus icon={false} align={"left"} height={"2rem"} />
-                </Grid>
-                <Grid item xs={8}>
-                  <Container className="buttonsContainer">
-                    <Button>
-                      <ChatBubble />
-                    </Button>
-                    <Button>
-                      <Call />
-                    </Button>
-                  </Container>
-                </Grid>
-              </Grid>
+              <RoomContentFriendContainer user={user} index={index} key={index}/>
             )
           })
         }
         {
           requested.map((user, index) => {
             //Request sent by user
-            if (!user) { return console.error("User null"); }
             return (
-              <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
-                <Grid item xs={1}>
-                  <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
-                </Grid>
-                <Grid item xs={3} className="userInfo">
-                  <span className="userName">{user.name}</span>
-                  <CurrentStatus icon={false} align={"left"} height={"2rem"} />
-                </Grid>
-                <Grid item xs={8}>
-                  <Container className="buttonsContainer">
-                    <Button>
-                      <PersonAdd />
-                    </Button>
-                    <Button>
-                      <PersonRemove />
-                    </Button>
-                  </Container>
-                </Grid>
-              </Grid>
+              <RoomContentFriendContainer user={user} index={index} key={index}/>
             )
           })
         }
         {
           pending.map((user, index) => {
             //Request sent to user
-            if (!user) { return console.error("User null"); }
             return (
-              <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
-                <Grid item xs={1}>
-                  <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
-                </Grid>
-                <Grid item xs={3} className="userInfo">
-                  <span className="userName">{user.name}</span>
-                  <CurrentStatus icon={false} align={"left"} height={"2rem"} />
-                </Grid>
-                <Grid item xs={8}>
-                  <Container className="buttonsContainer">
-                    <Button>
-                      <PersonRemove />
-                    </Button>
-                  </Container>
-                </Grid>
-              </Grid>
+              <RoomContentFriendContainer user={user} index={index} key={index}/>
             )
           })
         }
       </Container>
-    </Container>
+    </Container >
   )
 }
 
