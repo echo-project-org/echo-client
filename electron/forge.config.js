@@ -20,8 +20,8 @@ module.exports = {
         setupIcon: path.join(process.cwd(), 'images', 'icon.ico'),
         iconUrl: path.join(process.cwd(), 'images', 'icon.ico'),
         noMsi: false,
-        noDelta: false,
-        remoteReleases: "https://download.kuricki.com/updates/latest/",
+        noDelta: true,
+        // remoteReleases: "https://download.kuricki.com/updates/latest/",
       },
     },
     // {

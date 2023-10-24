@@ -50,20 +50,28 @@ jobs:
           echo "artifact_path=$out_path" >> $ENV:GITHUB_OUTPUT
           echo "Build Output: $out_path"
 
-      - name: Extract version from package.json
-        id: extract_version
+      - name: Extract echo version from package.json
+        id: extract_echo_version
         shell: pwsh
         run: |
           $pkg_version = (Get-Content -Path .\echo\package.json | ConvertFrom-Json).version
           echo "Version: $pkg_version"
           echo "Working Directory: ${{ steps.build_electron_app.outputs.artifact_path }}"
-          echo "release_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
+          echo "release_echo_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
+      
+      - name: Extract electron version from package.json
+        id: extract_electorn_version
+        shell: pwsh
+        run: |
+          $pkg_version = (Get-Content -Path .\electron\package.json | ConvertFrom-Json).version
+          echo "Version: $pkg_version"
+          echo "release_electron_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
 
       - name: Check if version is a pre-release
         id: check_pre_release
         shell: pwsh
         run: |
-          $version = "${{ steps.extract_version.outputs.release_version }}"
+          $version = "${{ steps.extract_echo_version.outputs.release_echo_version }}"
           echo "Version: $version"
           $first_digit = $version.Split('.')[0]
           if ($first_digit -ne '0') {
@@ -76,8 +84,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.extract_version.outputs.release_version }}
-          release_name: Release v${{ steps.extract_version.outputs.release_version }}
+          tag_name: v${{ steps.extract_echo_version.outputs.release_echo_version }}
+          release_name: Release v${{ steps.extract_echo_version.outputs.release_echo_version }}
           draft: false
           prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
 
@@ -88,8 +96,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\Echo-0.0.0 Setup.exe"
-          asset_name: echo-installer-win-${{ steps.extract_version.outputs.release_version }}.exe
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\EchoSetup.exe"
+          asset_name: echo-installer-win-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe
+          asset_content_type: application/zip
+      
+      - name: Upload MSI
+        id: upload-msi
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\EchoSetup.msi"
+          asset_name: echo-msi-win-${{ steps.extract_echo_version.outputs.release_echo_version }}.msi
           asset_content_type: application/zip
 
       - name: Upload Package
@@ -99,8 +118,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-0.0.0-full.nupkg"
-          asset_name: echo-win-${{ steps.extract_version.outputs.release_version }}-full.nupkg
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-${{ steps.extract_electorn_version.outputs.release_electron_version }}-full.nupkg"
+          asset_name: echo-win-${{ steps.extract_echo_version.outputs.release_echo_version }}-full.nupkg
           asset_content_type: application/zip
 
       - name: Upload RELEASES
@@ -110,14 +129,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-0.0.0-full.nupkg"
+          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\RELEASES"
           asset_name: RELEASES
           asset_content_type: application/zip
       
       - name: Create ZIP Archive of Pre-compiled Folder
         shell: pwsh
         working-directory: ./electron/out
-        run: 7z a -r -tzip pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip Echo-win32-x64
+        run: 7z a -r -tzip pre-compiled-${{ steps.extract_echo_version.outputs.release_echo_version }}.zip Echo-win32-x64
         
       - name: Upload Source Code
         id: upload-source-code
@@ -126,8 +145,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip
-          asset_name: pre-compiled-${{ steps.extract_version.outputs.release_version }}.zip
+          asset_path: ./electron/out/pre-compiled-${{ steps.extract_echo_version.outputs.release_echo_version }}.zip
+          asset_name: pre-compiled-${{ steps.extract_echo_version.outputs.release_echo_version }}.zip
           asset_content_type: application/zip
   
   build-and-release-linux:
