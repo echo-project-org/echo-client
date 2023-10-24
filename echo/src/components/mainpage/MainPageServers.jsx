@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Avatar, Grid, styled } from '@mui/material';
+import { Avatar, Grid, styled, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { TransitionGroup } from 'react-transition-group';
 
 const api = require('../../api');
 
@@ -64,26 +65,27 @@ function MainPageServers({ }) {
   }, []);
 
   const enterServer = () => {
-    console.log("should enter server")
     navigate("/main");
   }
 
   return (
-    <>
+    <TransitionGroup unmountOnExit>
       {servers.map((Server, id) => {
         return (
-          <StyledGrid container key={id} flexDirection={"row"} onClick={enterServer}>
-            <Grid item xs={2.5} md={2} lg={1.5}>
-              <StyledAvatar src={Server.logo} />
-            </Grid>
-            <Grid item xs={9}>
-              <h3>{Server.name}</h3>
-              <p>{Server.description}</p>
-            </Grid>
-          </StyledGrid>
+          <Slide direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100}>
+            <StyledGrid container key={id} flexDirection={"row"} onClick={enterServer}>
+              <Grid item>
+                <StyledAvatar src={Server.logo} />
+              </Grid>
+              <Grid item>
+                <h3>{Server.name}</h3>
+                <p>{Server.description}</p>
+              </Grid>
+            </StyledGrid>
+          </Slide>
         )
       })}
-    </>
+    </TransitionGroup>
   )
 }
 

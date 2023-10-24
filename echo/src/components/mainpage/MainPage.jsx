@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Avatar, Container, Grid, Icon, Tooltip, styled } from '@mui/material';
-import { List, PeopleAlt } from '@mui/icons-material';
+import { Container, Grid, Icon, Tooltip, styled, Slide } from '@mui/material';
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
@@ -10,7 +9,8 @@ const api = require('../../api');
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     height: 'calc(100vh - 2rem)',
-    width: '98%',
+    width: 'calc(100vw - 7rem)',
+    marginLeft: ".5rem",
     borderRadius: "1rem",
     color: "white",
     textAlign: "left",
@@ -23,7 +23,7 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 const StyledContainerSidebar = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     height: 'calc(100vh - 2rem)',
-    width: '98%',
+    width: '6rem',
     borderRadius: "0 .4rem .4rem 0",
     color: "white",
     textAlign: "center",
@@ -71,13 +71,13 @@ function MainPage({ }) {
       name: "Servers",
       selected: true,
       icon: "list",
-      element: <MainPageServers/>,
+      element: <MainPageServers />,
     },
     {
       name: "Friends",
       selected: false,
       icon: "people_alt",
-      element: <MainPageFriends/>,
+      element: <MainPageFriends />,
     }
   ]);
 
@@ -106,24 +106,26 @@ function MainPage({ }) {
 
   return (
     <Grid container>
-      <Grid item xs={1} md={1} lg={0.8}>
-        <StyledContainerSidebar>
-          {sidebarButtons.map((button, id) => {
-            return (
-              <Tooltip title={button.name} placement="right" arrow>
-                <StyledIconContainer key={id} onClick={changeSelected} data-id={id}>
-                  {button.selected ? 
-                    <StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledSelectedIcon>
-                    :
-                    <StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledUnselectedIcon>
-                  }
-                </StyledIconContainer>
-              </Tooltip>
-            )
-          })}
-        </StyledContainerSidebar>
+      <Grid item>
+        <Slide direction="right" in={true} mountOnEnter unmountOnExit>
+          <StyledContainerSidebar>
+            {sidebarButtons.map((button, id) => {
+              return (
+                <Tooltip key={id} title={button.name} placement="right" arrow>
+                  <StyledIconContainer onClick={changeSelected} data-id={id}>
+                    {button.selected ?
+                      <StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledSelectedIcon>
+                      :
+                      <StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledUnselectedIcon>
+                    }
+                  </StyledIconContainer>
+                </Tooltip>
+              )
+            })}
+          </StyledContainerSidebar>
+        </Slide>
       </Grid>
-      <Grid item xs={11} md={11} lg={11.2}>
+      <Grid item>
         <StyledContainer>
           {getSelected().element}
         </StyledContainer>
