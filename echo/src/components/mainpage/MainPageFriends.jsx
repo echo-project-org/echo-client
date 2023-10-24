@@ -103,11 +103,11 @@ function MainPageFriends({ }) {
   }, []);
 
   return (
-    <TransitionGroup unmountOnExit>
+    <TransitionGroup>
       {friends.map((friend, id) => {
         return (
-          <Slide direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100}>
-            <StyledGrid container key={id} flexDirection={"row"}>
+          <Slide key={id} direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100}>
+            <StyledGrid container flexDirection={"row"}>
               <Grid item>
                 <StyledAvatar src={friend.logo} />
               </Grid>

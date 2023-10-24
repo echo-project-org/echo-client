@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Container, Grid, Icon, Tooltip, styled, Slide } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
+
+import { storage } from "../../index";
 
 const api = require('../../api');
 
@@ -66,6 +69,7 @@ const StyledUnselectedIcon = styled(Icon)(({ theme }) => ({
 }));
 
 function MainPage({ }) {
+  const navigate = useNavigate();
   const [sidebarButtons, setSidebarButtons] = useState([
     {
       name: "Servers",
@@ -103,6 +107,13 @@ function MainPage({ }) {
       })
     });
   }
+
+  useEffect(() => {
+    // if id is not set, redirect to login page
+    if (!storage.get("id")) {
+      navigate("/login");
+    }
+  });
 
   return (
     <Grid container>
