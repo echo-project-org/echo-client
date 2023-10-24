@@ -711,19 +711,58 @@ class EchoProtocol {
   }
 
   getFriend(id) {
-    return this.cachedFriends.get(id);
+    let friend = this.cachedFriends.get(id);
+    let userFriend = this.cachedUsers.get(id);
+    if (friend && userFriend) {
+      return userFriend;
+    } else {
+      console.warn("Friend not found in cache, probably offline and we don't handle it")
+    }
   }
 
   getFriends() {
-    return this.cachedFriends.getAccepted();
+    let friends = this.cachedFriends.getAccepted();
+    let usersFriends = [];
+    friends.forEach((friend) => {
+      let f = this.cachedUsers.get(friend.id)
+      if (f) {
+        usersFriends.push(f);
+      } else {
+        console.warn("Friend not found in cache, probably offline and we don't handle it")
+      }
+    });
+
+    return usersFriends;
   }
 
   getFriendRequests() {
-    return this.cachedFriends.getNotAccepted();
+    let friends = this.cachedFriends.getNotAccepted();
+    let usersFriends = [];
+    friends.forEach((friend) => {
+      let f = this.cachedUsers.get(friend.id)
+      if (f) {
+        usersFriends.push(f);
+      } else {
+        console.warn("Friend not found in cache, probably offline and we don't handle it")
+      }
+    });
+
+    return usersFriends;
   }
 
   getFriendRequested() {
-    return this.cachedFriends.getRequested();
+    let friends = this.cachedFriends.getRequested();
+    let usersFriends = [];
+    friends.forEach((friend) => {
+      let f = this.cachedUsers.get(friend.id)
+      if (f) {
+        usersFriends.push(f);
+      } else {
+        console.warn("Friend not found in cache, probably offline and we don't handle it")
+      }
+    });
+
+    return usersFriends;
   }
 
   getRoom(id) {
