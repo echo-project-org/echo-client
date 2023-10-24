@@ -21,7 +21,7 @@ module.exports = {
         iconUrl: path.join(process.cwd(), 'images', 'icon.ico'),
         noMsi: false,
         noDelta: false,
-        remoteReleases: "https://download.kuricki.com/updates/latest/",
+        // remoteReleases: "https://download.kuricki.com/updates/latest/",
       },
     },
     // {
