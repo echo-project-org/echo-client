@@ -87,7 +87,7 @@ class Friends {
         field = this.typeCheck(field);
         value = this.typeCheck(value);
         if (!this.friends[id]) return console.error(`[CACHE] Friend ${id} does not exist in cache`);
-        this.users[id][field] = value;
+        this.friends[id][field] = value;
     }
 }
 
