@@ -220,6 +220,28 @@ router.get('/friends/requests/:id', (req, res) => {
     });
 });
 
+router.get('/friends/sentRequests/:id', (req, res) => {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).send({ message: "You messed up the request." });
+
+    req.database.query("SELECT otherId as id FROM user_friends WHERE id = ? AND id NOT IN (SELECT id WHERE otherId = ?)", [id, id], function (err, result, fields) {
+        if (err) return res.status(400).send({ error: "You messed up the request." });
+
+        var jsonOut = [];
+        if (result.length > 0) {
+            result.map(function (friends) {
+                jsonOut.push({
+                    "id": friends.id,
+                });
+            })
+            res.status(200).send(jsonOut);
+        } else {
+            res.status(200).send(jsonOut);
+        }
+    });
+});
+
 // operation on friend request
 router.post('/friend/request', (req, res) => {
     const body = req.body;
