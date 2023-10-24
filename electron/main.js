@@ -5,12 +5,21 @@ if (app.isPackaged) {
   const server = 'https://download.kuricki.com'
   const url = `${server}/update/${process.platform}/${app.getVersion()}`
   autoUpdater.setFeedURL({ url })
-  autoUpdater.checkForUpdates();
+  try {
+    autoUpdater.checkForUpdates();
+  } catch (e) {
+    console.log("Error while checking for updates")
+  }
 
   setInterval(() => {
     console.log("Checking for updates")
     console.log(url);
-    autoUpdater.checkForUpdates()
+    //this fails if app is not installed
+    try {
+      autoUpdater.checkForUpdates();
+    } catch (e) {
+      console.log("Error while checking for updates")
+    }
   }, 60000)
 
   autoUpdater.on('update-available', () => {

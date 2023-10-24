@@ -706,7 +706,7 @@ class EchoProtocol {
   }
 
   removeFriend(friend) {
-    this.cachedFriends.remove(friend);
+    this.cachedFriends.remove(friend.id);
     this.friendCacheUpdated(this.cachedFriends.get(friend.id));
   }
 
