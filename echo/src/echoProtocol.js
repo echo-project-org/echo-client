@@ -736,7 +736,7 @@ class EchoProtocol {
   }
 
   getFriendRequests() {
-    let friends = this.cachedFriends.getNotAccepted();
+    let friends = this.cachedFriends.getRequested();
     let usersFriends = [];
     friends.forEach((friend) => {
       let f = this.cachedUsers.get(friend.id)
@@ -751,7 +751,7 @@ class EchoProtocol {
   }
 
   getFriendRequested() {
-    let friends = this.cachedFriends.getRequested();
+    let friends = this.cachedFriends.getNotAccepted();
     let usersFriends = [];
     friends.forEach((friend) => {
       let f = this.cachedUsers.get(friend.id)
