@@ -68,7 +68,7 @@ class Friends {
         //friends requests that I have received but have not accepted yet
         let requested = [];
         for (let id in this.friends) {
-            if (this.friends[id].requested && !this.friends[id].accepted) requested.push(this.friends[id]);
+            if (!this.friends[id].requested && this.friends[id].accepted) requested.push(this.friends[id]);
         }
         return requested;
     }
