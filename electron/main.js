@@ -14,6 +14,7 @@ if (app.isPackaged) {
   setInterval(() => {
     console.log("Checking for updates")
     console.log(url);
+    //this fails if app is not installed
     try {
       autoUpdater.checkForUpdates();
     } catch (e) {
