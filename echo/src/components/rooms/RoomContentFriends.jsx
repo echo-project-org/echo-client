@@ -15,15 +15,17 @@ function RoomContentFriends({ }) {
   const [pending, setPending] = useState([]);
   const [requested, setRequested] = useState([]);
 
-  api.call("users/friends", "POST", { id: storage.get("id") }).then((res) => {
-    res.json.forEach((user) => {
-      ep.addFriend({ id: user.id, accepted: true, requested: true });
-    });
-  }).catch((err) => {
-    console.error(err);
-  });
-
   useEffect(() => {
+    api.call("users/friends/" + storage.get('id'), "GET").then((res) => {
+      res.json.forEach((user) => {
+        if (user.id) {
+          ep.addFriend({ id: user.id, accepted: true, requested: true });
+        }
+      });
+    }).catch((err) => {
+      console.error(err);
+    });
+
     setFriends(ep.getFriends());
     setPending(ep.getFriendRequested());
     setRequested(ep.getFriendRequests());
@@ -44,6 +46,7 @@ function RoomContentFriends({ }) {
       <Container className="friends-list-overflow">
         {
           friends.map((user, index) => {
+            if (!user) { return console.error("User null"); }
             return (
               <Grid container className="friend-container" key={index} flexDirection={"row"} display={"flex"}>
                 <Grid item xs={1}>
