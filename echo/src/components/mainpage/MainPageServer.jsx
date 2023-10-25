@@ -1,7 +1,6 @@
 import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
-import { Fade } from '@mui/material';
 import { motion } from 'framer-motion'
 
 import { ep } from "../../index";
@@ -22,17 +21,17 @@ function MainPageServer() {
     })
   }, [roomId]);
 
+  const StyledServerContainer = motion(StylingComponents.MainPageServer.StyledServerContainer)
+
   return (
-    <motion.div
+    <StyledServerContainer
       initial={{ x: 100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 100, opacity: 0 }}
     >
-      <StylingComponents.MainPageServer.StyledServerContainer>
-        <Sidebar updateCurrentRoom={updateCurrentRoom} />
-        <RoomContent roomId={roomId} />
-      </StylingComponents.MainPageServer.StyledServerContainer>
-    </motion.div>
+      <Sidebar updateCurrentRoom={updateCurrentRoom} />
+      <RoomContent roomId={roomId} />
+    </StyledServerContainer>
   )
 }
 
