@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import { Alert, Button, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 
-import BackButton from '../settings/BackButton';
 import imgLogo from "../../img/headphones.svg"
+import StyledComponents from '../../StylingComponents';
 
 var api = require('../../api')
 
@@ -35,6 +35,10 @@ const Register = () => {
   const handleClose = () => {
     //Close error message handler
     setOpen(false);
+  }
+
+  const handleLogin = () => {
+    navigate("/login");
   }
 
   const checkCredentials = async (e) => {
@@ -94,12 +98,11 @@ const Register = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <BackButton />
-      <div className="customForm" style={{ height: "38rem" }}>
-        <div className="boxedLogoContainer">
-          <img className="boxedLogo" src={imgLogo} alt='echoLogo' />
-          <div className="ripple"></div>
-        </div>
+      <StyledComponents.Register.StyledForm>
+        <StyledComponents.Register.StyledBoxedLogo>
+          <img src={imgLogo} alt='echoLogo' />
+          <StyledComponents.Register.StyledRipple />
+        </StyledComponents.Register.StyledBoxedLogo>
         <h1>Create account</h1>
         <input
           id="usernameBox"
@@ -129,8 +132,9 @@ const Register = () => {
           placeholder="Repeat password"
           onKeyDown={checkCredentials}
         />
-        <Button color="secondary" variant="outlined" onClick={checkCredentials}>Register</Button>
-      </div>
+        <StyledComponents.Register.StyledButtonPrimary variant="outlined" onClick={checkCredentials}>Register</StyledComponents.Register.StyledButtonPrimary>
+        <StyledComponents.Register.StyledButtonSecondary variant="outlined" onClick={handleLogin}>Go to Login</StyledComponents.Register.StyledButtonSecondary>
+      </StyledComponents.Register.StyledForm>
 
       <Snackbar
         open={open}

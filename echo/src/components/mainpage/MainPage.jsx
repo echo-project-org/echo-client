@@ -6,67 +6,9 @@ import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
 
 import { storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
 
 const api = require('../../api');
-
-const StyledContainer = styled(Container)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    height: 'calc(100vh - 2rem)',
-    width: 'calc(100vw - 7rem)',
-    marginLeft: ".5rem",
-    borderRadius: "1rem",
-    color: "white",
-    textAlign: "left",
-    backgroundColor: theme.palette.background.dark,
-    overflow: "auto",
-    maxWidth: "100% !important",
-  },
-}));
-
-const StyledContainerSidebar = styled(Container)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    height: 'calc(100vh - 2rem)',
-    width: '6rem',
-    borderRadius: "0 .4rem .4rem 0",
-    color: "white",
-    textAlign: "center",
-    backgroundColor: theme.palette.background.dark,
-    overflow: "auto",
-  }
-}));
-
-const StyledIconContainer = styled(Container)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    justifyContent: "center",
-    height: "5rem",
-    width: "100%",
-    // put content in the middle
-    display: "flex",
-    alignItems: "center",
-    color: theme.palette.text.dark,
-    ":hover": {
-      backgroundColor: theme.palette.background.light,
-      cursor: "pointer",
-    },
-  }
-}));
-
-const StyledSelectedIcon = styled(Icon)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    color: theme.palette.text.light,
-    fontSize: "2rem",
-    transition: "all .2s ease-in-out",
-    fontSize: "3rem",
-  },
-}));
-
-const StyledUnselectedIcon = styled(Icon)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    color: theme.palette.text.dark,
-    fontSize: "2rem",
-    transition: "all .2s ease-in-out",
-  },
-}));
 
 function MainPage({ }) {
   const navigate = useNavigate();
@@ -109,37 +51,38 @@ function MainPage({ }) {
   }
 
   useEffect(() => {
+    console.log("negri")
     // if id is not set, redirect to login page
     if (!storage.get("id")) {
       navigate("/login");
     }
-  });
+  }, []);
 
   return (
     <Grid container>
       <Grid item>
         <Slide direction="right" in={true} mountOnEnter unmountOnExit>
-          <StyledContainerSidebar>
+          <StyledComponents.MainPage.StyledContainerSidebar>
             {sidebarButtons.map((button, id) => {
               return (
                 <Tooltip key={id} title={button.name} placement="right" arrow>
-                  <StyledIconContainer onClick={changeSelected} data-id={id}>
+                  <StyledComponents.MainPage.StyledIconContainer onClick={changeSelected} data-id={id}>
                     {button.selected ?
-                      <StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledSelectedIcon>
+                      <StyledComponents.MainPage.StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledSelectedIcon>
                       :
-                      <StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledUnselectedIcon>
+                      <StyledComponents.MainPage.StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledUnselectedIcon>
                     }
-                  </StyledIconContainer>
+                  </StyledComponents.MainPage.StyledIconContainer>
                 </Tooltip>
               )
             })}
-          </StyledContainerSidebar>
+          </StyledComponents.MainPage.StyledContainerSidebar>
         </Slide>
       </Grid>
       <Grid item>
-        <StyledContainer>
+        <StyledComponents.MainPage.StyledContainer>
           {getSelected().element}
-        </StyledContainer>
+        </StyledComponents.MainPage.StyledContainer>
       </Grid>
     </Grid>
   )

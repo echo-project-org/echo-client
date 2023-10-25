@@ -11,6 +11,7 @@ import AnimatedRoutes from './components/mainpage/AnimatedRoutes';
 import WindowControls from './components/header/WindowControls';
 
 import { storage } from "./index";
+import StylingComponents from './StylingComponents';
 
 import {
   createTheme,
@@ -72,67 +73,68 @@ function App() {
         }
       },
       MuiAvatar: {
-        root: {
+        root: ({ theme }) => ({
           styleOverrides: {
             ".MuiAvatar-fallback": {
               objectFit: "cover",
-              background: "var(--mui-palette-background-main)",
+              background: theme.palette.background.main,
             }
           }
-        }
+        })
       },
       MuiTooltip: {
         styleOverrides: {
-          tooltip: {
-            color: "var(--mui-palette-text-light)",
+          tooltip: ({ theme }) => ({
+            color: theme.palette.text.light,
             fontSize: ".9rem",
-            border: "1px solid var(--mui-palette-background-light)",
-            background: "var(--mui-palette-background-main)",
+            border: "1px solid " + theme.palette.background.light,
+            backgroundColor: theme.palette.background.main,
             borderRadius: 10,
             padding: 8
-          },
-          arrow: {
+          }),
+          arrow: ({ theme }) => ({
             fontSize: 16,
             width: 17,
-            "&::before": {
-              border: "1px solid var(--mui-palette-background-light)",
-              backgroundColor: "var(--mui-palette-background-main)",
+            "::before": {
+              border: "1px solid " + theme.palette.background.light,
+              backgroundColor: theme.palette.background.main,
+              color: theme.palette.background.main,
               boxSizing: "border-box"
             }
-          }
+          })
         }
       },
       MuiSlider: {
         styleOverrides: {
-          thumb: {
+          thumb: ({ theme }) => ({
             cursor: "e-resize",
             width: "15px",
             height: "15px",
-            color: "var(--mui-palette-text-light)",
-            ":hover": {
-              color: "var(--mui-palette-text-light)",
-              boxShadow: "0 0 15px 10px var(--mui-palette-background-light)",
-            }
-          },
-          valueLabel: {
-            backgroundColor: "var(--mui-palette-background-main)",
-            color: "var(--mui-palette-text-light)",
+            color: theme.palette.text.light,
+            ":hover": ({ theme }) => ({
+              color: theme.palette.text.light,
+              boxShadow: "0 0 15px 10px " + theme.palette.background.light,
+            })
+          }),
+          valueLabel: ({ theme }) => ({
+            backgroundColor: theme.palette.background.main,
+            color: theme.palette.text.light,
             borderRadius: "10px",
-          },
-          valueLabelOpen: {
-            backgroundColor: "var(--mui-palette-background-main)",
-            color: "var(--mui-palette-text-light)",
+          }),
+          valueLabelOpen: ({ theme }) => ({
+            backgroundColor: theme.palette.background.main,
+            color: theme.palette.text.light,
             borderRadius: "10px",
-          },
-          colorPrimary: {
-            color: "var(--mui-palette-text-light)",
-          },
-          colorSecondary: {
-            color: "var(--mui-palette-text-light)",
-          },
-          markLabel: {
-            color: "var(--mui-palette-text-light)",
-          }
+          }),
+          colorPrimary: ({ theme }) => ({
+            color: theme.palette.text.light,
+          }),
+          colorSecondary: ({ theme }) => ({
+            color: theme.palette.text.light,
+          }),
+          markLabel: ({ theme }) => ({
+            color: theme.palette.text.light,
+          })
         }
       },
       MuiMenu: {
@@ -170,7 +172,8 @@ function App() {
           root: {
             "@media (min-width: 600px)": {
               padding: 0,
-            }
+            },
+            maxWidth: "100% !important",
           }
         }
       },
@@ -198,23 +201,23 @@ function App() {
       },
       MuiToggleButton: {
         styleOverrides: {
-          root: {
-            color: "var(--mui-palette-text-dark)",
+          root: ({ theme }) => ({
+            color: theme.palette.text.dark,
             backgroundColor: "rgba(0, 0, 0, 0)",
             border: "none",
             ":hover": {
               backgroundColor: "rgba(0, 0, 0, 0)",
               border: "none",
-              color: "var(--mui-palette-text-dark)",
+              color: theme.palette.text.dark,
               transitionDuration: ".5s"
             },
             "&.Mui-selected, &.Mui-selected:hover": {
               backgroundColor: "rgba(0, 0, 0, 0)",
               border: "none",
-              color: "var(--mui-palette-text-light)",
+              color: theme.palette.text.light,
               transitionDuration: ".5s"
             },
-          },
+          }),
         }
       },
     }
@@ -227,18 +230,18 @@ function App() {
   });
 
   return (
-    <div className="App">
-      <CssVarsProvider theme={theme}>
-        <div className="topBar">
+    <CssVarsProvider theme={theme}>
+      <StylingComponents.App.AppStyledContainer>
+        <StylingComponents.App.StyledTopBar>
           <WindowControls />
-        </div>
+        </StylingComponents.App.StyledTopBar>
         <HashRouter>
           <AnimatedRoutes />
         </HashRouter>
-      </CssVarsProvider>
 
-      <script src="/socket.io/socket.io.js"></script>
-    </div>
+        <script src="/socket.io/socket.io.js"></script>
+      </StylingComponents.App.AppStyledContainer>
+    </CssVarsProvider>
   );
 }
 

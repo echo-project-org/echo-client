@@ -1,11 +1,13 @@
-.App {
+/* .App {
   text-align: center;
   width: 100vw;
   height: 100vh;
   position: fixed;
   display: flex;
   flex-direction: column;
-}
+  top: 0;
+  left: 0;
+} */
 
 .App-logo {
   height: 40vmin;
