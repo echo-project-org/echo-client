@@ -28,12 +28,10 @@ function MainPageServer() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 100, opacity: 0 }}
     >
-      <Fade in={true}>
-        <StylingComponents.MainPageServer.StyledServerContainer>
-          <Sidebar updateCurrentRoom={updateCurrentRoom} />
-          <RoomContent roomId={roomId} />
-        </StylingComponents.MainPageServer.StyledServerContainer>
-      </Fade>
+      <StylingComponents.MainPageServer.StyledServerContainer>
+        <Sidebar updateCurrentRoom={updateCurrentRoom} />
+        <RoomContent roomId={roomId} />
+      </StylingComponents.MainPageServer.StyledServerContainer>
     </motion.div>
   )
 }
