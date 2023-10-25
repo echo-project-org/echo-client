@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Grid, Icon, Tooltip, styled, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from 'framer-motion'
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
@@ -59,32 +60,38 @@ function MainPage({ }) {
   }, []);
 
   return (
-    <Grid container>
-      <Grid item>
-        <Slide direction="right" in={true} mountOnEnter unmountOnExit>
-          <StyledComponents.MainPage.StyledContainerSidebar>
-            {sidebarButtons.map((button, id) => {
-              return (
-                <Tooltip key={id} title={button.name} placement="right" arrow>
-                  <StyledComponents.MainPage.StyledIconContainer onClick={changeSelected} data-id={id}>
-                    {button.selected ?
-                      <StyledComponents.MainPage.StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledSelectedIcon>
-                      :
-                      <StyledComponents.MainPage.StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledUnselectedIcon>
-                    }
-                  </StyledComponents.MainPage.StyledIconContainer>
-                </Tooltip>
-              )
-            })}
-          </StyledComponents.MainPage.StyledContainerSidebar>
-        </Slide>
+    <motion.div
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -100, opacity: 0 }}
+    >
+      <Grid container>
+        <Grid item>
+          <Slide direction="right" in={true} mountOnEnter unmountOnExit>
+            <StyledComponents.MainPage.StyledContainerSidebar>
+              {sidebarButtons.map((button, id) => {
+                return (
+                  <Tooltip key={id} title={button.name} placement="right" arrow>
+                    <StyledComponents.MainPage.StyledIconContainer onClick={changeSelected} data-id={id}>
+                      {button.selected ?
+                        <StyledComponents.MainPage.StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledSelectedIcon>
+                        :
+                        <StyledComponents.MainPage.StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledUnselectedIcon>
+                      }
+                    </StyledComponents.MainPage.StyledIconContainer>
+                  </Tooltip>
+                )
+              })}
+            </StyledComponents.MainPage.StyledContainerSidebar>
+          </Slide>
+        </Grid>
+        <Grid item>
+          <StyledComponents.MainPage.StyledContainer>
+            {getSelected().element}
+          </StyledComponents.MainPage.StyledContainer>
+        </Grid>
       </Grid>
-      <Grid item>
-        <StyledComponents.MainPage.StyledContainer>
-          {getSelected().element}
-        </StyledComponents.MainPage.StyledContainer>
-      </Grid>
-    </Grid>
+    </motion.div>
   )
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Avatar, Grid, Slide, styled } from '@mui/material';
 import { TransitionGroup } from 'react-transition-group';
+import { motion } from 'framer-motion'
 
 const api = require('../../api');
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Avatar, Grid, styled, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { TransitionGroup } from 'react-transition-group';
-
+import { motion } from 'framer-motion'
 import { ep, storage } from "../../index";
 
 const api = require('../../api');
