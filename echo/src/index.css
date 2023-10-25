@@ -9,13 +9,6 @@ html {
   overflow: hidden;
 }
 
-/* body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--mui-palette-background-main);
-  height: 100%;
-} */
-
 #root {
   height: 100%;
 }
@@ -35,18 +28,6 @@ html {
   height: 100vh;
   width: 100vw;
 }
-
-/* .mainLogoImg {
-  color: var(--mui-palette-text-light);
-  height: 15rem;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  animation: 1500ms ease 0s 1 popIn;
-} */
 
 .hidden {
   visibility: 0;

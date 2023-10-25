@@ -1,4 +1,4 @@
-import { Container, Grid, Icon, Tooltip, styled, Slide, Button } from '@mui/material';
+import { Container, Grid, Icon, Tooltip, styled, Slide, Button, ButtonGroup } from '@mui/material';
 
 /* App */
 
@@ -232,6 +232,12 @@ const StyledButtonSecondary = styled(Button)(({ theme }) => ({
 
 /* Window Controls */
 
+const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
+  [theme.breakpoints.up('sm')]: {
+    "-webkit-app-region": "none",
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
@@ -261,4 +267,7 @@ export default {
     StyledButtonPrimary,
     StyledButtonSecondary,
   },
+  WindowControls: {
+    StyledButtonGroup
+  }
 }

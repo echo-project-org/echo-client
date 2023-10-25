@@ -3,6 +3,7 @@ import { ButtonGroup, Button } from '@mui/material'
 import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const api = require('../../api');
 const { ipcRenderer } = window.require('electron');
@@ -22,7 +23,7 @@ function WindowControls({ }) {
   }
 
   return (
-    <ButtonGroup variant='text' size="small">
+    <StylingComponents.WindowControls.StyledButtonGroup variant='text' size="small">
       <Button onClick={minimize} disableRipple>
         <Minimize fontSize="small" />
       </Button>
@@ -34,12 +35,12 @@ function WindowControls({ }) {
         disableRipple
         onMouseEnter={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
         onMouseLeave={(e) => e.target.style.backgroundColor = null}
-        // onMouseDown={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
-        // onMouseUp={(e) => e.target.style.backgroundColor = null}
+      // onMouseDown={(e) => e.target.style.backgroundColor = "rgba(230, 10, 10, .8)"}
+      // onMouseUp={(e) => e.target.style.backgroundColor = null}
       >
         <Close fontSize="small" />
       </Button>
-    </ButtonGroup>
+    </StylingComponents.WindowControls.StyledButtonGroup>
   )
 }
 
