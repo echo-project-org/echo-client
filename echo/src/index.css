@@ -74,18 +74,6 @@ html {
   gap: 1rem;
 }
 
-.settingsModalSubDiv {
-  background-color: var(--mui-palette-background-dark);
-  padding: 1rem;
-  justify-content: center;
-  align-items: center;
-  /* align-items: flex-start; */
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .screenshareModalSubdiv {
   background-color: var(--mui-palette-background-dark);
   padding: 2rem;
