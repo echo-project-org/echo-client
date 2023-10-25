@@ -1,29 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Avatar, Grid, styled, Slide } from '@mui/material';
+import { Grid, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { TransitionGroup } from 'react-transition-group';
-import { motion } from 'framer-motion'
+
 import { ep, storage } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const api = require('../../api');
-
-const StyledGrid = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    width: "100%",
-    ":hover": {
-      backgroundColor: theme.palette.background.light,
-      cursor: "pointer",
-    },
-  },
-}));
-
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    width: "4rem",
-    height: "4rem",
-    margin: "1.2rem",
-  },
-}));
 
 function MainPageServers({ }) {
   const [servers, setFriends] = useState([]);
@@ -92,15 +75,15 @@ function MainPageServers({ }) {
       {servers.map((Server, id) => {
         return (
           <Slide key={id} direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100}>
-            <StyledGrid container flexDirection={"row"} onClick={enterServer}>
+            <StylingComponents.MainPage.StyledMainPageGrid container flexDirection={"row"} onClick={enterServer}>
               <Grid item>
-                <StyledAvatar src={Server.logo} />
+                <StylingComponents.MainPage.StyledMainPageAvatar src={Server.logo} />
               </Grid>
               <Grid item>
                 <h3>{Server.name}</h3>
                 <p>{Server.description}</p>
               </Grid>
-            </StyledGrid>
+            </StylingComponents.MainPage.StyledMainPageGrid>
           </Slide>
         )
       })}

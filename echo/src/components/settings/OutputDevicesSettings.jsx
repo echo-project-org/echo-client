@@ -3,6 +3,7 @@ import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mu
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
 
 const CurrentDevice = ({ outputDevices, outputDevice, showList }) => {
   var currentDevice = outputDevices.find(device => device.id === outputDevice);
@@ -72,7 +73,7 @@ function OutputDevicesSettings({ outputDevices }) {
   }
 
   return (
-    <div className="settingsModalSubDiv noselect">
+    <StyledComponents.Settings.StyledSettingsModalSubdiv>
       <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         Output device
       </Typography>
@@ -102,7 +103,7 @@ function OutputDevicesSettings({ outputDevices }) {
           />
         </Stack>
       </div>
-    </div>
+    </StyledComponents.Settings.StyledSettingsModalSubdiv>
   )
 }
 

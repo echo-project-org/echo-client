@@ -3,6 +3,8 @@ import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Typography } from
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
+
 import CurrentStatus from '../user/CurrentStatus';
 
 var api = require('../../api');
@@ -200,7 +202,7 @@ function UserSettings() {
   }
 
   return (
-    <div className="settingsModalSubDiv">
+    <StyledComponents.Settings.StyledSettingsModalSubdiv>
       <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         User settings
       </Typography>
@@ -273,7 +275,7 @@ function UserSettings() {
           >Update</Button>
         </Grid>
       </StyledGridContainer>
-    </div>
+    </StyledComponents.Settings.StyledSettingsModalSubdiv>
   )
 }
 

@@ -1,27 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Avatar, Grid, Slide, styled } from '@mui/material';
+import { Grid, Slide } from '@mui/material';
 import { TransitionGroup } from 'react-transition-group';
-import { motion } from 'framer-motion'
+
+import { ep, storage } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const api = require('../../api');
-
-const StyledGrid = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    width: "100%",
-    ":hover": {
-      backgroundColor: theme.palette.background.light,
-      cursor: "pointer",
-    },
-  },
-}));
-
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    width: "4rem",
-    height: "4rem",
-    margin: "1.2rem",
-  },
-}));
 
 function MainPageFriends({ }) {
   const [friends, setFriends] = useState([]);
@@ -108,15 +92,15 @@ function MainPageFriends({ }) {
       {friends.map((friend, id) => {
         return (
           <Slide key={id} direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100}>
-            <StyledGrid container flexDirection={"row"}>
+            <StylingComponents.MainPage.StyledMainPageGrid container flexDirection={"row"}>
               <Grid item>
-                <StyledAvatar src={friend.logo} />
+                <StylingComponents.MainPage.StyledMainPageAvatar src={friend.logo} />
               </Grid>
               <Grid item>
                 <h3>{friend.name}</h3>
                 <p>{friend.description}</p>
               </Grid>
-            </StyledGrid>
+            </StylingComponents.MainPage.StyledMainPageGrid>
           </Slide>
         )
       })}

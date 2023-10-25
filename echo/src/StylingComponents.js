@@ -1,4 +1,4 @@
-import { Container, Grid, Icon, Tooltip, styled, Slide, Button, ButtonGroup } from '@mui/material';
+import { Container, Grid, Icon, styled, Button, ButtonGroup, Box, Avatar } from '@mui/material';
 
 /* App */
 
@@ -88,6 +88,30 @@ const StyledUnselectedIcon = styled(Icon)(({ theme }) => ({
     color: theme.palette.text.dark,
     fontSize: "2rem",
     transition: "all .2s ease-in-out",
+  },
+}));
+
+const StyledMainPageGrid = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    ":hover": {
+      backgroundColor: theme.palette.background.light,
+      cursor: "pointer",
+    },
+    "h3": {
+      color: theme.palette.text.main,
+    },
+    "p": {
+      color: theme.palette.text.main,
+    },
+  },
+}));
+
+const StyledMainPageAvatar = styled(Avatar)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "4rem",
+    height: "4rem",
+    margin: "1.2rem",
   },
 }));
 
@@ -354,12 +378,96 @@ const StyledRoomControlsConnection = styled("div")(({ theme }) => ({
   }
 }));
 
+/* Settings */
+
+const StyledSettingsContainer = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  }
+}));
+
+const StyledSettingsBox = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    position: "relative",
+    top: "5%",
+    margin: "auto",
+    height: '80%',
+    width: '80%',
+    backgroundColor: theme.palette.background.main,
+    color: theme.palette.text.main,
+    overflow: 'auto',
+    border: "2px solid " + theme.palette.background.light,
+    boxShadow: "24",
+    outline: 'none',
+    padding: "1.5rem",
+    borderRadius: '.4rem',
+  }
+}));
+
+const StyledImageUploaderContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    position: "fixed",
+    top: "20%",
+    left: "20%",
+    textAlign: "center",
+    position: "fixed",
+    maxWidth: "60%",
+    width: "60%",
+    height: "fit-content",
+    paddingBottom: "1rem",
+    paddingTop: "1rem",
+    margin: "auto",
+    backgroundColor: theme.palette.background.main,
+    boxShadow: "0 8px 15px 8px rgba(0, 0, 0, .8)",
+    border: "1px solid " + theme.palette.text.light,
+    borderRadius: "20px",
+    zIndex: "3",
+  },
+}));
+
+const StyledImageUploaderBackground = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    height: "100%",
+    position: "fixed",
+    top: 0,
+    left: 0,
+    zIndex: 3
+  }
+}));
+
+const StyledImageUploaderContentContainer = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    backgroundColor: theme.palette.background.dark,
+    margin: "1rem 1rem 0 1rem",
+    paddingBottom: "1rem",
+    borderRadius: "1rem",
+  }
+}));
+
+const StyledSettingsModalSubdiv = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    backgroundColor: theme.palette.background.dark,
+    padding: "1rem",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
     StyledTopBar,
   },
   MainPage: {
+    StyledMainPageGrid,
+    StyledMainPageAvatar,
     StyledContainer,
     StyledContainerSidebar,
     StyledIconContainer,
@@ -401,5 +509,13 @@ export default {
   RoomControls: {
     StyledRoomControlsContainer,
     StyledRoomControlsConnection
+  },
+  Settings: {
+    StyledSettingsContainer,
+    StyledSettingsBox,
+    StyledImageUploaderContainer,
+    StyledImageUploaderBackground,
+    StyledImageUploaderContentContainer,
+    StyledSettingsModalSubdiv
   }
 }

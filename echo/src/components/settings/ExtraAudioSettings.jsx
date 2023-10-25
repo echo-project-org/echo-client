@@ -3,6 +3,7 @@ import { Stack, Slider, Tooltip, FormControlLabel, Switch, Typography } from '@m
 import { RecordVoiceOver, Headphones } from '@mui/icons-material';
 
 import { storage, ep, ap } from "../../index";
+import StyledComponents from '../../StylingComponents';
 
 function ExtraAudioSettings() {
   const [echoCancellation, setEchoCancellation] = useState(false);
@@ -66,7 +67,7 @@ function ExtraAudioSettings() {
   }
 
   return (
-    <div className="settingsModalSubDiv noselect">
+    <StyledComponents.Settings.StyledSettingsModalSubdiv>
       <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         Extra audio settings
       </Typography>
@@ -110,7 +111,7 @@ function ExtraAudioSettings() {
           <FormControlLabel control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Auto gain control" />
         </Stack>
       </div>
-    </div>
+    </StyledComponents.Settings.StyledSettingsModalSubdiv>
   )
 }
 
