@@ -1,24 +1,22 @@
+import { Typography } from '@mui/material';
+
 import OnlineUserIcon from '../user/OnlineUserIcon';
 
 import { ep } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 function ActiveRoom({ users, data }) {
-  // const handleClick = () => {
-  //   ep.roomClicked({ roomId: data.id });
-  // }
-
   return (
-    // <div className='room' onClick={handleClick}>
-    <div className='room'>
-      <p className='roomName noselect'>{data.name}</p>
-      <div className="roomUsers">
+    <StylingComponents.Rooms.StyledActiveRoom>
+      <Typography variant="h6">{data.name}</Typography>
+      <StylingComponents.Rooms.StyledRoomUsers>
         {
           users.sort().map((user, id) => (
             <OnlineUserIcon key={id} user={user} />
           ))
         }
-      </div>
-    </div>
+      </StylingComponents.Rooms.StyledRoomUsers>
+    </StylingComponents.Rooms.StyledActiveRoom>
   )
 }
 

@@ -47,9 +47,9 @@ function Room({ active, data }) {
   }, [])
 
   return (
-    <div>
+    <>
       { active ? <ActiveRoom users={onlineUsers} data={data} /> : <InactiveRoom users={onlineUsers} data={data} /> }
-    </div>
+    </>
   )
 }
 

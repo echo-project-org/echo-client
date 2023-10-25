@@ -8,6 +8,7 @@ import SettingsButton from '../settings/SettingsButton';
 import ScreenShareSelector from '../settings/ScreenShareSelector';
 
 import { ep, storage, ap } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const api = require('../../api')
 
@@ -131,9 +132,12 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   return (
-    <div className='roomControl'>
+    <StylingComponents.RoomControls.StyledRoomControlsContainer>
       <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-        <div className="voiceConnected"><p>{rtcConnectionState}</p> <p><SignalCellularAlt /></p></div>
+        <StylingComponents.RoomControls.StyledRoomControlsConnection>
+          <p>{rtcConnectionState}</p>
+          <p><SignalCellularAlt /></p>
+        </StylingComponents.RoomControls.StyledRoomControlsConnection>
       </Tooltip>
       <ButtonGroup variant='text'>
         <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -154,7 +158,7 @@ function RoomControl({ state, setState, screenSharing }) {
           </Button>
         </Tooltip>
       </ButtonGroup>
-    </div>
+    </StylingComponents.RoomControls.StyledRoomControlsContainer>
   )
 }
 

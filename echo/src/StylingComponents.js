@@ -26,7 +26,7 @@ const StyledTopBar = styled(Container)(({ theme }) => ({
     display: "flex",
     flexDirection: "row-reverse",
     flex: "0 0 auto",
-    "-webkit-app-region": "drag"
+    WebkitAppRegion: "drag"
   }
 }));
 
@@ -234,7 +234,123 @@ const StyledButtonSecondary = styled(Button)(({ theme }) => ({
 
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
-    "-webkit-app-region": "none",
+    WebkitAppRegion: "none",
+  }
+}));
+
+/* Main Page Server */
+
+const StyledServerContainer = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    flex: "1 1 auto",
+  }
+}));
+
+/* Sidebar */
+
+const StyledSidebarWrapper = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "18rem",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    flex: "0 0 auto",
+  }
+}));
+
+/* Rooms & Room */
+
+const StyledRoomsContainer = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    height: "0",
+    margin: "0 auto",
+    flex: ".98 1 auto",
+    display: "flex",
+    flexDirection: "column",
+    overflowY: "show",
+    overflowX: "hidden",
+  }
+}));
+
+const StyledActiveRoom = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    backgroundColor: theme.palette.background.dark,
+    borderRadius: "0 .4rem .4rem 0",
+    margin: ".4rem 0 .4rem 0",
+    boxShadow: ".3rem 0 .3rem .1rem " + theme.palette.text.light,
+    transition: "all .1s ease-in-out",
+    marginRight: ".75rem",
+    "h6": {
+      paddingTop: ".5rem",
+      color: theme.palette.text.light
+    }
+  }
+}));
+
+const StyledInactiveRoom = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    backgroundColor: theme.palette.background.dark,
+    borderRadius: "0 .3rem .3rem 0",
+    margin: ".4rem 0 .4rem 0",
+    transition: "all .2s ease-in-out",
+    cursor: "pointer",
+    marginRight: ".65rem",
+    ":hover": {
+      boxShadow: ".2rem 0 .3rem .5px " + theme.palette.text.light,
+      transition: "all .2s ease-in-out"
+    },
+    "h6": {
+      paddingTop: ".5rem",
+      fontSize: "1.1rem",
+      color: theme.palette.text.light
+    }
+  }
+}));
+
+const StyledRoomUsers = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  }
+}));
+
+/* Room Controls */
+
+const StyledRoomControlsContainer = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    justifyContent: "center",
+    textAlign: "center",
+    alignItems: "center",
+    zIndex: 1,
+  }
+}));
+
+const StyledRoomControlsConnection = styled("div")(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    fontSize: "1rem",
+    userSelect: "none",
+    cursor: "pointer",
+    margin: "0 auto 10px auto",
+    height: "auto",
+    width: "80%",
+    color: "white",
+    border: "1px solid " + theme.palette.background.light,
+    background: "linear-gradient(200deg, " + theme.palette.secondary.light + " 0%, " + theme.palette.secondary.main + " 20%, " + theme.palette.secondary.dark + " 100%)",
+    boxShadow: "0 0 .3rem .1rem " + theme.palette.background.dark,
+    borderRadius: "1rem",
+    padding: "5px",
+    "p": {
+      lineHeight: "normal",
+      display: "inline",
+      verticalAlign: "middle",
+    }
   }
 }));
 
@@ -269,5 +385,21 @@ export default {
   },
   WindowControls: {
     StyledButtonGroup
+  },
+  MainPageServer: {
+    StyledServerContainer
+  },
+  Sidebar: {
+    StyledSidebarWrapper
+  },
+  Rooms: {
+    StyledInactiveRoom,
+    StyledActiveRoom,
+    StyledRoomUsers,
+    StyledRoomsContainer
+  },
+  RoomControls: {
+    StyledRoomControlsContainer,
+    StyledRoomControlsConnection
   }
 }

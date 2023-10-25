@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Room from './Room';
 
 import { ep, storage, ap } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const api = require("../../api");
 
@@ -109,13 +110,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
 
 
   return (
-    <div className='roomsContainer'>
+    <StylingComponents.Rooms.StyledRoomsContainer>
       {
         remoteRooms.map((room) => (
           <Room active={room.id === activeRoomId ? true : false} key={room.id} data={room} />
         ))
       }
-    </div>
+    </StylingComponents.Rooms.StyledRoomsContainer>
   )
 }
 

@@ -1,8 +1,9 @@
 import React from 'react'
-import { Avatar, AvatarGroup } from '@mui/material'
+import { Avatar, AvatarGroup, Typography } from '@mui/material'
 import { styled } from "@mui/material/styles";
 
 import { ep } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const StyledAvatarGroup = styled(AvatarGroup)({
   "& .MuiAvatar-root": {
@@ -16,8 +17,8 @@ function InactiveRoom({ users, data }) {
   }
 
   return (
-    <div className='secondRoom' onClick={handleClick}>
-      <p className='roomName noselect'>{data.name}</p>
+    <StylingComponents.Rooms.StyledInactiveRoom onClick={handleClick}>
+      <Typography variant="h6">{data.name}</Typography>
       <StyledAvatarGroup max={15} sx={{ justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem' }}>
         {
           users.map((user, id) => (
@@ -25,7 +26,7 @@ function InactiveRoom({ users, data }) {
           ))
         }
       </StyledAvatarGroup>
-    </div>
+    </StylingComponents.Rooms.StyledInactiveRoom>
   )
 }
 

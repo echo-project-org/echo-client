@@ -1,11 +1,3 @@
-.sideWithChat {
-  display: flex;
-  flex-direction: row;
-  flex: 1 1 auto;
-  /* height: 97vh;
-  min-height: 1vh; */
-}
-
 .chat {
   position: relative;
   height: 100%;
