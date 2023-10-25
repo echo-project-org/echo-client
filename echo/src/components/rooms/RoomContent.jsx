@@ -1,46 +1,35 @@
 import "../../css/chat.css";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
 import InternalRoomContent from "./InternalRoomContent.jsx";
 
 import { ep, storage } from "../../index";
+import StylingComponents from '../../StylingComponents';
+
 import RoomContentSelector from "./RoomContentSelector.jsx";
 
-const StyledContainer = styled(Container)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    margin: "0 0 0 1rem",
-    width: "100%",
-    position: "relative",
-    display: "inline-flex",
-    maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: theme.palette.background.dark,
-    padding: "0 0 0 .6rem",
-    maxHeight: "43.09px",
-    top: "10%",
-  },
-}));
-
-const StyledContainerContent = styled(Container)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    margin: ".1rem 0 0 1rem",
-    height: "100%",
-    width: "100%",
-    position: "relative",
-    padding: "0",
-    display: "inline-flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    maxWidth: "calc(100vw - 20rem)",
-    backgroundColor: theme.palette.background.dark,
-  },
-}));
+function useWindowSize() {
+  const [size, setSize] = useState([0, 0]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight]);
+    }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+  return size;
+}
 
 function RoomContent({ roomId }) {
   // const [hasUsersStreaming, setHasUsersStreaming] = useState(false);
   const [contentSelected, setContentSelected] = useState("friends");
   const [roomName, setRoomName] = useState("Join a room"); // MAX 20 CHARS
   const [roomDescription, setRoomDescription] = useState("This room has no description or you are not in a room"); // MAX 150 CHARS
+  const [tempChange, setTempChange] = useState(false);
+
+  const [width, height] = useWindowSize();
 
   useEffect(() => {
     const roomData = ep.getRoom(roomId);
@@ -58,7 +47,7 @@ function RoomContent({ roomId }) {
   useEffect(() => {
     ep.on("gotVideoStream", "RoomContent.gotVideoStream", (data) => {
       setContentSelected("screen");
-    })
+    });
 
     ep.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
       setContentSelected("friends");
@@ -75,26 +64,41 @@ function RoomContent({ roomId }) {
     }
   }, [contentSelected]);
 
+  useEffect(() => {
+    if (width < 960 && !tempChange) {
+      setTempChange(true);
+      setRoomDescription((prev) => {
+        if (prev.length > 60) {
+          return prev.slice(0, 60) + "...";
+        }
+        return prev;
+      });
+    } else if (width >= 960 && tempChange) {
+      setTempChange(false);
+      const roomData = ep.getRoom(roomId);
+      if (roomData) {
+        setRoomDescription(roomData.description);
+      }
+    }
+  }, [width, height]);
+
   return (
     <Grid container direction={"row"}>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
         maxHeight: "43.09px",
       }}>
-        <StyledContainer>
-          <Grid container>
-            <Grid item xs={11} sm={11} md={10} lg={10} xl={10} sx={{
-              display: "flex",
-              flexDirection: "row",
-            }} >
-              <Container className="roomTitleContainer">
+        <StylingComponents.Rooms.StyledRoomContentHeader>
+          <Grid container sx={{ justifyContent: "space-between" }}>
+            <Grid item sx={{ display: "flex", flexDirection: "row" }}>
+              <StylingComponents.Rooms.StyledRoomTitleContainer>
                 {roomName}
-              </Container>
-              <Divider orientation="vertical" sx={{ backgroundColor: "#2e2030" }} />
-              <Container className="roomDescriptionContainer">
+              </StylingComponents.Rooms.StyledRoomTitleContainer>
+              <Divider orientation="vertical" backgroundColor="background" />
+              <StylingComponents.Rooms.StyledRoomDescriptionContainer>
                 {roomDescription}
-              </Container>
+              </StylingComponents.Rooms.StyledRoomDescriptionContainer>
             </Grid>
-            <Grid item xs={1} sm={1} md={2} lg={2} xl={2} sx={{
+            <Grid item sx={{
               display: "flex",
               flexDirection: "row",
               justifyContent: "flex-end",
@@ -103,15 +107,15 @@ function RoomContent({ roomId }) {
               <RoomContentSelector roomId={roomId} contentSelected={contentSelected} setContentSelected={setContentSelectedWrap} />
             </Grid>
           </Grid>
-        </StyledContainer>
+        </StylingComponents.Rooms.StyledRoomContentHeader>
       </Grid>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
         height: "calc(100vh - 5rem)",
         maxHeight: "calc(100vh - 5rem)",
       }}>
-        <StyledContainerContent>
+        <StylingComponents.Rooms.StyledRoomContentItems>
           <InternalRoomContent roomId={roomId} contentSelected={contentSelected} />
-        </StyledContainerContent>
+        </StylingComponents.Rooms.StyledRoomContentItems>
       </Grid>
     </Grid>
   )

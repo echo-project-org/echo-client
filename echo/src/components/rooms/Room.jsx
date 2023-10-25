@@ -1,4 +1,4 @@
-import { useState, useEffect, Component } from 'react';
+import { useState, useEffect } from 'react';
 import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 

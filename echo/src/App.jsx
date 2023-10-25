@@ -28,19 +28,8 @@ function App() {
   const [text, setText] = useState(storage.get("text") || "#ffffff");
   const [background, setBackground] = useState(storage.get("background") || "#331b36");
 
-  // const theme = useMemo(
-  //   () =>
-  //     createMuiTheme({
-  //       palette: {
-  //         primary: { main: primary }
-  //       }
-  //     }),
-  //   [primary]
-  // );
-
   useEffect(() => {
     ep.on("themeChanged", (theme) => {
-      console.log(theme);
       setPrimary(() => theme.primary);
       setSecondary(() => theme.secondary);
       setText(() => theme.text);
@@ -52,17 +41,17 @@ function App() {
     }
   }, []);
 
-  const _theme = createTheme();
+  const themePaletteMaker = createTheme();
   const muiTheme = useMemo(
     () => extendTheme({
       palette: {
         mode: 'dark',
-        background: _theme.palette.augmentColor({
+        background: themePaletteMaker.palette.augmentColor({
           color: {
             main: background,
           }
         }),
-        text: _theme.palette.augmentColor({
+        text: themePaletteMaker.palette.augmentColor({
           color: {
             main: text,
           }
@@ -73,7 +62,6 @@ function App() {
         secondary: {
           main: secondary,
         },
-        // accent: 633f69
       },
       typography: {
         fontFamily: ['Roboto Condensed'].join(','),
@@ -85,9 +73,7 @@ function App() {
               color: theme.palette.text.main,
               textAlign: "center",
             }),
-            // change the style of the contained button type
             contained: ({ theme }) => ({
-              // boxShadow: "0 .3rem .4rem 0 rgba(0, 0, 0, .5)",
               backgroundColor: theme.palette.primary.main,
               color: theme.palette.text.light,
               ":hover": {

@@ -2,7 +2,6 @@ import "../../css/settings.css";
 
 import { useState, useEffect } from 'react'
 import { Grid, Button, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 import { ep, storage } from "../../index";
 import StyledComponents from '../../StylingComponents';
@@ -17,7 +16,6 @@ function ThemeSettings() {
   const [valueChanged, setValueChanged] = useState(false);
 
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setValueChanged(true);

@@ -345,6 +345,69 @@ const StyledRoomUsers = styled("div")(({ theme }) => ({
   }
 }));
 
+const StyledRoomContentHeader = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    // margin: "0 0 0 1rem",
+    width: "99%",
+    position: "relative",
+    display: "inline-flex",
+    maxWidth: "calc(100vw - 20rem)",
+    backgroundColor: theme.palette.background.dark,
+    // padding: "0 0 0 .6rem",
+    maxHeight: "43.09px",
+    top: "10%",
+  },
+}));
+
+const StyledRoomContentItems = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    // margin: ".1rem 0 0 1rem",
+    height: "100%",
+    width: "99%",
+    position: "relative",
+    padding: "0",
+    display: "inline-flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    maxWidth: "calc(100vw - 20rem)",
+    backgroundColor: theme.palette.background.dark,
+  },
+}));
+
+const StyledRoomTitleContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    padding: ".5rem",
+    margin: "auto !important",
+    width: "fit-content",
+    flexDirection: "row",
+    justifyContent: "left",
+    textAlign: "left",
+    alignItems: "left",
+    marginTop: "1rem",
+    display: "flex !important",
+    color: theme.palette.text.light,
+    maxWidth: "20rem !important",
+    fontSize: ".8rem",
+  }
+}));
+
+const StyledRoomDescriptionContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    padding: ".5rem",
+    margin: "auto !important",
+    width: "fit-content",
+    flexDirection: "row",
+    justifyContent: "left",
+    textAlign: "left",
+    alignItems: "left",
+    marginTop: "1rem",
+    display: "flex !important",
+    color: theme.palette.text.light,
+    maxWidth: "100% !important",
+    fontSize: ".7rem",
+  }
+}));
+
 /* Room Controls */
 
 const StyledRoomControlsContainer = styled("div")(({ theme }) => ({
@@ -504,7 +567,11 @@ export default {
     StyledInactiveRoom,
     StyledActiveRoom,
     StyledRoomUsers,
-    StyledRoomsContainer
+    StyledRoomsContainer,
+    StyledRoomContentHeader,
+    StyledRoomContentItems,
+    StyledRoomTitleContainer,
+    StyledRoomDescriptionContainer,
   },
   RoomControls: {
     StyledRoomControlsContainer,

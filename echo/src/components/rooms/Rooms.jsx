@@ -1,9 +1,9 @@
-import "../../css/rooms.css"
 import { useState, useEffect } from 'react';
-import Room from './Room';
 
 import { ep, storage, ap } from "../../index";
 import StylingComponents from '../../StylingComponents';
+
+import Room from './Room';
 
 const api = require("../../api");
 

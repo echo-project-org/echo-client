@@ -65,7 +65,7 @@ function RoomContentFriends({ }) {
           friends.map((user, index) => {
             //Friends
             return (
-              <RoomContentFriendContainer user={user} index={index} key={index}/>
+              <RoomContentFriendContainer user={user} index={index} key={index} />
             )
           })
         }
@@ -73,7 +73,7 @@ function RoomContentFriends({ }) {
           requested.map((user, index) => {
             //Request sent by user
             return (
-              <RoomContentFriendContainer user={user} index={index} key={index}/>
+              <RoomContentFriendContainer user={user} index={index} key={index} />
             )
           })
         }
@@ -81,7 +81,7 @@ function RoomContentFriends({ }) {
           pending.map((user, index) => {
             //Request sent to user
             return (
-              <RoomContentFriendContainer user={user} index={index} key={index}/>
+              <RoomContentFriendContainer user={user} index={index} key={index} />
             )
           })
         }
