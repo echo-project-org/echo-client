@@ -9,7 +9,7 @@ import MainPageServers from './MainPageServers';
 import { storage } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
-function MainPage({ }) {
+function MainPage() {
   const navigate = useNavigate();
   const [sidebarButtons, setSidebarButtons] = useState([
     {
@@ -55,7 +55,7 @@ function MainPage({ }) {
     if (!storage.get("id")) {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <motion.div
