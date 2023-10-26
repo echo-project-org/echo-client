@@ -582,6 +582,7 @@ class EchoProtocol {
   }
 
   stopScreenSharing() {
+    this.updateUser({ id: storage.get("id"), field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
       this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });

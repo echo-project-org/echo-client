@@ -38,12 +38,14 @@ function OnlineUserIcon({ user }) {
     ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true)
+        user.broadcastingVideo = true;
       }
     });
 
     ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(false)
+        user.broadcastingVideo = false;
       }
     });
 
