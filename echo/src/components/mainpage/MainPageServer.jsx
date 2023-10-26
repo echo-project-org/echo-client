@@ -1,7 +1,7 @@
 import Sidebar from '../sidebar/Sidebar';
 import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
 import { ep } from "../../index";
 import StylingComponents from '../../StylingComponents';
 
@@ -20,17 +20,11 @@ function MainPageServer() {
     })
   }, [roomId]);
 
-  const MPS = motion(StylingComponents.MainPageServer.StyledServerContainer)
-
   return (
-    <MPS
-      initial={{ x: 100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 100, opacity: 0 }}
-    >
+    <StylingComponents.MainPageServer.StyledServerContainer>
       <Sidebar updateCurrentRoom={updateCurrentRoom} />
       <RoomContent roomId={roomId} />
-    </MPS>
+    </StylingComponents.MainPageServer.StyledServerContainer>
   )
 }
 
