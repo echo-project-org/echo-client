@@ -6,6 +6,7 @@ class Friends {
   }
 
   typeCheck(data) {
+    if (data === undefined || data === null) throw new Error("[CACHE] Data is required to type check");
     if (typeof data !== "object") {
       if (typeof data === "boolean") return data;
       return data = String(data);
