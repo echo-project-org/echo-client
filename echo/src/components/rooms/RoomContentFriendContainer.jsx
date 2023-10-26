@@ -51,18 +51,18 @@ function RoomContentFriendContainer({ user, index }) {
   }, [friendStatus, user.id]);
 
   return (
-    <Grid container className="friend-container" key={"f" + index} flexDirection={"row"} display={"flex"}>
+    <StyledComponents.Friends.StyledFriendsContainer container key={"f" + index} flexDirection={"row"} display={"flex"}>
       <Grid item>
-        <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
+        <Avatar alt={user.id} src={user.userImage} sx={{ width: "calc(2rem + 2vw)" }} />
       </Grid>
-      <Grid item xs={4} className="userInfo">
-        <span className="userName">{user.name}</span>
+      <Grid item>
+        <span>{user.name}</span>
         <CurrentStatus icon={false} align={"left"} height={"2rem"} />
       </Grid>
-      <Grid item xs={7}>
+      <Grid item>
         <RoomConentFriendsButtons user={user} friendStatus={friendStatus} />
       </Grid>
-    </Grid>
+    </StyledComponents.Friends.StyledFriendsContainer>
   )
 }
 
