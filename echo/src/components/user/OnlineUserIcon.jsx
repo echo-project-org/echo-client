@@ -9,7 +9,6 @@ import StyledComponents from '../../StylingComponents';
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 function OnlineUserIcon({ user }) {
-  console.log("RERENDER ONLINE USER ICON", user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
