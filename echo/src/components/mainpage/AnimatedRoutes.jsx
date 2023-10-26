@@ -11,7 +11,7 @@ import Register from './Register'
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <AnimatePresence mode='exitBeforeEnter'>
+    <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
         <Route path="/" exact element={<MainPage />} />
         <Route path="/login" element={<Login />} />
