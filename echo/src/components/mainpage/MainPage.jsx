@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Container, Grid, Icon, Tooltip, styled, Slide } from '@mui/material';
+import { Grid, Tooltip, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
 
 import { storage } from "../../index";
 import StyledComponents from '../../StylingComponents';
-
-const api = require('../../api');
 
 function MainPage({ }) {
   const navigate = useNavigate();
