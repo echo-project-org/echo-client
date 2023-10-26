@@ -53,11 +53,11 @@ function RoomContentFriendContainer({ user, index }) {
       <Grid item style={{ width: "calc(2rem + 2vw)" }}>
         <Avatar alt={user.id} src={user.userImage} />
       </Grid>
-      <Grid item style={{ width: "20%", marginLeft: "1rem" }}>
+      <Grid item style={{ width: "30%", marginLeft: "1rem" }}>
         <span>{user.name}</span>
         <CurrentStatus icon={false} align={"left"} height={"2rem"} />
       </Grid>
-      <Grid item style={{ width: "80%" }}>
+      <Grid item style={{ width: "70%" }}>
         <RoomConentFriendsButtons user={user} friendStatus={friendStatus} />
       </Grid>
     </StyledComponents.Friends.StyledFriendsContainer>
