@@ -32,7 +32,7 @@ class HttpCheck {
         if (this.responseTime > this.service.responseTime) {
             this.service.status = "warning";
             this.service.error = "Response time too high";
-            this.service.runner.createIncident(this.service.name);
+            this.service.runner.createIncident(this.service.name, this.service.error, this.service.status);
             console.log("[HTTP] " + this.service.name + " is in state " + this.service.status + " (" + this.service.error + ")");
         }
     }
@@ -42,11 +42,11 @@ class HttpCheck {
         switch (this.service.error.code) {
             case "ERR_BAD_REQUEST":
                 this.service.error = "Bad request";
-                this.service.runner.createIncident(this.service.name);
+                this.service.runner.createIncident(this.service.name, this.service.error, this.service.status);
                 break;
             case "ERR_BAD_RESPONSE":
                 this.service.error = "Bad response";
-                this.service.runner.createIncident(this.service.name);
+                this.service.runner.createIncident(this.service.name, this.service.error, this.service.status);
                 break;
             default:
                 break;
