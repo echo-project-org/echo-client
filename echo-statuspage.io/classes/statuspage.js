@@ -73,31 +73,31 @@ class StatusPage {
 
         if (current_severity === 0 && previous_severity !== 0) {
             return {
-                body: `The service "${service_display}" is now back to normal.\n${this.config.footerMessage}`,
-                status: "resolved"
+                body: `The service "${service_display}" is now back to normal.`,
+                status: "completed"
             }
         }
         if (current_severity === 1 && previous_severity > 1) {
             return {
-                body: `The service "${service_display}" seems to be recovering, but the performance is still degraded.${this.config.footerMessage}`,
-                status: "monitoring"
+                body: `The service "${service_display}" seems to be recovering, but the performance is still degraded.`,
+                status: "verifying"
             }
         }
         if (current_severity === 2 && previous_severity > 1) {
             return {
-                body: `The service "${service_display}" is now experiencing minor issues.${this.config.footerMessage}`,
+                body: `The service "${service_display}" is now experiencing minor issues.`,
                 status: "verifying"
             }
         }
         if (current_severity === 3 && previous_severity > 1) {
             return {
-                body: `The service "${service_display}" is now experiencing major issues.${this.config.footerMessage}`,
+                body: `The service "${service_display}" is now experiencing major issues.`,
                 status: "verifying"
             }
         }
         if (current_severity === 4 && previous_severity !== 4) {
             return {
-                body: `The service "${service_display}" is now under maintenance.${this.config.footerMessage}`,
+                body: `The service "${service_display}" is now under maintenance.`,
                 status: "in_progress"
             }
         }
@@ -125,7 +125,7 @@ class StatusPage {
         const bodyData = this._computeUpdatedBody(service);
         const data = {
             id: this.incidents[service.name].id,
-            severity: this._computeStatusSeverity(service_status),
+            severity: this._computeStatusSeverity(service.status),
             incident: {
                 name: `${service.display_name} incident, ${service.error}`,
                 status: bodyData.status,
@@ -188,7 +188,7 @@ class StatusPage {
             })
             .catch((error) => {
                 console.log("[STATUSPAGE] " + service_name + " incident creation failed");
-                // console.error(error);
+                console.error(error.response.data);
             });
     }
 
@@ -205,7 +205,7 @@ class StatusPage {
             })
             .catch((error) => {
                 console.log("[STATUSPAGE] " + service_name + " incident update failed");
-                console.error(error);
+                console.error(error.response.data);
             });
     }
 
