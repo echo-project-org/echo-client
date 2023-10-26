@@ -557,6 +557,26 @@ const StyledFriendsContainer = styled(Grid)(({ theme }) => ({
   }
 }));
 
+const StyledFriendsListContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    height: "100%",
+    padding: "0 !important",
+    maxWidth: "100% !important",
+    overflowY: "auto",
+  }
+}));
+
+const StyledFriendsListOverflow = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    padding: "0 !important",
+    maxWidth: "100% !important",
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
@@ -620,6 +640,8 @@ export default {
     StyledSettingsModalSubdiv
   },
   Friends: {
-    StyledFriendsContainer
+    StyledFriendsContainer,
+    StyledFriendsListContainer,
+    StyledFriendsListOverflow,
   }
 }

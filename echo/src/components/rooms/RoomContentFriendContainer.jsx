@@ -1,5 +1,3 @@
-import "../../css/friends.css";
-
 import { useEffect, useState } from "react";
 
 import { Avatar, Grid, Container, Button } from "@mui/material";
@@ -52,14 +50,14 @@ function RoomContentFriendContainer({ user, index }) {
 
   return (
     <StyledComponents.Friends.StyledFriendsContainer container key={"f" + index} flexDirection={"row"} display={"flex"}>
-      <Grid item>
-        <Avatar alt={user.id} src={user.userImage} sx={{ width: "calc(2rem + 2vw)" }} />
+      <Grid item style={{ width: "calc(2rem + 2vw)" }}>
+        <Avatar alt={user.id} src={user.userImage} />
       </Grid>
-      <Grid item>
+      <Grid item style={{ width: "20%", marginLeft: "1rem" }}>
         <span>{user.name}</span>
         <CurrentStatus icon={false} align={"left"} height={"2rem"} />
       </Grid>
-      <Grid item>
+      <Grid item style={{ width: "80%" }}>
         <RoomConentFriendsButtons user={user} friendStatus={friendStatus} />
       </Grid>
     </StyledComponents.Friends.StyledFriendsContainer>

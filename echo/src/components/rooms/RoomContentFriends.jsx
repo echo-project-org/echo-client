@@ -1,12 +1,9 @@
-import "../../css/friends.css";
-
 import { useEffect, useState } from "react";
-
-import { Avatar, Grid, Container, Button } from "@mui/material";
-import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
+import { Container } from "@mui/material";
 
 import { ep, storage } from "../../index";
-import CurrentStatus from "../user/CurrentStatus";
+import StyledComponents from '../../StylingComponents';
+
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
 const api = require('../../api');
@@ -48,6 +45,8 @@ function RoomContentFriends({ }) {
     setRequested(ep.getFriendRequests());
 
     ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
+      console.log("Friend cache updated")
+      console.log(ep.getFriends(), ep.getFriendRequested(), ep.getFriendRequests());
       setFriends(ep.getFriends());
       setPending(ep.getFriendRequested());
       setRequested(ep.getFriendRequests());
@@ -59,8 +58,8 @@ function RoomContentFriends({ }) {
   }, []);
 
   return (
-    <Container className="friends-list-container">
-      <Container className="friends-list-overflow">
+    <StyledComponents.Friends.StyledFriendsListContainer>
+      <StyledComponents.Friends.StyledFriendsListOverflow>
         {
           friends.map((user, index) => {
             //Friends
@@ -85,8 +84,8 @@ function RoomContentFriends({ }) {
             )
           })
         }
-      </Container>
-    </Container >
+      </StyledComponents.Friends.StyledFriendsListOverflow>
+    </StyledComponents.Friends.StyledFriendsListContainer>
   )
 }
 

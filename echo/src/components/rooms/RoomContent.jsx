@@ -2,12 +2,12 @@ import "../../css/chat.css";
 
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
-import InternalRoomContent from "./InternalRoomContent.jsx";
 
 import { ep, storage } from "../../index";
 import StylingComponents from '../../StylingComponents';
 
 import RoomContentSelector from "./RoomContentSelector.jsx";
+import InternalRoomContent from "./InternalRoomContent.jsx";
 
 function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
@@ -83,7 +83,7 @@ function RoomContent({ roomId }) {
   }, [width, height]);
 
   return (
-    <Grid container direction={"row"}>
+    <Grid container direction={"row"} style={{ height: "97vh" }}>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
         maxHeight: "43.09px",
       }}>
@@ -93,7 +93,7 @@ function RoomContent({ roomId }) {
               <StylingComponents.Rooms.StyledRoomTitleContainer>
                 {roomName}
               </StylingComponents.Rooms.StyledRoomTitleContainer>
-              <Divider orientation="vertical" backgroundColor="background" />
+              <Divider orientation="vertical" />
               <StylingComponents.Rooms.StyledRoomDescriptionContainer>
                 {roomDescription}
               </StylingComponents.Rooms.StyledRoomDescriptionContainer>
