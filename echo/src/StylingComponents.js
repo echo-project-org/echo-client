@@ -77,7 +77,6 @@ const StyledIconContainer = styled(Container)(({ theme }) => ({
 const StyledSelectedIcon = styled(Icon)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     color: theme.palette.text.light,
-    fontSize: "2rem",
     transition: "all .2s ease-in-out",
     fontSize: "3rem",
   },
@@ -475,7 +474,6 @@ const StyledImageUploaderContainer = styled(Container)(({ theme }) => ({
     top: "20%",
     left: "20%",
     textAlign: "center",
-    position: "fixed",
     maxWidth: "60%",
     width: "60%",
     height: "fit-content",

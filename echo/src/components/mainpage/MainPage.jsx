@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Container, Grid, Icon, Tooltip, styled, Slide } from '@mui/material';
+import { Grid, Tooltip, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
@@ -9,9 +9,7 @@ import MainPageServers from './MainPageServers';
 import { storage } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
-const api = require('../../api');
-
-function MainPage({ }) {
+function MainPage() {
   const navigate = useNavigate();
   const [sidebarButtons, setSidebarButtons] = useState([
     {
@@ -52,14 +50,19 @@ function MainPage({ }) {
   }
 
   useEffect(() => {
-    console.log("negri")
+    console.log("Non si può dire questo")
     // if id is not set, redirect to login page
     if (!storage.get("id")) {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   return (
+    <motion.div
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -100, opacity: 0 }}
+    >
     <Grid container>
       <Grid item>
         <Slide direction="right" in={true} mountOnEnter unmountOnExit>
@@ -86,6 +89,7 @@ function MainPage({ }) {
         </StyledComponents.MainPage.StyledContainer>
       </Grid>
     </Grid>
+    </motion.div>
   )
 }
 

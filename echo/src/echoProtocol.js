@@ -642,7 +642,7 @@ class EchoProtocol {
   }
 
   getAudioState(id = false) {
-    if (id && this.mh) {
+    if (id) {
       const cachedUser = this.cachedUsers.get(id);
       if (cachedUser && !cachedUser.self) {
         return {
@@ -652,7 +652,14 @@ class EchoProtocol {
         }
       }
     }
-    return this.mh.getAudioState();
+    if(this.mh){
+      return this.mh.getAudioState();
+    }
+
+    return {
+      isMuted: false,
+      isDeaf: false
+    }
   }
 
   // cache rooms functions
