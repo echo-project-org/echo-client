@@ -723,7 +723,8 @@ class EchoProtocol {
     if (friend && userFriend) {
       return userFriend;
     } else {
-      console.warn("Friend not found in cache, probably offline and we don't handle it")
+      this.needUserCacheUpdate({ id, call: { function: "getFriend", args: { id } } });
+      console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", id)
     }
   }
 
@@ -752,7 +753,7 @@ class EchoProtocol {
       if (f) {
         usersFriends.push(f);
       } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it")
+        console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", friend.id)
       }
     });
 
@@ -767,7 +768,7 @@ class EchoProtocol {
       if (f) {
         usersFriends.push(f);
       } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it")
+        console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", friend.id)
       }
     });
 
@@ -782,7 +783,7 @@ class EchoProtocol {
       if (f) {
         usersFriends.push(f);
       } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it")
+        console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", friend.id)
       }
     });
 
