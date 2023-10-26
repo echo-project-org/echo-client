@@ -1,14 +1,15 @@
 
-const socket = require("socket.io-client");
+const socketIO = require("socket.io-client");
 
 class SocketCheck {
     constructor(service) {
         this.service = service;
+        if (service.fireOnStart) this.check();
         this.interval = setInterval(this.check.bind(this), this.service.interval * 1000);
     }
 
     check() {
-        const socket = socket(this.service.url);
+        const socket = socketIO(this.service.url);
         socket.on("connect", () => {
             this.service.status = "ok";
             socket.disconnect();

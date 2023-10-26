@@ -10,6 +10,10 @@ router.use((req, res, next) => {
     next();
 });
 
+router.get('/', (req, res) => {
+    res.status(200).send({ message: "pong" });
+});
+
 router.get("/:id", (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).send({ message: "You messed up the request." });
