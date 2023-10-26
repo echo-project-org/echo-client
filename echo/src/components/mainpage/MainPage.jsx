@@ -52,7 +52,7 @@ function MainPage({ }) {
   }
 
   useEffect(() => {
-    console.log("negri")
+    console.log("Non si può dire questo")
     // if id is not set, redirect to login page
     if (!storage.get("id")) {
       navigate("/login");
