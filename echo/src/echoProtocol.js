@@ -690,16 +690,20 @@ class EchoProtocol {
   }
 
   updateUser({ id, field, value }) {
-    if (this.cachedUsers.get(id)) {
-      this.cachedUsers.update(id, field, value);
-      const rooms = this.cachedRooms.values();
-      for (const room of rooms) {
-        room.chat.updateUser({ id, field, value });
-        if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+    try{
+      if (this.cachedUsers.get(id)) {
+        this.cachedUsers.update(id, field, value);
+        const rooms = this.cachedRooms.values();
+        for (const room of rooms) {
+          room.chat.updateUser({ id, field, value });
+          if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+        }
+        this.usersCacheUpdated(this.cachedUsers.get(id));
       }
-      this.usersCacheUpdated(this.cachedUsers.get(id));
+      else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
+    } catch (error) {
+      console.error(error);
     }
-    else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
   }
 
   addFriend(friend) {

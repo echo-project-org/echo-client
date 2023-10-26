@@ -6,7 +6,7 @@ class Users {
     }
 
     typeCheck(data) {
-        if (!data) return new Error("[CACHE] Data is required to type check");
+        if (!data) throw new Error("[CACHE] Data is required to type check");
         if (typeof data !== "object") {
             if (typeof data === "boolean") return data;
             return data = String(data);
