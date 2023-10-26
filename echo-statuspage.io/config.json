@@ -1,0 +1,20 @@
+{
+    "services": [
+        {
+            "type": "http",
+            "url": "https://echo.kuricki.com/api/ping",
+            "interval": 10000
+        },
+        {
+            "type": "socket",
+            "url": "https://echo.kuricki.com//socket.io/",
+            "interval": 10000
+        },
+        {
+            "type": "kok"
+        }
+    ],
+    "statusPage": {
+        "url": ""
+    }
+}
