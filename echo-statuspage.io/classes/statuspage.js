@@ -113,7 +113,8 @@ class StatusPage {
                 this.updateIncident(service);
             }
         } else {
-            this.createIncident(service);
+            if (service_severity !== 0)
+                this.createIncident(service);
         };
     }
 

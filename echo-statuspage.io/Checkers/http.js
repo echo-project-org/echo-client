@@ -18,6 +18,7 @@ class HttpCheck {
                 console.log("[HTTP] " + this.service.name + " http call was successful and took " + (Date.now() - this.callTIme) + "ms");
                 this.responseTime = Date.now() - this.callTIme;
                 this.service.status = "ok";
+                this.service.error = "Everything operational";
                 this.checkResponseTime();
             })
             .catch((error) => {
@@ -32,9 +33,9 @@ class HttpCheck {
         if (this.responseTime > this.service.responseTime) {
             this.service.status = "low_performance";
             this.service.error = "Response time too high";
-            this.service.runner.updateStatusPage(this.service);
             console.log("[HTTP] " + this.service.name + " is in state " + this.service.status + " (" + this.service.error + ")");
         }
+        this.service.runner.updateStatusPage(this.service);
     }
 
     translateError() {
