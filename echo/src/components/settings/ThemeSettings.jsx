@@ -115,10 +115,10 @@ function ThemeSettings() {
         <Grid item xs={12}>
           <Grid container justifyContent="center" direction={"row"}>
             <Grid item xs={5} sx={{ textAlign: "center", marginTop: "1rem", marginBottom: "1rem" }}>
-              <Button variant="contained" onClick={updateTheme} sx={{ width: "80%" }}>Save</Button>
+              <Button variant="contained" onClick={updateTheme} sx={{ width: "80%" }}>Save Theme</Button>
             </Grid>
             <Grid item xs={5} sx={{ textAlign: "center", marginTop: "1rem", marginBottom: "1rem" }}>
-              <Button variant="contained" onClick={resetTheme} sx={{ width: "80%" }}>Reset</Button>
+              <Button variant="contained" onClick={resetTheme} sx={{ width: "80%" }}>Reset Theme</Button>
             </Grid>
           </Grid>
         </Grid>
