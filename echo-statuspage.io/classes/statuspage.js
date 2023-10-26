@@ -6,6 +6,21 @@ class StatusPage {
         this.incidents = {}
     }
 
+    _computeImpact(service_status) {
+        switch (service_status) {
+            case "ok":
+                return "resolved";
+            case "error":
+                return "critical";
+            case "warning":
+                return "major";
+            case "low_performance":
+                return "minor";
+            default:
+                return "maintenance";
+        }
+    }
+
     _computeStatus(service_status) {
         switch (service_status) {
             case "ok":
@@ -57,28 +72,44 @@ class StatusPage {
         const previous_severity = this._computeStatusSeverity(this.incidents[service.name].incident.status);
 
         if (current_severity === 0 && previous_severity !== 0) {
-            return `The service "${service_display}" is now back to normal.\n${this.config.footerMessage}`;
+            return {
+                body: `The service "${service_display}" is now back to normal.\n${this.config.footerMessage}`,
+                status: "resolved"
+            }
         }
         if (current_severity === 1 && previous_severity > 1) {
-            return `The service "${service_display}" seems to be recovering, but the performance is still degraded.\n${this.config.footerMessage}`;
+            return {
+                body: `The service "${service_display}" seems to be recovering, but the performance is still degraded.${this.config.footerMessage}`,
+                status: "monitoring"
+            }
         }
         if (current_severity === 2 && previous_severity > 1) {
-            return `The service "${service_display}" is now experiencing minor issues.\n${this.config.footerMessage}`;
+            return {
+                body: `The service "${service_display}" is now experiencing minor issues.${this.config.footerMessage}`,
+                status: "verifying"
+            }
         }
         if (current_severity === 3 && previous_severity > 1) {
-            return `The service "${service_display}" is now experiencing major issues.\n${this.config.footerMessage}`;
+            return {
+                body: `The service "${service_display}" is now experiencing major issues.${this.config.footerMessage}`,
+                status: "verifying"
+            }
         }
         if (current_severity === 4 && previous_severity !== 4) {
-            return `The service "${service_display}" is now under maintenance.\n${this.config.footerMessage}`;
+            return {
+                body: `The service "${service_display}" is now under maintenance.${this.config.footerMessage}`,
+                status: "in_progress"
+            }
         }
     }
 
     updateStatusPage(service) {
         const service_name = service.name;
-        const service_status = service.status;
+        const service_severity = this._computeStatusSeverity(service.status);
 
         if (this.incidents[service_name]) {
-            if (this.incidents[service_name].incident.status !== service_status) {
+            console.log(this.incidents[service_name].severity, service_severity)
+            if (this.incidents[service_name].severity !== service_severity) {
                 this.updateIncident(service);
             }
         } else {
@@ -90,11 +121,14 @@ class StatusPage {
         const startDate = new Date();
         const plannedEndDate = new Date(startDate);
         plannedEndDate.setDate(plannedEndDate.getDate() + 4);
+        const bodyData = this._computeUpdatedBody(service);
         const data = {
+            id: this.incidents[service.name].id,
+            severity: this._computeStatusSeverity(service_status),
             incident: {
                 name: `${service.display_name} incident, ${service.error}`,
-                status: this._computeStatus(service.status),
-                body: this._computeUpdatedBody(service),
+                status: bodyData.status,
+                body: bodyData.body,
                 components: {
                     [this.config.components[service.name]]: this._computeComponentStatus(service.status)
                 },
@@ -120,6 +154,7 @@ class StatusPage {
         const plannedEndDate = new Date(startDate);
         plannedEndDate.setDate(plannedEndDate.getDate() + 4);
         const data = {
+            severity: this._computeStatusSeverity(service_status),
             incident: {
                 name: `${service_display} incident, ${service_error}`,
                 status: "in_progress",
@@ -134,7 +169,6 @@ class StatusPage {
                 scheduled_for: startDate,
                 scheduled_until: plannedEndDate,
                 deliver_notifications: this._computeStatus(service_status) == "critical" ? true : false,
-                severity: this._computeStatusSeverity(service_status)
             }
         }
         this.postIncident(data, service_name);
@@ -153,12 +187,12 @@ class StatusPage {
             })
             .catch((error) => {
                 console.log("[STATUSPAGE] " + service_name + " incident creation failed");
-                console.error(error);
+                // console.error(error);
             });
     }
 
     patchIncident(incident, service_name) {
-        axios.put(`${this.config.url}/pages/${this.config.PAGE_ID}/incidents`, incident, {
+        axios.put(`${this.config.url}/pages/${this.config.PAGE_ID}/incidents/${incident.id}`, incident, {
             headers: {
                 "Authorization": `OAuth ${this.config.API_KEY}`,
             }
