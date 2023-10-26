@@ -523,6 +523,42 @@ const StyledSettingsModalSubdiv = styled("div")(({ theme }) => ({
   }
 }));
 
+/* Friends */
+
+const StyledFriendsContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "nowrap !important",
+    width: "100%",
+    padding: ".8rem",
+    color: theme.palette.text.primary,
+    ":hover": {
+      backgroundColor: theme.palette.background.light,
+    },
+    "& .MuiAvatar-root": {
+      width: "calc(2rem + 2vw)",
+      height: "calc(2rem + 2vw)",
+    },
+    "& .MuiGrid-root": {
+      display: "flex",
+      flexDirection: "column",
+      textAlign: "left",
+      width: "5rem",
+    },
+    "& .MuiContainer-root": {
+      textAlign: "right"
+    },
+    "span": {
+      fontSize: "calc(0.8rem + 0.5vw)",
+      fontWeight: "500",
+      paddingLeft: "0.5rem",
+    }
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
@@ -584,5 +620,8 @@ export default {
     StyledImageUploaderBackground,
     StyledImageUploaderContentContainer,
     StyledSettingsModalSubdiv
+  },
+  Friends: {
+    StyledFriendsContainer
   }
 }
