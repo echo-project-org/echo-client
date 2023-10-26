@@ -1,11 +1,11 @@
-import '../../css/onlineusers.css'
-
 import { Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid } from '@mui/material'
 import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 
 import { ep } from "../../index";
+import StyledComponents from '../../StylingComponents';
+
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 function OnlineUserIcon({ user }) {
@@ -75,9 +75,8 @@ function OnlineUserIcon({ user }) {
   };
 
   return (
-    <div className="onlineUserContainer">
-      <div
-        className="onlineUserIcon noselect pointer"
+    <StyledComponents.OnlineUserIcon.StyledOnlineUserIconContainer>
+      <StyledComponents.OnlineUserIcon.StyledOnlineUserIcon
         onContextMenu={handleClick}
         onClick={handleClick}
         size="small"
@@ -87,12 +86,12 @@ function OnlineUserIcon({ user }) {
       >
         <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
         <p className='onlineUserNick'>{user.name}</p>
-        <Grid container direction="row" justifyContent="right" sx={{ color: "white" }}>
+        <Grid container direction="row" justifyContent="right" sx={{ color: "white", paddingRight: ".9rem" }}>
           {deaf ? <VolumeOff fontSize="small" /> : null}
           {muted ? <MicOffRounded fontSize="small" /> : null}
           {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{ color: "red" }} /> : null}
         </Grid>
-      </div>
+      </StyledComponents.OnlineUserIcon.StyledOnlineUserIcon>
 
       <Menu
         anchorEl={anchorEl}
@@ -102,13 +101,13 @@ function OnlineUserIcon({ user }) {
         MenuListProps={{ 'aria-labelledby': 'userIcon', 'className': 'userMenuModal' }}
       >
         <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
-          <div className="avatarBadge">
+          <StyledComponents.OnlineUserIcon.StyledOnlineUserIconAvatarBadge>
             <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
-            {user.online === "1" ? <Circle className="statusIndicator" style={{ color: "#44b700" }} /> : null}
-            {user.online === "2" ? <DarkMode className="statusIndicator rotateMoon" style={{ color: "#ff8800" }} /> : null}
-            {user.online === "3" ? <DoNotDisturbOn className="statusIndicator" style={{ color: "#fd4949" }} /> : null}
-            {user.online === "4" ? <Circle className="statusIndicator" style={{ color: "#f5e8da" }} /> : null}
-          </div>
+            {user.online === "1" ? <Circle style={{ color: "#44b700" }} /> : null}
+            {user.online === "2" ? <DarkMode style={{ color: "#ff8800" }} /> : null}
+            {user.online === "3" ? <DoNotDisturbOn style={{ color: "#fd4949" }} /> : null}
+            {user.online === "4" ? <Circle style={{ color: "#f5e8da" }} /> : null}
+          </StyledComponents.OnlineUserIcon.StyledOnlineUserIconAvatarBadge>
           <p style={{ marginTop: ".8rem" }}>{user.name}</p>
         </div>
 
@@ -131,7 +130,7 @@ function OnlineUserIcon({ user }) {
         <Divider sx={{ my: 0.5 }} variant='middle' />
         <OnlineUsersMenuItems user={user} broadcastingVideo={broadcastingVideo} handleClose={handleClose} />
       </Menu>
-    </div>
+    </StyledComponents.OnlineUserIcon.StyledOnlineUserIconContainer>
   )
 }
 

@@ -577,10 +577,67 @@ const StyledFriendsListOverflow = styled(Container)(({ theme }) => ({
   }
 }));
 
+/* OnlineUserIcon */
+
+const StyledOnlineUserIcon = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    display: "flex",
+    alignItems: "center",
+    margin: ".4rem 0 .4rem .5rem",
+    "p": {
+      margin: "0 0 0 0.5rem",
+      color: theme.palette.text.light
+    }
+  }
+}));
+
+const StyledOnlineUserIconContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    transition: "all .1s ease-in-out",
+    width: "95%",
+    marginBottom: ".4rem",
+    ":hover": {
+      transition: "all .1s ease-in-out",
+      cursor: "pointer",
+      backgroundColor: theme.palette.background.light,
+      borderRadius: "8px",
+    }
+  }
+}));
+
+const StyledOnlineUserIconAvatarBadge = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "4rem",
+    height: "4rem",
+    borderRadius: "50%",
+    fontSize: "1.2rem",
+    fontWeight: "600",
+    margin: "0.8rem",
+    "svg": {
+      position: "absolute",
+      bottom: "0",
+      right: "0",
+      borderRadius: "50%",
+      transform: "translate(25%, 25%)",
+      backgroundColor: theme.palette.text.light,
+      margin: ".1rem",
+    }
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
     StyledTopBar,
+  },
+  OnlineUserIcon: {
+    StyledOnlineUserIconContainer,
+    StyledOnlineUserIcon,
+    StyledOnlineUserIconAvatarBadge,
   },
   MainPage: {
     StyledMainPageGrid,
