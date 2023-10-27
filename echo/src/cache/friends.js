@@ -51,33 +51,6 @@ class Friends {
     return this.friends[id];
   }
 
-  getNotAccepted() {
-    //friends requests that I have sent but have not been accepted yet
-    let notAccepted = [];
-    for (let id in this.friends) {
-      if (!this.friends[id].accepted && this.friends[id].requested) notAccepted.push(this.friends[id]);
-    }
-    return notAccepted;
-  }
-
-  getRequested() {
-    //friends requests that I have received but have not accepted yet
-    let requested = [];
-    for (let id in this.friends) {
-      if (!this.friends[id].requested && this.friends[id].accepted) requested.push(this.friends[id]);
-    }
-    return requested;
-  }
-
-  getAccepted() {
-    //actual friends
-    let accepted = [];
-    for (let id in this.friends) {
-      if (this.friends[id].accepted && this.friends[id].requested) accepted.push(this.friends[id]);
-    }
-    return accepted;
-  }
-
   update(id, field, value) {
     id = this.typeCheck(id);
     field = this.typeCheck(field);
