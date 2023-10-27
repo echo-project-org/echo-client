@@ -222,7 +222,6 @@ router.get('/friends/:id', (req, res) => {
         };
         if (result.length > 0) {
             result.map((friends) => {
-                console.log(friends);
                 // check if user is friended by other user
                 if (friends.relationship === "friend" && friends.otherId !== Number(id)) {
                     friendMap.friended.push({
