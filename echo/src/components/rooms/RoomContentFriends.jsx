@@ -16,31 +16,37 @@ function RoomContentFriends({ }) {
       .then((res) => {
         const _friends = [];
         for (var i in res.json.friended) {
-          _friends.push({
+          const data = {
             id: res.json.friended[i].id,
             name: res.json.friended[i].name,
             status: res.json.friended[i].status,
             img: res.json.friended[i].img,
             type: "friended"
-          })
+          }
+          _friends.push(data);
+          ep.addFriend(data);
         }
         for (var i in res.json.sent) {
-          _friends.push({
+          const data = {
             id: res.json.sent[i].id,
             name: res.json.sent[i].name,
             status: res.json.sent[i].status,
             img: res.json.sent[i].img,
             type: "sent"
-          })
+          }
+          _friends.push(data);
+          ep.addFriend(data);
         }
         for (var i in res.json.incoming) {
-          _friends.push({
+          const data = {
             id: res.json.incoming[i].id,
             name: res.json.incoming[i].name,
             status: res.json.incoming[i].status,
             img: res.json.incoming[i].img,
             type: "incoming"
-          })
+          }
+          _friends.push(data);
+          ep.addFriend(data);
         }
         setFriends(_friends);
       })
@@ -48,11 +54,15 @@ function RoomContentFriends({ }) {
         console.error(err.message);
       });
 
-
-    setFriends(ep.getFriends());
-
-    ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
-      setFriends(ep.getFriends());
+    ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (data) => {
+      console.log("RoomContentFriends.usersCacheUpdated: ", data);
+      setFriends((prev) => {
+        const newV = [];
+        for (var i in data) {
+          newV.push(data[i]);
+        }
+        return newV;
+      });
     });
 
     return () => {

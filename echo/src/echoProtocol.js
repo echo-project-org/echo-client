@@ -713,17 +713,18 @@ class EchoProtocol {
 
   addFriend(friend) {
     this.cachedFriends.add(friend);
-    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+    this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
   updateFriends({ id, field, value }) {
     this.cachedFriends.update(id, field, value);
-    this.friendCacheUpdated(this.cachedFriends.get(id));
+    this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
-  removeFriend(friend) {
-    this.cachedFriends.remove(friend.id);
-    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+  removeFriend(id) {
+    console.log("ep.removeFriend", id);
+    this.cachedFriends.remove(id);
+    this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
   getFriend(id) {
@@ -732,7 +733,7 @@ class EchoProtocol {
     if (friend && userFriend) {
       return userFriend;
     } else {
-      this.needUserCacheUpdate({ id, call: { function: "getFriend", args: { id } } });
+      // this.needUserCacheUpdate({ id, call: { function: "getFriend", args: { id } } });
       console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", id)
     }
   }
@@ -752,51 +753,6 @@ class EchoProtocol {
     } else {
       return "no"
     }
-  }
-
-  getFriends() {
-    let friends = this.cachedFriends.getAccepted();
-    let usersFriends = [];
-    friends.forEach((friend) => {
-      let f = this.cachedUsers.get(friend.id)
-      if (f) {
-        usersFriends.push(f);
-      } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", friend.id)
-      }
-    });
-
-    return usersFriends;
-  }
-
-  getFriendRequests() {
-    let friends = this.cachedFriends.getRequested();
-    let usersFriends = [];
-    friends.forEach((friend) => {
-      let f = this.cachedUsers.get(friend.id)
-      if (f) {
-        usersFriends.push(f);
-      } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", friend.id)
-      }
-    });
-
-    return usersFriends;
-  }
-
-  getFriendRequested() {
-    let friends = this.cachedFriends.getNotAccepted();
-    let usersFriends = [];
-    friends.forEach((friend) => {
-      let f = this.cachedUsers.get(friend.id)
-      if (f) {
-        usersFriends.push(f);
-      } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", friend.id)
-      }
-    });
-
-    return usersFriends;
   }
 
   getRoom(id) {

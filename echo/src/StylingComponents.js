@@ -631,10 +631,27 @@ const StyledOnlineUserIconAvatarBadge = styled(Container)(({ theme }) => ({
   }
 }));
 
+/* CurrentStatus */
+
+const StyledCurrentStatusContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    alignContent: "center",
+    padding: "0.5rem",
+    fontSize: "0.9rem",
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
     StyledTopBar,
+  },
+  CurrentStatus: {
+    StyledCurrentStatusContainer,
   },
   OnlineUserIcon: {
     StyledOnlineUserIconContainer,

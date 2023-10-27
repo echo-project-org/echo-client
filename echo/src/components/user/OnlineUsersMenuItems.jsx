@@ -24,7 +24,7 @@ function FriendButton({ user, handleClose }) {
     //notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
     ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
-    ep.removeFriend({ id: user.id });
+    ep.removeFriend(user.id);
     handleClose();
   }
 
@@ -39,7 +39,7 @@ function FriendButton({ user, handleClose }) {
   const handleFriendReject = () => {
     api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
     ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
-    ep.removeFriend({ id: user.id });
+    ep.removeFriend(user.id);
     handleClose();
   }
 

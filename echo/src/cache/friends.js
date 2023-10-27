@@ -12,32 +12,27 @@ class Friends {
       return data = String(data);
     }
 
-    if (data.id && typeof data.id !== "string") data.id = String(data.id);
-    if (data.accepted && typeof data.accepted !== "boolean") {
-      if (data.accepted === "true") data.accepted = true;
-      else if (data.accepted === "false") data.accepted = false;
-    }
-    if (data.requested && typeof data.requested !== "boolean") {
-      if (data.requested === "true") data.requested = true;
-      else if (data.requested === "false") data.requested = false;
-    }
+    if (data.img) data.img = String(data.img);
+    if (data.name) data.name = String(data.name);
+    if (data.status) data.status = String(data.status);
 
     return data;
   }
 
   add(data) {
     if (!data) return console.error("[CACHE] Data is required to add a friend to the cache");
-
     data = this.typeCheck(data);
 
     if (!data.id) return console.error("[CACHE] ID is required to add a friend to the cache");
-
+    if (!data.type) return console.error("[CACHE] Type is required to add a friend to the cache");
     if (this.friends[data.id]) return console.warn(`[CACHE] Friend ${data.id} already exists in cache`);
 
     this.friends[data.id] = {
       id: data.id,
-      accepted: data.accepted || false,
-      requested: data.requested || false,
+      type: data.type,
+      img: data.img || "",
+      name: data.name || "",
+      status: data.status || "",
     }
   }
 
