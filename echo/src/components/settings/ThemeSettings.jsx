@@ -62,6 +62,11 @@ function ThemeSettings() {
     storage.set("secondary", secondary);
     storage.set("text", text);
 
+    theme.palette.background.main = background;
+    theme.palette.primary.main = primary;
+    theme.palette.secondary.main = secondary;
+    theme.palette.text.main = text;
+
     ep.emit("themeChanged", {
       background: background,
       primary: primary,
@@ -69,13 +74,6 @@ function ThemeSettings() {
       text: text,
     });
   }
-
-  useEffect(() => {
-    theme.palette.background.main = background;
-    theme.palette.primary.main = primary;
-    theme.palette.secondary.main = secondary;
-    theme.palette.text.main = text;
-  }, [background, primary, secondary, text]);
 
   return (
     <StyledComponents.Settings.StyledSettingsModalSubdiv>
