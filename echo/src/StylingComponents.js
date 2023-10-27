@@ -307,7 +307,7 @@ const StyledActiveRoom = styled("div")(({ theme }) => ({
     borderRadius: "0 .4rem .4rem 0",
     margin: ".4rem 0 .4rem 0",
     boxShadow: ".3rem 0 .3rem .1rem " + theme.palette.text.light,
-    transition: "all .1s ease-in-out",
+    transition: "boxShadow .1s ease-in-out, height 1s ease-in-out",
     marginRight: ".75rem",
     "h6": {
       paddingTop: ".5rem",
@@ -326,7 +326,7 @@ const StyledInactiveRoom = styled("div")(({ theme }) => ({
     marginRight: ".65rem",
     ":hover": {
       boxShadow: ".2rem 0 .3rem .5px " + theme.palette.text.light,
-      transition: "all .2s ease-in-out"
+      transition: "boxShadow .2s ease-in-out"
     },
     "h6": {
       paddingTop: ".5rem",
