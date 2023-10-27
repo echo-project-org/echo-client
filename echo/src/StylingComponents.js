@@ -99,9 +99,11 @@ const StyledMainPageGrid = styled(Grid)(({ theme }) => ({
     },
     "h3": {
       color: theme.palette.text.main,
+      paddingLeft: ".5rem",
     },
     "p": {
       color: theme.palette.text.main,
+      paddingLeft: ".5rem",
     },
   },
 }));

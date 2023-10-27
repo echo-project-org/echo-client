@@ -10,7 +10,7 @@ import CurrentStatus from "../user/CurrentStatus";
 
 const api = require('../../api');
 
-function RoomConentFriendsButtons({ user, friendStatus }) {
+function RoomConentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {
     api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
     ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
@@ -31,34 +31,27 @@ function RoomConentFriendsButtons({ user, friendStatus }) {
 
   return (
     <Container className="buttonsContainer">
-      { friendStatus === "friends" ? <Button><ChatBubble /></Button> : null }
-      { friendStatus === "friends" ? <Button><Call /></Button> : null }
-      { friendStatus === "pending" ? <Button onClick={handleFriendAccept}><PersonAdd /></Button> : null }
-      { friendStatus === "pending" ? <Button onClick={handleFriendReject}><PersonRemove /></Button> : null }
-      { friendStatus === "requested" ? <Button onClick={handleRemoveSentRequest}><PersonRemove /></Button> : null }
+      { user.type === "friended" ? <Button><ChatBubble /></Button> : null }
+      { user.type === "friended" ? <Button><Call /></Button> : null }
+      { user.type === "incoming" ? <Button onClick={handleFriendAccept}><PersonAdd /></Button> : null }
+      { user.type === "incoming" ? <Button onClick={handleFriendReject}><PersonRemove /></Button> : null }
+      { user.type === "sent" ? <Button onClick={handleRemoveSentRequest}><PersonRemove /></Button> : null }
     </Container>
   )
 }
 
 function RoomContentFriendContainer({ user, index }) {
-  // friendStatus can be 'no', 'friends', 'pending', 'requested'
-  const [friendStatus, setFriendStatus] = useState('no');
-
-  useEffect(() => {
-    setFriendStatus(ep.getFriendStatus(user.id));
-  }, [friendStatus, user.id]);
-
   return (
     <StyledComponents.Friends.StyledFriendsContainer container key={"f" + index} flexDirection={"row"} display={"flex"}>
       <Grid item style={{ width: "calc(2rem + 2vw)" }}>
-        <Avatar alt={user.id} src={user.userImage} />
+        <Avatar alt={user.id} src={user.img} />
       </Grid>
       <Grid item style={{ width: "30%", marginLeft: "1rem" }}>
         <span>{user.name}</span>
-        <CurrentStatus icon={false} align={"left"} height={"2rem"} />
+        <CurrentStatus icon={false} align={"left"} height={"2rem"} online={user.status} />
       </Grid>
       <Grid item style={{ width: "70%" }}>
-        <RoomConentFriendsButtons user={user} friendStatus={friendStatus} />
+        <RoomConentFriendsButtons user={user} />
       </Grid>
     </StyledComponents.Friends.StyledFriendsContainer>
   )

@@ -36,7 +36,6 @@ function MainPage() {
 
   const changeSelected = (e) => {
     const id = e.currentTarget.dataset.id;
-    console.log(id, typeof id)
     setSidebarButtons((prev) => {
       return prev.map((button, index) => {
         if (index.toString() === id) {
@@ -50,7 +49,6 @@ function MainPage() {
   }
 
   useEffect(() => {
-    console.log("Non si può dire questo")
     // if id is not set, redirect to login page
     if (!storage.get("id")) {
       navigate("/login");

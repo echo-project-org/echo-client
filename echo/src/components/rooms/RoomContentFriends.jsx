@@ -10,63 +10,49 @@ const api = require('../../api');
 
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);
-  const [pending, setPending] = useState([]);
-  const [requested, setRequested] = useState([]);
 
   useEffect(() => {
-    api.call("users/friends/" + storage.get('id'), "GET").then((res) => {
-      res.json.forEach((user) => {
-        if (user.id) {
-          ep.addFriend({ id: user.id, accepted: true, requested: true });
-          if (!ep.getUser(user.id)) {
-            api.call("users/" + user.id, "GET").then((res) => {
-              ep.addUser(res.json);
-            });
-          }
+    api.call('users/friends/' + storage.get("id"), "GET")
+      .then((res) => {
+        const _friends = [];
+        for (var i in res.json.friended) {
+          _friends.push({
+            id: res.json.friended[i].id,
+            name: res.json.friended[i].name,
+            status: res.json.friended[i].status,
+            img: res.json.friended[i].img,
+            type: "friended"
+          })
         }
+        for (var i in res.json.sent) {
+          _friends.push({
+            id: res.json.sent[i].id,
+            name: res.json.sent[i].name,
+            status: res.json.sent[i].status,
+            img: res.json.sent[i].img,
+            type: "sent"
+          })
+        }
+        for (var i in res.json.incoming) {
+          _friends.push({
+            id: res.json.incoming[i].id,
+            name: res.json.incoming[i].name,
+            status: res.json.incoming[i].status,
+            img: res.json.incoming[i].img,
+            type: "incoming"
+          })
+        }
+        setFriends(_friends);
+      })
+      .catch((err) => {
+        console.error(err.message);
       });
-    }).catch((err) => {
-      console.error(err);
-    });
 
-    api.call("users/friends/requests/" + storage.get('id'), "GET").then((res) => {
-      res.json.forEach((user) => {
-        console.log(user)
-        if (user.id) {
-          ep.addFriend({ id: user.id, accepted: true, requested: false });
-          console.log(ep.getUser(user.id))
-          if (!ep.getUser(user.id)) {
-            api.call("users/" + user.id, "GET").then((res) => {
-              ep.addUser(res.json);
-            });
-          }
-        }
-      });
-    });
-
-    api.call("users/friends/sentRequests/" + storage.get('id'), "GET").then((res) => {
-      res.json.forEach((user) => {
-        if (user.id) {
-          ep.addFriend({ id: user.id, accepted: false, requested: true });
-          if (!ep.getUser(user.id)) {
-            api.call("users/" + user.id, "GET").then((res) => {
-              ep.addUser(res.json);
-            });
-          }
-        }
-      });
-    });
 
     setFriends(ep.getFriends());
-    setPending(ep.getFriendRequested());
-    setRequested(ep.getFriendRequests());
 
     ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
-      console.log("Friend cache updated")
-      console.log(ep.getFriends(), ep.getFriendRequested(), ep.getFriendRequests());
       setFriends(ep.getFriends());
-      setPending(ep.getFriendRequested());
-      setRequested(ep.getFriendRequests());
     });
 
     return () => {
@@ -77,30 +63,9 @@ function RoomContentFriends({ }) {
   return (
     <StyledComponents.Friends.StyledFriendsListContainer>
       <StyledComponents.Friends.StyledFriendsListOverflow>
-        {
-          friends.map((user, index) => {
-            //Friends
-            return (
-              <RoomContentFriendContainer user={user} index={index} key={index} />
-            )
-          })
-        }
-        {
-          requested.map((user, index) => {
-            //Request sent by user
-            return (
-              <RoomContentFriendContainer user={user} index={index} key={index} />
-            )
-          })
-        }
-        {
-          pending.map((user, index) => {
-            //Request sent to user
-            return (
-              <RoomContentFriendContainer user={user} index={index} key={index} />
-            )
-          })
-        }
+        {friends.map((user, index) => {
+          return <RoomContentFriendContainer user={user} index={index} key={index} />
+        })}
       </StyledComponents.Friends.StyledFriendsListOverflow>
     </StyledComponents.Friends.StyledFriendsListContainer>
   )

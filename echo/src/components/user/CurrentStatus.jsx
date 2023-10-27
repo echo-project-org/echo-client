@@ -1,4 +1,4 @@
-import "../../css/userstatus.css";
+import { useState, useEffect } from "react";
 
 import { Container } from '@mui/material'
 import { Circle, DoNotDisturbOn, DarkMode } from '@mui/icons-material';
@@ -6,8 +6,17 @@ import PropTypes from 'prop-types';
 
 import { storage } from "../../index";
 
-function CurrentStatus({ icon, align, height }) {
-  const online = storage.get("online");
+function CurrentStatus({ icon, align, height, online }) {
+  const [status, setStatus] = useState(0); // 0 - offline, 1 - online, 2 - away, 3 - do not disturb, 4 - invisible
+
+  useEffect(() => {
+    const _online = storage.get("online");
+    if (online === "none") {
+      setStatus(_online);
+    } else {
+      setStatus(online);
+    }
+  }, []);
 
   var style={
     width: "100%",
@@ -70,13 +79,15 @@ function CurrentStatus({ icon, align, height }) {
 CurrentStatus.propTypes = {
   icon: PropTypes.bool,
   align: PropTypes.string,
-  height: PropTypes.string
+  height: PropTypes.string,
+  online: PropTypes.string
 }
 
 CurrentStatus.defaultProps = {
   icon: true,
   align: "right",
-  height: "100%"
+  height: "100%",
+  online: "none"
 }
 
 export default CurrentStatus;
