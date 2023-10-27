@@ -18,6 +18,11 @@ function RoomContentFriends({ }) {
       res.json.forEach((user) => {
         if (user.id) {
           ep.addFriend({ id: user.id, accepted: true, requested: true });
+          if (!ep.getUser(user.id)) {
+            api.call("users/" + user.id, "GET").then((res) => {
+              ep.addUser(res.json);
+            });
+          }
         }
       });
     }).catch((err) => {
@@ -26,8 +31,15 @@ function RoomContentFriends({ }) {
 
     api.call("users/friends/requests/" + storage.get('id'), "GET").then((res) => {
       res.json.forEach((user) => {
+        console.log(user)
         if (user.id) {
           ep.addFriend({ id: user.id, accepted: true, requested: false });
+          console.log(ep.getUser(user.id))
+          if (!ep.getUser(user.id)) {
+            api.call("users/" + user.id, "GET").then((res) => {
+              ep.addUser(res.json);
+            });
+          }
         }
       });
     });
@@ -36,6 +48,11 @@ function RoomContentFriends({ }) {
       res.json.forEach((user) => {
         if (user.id) {
           ep.addFriend({ id: user.id, accepted: false, requested: true });
+          if (!ep.getUser(user.id)) {
+            api.call("users/" + user.id, "GET").then((res) => {
+              ep.addUser(res.json);
+            });
+          }
         }
       });
     });

@@ -683,6 +683,10 @@ class EchoProtocol {
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
 
+  getUser(id) {
+    return this.cachedUsers.get(id); 
+  }
+
   updatePersonalSettings({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
       this.socket.emit("client.updateUser", { id, field, value });
