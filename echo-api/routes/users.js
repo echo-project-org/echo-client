@@ -194,15 +194,26 @@ router.get('/friends/:id', (req, res) => {
                 ELSE 'incoming'
             END AS relationship,
             CASE
-                WHEN f1.id = ? THEN f2.id
+                WHEN f1.id = ? THEN f1.otherId
                 ELSE f1.id
             END AS otherUserId,
+            u.name AS otherUsername,
+            u.img AS otherUserImage,
+            CASE
+                WHEN u.online = '1' THEN us.status
+                ELSE '0'
+            END AS otherUserStatus,
             f1.otherId AS otherId
         FROM user_friends f1
         LEFT JOIN user_friends f2 ON (f1.id = f2.otherId AND f1.otherId = f2.id)
+        LEFT JOIN users u ON u.id = CASE WHEN f1.id = ? THEN f1.otherId ELSE f1.id END
+        LEFT JOIN user_status us ON us.userId = CASE WHEN f1.id = ? THEN f1.otherId ELSE f1.id END
         WHERE f1.id = ? OR f1.otherId = ?;
-    `, [id, id, id, id, id, id, id], function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
+    `, [id, id, id, id, id, id, id, id, id], function (err, result, fields) {
+        if (err) {
+            console.error(err);
+            return res.status(400).send({ error: "You messed up the request." });
+        }
 
         const friendMap = {
             friended: [],
@@ -211,22 +222,32 @@ router.get('/friends/:id', (req, res) => {
         };
         if (result.length > 0) {
             result.map((friends) => {
+                console.log(friends);
                 // check if user is friended by other user
                 if (friends.relationship === "friend" && friends.otherId !== Number(id)) {
                     friendMap.friended.push({
-                        "id": friends.otherUserId,
+                        id: friends.otherUserId,
+                        img: friends.otherUserImage,
+                        name: friends.otherUsername,
+                        status: friends.otherUserStatus,
                     })
                 } else
                 // check if user sent friend request
                 if (friends.relationship === "sent") {
                     friendMap.sent.push({
-                        "id": friends.otherId,
+                        id: friends.otherUserId,
+                        img: friends.otherUserImage,
+                        name: friends.otherUsername,
+                        status: friends.otherUserStatus,
                     })
                 } else
                 // check if user has incoming friend request
                 if (friends.relationship === "incoming") {
                     friendMap.incoming.push({
-                        "id": friends.otherUserId,
+                        id: friends.otherUserId,
+                        img: friends.otherUserImage,
+                        name: friends.otherUsername,
+                        status: friends.otherUserStatus,
                     })
                 }
             });
