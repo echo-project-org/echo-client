@@ -6,13 +6,17 @@ class SocketCheck {
         this.service = service;
         if (service.fireOnStart) this.check();
         this.interval = setInterval(this.check.bind(this), this.service.interval * 1000);
+        
+        this.socket = socketIO(this.service.url, {
+            path: "/socket.io",
+            query: { id: "status" }
+        });
     }
 
     check() {
-        const socket = socketIO(this.service.url);
         socket.on("connect", () => {
             this.service.status = "ok";
-            socket.disconnect();
+            // socket.disconnect();
         });
         socket.on("connect_error", (error) => {
             this.service.status = "error";
