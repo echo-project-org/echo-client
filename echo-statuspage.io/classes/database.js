@@ -1,4 +1,4 @@
-const sqlite3 = requrie("sqlite3");
+const sqlite3 = require("sqlite3");
 
 class Database {
     constructor(config) {
@@ -7,11 +7,13 @@ class Database {
         const path = "./data/" + this.config.name + ".db";
         this.db = new sqlite3.Database(path);
         // init the database creating all the tables
-        this.init();
     }
 
     init() {
-        this.db.run("CREATE TABLE IF NOT EXISTS incidents (id TEXT, name TEXT, status TEXT, message TEXT)");
+        return new Promise((resolve, reject) => {
+            this.db.run("CREATE TABLE IF NOT EXISTS incidents (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, incId TEXT, status TEXT, message TEXT, data TEXT)");
+            resolve();
+        });
     }
 
     /**
@@ -23,8 +25,21 @@ class Database {
      * @param {String} incident.message message to be displayed on the statuspage
      */
     addIncident(incident) {
-        const sql = "INSERT INTO incidents (name, id, status, message) VALUES (?, ?, ?, ?)";
-        this.db.run(sql, [incident.name, incident.status, incident.message, incident.timestamp]);
+        const sql = "INSERT INTO incidents (name, incId, status, message, data) VALUES (?, ?, ?, ?, ?)";
+        this.db.run(sql, [incident.name, incident.id, incident.status || "in_progress", incident.message, JSON.stringify(incident)]);
+    }
+
+    getIncident(incident) {
+        const sql = "SELECT * FROM incidents WHERE incId = ? ORDER BY id DESC LIMIT 1";
+        return new Promise((resolve, reject) => {
+            this.db.all(sql, [incident.id], (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
     }
 
     /**
@@ -32,7 +47,7 @@ class Database {
      * @returns {Promise<Array>} array of incidents
      */
     getActiveIncidents() {
-        const sql = "SELECT * FROM incidents WHERE status <> ?";
+        const sql = "SELECT * FROM incidents WHERE id = ( SELECT MAX(id) FROM incidents WHERE status <> ? )";
         return new Promise((resolve, reject) => {
             this.db.all(sql, ["completed"], (err, rows) => {
                 if (err) {
@@ -44,3 +59,5 @@ class Database {
         });
     }
 }
+
+module.exports = Database;

@@ -1,9 +1,19 @@
 const axios = require('axios');
 
 class StatusPage {
-    constructor(config) {
+    constructor(config, db) {
         this.config = config.statusPage
         this.incidents = {}
+        this.db = db;
+        this.db.init()
+            .then(() => {
+                this.db.getActiveIncidents()
+                    .then((incidents) => {
+                        incidents.forEach((incident) => {
+                            this.incidents[incident.name] = JSON.parse(incident.data);
+                        });
+                    });
+            });
     }
 
     _computeImpact(service_status) {
@@ -185,6 +195,7 @@ class StatusPage {
                 console.log("[STATUSPAGE] " + service_name + " incident created");
                 this.incidents[service_name] = incident;
                 this.incidents[service_name].id = response.data.id;
+                this.db.addIncident(response.data);
             })
             .catch((error) => {
                 console.log("[STATUSPAGE] " + service_name + " incident creation failed");
@@ -202,6 +213,7 @@ class StatusPage {
                 console.log("[STATUSPAGE] " + service_name + " incident updated");
                 this.incidents[service_name] = incident;
                 this.incidents[service_name].id = response.data.id;
+                this.db.addIncident(response.data);
             })
             .catch((error) => {
                 console.log("[STATUSPAGE] " + service_name + " incident update failed");

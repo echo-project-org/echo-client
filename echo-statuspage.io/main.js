@@ -6,11 +6,14 @@ const StatusPage = require("./classes/statuspage");
 const Logger = require("./classes/logger");
 new Logger(config);
 
+const Database = require("./classes/database");
+const db = new Database(config);
+
 const checkers = [];
 
-
 config.services.forEach(element => {
-    element.runner = new StatusPage(config);
+    element.runner = new StatusPage(config, db);
+    element.db = db;
     switch (element.type) {
         case "http":
             checkers.push(new HttpCheck(element));
