@@ -14,14 +14,14 @@ class SocketCheck {
     }
 
     check() {
-        socket.on("connect", () => {
+        this.socket.on("connect", () => {
             this.service.status = "ok";
             // socket.disconnect();
         });
-        socket.on("connect_error", (error) => {
+        this.socket.on("connect_error", (error) => {
             this.service.status = "error";
             this.service.error = error;
-            socket.disconnect();
+            this.socket.disconnect();
         });
     }
 }
