@@ -38,6 +38,7 @@ function Header({ }) {
             height: "5rem",
             borderBottom: "1px solid #e0e0e0",
             boxShadow: "0px 0px 10px 0px rgba(255,255,255,0.75)",
+            position: "fixed",
         }}>
             <Grid container sx={{}}>
                 <Grid item sx={{ }}>
