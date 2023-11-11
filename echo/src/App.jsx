@@ -62,6 +62,21 @@ function App() {
         secondary: {
           main: secondary,
         },
+        error: themePaletteMaker.palette.augmentColor({
+          color: {
+            main: "#ff0000",
+          }
+        }),
+        warning: themePaletteMaker.palette.augmentColor({
+          color: {
+            main: "#ffff00",
+          }
+        }),
+        success: themePaletteMaker.palette.augmentColor({
+          color: {
+            main: "#00ff00",
+          }
+        }),
       },
       typography: {
         fontFamily: ['Roboto Condensed'].join(','),
