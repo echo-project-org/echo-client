@@ -1,23 +1,53 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Grid, Typography } from '@mui/material';
-import { ButtonGroup, Button, Tooltip, Container } from '@mui/material';
+import { ButtonGroup, Button, Tooltip, Container, ClickAwayListener, Grid, Slider } from '@mui/material';
 import { CancelPresentation, VolumeUp, VolumeOff, PictureInPictureAlt } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
 
 import { ep } from '../..';
+
+const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider }) => {
+  const [volume, setVolume] = useState(0);
+
+  if (!showVolumeSlider) return (<></>)
+
+  return (
+    <Container sx={{
+      position: "absolute",
+      bottom: "3.8rem",
+      left: "0",
+      width: "100%",
+      height: "200%",
+      zIndex: "3",
+      // opacity: showVolumeSlider ? "1" : "0",
+      transition: "all 0.1s ease",
+    }}>
+      <ClickAwayListener onClickAway={hideVolumeSlider}>
+        <Slider
+          sx={{
+            right: "2.5rem"
+          }}
+          orientation='vertical'
+          value={volume}
+          onChange={(e, newValue) => setVolume(newValue)}
+        ></Slider>
+      </ClickAwayListener>
+    </Container>
+  )
+}
 
 const ScreenShareControlIcons = ({ stopPlayback }) => {
   const [showControls, setShowControls] = useState(false);
   const [screenShareStream, setScreenShareStream] = useState(ep.getVideo());
   const [muted, setMuted] = useState(true);
   const [pip, setPip] = useState(false);
+  const [volumeSlider, setVolumeSlider] = useState(false);
 
   const handleMouseEnter = () => {
     setShowControls(true);
   }
   const handleMouseLeave = () => {
-    setShowControls(false);
+    // setShowControls(false);
   }
   const toggleMuteStream = () => {
     setMuted(!muted);
@@ -30,6 +60,13 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
   }
   const disablePip = () => {
     setPip(false);
+  }
+
+  const showVolumeSlider = () => {
+    setVolumeSlider(true);
+  }
+  const hideVolumeSlider = () => {
+    setVolumeSlider(false);
   }
 
   useEffect(() => {
@@ -76,12 +113,6 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         zIndex: "2",
         opacity: showControls ? "1" : "0",
       }}>
-        {/* <Grid container direction='row' alignContent='center' justifyContent='start' style={{ padding: 16 }}>
-          <Grid item>
-            <Typography variant='h5' style={{ color: '#f5e8da' }}>Player</Typography>
-          </Grid>
-        </Grid> */}
-
         <Grid container direction='row' alignItems='center' justifyContent='center' paddingBottom={"1rem"} zIndex={3} sx={{
           // align items to bottom of container
           position: "absolute",
@@ -90,11 +121,12 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
           width: "100%",
         }}>
           <ButtonGroup variant='text'>
-            <Tooltip title={"Mute stream"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
-              <Button disableRipple onClick={toggleMuteStream}>
+            <>
+              <VolumeSlider showVolumeSlider={volumeSlider} hideVolumeSlider={hideVolumeSlider} />
+              <Button disableRipple onClick={toggleMuteStream} onMouseEnter={showVolumeSlider}>
                 {muted ? <VolumeOff /> : <VolumeUp />}
               </Button>
-            </Tooltip>
+            </>
             <Tooltip title={"Stop watching"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
               <Button disableRipple onClick={stopWaching}>
                 <CancelPresentation />
