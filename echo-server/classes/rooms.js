@@ -485,7 +485,7 @@ class Rooms {
 
             this.workers.forEach(async (worker, _) => {
                 let usage = await worker.getResourceUsage();
-                console.log("Checking worker " + worker.pid + " with usage " + usage.ru_utime + " and min usage " + minUsage);
+                console.log("[W-" + worker.pid + "] CPU time: " + usage.ru_utime);
                 if (usage.ru_utime < minUsage) {
                     minUsage = usage.ru_utime;
                     minWorker = worker;
