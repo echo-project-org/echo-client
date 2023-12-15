@@ -480,15 +480,16 @@ class Rooms {
     async addRoom(id) {
         if (!this.rooms.has(id)) {
             //find the worker with the least cpu usage
-            let minUsage = Infinity;
-            let minWorker = null;
-            this.workers.forEach((worker, _) => {
-                worker.getResourceUsage().then((usage) => {
-                    if (usage.ru_utime < minUsage) {
-                        minUsage = usage.ru_utime;
-                        minWorker = worker;
-                    }
-                });
+            let minUsage = this.workers[0].getResourceUsage().ru_utime;
+            let minWorker = this.workers[0];
+
+            this.workers.forEach(async (worker, _) => {
+                let usage = await worker.getResourceUsage();
+                console.log("Checking worker " + worker.pid + " with usage " + usage.ru_utime + " and min usage " + minUsage);
+                if (usage.ru_utime < minUsage) {
+                    minUsage = usage.ru_utime;
+                    minWorker = worker;
+                }
             });
 
             //create a router
