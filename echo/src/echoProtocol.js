@@ -463,7 +463,7 @@ class EchoProtocol {
     const audioState = this.getAudioState();
     this.mh.startStatsInterval();
     // join the transmission on current room
-    this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted }); //TODO Multi server - add serverId and join room would call server function and join router serverId@roomId
+    this.socket.emit("client.join", { serverId: 1, id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted }); //TODO Multi server - add serverId and join room would call server function and join router serverId@roomId
     this.joinedRoom();
   }
 
