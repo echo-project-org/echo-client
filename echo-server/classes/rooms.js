@@ -463,7 +463,7 @@ class Rooms {
 
     async joinRoom(data) {
         //TODO Multi server - Use data.serverId to discriminate which server the user wants to join and join router named serverId@roomId
-        await this.addRoom(data.roomId);
+        await this.addRoom(data);
         this.addUserToRoom(data);
     }
 
@@ -477,7 +477,8 @@ class Rooms {
         this.connectedClients.delete(data.id);
     }
 
-    async addRoom(id) {
+    async addRoom(data) {
+        let id = data.roomId + "@" + data.serverId;
         if (!this.rooms.has(id)) {
             //find the worker with the least cpu usage
             let minUsage = this.workers[0].getResourceUsage().ru_utime;
@@ -554,14 +555,17 @@ class Rooms {
     addUserToRoom(data) {
         const id = data.id;
         const roomId = data.roomId;
+        const serverId = data.serverId;
+
+        const actualRoomId = roomId + "@" + serverId;
         if (this.connectedClients.has(id)) {
-            if (this.rooms.has(roomId)) {
+            if (this.rooms.has(actualRoomId)) {
                 const user = this.connectedClients.get(id);
-                user.setCurrentRoom(roomId);
-                this.rooms.get(roomId).users.set(user.id, user);
+                user.join({roomId: actualRoomId});
+                this.rooms.get(actualRoomId).users.set(user.id, user);
 
                 let newUser = this.connectedClients.get(id);
-                let router = this.rooms.get(roomId).mediasoupRouter;
+                let router = this.rooms.get(actualRoomId).mediasoupRouter;
                 //Create receive transport
                 router.createWebRtcTransport({
                     listenIps: [
@@ -626,7 +630,7 @@ class Rooms {
                     newUser.setSendVideoTransport(transport, router.rtpCapabilities);
                 });
             }
-        } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + roomId + ", user is not connected to socket"));
+        } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + actualRoomId + ", user is not connected to socket"));
     }
 
     getUsersInRoom(id) {
