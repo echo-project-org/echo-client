@@ -459,8 +459,8 @@ class User {
     // unused for now, could be handy in case of connection problems
     // (like reconnecting to the last room)
     setCurrentRoom(roomId) {
-        if (typeof roomId !== "number") roomId = Number(roomId);
-        if (isNaN(roomId)) return console.error("NOT A VALID ROOM NUMBER IN setCurrentRoom")
+        //if (typeof roomId !== "string") roomId = Number(roomId);
+        //if (isNaN(roomId)) return console.error("NOT A VALID ROOM NUMBER IN setCurrentRoom")
         this.currentRoom = roomId;
     }
 
