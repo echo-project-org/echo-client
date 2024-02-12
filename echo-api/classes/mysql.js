@@ -14,8 +14,8 @@ class SQL {
                 console.log("Connected to database!")
             })
             .catch(err => {
-                console.log(err);
-                if (this.con) this.con.destroy();
+                console.error(err);
+                if (this.con) this.con.release();
                 this.connected = false;
                 console.error("Retrying connection to database. Maybe offline?");
                 setTimeout(() => { this.enstablishConnection() }, this.config.database.retryInterval * 1000 * 60 || 20000);
@@ -24,17 +24,38 @@ class SQL {
 
     connect() {
         return new Promise((resolve, reject) => {
-            this.con = mysql.createConnection(this.config.database);
-            this.con.connect((err) => {
-                if (err) return reject(err);
-                resolve();
-            });
+            this.pool = mysql.createPool(this.config.database);
+            this.con = this.pool.getConnection((err, connection) => {
+                if(err){
+                    connection.release();
+                    reject(err);
+                }
+            })
+            resolve();
         });
     }
     
     getConnection() {
         if (!this.connected) return false;
-        return this.con;
+        return this.pool;
+    }
+
+    query(query, callback){
+        this.pool.getConnection((err, connection) => {
+            if(err){
+                console.error(err);
+                connection.release();
+                return false;
+            }
+            connection.query(query, (err, result) => {
+                connection.release();
+                if(err){
+                    console.error(err);
+                    return false;
+                }
+                callback(result);
+            });
+        });
     }
 }
 
