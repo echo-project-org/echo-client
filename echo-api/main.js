@@ -38,5 +38,6 @@ server.use("/api/users", require("./routes/users"));
 server.use("/api/rooms", require("./routes/rooms"));
 // server.use("/api/app", require("./routes/app"));
 server.use("/api/auth", require("./routes/auth"));
+server.use("/api/servers", require("./routes/servers"));
 
 server.listen(config.port, () => console.log("API online and listening on port", config.port));
