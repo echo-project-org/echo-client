@@ -75,6 +75,8 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
+      data.roomId = data.roomId.slice(0, data.roomId.lastIndexOf('@'));
+      console.log(data);
       if (data.isConnected) this.startReceiving(data.id);
       this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
       this.updateUser({ id: data.id, field: "muted", value: data.muted });
@@ -653,7 +655,7 @@ class EchoProtocol {
         }
       }
     }
-    if(this.mh){
+    if (this.mh) {
       return this.mh.getAudioState();
     }
 
@@ -684,7 +686,7 @@ class EchoProtocol {
   }
 
   getUser(id) {
-    return this.cachedUsers.get(id); 
+    return this.cachedUsers.get(id);
   }
 
   updatePersonalSettings({ id, field, value }) {
@@ -695,7 +697,7 @@ class EchoProtocol {
   }
 
   updateUser({ id, field, value }) {
-    try{
+    try {
       if (this.cachedUsers.get(id)) {
         this.cachedUsers.update(id, field, value);
         const rooms = this.cachedRooms.values();
