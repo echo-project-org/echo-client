@@ -30,11 +30,6 @@ jobs:
         run: npm install
         working-directory: ./echo
 
-      - name: Build React Frontend
-        shell: pwsh
-        run: npm run build
-        working-directory: ./echo
-
       - name: Install dependencies for the Electron app
         shell: pwsh
         run: npm install
@@ -45,8 +40,8 @@ jobs:
         shell: pwsh
         working-directory: ./electron
         run: |
-          $build_output = npm run make
-          $out_path = echo $build_output | Select-String -Pattern '\[DATA\] Artifacts available at: ' | ForEach-Object { $_ -replace '^.*\[DATA\] Artifacts available at: ', '' }
+          $build_output = npm run dist
+          $out_path = ./dist
           echo "artifact_path=$out_path" >> $ENV:GITHUB_OUTPUT
           echo "Build Output: $out_path"
 
@@ -96,93 +91,50 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\EchoSetup.exe"
-          asset_name: echo-installer-win-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe
+          asset_path: "./"
+          asset_name: Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe
           asset_content_type: application/zip
       
-      - name: Upload MSI
-        id: upload-msi
+      - name: Upload blockmap
+        id: upload-blockmap
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\EchoSetup.msi"
-          asset_name: echo-msi-win-${{ steps.extract_echo_version.outputs.release_echo_version }}.msi
+          asset_path: "./"
+          asset_name: Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe.blockmap
           asset_content_type: application/zip
 
-      - name: Upload Package
-        id: upload-package
+      - name: Upload builder debug
+        id: upload-builder-debug
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\echo-${{ steps.extract_electorn_version.outputs.release_electron_version }}-full.nupkg"
-          asset_name: echo-win-${{ steps.extract_echo_version.outputs.release_echo_version }}-full.nupkg
+          asset_path: "./"
+          asset_name: builder-debug.yml
           asset_content_type: application/zip
 
-      - name: Upload RELEASES
-        id: upload-releases
+      - name: Upload builder-effective-config
+        id: upload-builder-effective-config
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ steps.build_electron_app.outputs.artifact_path }}\\squirrel.windows\\x64\\RELEASES"
-          asset_name: RELEASES
+          asset_path: "./"
+          asset_name: builder-effective-config.yml
           asset_content_type: application/zip
-      
-      - name: Create ZIP Archive of Pre-compiled Folder
-        shell: pwsh
-        working-directory: ./electron/out
-        run: 7z a -r -tzip pre-compiled-${{ steps.extract_echo_version.outputs.release_echo_version }}.zip Echo-win32-x64
-        
-      - name: Upload Source Code
-        id: upload-source-code
+
+      - name: Upload latest.yml
+        id: upload-latest-yml
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.zth_token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./electron/out/pre-compiled-${{ steps.extract_echo_version.outputs.release_echo_version }}.zip
-          asset_name: pre-compiled-${{ steps.extract_echo_version.outputs.release_echo_version }}.zip
+          asset_path: "./"
+          asset_name: latest.yml
           asset_content_type: application/zip
-  
-  build-and-release-linux:
-    runs-on: ubuntu-latest
-
-    # wait for prev job to finish
-    needs: build-and-release-windows
-
-    # disable this step for now
-    if: false
-    # if: contains(github.event.head_commit.message, 'Create new release')
-
-    env:
-      CI: false
-      GITHUB_TOKEN: ${{ secrets.zth_token }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies for the React frontend
-        shell: pwsh
-        run: npm install
-        working-directory: ./echo
-
-      - name: Build React Frontend
-        shell: pwsh
-        run: npm run build
-        working-directory: ./echo
-
-      - name: Install dependencies for the Electron app
-        shell: pwsh
-        run: npm install
-        working-directory: ./electron
