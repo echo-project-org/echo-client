@@ -1,50 +1,9 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, autoUpdater, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog } = require('electron');
+const { autoUpdater, AppUpdater } = require('electron-updater');
 const path = require('path')
 
-if (app.isPackaged) {
-  const server = 'https://download.kuricki.com'
-  const url = `${server}/update/${process.platform}/${app.getVersion()}`
-  autoUpdater.setFeedURL({ url })
-  try {
-    autoUpdater.checkForUpdates();
-  } catch (e) {
-    console.log("Error while checking for updates")
-  }
-
-  setInterval(() => {
-    console.log("Checking for updates")
-    console.log(url);
-    //this fails if app is not installed
-    try {
-      autoUpdater.checkForUpdates();
-    } catch (e) {
-      console.log("Error while checking for updates")
-    }
-  }, 60000)
-
-  autoUpdater.on('update-available', () => {
-    const dialogOpts = {
-      type: 'info',
-      buttons: ['Restart and update'],
-      title: 'Echo update',
-      message: 'New version available',
-      detail: 'A new version of Echo is available. Please update the app.'
-    }
-
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      autoUpdater.quitAndInstall();
-    })
-  })
-
-  autoUpdater.on('update-not-available', () => {
-    console.log("No updates available")
-  })
-
-  autoUpdater.on('error', (message) => {
-    console.error("Error while checking for updates")
-    console.error(message)
-  })
-}
+autoUpdater.autoDownload = true;
+autoUpdater.autoInstallOnAppQuit = true;
 
 var mainWindow;
 var rtcInternals;
@@ -84,7 +43,7 @@ const createMainWindow = () => {
   win.setMinimumSize(800, 700);
 
   if (app.isPackaged) {
-    win.loadFile('index.html'); // prod
+    win.loadFile('./frontend/index.html'); // prod
   } else {
     win.loadURL('http://localhost:3000'); // dev
   }
@@ -108,6 +67,7 @@ let tray = null;
 
 
 app.whenReady().then(() => {
+  autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
   tray = new Tray(path.join(process.cwd(), 'images', 'icon.png'))
   const TrayMenu = [
@@ -181,6 +141,30 @@ app.whenReady().then(() => {
     rtcInternals.loadURL("chrome://webrtc-internals");
     rtcInternals.show();
   }
+
+  autoUpdater.on('update-available', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Echo',
+      message: 'Update available. Downloading...',
+      buttons: []
+    });
+  });
+
+  autoUpdater.on('update-downloaded', () => {
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'Echo',
+      message: 'Update downloaded. Restarting...',
+      buttons: []
+    });
+
+    autoUpdater.quitAndInstall();
+  });
+
+  autoUpdater.on('error', (err) => {
+    dialog.showErrorBox('Error: ', err == null ? "unknown" : (err.stack || err).toString());
+  });
 })
 
 // app.on('window-all-closed', () => {

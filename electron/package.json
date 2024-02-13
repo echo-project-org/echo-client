@@ -1,18 +1,31 @@
 {
   "name": "echo",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "Echo project - The better messaging and voice chat app",
   "productName": "Echo",
   "main": "main.js",
   "scripts": {
     "start": "concurrently --kill-others \"npm run start-frontend\" \"npm run start-backend\"",
-    "start-backend": "electron-forge start",
+    "start-backend": "electron .",
     "start-frontend": "cd ../echo && npm run start",
-    "package": "electron-forge package",
-    "publish": "electron-forge publish",
-    "make": "electron-forge make"
+    "dist": "cd ../echo && npm run build && cd ../electron && electron-builder"
   },
-  "author": "Kury",
+  "repository": "https://github.com/KuryGabriele/echo-project",
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
+  },
+  "build": {
+    "appId": "com.echo.kuricki",
+    "productName": "Echo",
+    "win": {
+      "target": "nsis"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "author": "Kury & Thundy",
   "license": "ISC",
   "devDependencies": {
     "@electron-forge/cli": "^6.4.2",
@@ -26,11 +39,11 @@
     "@electron-forge/publisher-github": "^6.4.2",
     "concurrently": "^8.0.1",
     "electron": "^24.8.5",
+    "electron-builder": "^24.9.1",
     "electron-wix-msi": "^5.0.0"
   },
   "dependencies": {
-    "@electron-forge/maker-flatpak": "^6.4.2",
-    "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^6.1.7",
     "rpmbuild": "^0.0.23",
     "wait-on": "^7.0.1"
   }

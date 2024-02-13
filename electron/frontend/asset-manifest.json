@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "./static/css/main.942e3ab6.css",
+    "main.js": "./static/js/main.3e6698e9.js",
+    "static/js/787.f021fffd.chunk.js": "./static/js/787.f021fffd.chunk.js",
+    "static/media/echoRingtone.flac": "./static/media/echoRingtone.6adad6a718d61905e0cd.flac",
+    "static/media/streamend.mp3": "./static/media/streamend.7fc582d033676395f20e.mp3",
+    "static/media/streamstart.mp3": "./static/media/streamstart.1d6024144527275cd535.mp3",
+    "static/media/headphones.svg": "./static/media/headphones.2dba6f0b1b255ca1a3dcb5b487e2853b.svg",
+    "static/media/newmessage.mp3": "./static/media/newmessage.56b3980f3369a158fc1e.mp3",
+    "static/media/newmessageself.mp3": "./static/media/newmessageself.ac24f67519e923da3df1.mp3",
+    "static/media/undeaf.mp3": "./static/media/undeaf.52121d5686a3f70d0984.mp3",
+    "static/media/deaf.mp3": "./static/media/deaf.f29a7df0d2d86f85442f.mp3",
+    "static/media/unmute.mp3": "./static/media/unmute.e5aeac73045da144dad0.mp3",
+    "static/media/join.mp3": "./static/media/join.f35ccd7a9ff6315ea338.mp3",
+    "static/media/leave.mp3": "./static/media/leave.7eec8d77a67d593bb0dc.mp3",
+    "static/media/mute.mp3": "./static/media/mute.e9d441477caf2f590c52.mp3",
+    "index.html": "./index.html",
+    "main.942e3ab6.css.map": "./static/css/main.942e3ab6.css.map",
+    "main.3e6698e9.js.map": "./static/js/main.3e6698e9.js.map",
+    "787.f021fffd.chunk.js.map": "./static/js/787.f021fffd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.942e3ab6.css",
+    "static/js/main.3e6698e9.js"
+  ]
+}
