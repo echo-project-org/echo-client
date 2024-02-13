@@ -1,41 +1,94 @@
-import { motion } from 'framer-motion'
-import Sidebar from '../sidebar/Sidebar';
-import RoomContent from '../rooms/RoomContent';
 import { useState, useEffect } from 'react';
+import { Grid, Tooltip, Slide } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion'
 
-import { ep } from "../../index";
-// const api = require('../../api')
+import MainPageFriends from './MainPageFriends';
+import MainPageServers from './MainPageServers';
+
+import { storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
 
 function MainPage() {
-  const [roomId, setRoomId] = useState(0);
+  const navigate = useNavigate();
+  const [sidebarButtons, setSidebarButtons] = useState([
+    {
+      name: "Servers",
+      selected: true,
+      icon: "list",
+      element: <MainPageServers />,
+    },
+    {
+      name: "Friends",
+      selected: false,
+      icon: "people_alt",
+      element: <MainPageFriends />,
+    }
+  ]);
 
-  const updateCurrentRoom = (joiningId) => {
-    setRoomId(joiningId);
+  const getSelected = () => {
+    for (let i = 0; i < sidebarButtons.length; i++) {
+      if (sidebarButtons[i].selected) {
+        return sidebarButtons[i];
+      }
+    }
+  }
+
+  const changeSelected = (e) => {
+    const id = e.currentTarget.dataset.id;
+    setSidebarButtons((prev) => {
+      return prev.map((button, index) => {
+        if (index.toString() === id) {
+          button.selected = true;
+        } else {
+          button.selected = false;
+        }
+        return button;
+      })
+    });
   }
 
   useEffect(() => {
-    ep.on("exitedFromRoom", (data) => {
-      setRoomId(0);
-    })
-  }, [roomId]);
+    // if id is not set, redirect to login page
+    if (!storage.get("id")) {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   return (
     <motion.div
-      className='mainScreen'
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -100, opacity: 0 }}
     >
-      <div className='sideWithChat'>
-        <Sidebar updateCurrentRoom={updateCurrentRoom} />
-        <RoomContent roomId={roomId} />
-      </div>
-
+    <Grid container>
+      <Grid item>
+        <Slide direction="right" in={true} mountOnEnter unmountOnExit>
+          <StyledComponents.MainPage.StyledContainerSidebar>
+            {sidebarButtons.map((button, id) => {
+              return (
+                <Tooltip key={id} title={button.name} placement="right" arrow>
+                  <StyledComponents.MainPage.StyledIconContainer onClick={changeSelected} data-id={id}>
+                    {button.selected ?
+                      <StyledComponents.MainPage.StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledSelectedIcon>
+                      :
+                      <StyledComponents.MainPage.StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledUnselectedIcon>
+                    }
+                  </StyledComponents.MainPage.StyledIconContainer>
+                </Tooltip>
+              )
+            })}
+          </StyledComponents.MainPage.StyledContainerSidebar>
+        </Slide>
+      </Grid>
+      <Grid item>
+        <StyledComponents.MainPage.StyledContainer>
+          {getSelected().element}
+        </StyledComponents.MainPage.StyledContainer>
+      </Grid>
+    </Grid>
     </motion.div>
   )
 }
 
-MainPage.defaultProps = {
-}
-
-export default MainPage
+export default MainPage;

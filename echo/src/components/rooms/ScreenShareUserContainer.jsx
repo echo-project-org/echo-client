@@ -46,7 +46,6 @@ function ScreenShareUserContainer({ user, selectUser }) {
     });
 
     ep.on("audioStatsUpdate", "ScreenShareUserContainer.audioStatsUpdate", (audioData) => {
-      console.log(audioData, user);
       if (audioData.id === user.id) {
         setTalking(audioData.talking);
       }

@@ -1,4 +1,4 @@
-import { useState, useEffect, Component } from 'react';
+import { useState, useEffect } from 'react';
 import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 
@@ -47,9 +47,9 @@ function Room({ active, data }) {
   }, [])
 
   return (
-    <div>
+    <>
       { active ? <ActiveRoom users={onlineUsers} data={data} /> : <InactiveRoom users={onlineUsers} data={data} /> }
-    </div>
+    </>
   )
 }
 

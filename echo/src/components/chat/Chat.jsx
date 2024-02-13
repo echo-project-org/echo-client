@@ -38,7 +38,7 @@ function Chat({ currentRoomId, onMouseDown }) {
         setMessages([]);
 
         // get messages from api
-        api.call("rooms/" + currentRoomId + "/messages")
+        api.call("rooms/" + currentRoomId + "/" + storage.get('serverId') + "/messages")
           .then((res) => {
             ep.setMessagesCache({ messages: res.json, roomId: currentRoomId });
           })

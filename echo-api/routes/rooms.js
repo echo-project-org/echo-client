@@ -9,8 +9,10 @@ router.use((req, res, next) => {
     next();
 });
 
-router.get('/', (req, res) => {
-    req.database.query("SELECT id, name, description, maxUsers FROM rooms ORDER BY id", [], (err, result, fields) => {
+router.get('/:serverId', (req, res) => {
+    const { serverId } = req.params;
+    if (!serverId) return res.status(400).json({ message: "Provide a valid server id" });
+    req.database.query("SELECT id, name, description, maxUsers FROM rooms WHERE serverId = ? ORDER BY id", [serverId], (err, result, fields) => {
         if (err) return console.error(err);
 
         var jsonOut = [];
@@ -23,16 +25,19 @@ router.get('/', (req, res) => {
                     maxUsers: plate.maxUsers
                 });
             });
+        } else {
+            return res.status(400).json({ message: "No rooms found for the provided server id" });
         }
         return res.json(jsonOut);
     });
 });
 
-router.get('/:id', (req, res) => {
-    const { id } = req.params;
+router.get('/:serverId/:id', (req, res) => {
+    const { serverId, id } = req.params;
+    if (!serverId) return res.status(400).json({ message: "Provide a valid server id" });
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
 
-    req.database.query("SELECT id, name, description, maxUsers FROM rooms WHERE id = ?", [req.params.id], (err, result, fields) => {
+    req.database.query("SELECT id, name, description, maxUsers FROM rooms WHERE id = ? AND serverId = ?", [id, serverId], (err, result, fields) => {
         if (err) return console.error(err);
 
         if (result.length > 0) {
@@ -44,25 +49,30 @@ router.get('/:id', (req, res) => {
                 img: plate.img,
                 maxUser: plate.maxUsers
             });
+        } else {
+            return res.status(400).json({ message: "No room found with the provided id" });
         }
     });
 });
 
 // create new room
 router.post('/', (req, res) => {
-    const { name, description, maxUsers } = req.body;
-    if (!name || !description || !maxUsers) return res.status(400).json({ message: "Provide a valid room id" });
+    const { serverId, name, description, maxUsers } = req.body;
+    if (!serverId || !name || !description || !maxUsers) return res.status(400).json({ message: "Provide a valid room id" });
 
-    req.database.query("INSERT INTO rooms (name, description, maxUsers) VALUES (?, ?, ?)", [name, description, maxUsers], (err, result, fields) => {
-        if (err) return console.error(err);
+    req.database.query("INSERT INTO rooms (serverId, name, description, maxUsers) VALUES (?, ?, ?, ?)", [serverId, name, description, maxUsers], (err, result, fields) => {
+        if (err) {
+            res.status(400).json({ message: "Error creating the room!" });
+            return console.error(err);
+        }
         res.json({ message: "Room created!" });
     });
 });
 
 // join room
 router.post('/join', (req, res) => {
-    const { userId, roomId } = req.body;
-    if (!roomId || !userId) return res.status(400).json({ message: "Provide a valid room id" });
+    const { serverId, userId, roomId } = req.body;
+    if (!serverId || !roomId || !userId) return res.status(400).json({ message: "Provide a valid room id" });
 
     // if user is already in room, remove it
     req.database.query("DELETE FROM room_users WHERE userId = ?", [userId], (err, result, fields) => {
@@ -73,10 +83,10 @@ router.post('/join', (req, res) => {
     // if room id is 0, then the user has left all rooms
     if (roomId !== "0") {
         // add user to joining room
-        req.database.query("INSERT INTO room_users (roomId, userId) VALUES (?, ?)", [roomId, userId], (err, result, fields) => {
+        req.database.query("INSERT INTO room_users (roomId, userId, serverId) VALUES (?, ?, ?)", [roomId, userId, serverId], (err, result, fields) => {
             if (err) return console.error(err);
             // send complete room data back to client
-            req.database.query("SELECT users.id, users.name, users.img FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ?", [roomId], (err, result, fields) => {
+            req.database.query("SELECT users.id, users.name, users.img FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ? AND room_users.serverId = ?", [roomId, serverId], (err, result, fields) => {
                 if (err) return console.error(err);
 
                 var jsonOut = [];
@@ -95,11 +105,13 @@ router.post('/join', (req, res) => {
     }
 });
 
-router.get('/:id/users', (req, res) => {
-    const { id } = req.params;
+// get users in room
+router.get('/:id/:serverId/users', (req, res) => {
+    const { id, serverId } = req.params;
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
+    if (!serverId) return res.status(400).json({ message: "Provide a valid server id" });
 
-    req.database.query("SELECT users.id, users.name, users.img, users.online FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ?", [id], (err, result, fields) => {
+    req.database.query("SELECT users.id, users.name, users.img, users.online FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ? AND serverId = ?", [id, serverId], (err, result, fields) => {
         if (err) return console.error(err);
 
         var jsonOut = [];
@@ -118,9 +130,10 @@ router.get('/:id/users', (req, res) => {
     });
 });
 
-router.get('/:id/messages', (req, res) => {
-    const { id } = req.params;
+router.get('/:id/:serverId/messages', (req, res) => {
+    const { id, serverId } = req.params;
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
+    if (!serverId) return res.status(400).json({ message: "Provide a valid server id" });
 
     // TODO: request previous 50 messages if scrolling up
     req.database.query(`
@@ -134,10 +147,10 @@ router.get('/:id/messages', (req, res) => {
             users.img
         FROM room_messages
         INNER JOIN users ON room_messages.userId = users.id
-        WHERE room_messages.roomId = ?
+        WHERE room_messages.roomId = ? AND room_messages.serverId = ?
         ORDER BY room_messages.id DESC
         LIMIT 50
-    `, [id], (err, result, fields) => {
+    `, [id, serverId], (err, result, fields) => {
         if (err) return console.error(err);
 
         var jsonOut = [];
@@ -159,17 +172,21 @@ router.get('/:id/messages', (req, res) => {
 });
 
 router.post('/messages', (req, res) => {
-    const { roomId, userId, message } = req.body;
+    const { roomId, userId, serverId, message, } = req.body;
     if (!roomId) return res.status(400).json({ message: "Provide a valid room id" });
     if (!userId) return res.status(400).json({ message: "Provide a valid user id" });
+    if (!serverId) return res.status(400).json({ message: "Provide a valid server id" });
     if (!message) return res.status(400).json({ message: "Provide a valid message" });
-
+    
     // transform js date to mysql date
     // const jsDate = new Date(date);
     // const mysqlDate = jsDate.toISOString().slice(0, 19).replace('T', ' ');
 
-    req.database.query("INSERT INTO room_messages (roomId, userId, message) VALUES (?, ?, ?)", [roomId, userId, message], (err, result, fields) => {
-        if (err) return console.error(err);
+    req.database.query("INSERT INTO room_messages (roomId, userId, serverId, message) VALUES (?, ?, ?, ?)", [roomId, userId, serverId, message], (err, result, fields) => {
+        if (err) {
+            res.status(400).json({ message: "Error sending the message!" });
+            return console.error(err);
+        }
         res.json({ message: "Message sent!" });
     });
 });

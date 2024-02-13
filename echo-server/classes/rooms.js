@@ -2,6 +2,7 @@ const User = require("./users");
 const mediasoup = require("mediasoup");
 const Colors = require("./colors");
 const colors = new Colors();
+const os = require("os");
 
 const codecs = [{
     kind: "audio",
@@ -35,39 +36,55 @@ class Rooms {
         this.userListeners = new Map();
         this.socket = null;
         this.worker = null;
+        this.workers = [];
+
+        let numberOfWorkers = os.cpus().length;
+
+        console.log(colors.changeColor("green", "Creating " + numberOfWorkers + " workers"));
+
+        for (let i = 0; i < numberOfWorkers; i++) {
+            mediasoup.createWorker({
+                logLevel: 'debug',
+                logTags: [
+                    'info',
+                    'ice',
+                    'dtls',
+                    'rtp',
+                    'srtp',
+                    'rtcp'
+                ],
+                rtcMinPort: 40000,
+                rtcMaxPort: 49999
+            }).then((worker) => {
+                this.workers.push(worker);
+                console.log(colors.changeColor("cyan", "[W-" + worker.pid + "] Worker created"));
+
+                worker.on('died', (e) => {
+                    console.log(colors.changeColor("red", "[W-" + worker.pid + "] died!"));
+                    let index = this.workers.indexOf(worker);
+                    if (index != -1) {
+                        this.workers.splice(index, 1);
+                    }
+                });
+
+                worker.observer.on('close', () => {
+                    console.log(colors.changeColor("red", "[W-" + worker.pid + "] closed!"));
+                    let index = this.workers.indexOf(worker);
+                    if (index != -1) {
+                        this.workers.splice(index, 1);
+                    }
+                });
+
+                worker.observer.on('newrouter', (router) => {
+                    console.log(colors.changeColor("cyan", "[W-" + worker.pid + "] New router with id " + router.id));
+                });
+            });
+        }
+
 
         this.privateCallRooms = new Map();
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
-
-        mediasoup.createWorker({
-            logLevel: 'debug',
-            logTags: [
-                'info',
-                'ice',
-                'dtls',
-                'rtp',
-                'srtp',
-                'rtcp'
-            ],
-            rtcMinPort: 40000,
-            rtcMaxPort: 49999
-        }).then((worker) => {
-            this.worker = worker;
-            console.log(colors.changeColor("cyan", "Mediasoup worker created with pid " + this.worker.pid));
-
-            this.worker.on('died', (e) => {
-                console.log(colors.changeColor("red", "Mediasoup worker died\n" + e));
-            });
-
-            this.worker.observer.on('close', () => {
-                console.log(colors.changeColor("red", "Mediasoup worker closed"));
-            });
-
-            this.worker.observer.on('newrouter', (router) => {
-                console.log(colors.changeColor("cyan", "Mediasoup router created with id " + router.id));
-            });
-        });
 
 
         this.emitter.on('connection', async (socket) => {
@@ -370,14 +387,14 @@ class Rooms {
     userFullyConnectedToRoom(a) {
         //Notify all users
         let newUser = this.connectedClients.get(a.id);
-        if(newUser.isPrivateCalling){
+        if (newUser.isPrivateCalling) {
             //user conneted to private call
             //to something
 
             return;
         }
         this.connectedClients.forEach((user, _) => {
-            if (a.id !== user.id) {
+            if (a.serverId === user.serverId && a.id !== user.id) {
                 const userRoom = user.getCurrentRoom();
                 a.isConnected = userRoom === a.roomId;
                 user.userJoinedChannel({
@@ -438,14 +455,18 @@ class Rooms {
     sendAudioState(data) {
         if (this.connectedClients.has(data.id)) {
             const user = this.connectedClients.forEach((user, id) => {
-                if (String(id) !== String(data.id))
-                    user.sendAudioState(data);
+                if(data.serverId === user.serverId){
+                    if (String(id) !== String(data.id)){
+                        user.sendAudioState(data);
+                    }
+                }
             });
         }
     }
 
     async joinRoom(data) {
-        await this.addRoom(data.roomId);
+        //TODO Multi server - Use data.serverId to discriminate which server the user wants to join and join router named serverId@roomId
+        await this.addRoom(data);
         this.addUserToRoom(data);
     }
 
@@ -459,9 +480,24 @@ class Rooms {
         this.connectedClients.delete(data.id);
     }
 
-    async addRoom(id) {
+    async addRoom(data) {
+        let id = data.roomId + "@" + data.serverId;
         if (!this.rooms.has(id)) {
-            let r = await this.worker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });
+            //find the worker with the least cpu usage
+            let minUsage = this.workers[0].getResourceUsage().ru_utime;
+            let minWorker = this.workers[0];
+
+            this.workers.forEach(async (worker, _) => {
+                let usage = await worker.getResourceUsage();
+                console.log("[W-" + worker.pid + "] CPU time: " + usage.ru_utime);
+                if (usage.ru_utime < minUsage) {
+                    minUsage = usage.ru_utime;
+                    minWorker = worker;
+                }
+            });
+
+            //create a router
+            let r = await minWorker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });
             r.observer.on('close', () => {
                 console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup router closed"));
             });
@@ -510,6 +546,11 @@ class Rooms {
                 user.clearTransports();
                 const room = this.rooms.get(roomId);
                 room.users.delete(data.id);
+
+                if(room.users.size === 0) {
+                    room.mediasoupRouter.close();
+                    this.rooms.delete(roomId);
+                }
             }
         }
     }
@@ -522,14 +563,17 @@ class Rooms {
     addUserToRoom(data) {
         const id = data.id;
         const roomId = data.roomId;
+        const serverId = data.serverId;
+
+        const actualRoomId = roomId + "@" + serverId;
         if (this.connectedClients.has(id)) {
-            if (this.rooms.has(roomId)) {
+            if (this.rooms.has(actualRoomId)) {
                 const user = this.connectedClients.get(id);
-                user.setCurrentRoom(roomId);
-                this.rooms.get(roomId).users.set(user.id, user);
+                user.join({roomId: actualRoomId});
+                this.rooms.get(actualRoomId).users.set(user.id, user);
 
                 let newUser = this.connectedClients.get(id);
-                let router = this.rooms.get(roomId).mediasoupRouter;
+                let router = this.rooms.get(actualRoomId).mediasoupRouter;
                 //Create receive transport
                 router.createWebRtcTransport({
                     listenIps: [
@@ -594,7 +638,7 @@ class Rooms {
                     newUser.setSendVideoTransport(transport, router.rtpCapabilities);
                 });
             }
-        } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + roomId + ", user is not connected to socket"));
+        } else console.log(colors.changeColor("red", "Can't add user " + id + " to room " + actualRoomId + ", user is not connected to socket"));
     }
 
     getUsersInRoom(id) {

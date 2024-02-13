@@ -3,6 +3,7 @@ import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip, FormContro
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
 import { ep, storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
 
 const CurrentDevice = ({ inputDevices, inputDevice, showList }) => {
   var currentDevice = inputDevices.find(device => device.id === inputDevice);
@@ -73,7 +74,7 @@ function InputDevicesSettings({ inputDevices }) {
   }
 
   return (
-    <div className="settingsModalSubDiv noselect">
+    <StyledComponents.Settings.StyledSettingsModalSubdiv>
       <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         Input device
       </Typography>
@@ -104,7 +105,7 @@ function InputDevicesSettings({ inputDevices }) {
           />
         </Stack>
       </div>
-    </div>
+    </StyledComponents.Settings.StyledSettingsModalSubdiv>
   )
 }
 

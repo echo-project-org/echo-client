@@ -1,0 +1,60 @@
+{
+    "services": [
+        {
+            "name": "api_users",
+            "display_name": "API Users",
+            "type": "http",
+            "url": "https://echo.kuricki.com/api/users/",
+            "fireOnStart": true,
+            "interval": 60,
+            "responseTime": 1000
+        },
+        {
+            "name": "api_rooms",
+            "display_name": "API Rooms",
+            "type": "http",
+            "url": "https://echo.kuricki.com/api/rooms/",
+            "fireOnStart": true,
+            "interval": 60,
+            "responseTime": 1000
+        },
+        {
+            "name": "socket_server",
+            "display_name": "Socket Server",
+            "type": "socket",
+            "url": "https://echo.kuricki.com",
+            "fireOnStart": true,
+            "interval": 60,
+            "responseTime": 1000
+        },
+        {
+            "name": "website",
+            "display_name": "Website",
+            "type": "http",
+            "url": "https://echo.kuricki.com/",
+            "fireOnStart": true,
+            "interval": 60,
+            "responseTime": 1000
+        }
+    ],
+    "statusPage": {
+        "url": "https://api.statuspage.io/v1",
+        "API_KEY": "koook",
+        "PAGE_ID_OLD": "a91813b5ebd449348f2e086f6cff62fc",
+        "PAGE_ID": "30e4a56d4eeb4fc2a45f53539777550a",
+        "components": {
+            "website": "7wt4yxbjk30t",
+            "api_users": "d56fc2hh0m0n",
+            "api_rooms": "d56fc2hh0m0n",
+            "socket_server": "1jp7y1wfvfz7"
+        },
+        "footerMessage": "\n\nVisit the official <a href='https://echo.kuricki.com/'>Website</a> for more information.\nWant to help with the project? Visit the official <a href='https://github.com/KuryGabriele/echo-project'>GitHub</a> repository and contribute!"
+    },
+    "database": {
+        "name": "statuspage"
+    },
+    "logs": {
+        "type": "verbose",
+        "path": "./data/logs/"
+    }
+}

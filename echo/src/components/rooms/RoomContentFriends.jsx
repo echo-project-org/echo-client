@@ -1,56 +1,68 @@
-import "../../css/friends.css";
-
 import { useEffect, useState } from "react";
-
-import { Avatar, Grid, Container, Button } from "@mui/material";
-import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
+import { Container } from "@mui/material";
 
 import { ep, storage } from "../../index";
-import CurrentStatus from "../user/CurrentStatus";
+import StyledComponents from '../../StylingComponents';
+
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
 const api = require('../../api');
 
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);
-  const [pending, setPending] = useState([]);
-  const [requested, setRequested] = useState([]);
 
   useEffect(() => {
-    api.call("users/friends/" + storage.get('id'), "GET").then((res) => {
-      res.json.forEach((user) => {
-        if (user.id) {
-          ep.addFriend({ id: user.id, accepted: true, requested: true });
+    api.call('users/friends/' + storage.get("id"), "GET")
+      .then((res) => {
+        const _friends = [];
+        for (var i in res.json.friended) {
+          const data = {
+            id: res.json.friended[i].id,
+            name: res.json.friended[i].name,
+            status: res.json.friended[i].status,
+            img: res.json.friended[i].img,
+            type: "friended"
+          }
+          _friends.push(data);
+          ep.addFriend(data);
         }
-      });
-    }).catch((err) => {
-      console.error(err);
-    });
-
-    api.call("users/friends/requests/" + storage.get('id'), "GET").then((res) => {
-      res.json.forEach((user) => {
-        if (user.id) {
-          ep.addFriend({ id: user.id, accepted: true, requested: false });
+        for (var i in res.json.sent) {
+          const data = {
+            id: res.json.sent[i].id,
+            name: res.json.sent[i].name,
+            status: res.json.sent[i].status,
+            img: res.json.sent[i].img,
+            type: "sent"
+          }
+          _friends.push(data);
+          ep.addFriend(data);
         }
-      });
-    });
-
-    api.call("users/friends/sentRequests/" + storage.get('id'), "GET").then((res) => {
-      res.json.forEach((user) => {
-        if (user.id) {
-          ep.addFriend({ id: user.id, accepted: false, requested: true });
+        for (var i in res.json.incoming) {
+          const data = {
+            id: res.json.incoming[i].id,
+            name: res.json.incoming[i].name,
+            status: res.json.incoming[i].status,
+            img: res.json.incoming[i].img,
+            type: "incoming"
+          }
+          _friends.push(data);
+          ep.addFriend(data);
         }
+        setFriends(_friends);
+      })
+      .catch((err) => {
+        console.error(err.message);
       });
-    });
 
-    setFriends(ep.getFriends());
-    setPending(ep.getFriendRequested());
-    setRequested(ep.getFriendRequests());
-
-    ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (_) => {
-      setFriends(ep.getFriends());
-      setPending(ep.getFriendRequested());
-      setRequested(ep.getFriendRequests());
+    ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (data) => {
+      console.log("RoomContentFriends.usersCacheUpdated: ", data);
+      setFriends((prev) => {
+        const newV = [];
+        for (var i in data) {
+          newV.push(data[i]);
+        }
+        return newV;
+      });
     });
 
     return () => {
@@ -59,34 +71,13 @@ function RoomContentFriends({ }) {
   }, []);
 
   return (
-    <Container className="friends-list-container">
-      <Container className="friends-list-overflow">
-        {
-          friends.map((user, index) => {
-            //Friends
-            return (
-              <RoomContentFriendContainer user={user} index={index} key={index}/>
-            )
-          })
-        }
-        {
-          requested.map((user, index) => {
-            //Request sent by user
-            return (
-              <RoomContentFriendContainer user={user} index={index} key={index}/>
-            )
-          })
-        }
-        {
-          pending.map((user, index) => {
-            //Request sent to user
-            return (
-              <RoomContentFriendContainer user={user} index={index} key={index}/>
-            )
-          })
-        }
-      </Container>
-    </Container >
+    <StyledComponents.Friends.StyledFriendsListContainer>
+      <StyledComponents.Friends.StyledFriendsListOverflow>
+        {friends.map((user, index) => {
+          return <RoomContentFriendContainer user={user} index={index} key={index} />
+        })}
+      </StyledComponents.Friends.StyledFriendsListOverflow>
+    </StyledComponents.Friends.StyledFriendsListContainer>
   )
 }
 

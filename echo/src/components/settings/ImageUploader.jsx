@@ -1,32 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import AvatarEditor from 'react-avatar-editor'
-import { Button, Container, Grid, Typography, Zoom, styled, Slider, Stack } from "@mui/material";
+import { Button, Grid, Typography, Zoom, Slider, Stack } from "@mui/material";
 import { Search } from '@mui/icons-material';
 
 import { storage, ep } from "../../index";
+import StyledComponents from '../../StylingComponents';
 
 const api = require("../../api");
-
-const StyledContainer = styled(Container)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    position: "fixed",
-    top: "20%",
-    left: "20%",
-    backgroundColor: "#fff",
-    textAlign: "center",
-    position: "fixed",
-    maxWidth: "60%",
-    height: "fit-content",
-    paddingBottom: "1rem",
-    paddingTop: "1rem",
-    margin: "auto",
-    backgroundColor: "var(--mui-palette-background-main)",
-    boxShadow: "0 8px 15px 8px rgba(0,0,0,0.8)",
-    border: "1px solid var(--mui-palette-text-light)",
-    borderRadius: "20px",
-    zIndex: "3",
-  },
-}));
 
 const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);
@@ -38,15 +18,15 @@ const ImageUploader = ({ open, data }) => {
 
   if (!data) data = {};
   if (!data.image) data.image = storage.get("userImage");
-  
+
   const handleZoomChange = (event, newValue) => {
     setZoom(newValue);
   };
 
   return (
     <Zoom in={open}>
-      <div className={open ? "imageUploaderBG bgFadeIn" : "imageUploaderBG"}>
-        <StyledContainer>
+      <StyledComponents.Settings.StyledImageUploaderBackground>
+        <StyledComponents.Settings.StyledImageUploaderContainer>
           <Grid container>
             <Grid item xs={12}>
               <Typography variant="h3" component="h5" className="noselect">
@@ -54,64 +34,80 @@ const ImageUploader = ({ open, data }) => {
               </Typography>
             </Grid>
             <Grid item xs={12}>
-            <div className="imageUploaderContentContainer">
-              <Grid container>
-                <Grid item xs={12}>
-                  <AvatarEditor
-                    className='avatarEditor'
-                    ref={imageEditorRef}
-                    image={data.image}
-                    border={10}
-                    borderRadius={300}
-                    scale={(zoom / 100) + 1}
-                  />
-                </Grid>
-                <Grid item xs={6} className='avatarEditorGrid'>
-                  <Button variant="contained" color="primary" onClick={() => {
-                    const canvas = imageEditorRef.current.getImage().toDataURL();
+              <StyledComponents.Settings.StyledImageUploaderContentContainer>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <AvatarEditor
+                      className='avatarEditor'
+                      ref={imageEditorRef}
+                      image={data.image}
+                      border={10}
+                      borderRadius={300}
+                      scale={(zoom / 100) + 1}
+                    />
+                  </Grid>
+                  <Grid item xs={6} className='avatarEditorGrid'>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        const canvas = imageEditorRef.current.getImage().toDataURL();
 
-                    api.call("users/image", "POST", { id: storage.get("id"), image: canvas })
-                      .then((res) => {
+                        api.call("users/image", "POST", { id: storage.get("id"), image: canvas })
+                          .then((res) => {
+                            ep.emit("closeUploader");
+                            ep.updatePersonalSettings({ id: storage.get("id"), field: "userImage", value: canvas });
+                            storage.set("userImage", canvas);
+                          })
+                          .catch(err => {
+                            console.error(err);
+                          });
+                      }}
+                      sx={{
+                        margin: "2rem",
+                        width: "80%"
+                      }}
+                    >
+                      Save
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
                         ep.emit("closeUploader");
-                        ep.updatePersonalSettings({ id: storage.get("id"), field: "userImage", value: canvas });
-                        storage.set("userImage", canvas);
-                      })
-                      .catch(err => {
-                        console.error(err);
-                      });
-                  }}>
-                    Save
-                  </Button>
+                      }}
+                      sx={{
+                        margin: "2rem",
+                        width: "80%"
+                      }}  
+                    >
+                      Cancel
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <div style={{ width: "80%", margin: "auto" }}>
+                      <Stack spacing={2} direction="row" alignItems="center">
+                        <Search fontSize="medium" />
+                        <Slider
+                          sx={{ width: "100%" }}
+                          valueLabelDisplay="auto"
+                          valueLabelFormat={(v) => { return v + "%" }}
+                          aria-label="Volume"
+                          value={zoom}
+                          onChange={handleZoomChange}
+                          size='medium'
+                        />
+                      </Stack>
+                    </div>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6} className='avatarEditorGrid'>
-                  <Button variant="contained" color="primary" onClick={() => {
-                    ep.emit("closeUploader");
-                  }}>
-                    Cancel
-                  </Button>
-                </Grid>
-                <Grid item xs={12} className='avatarEditorGrid'>
-                  <div style={{ width: "80%", margin: "auto" }}>
-                    <Stack spacing={2} direction="row" alignItems="center">
-                      <Search fontSize="medium" />
-                      <Slider
-                        sx={{ width: "100%" }}
-                        valueLabelDisplay="auto"
-                        valueLabelFormat={(v) => { return v + "%" }}
-                        aria-label="Volume"
-                        value={zoom}
-                        onChange={handleZoomChange}
-                        size='medium'
-                      />
-                    </Stack>
-                  </div>
-                </Grid>
-              </Grid>
-            </div>
+              </StyledComponents.Settings.StyledImageUploaderContentContainer>
+            </Grid>
           </Grid>
-          </Grid>
-        </StyledContainer>
-      </div>
+        </StyledComponents.Settings.StyledImageUploaderContainer>
+      </StyledComponents.Settings.StyledImageUploaderBackground>
     </Zoom>
   )
 }

@@ -6,6 +6,7 @@ class Users {
     }
 
     typeCheck(data) {
+        if (data === undefined || data === null) throw new Error("[CACHE] Data is required to type check");
         if (typeof data !== "object") {
             if (typeof data === "boolean") return data;
             return data = String(data);
@@ -89,15 +90,20 @@ class Users {
     }
 
     getInRoom(roomId) {
-        // data type check
-        roomId = this.typeCheck(roomId);
-        const users = [];
-        for (const user in this.users) {
-            if (this.users[user].currentRoom === roomId) {
-                users.push(this.typeCheck(this.users[user]));
+        try {
+            // data type check
+            roomId = this.typeCheck(roomId);
+            const users = [];
+            for (const user in this.users) {
+                if (this.users[user].currentRoom === roomId) {
+                    users.push(this.typeCheck(this.users[user]));
+                }
             }
+            return users;
+        } catch (error) {
+            // console.error(error);
+            return [];
         }
-        return users;
     }
 
     update(id, field, value) {

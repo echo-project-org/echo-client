@@ -1,109 +1,58 @@
-import "../../css/friends.css";
-
-import { useEffect, useState } from "react";
-
 import { Avatar, Grid, Container, Button } from "@mui/material";
 import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
 
 import { ep, storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
+
 import CurrentStatus from "../user/CurrentStatus";
 
 const api = require('../../api');
+
+function RoomConentFriendsButtons({ user }) {
+  const handleFriendAccept = (e) => {
+    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+    ep.updateFriends({ id: user.id, field: "type", value: "friended" });
+  }
+
+  const handleFriendReject = (e) => {
+    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    ep.removeFriend(user.id);
+  }
+
+  const handleRemoveSentRequest = (e) => {
+    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    ep.removeFriend(user.id);
+  }
+
+  return (
+    <Container className="buttonsContainer">
+      { user.type === "friended" ? <Button><ChatBubble /></Button> : null }
+      { user.type === "friended" ? <Button><Call /></Button> : null }
+      { user.type === "incoming" ? <Button onClick={handleFriendAccept}><PersonAdd /></Button> : null }
+      { user.type === "incoming" ? <Button onClick={handleFriendReject}><PersonRemove /></Button> : null }
+      { user.type === "sent" ? <Button onClick={handleRemoveSentRequest}><PersonRemove /></Button> : null }
+    </Container>
+  )
+}
+
 function RoomContentFriendContainer({ user, index }) {
-    const [friendStatus, setFriendStatus] = useState('no');
-
-    useEffect(() => {
-        setFriendStatus(ep.getFriendStatus(user.id));
-    }, [friendStatus, user.id]);
-
-
-    const handleFriendAccept = (e) => {
-        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
-        ep.updateFriends({ id: user.id, requested: true, accepted: true });
-    }
-
-    const handleFriendReject = (e) => {
-        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
-        ep.removeFriend({ id: user.id });
-    }
-
-    const handleRemoveSentRequest = (e) => {
-        api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-        ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
-        ep.removeFriend({ id: user.id });
-    }
-
-    if (friendStatus === 'no') {
-        return null;
-    }
-    if (friendStatus === 'friends') {
-        return (
-            <Grid container className="friend-container" key={"f" + index} flexDirection={"row"} display={"flex"}>
-                <Grid item xs={1}>
-                    <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
-                </Grid>
-                <Grid item xs={3} className="userInfo">
-                    <span className="userName">{user.name}</span>
-                    <CurrentStatus icon={false} align={"left"} height={"2rem"} />
-                </Grid>
-                <Grid item xs={8}>
-                    <Container className="buttonsContainer">
-                        <Button>
-                            <ChatBubble />
-                        </Button>
-                        <Button>
-                            <Call />
-                        </Button>
-                    </Container>
-                </Grid>
-            </Grid>
-        )
-    }
-    if (friendStatus === 'pending') {
-        return (
-            <Grid container className="friend-container" key={"r" + index} flexDirection={"row"} display={"flex"}>
-                <Grid item xs={1}>
-                    <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
-                </Grid>
-                <Grid item xs={3} className="userInfo">
-                    <span className="userName">{user.name}</span>
-                    <CurrentStatus icon={false} align={"left"} height={"2rem"} />
-                </Grid>
-                <Grid item xs={8}>
-                    <Container className="buttonsContainer">
-                        <Button onClick={handleFriendAccept}>
-                            <PersonAdd />
-                        </Button>
-                        <Button onClick={handleFriendReject}>
-                            <PersonRemove />
-                        </Button>
-                    </Container>
-                </Grid>
-            </Grid>
-        )
-    }
-    if (friendStatus === 'requested') {
-        return (
-            <Grid container className="friend-container" key={"p" + index} flexDirection={"row"} display={"flex"}>
-                <Grid item xs={1}>
-                    <Avatar className="userAvatar" alt={user.id} src={user.userImage} />
-                </Grid>
-                <Grid item xs={3} className="userInfo">
-                    <span className="userName">{user.name}</span>
-                    <CurrentStatus icon={false} align={"left"} height={"2rem"} />
-                </Grid>
-                <Grid item xs={8}>
-                    <Container className="buttonsContainer">
-                        <Button onClick={handleRemoveSentRequest}>
-                            <PersonRemove />
-                        </Button>
-                    </Container>
-                </Grid>
-            </Grid>
-        )
-    }
+  return (
+    <StyledComponents.Friends.StyledFriendsContainer container key={"f" + index} flexDirection={"row"} display={"flex"}>
+      <Grid item style={{ width: "calc(2rem + 2vw)" }}>
+        <Avatar alt={"userFriendsIcon:" + String(user.id)} src={user.img} />
+      </Grid>
+      <Grid item style={{ width: "30%", marginLeft: "1rem" }}>
+        <span>{user.name}</span>
+        <CurrentStatus icon={false} align={"left"} height={"2rem"} online={user.status} />
+      </Grid>
+      <Grid item style={{ width: "70%" }}>
+        <RoomConentFriendsButtons user={user} />
+      </Grid>
+    </StyledComponents.Friends.StyledFriendsContainer>
+  )
 }
 
 export default RoomContentFriendContainer

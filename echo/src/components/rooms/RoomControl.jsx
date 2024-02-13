@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ButtonGroup, Button, Zoom, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '@emotion/react';
 
 import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabled, Logout } from '@mui/icons-material';
 
@@ -8,35 +9,52 @@ import SettingsButton from '../settings/SettingsButton';
 import ScreenShareSelector from '../settings/ScreenShareSelector';
 
 import { ep, storage, ap } from "../../index";
+import StylingComponents from '../../StylingComponents';
 
 const api = require('../../api')
 
 function RoomControl({ state, setState, screenSharing }) {
+  const theme = useTheme();
+  let navigate = useNavigate();
+
   const [muted, setMuted] = useState(false);
   const [deaf, setDeaf] = useState(false);
   const [wasMuted, setWasMuted] = useState(false);
   const [ping, setPing] = useState(0);
   const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
-
-  let navigate = useNavigate();
+  const [rtcConnectionStateColor, setRtcConnectionStateColor] = useState(theme.palette.error.main);
 
   useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
   useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
   useEffect(() => {
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
       switch (data.state) {
-        case 'new': setRtcConnectionState("Not connected"); break;
-        case 'disconnected': setRtcConnectionState("Not connected"); break;
-        case 'connecting': setRtcConnectionState("Connecting"); break;
-        case 'connected': setRtcConnectionState("Connected"); break;
-        case 'failed': setRtcConnectionState("Failed"); break;
-        case 'closed': setRtcConnectionState("Not connected"); break;
-        default: setRtcConnectionState("Not connected"); break;
+        case 'new' || 'disconnected' || 'closed':
+          setRtcConnectionState("Not connected");
+          setRtcConnectionStateColor(theme.palette.error.main);
+          break;
+        case 'connecting' || 'checking':
+          setRtcConnectionState("Connecting");
+          setRtcConnectionStateColor(theme.palette.warning.main);
+          break;
+        case 'connected':
+          setRtcConnectionState("Connected");
+          setRtcConnectionStateColor(theme.palette.success.main);
+          break;
+        case 'failed':
+          setRtcConnectionState("Failed");
+          setRtcConnectionStateColor(theme.palette.error.main);
+          break;
+        default:
+          setRtcConnectionState("Not connected");
+          setRtcConnectionStateColor(theme.palette.error.main);
+          break;
       }
     });
 
     ep.on("exitedFromRoom", "RoomControl.exitedFromRoom", () => {
       setRtcConnectionState("Disconnected");
+      setRtcConnectionStateColor(theme.palette.error.main);
     });
 
     ep.on("localUserCrashed", (data) => {
@@ -71,7 +89,7 @@ function RoomControl({ state, setState, screenSharing }) {
           storage.clear();
         });
     } else {
-      api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0" })
+      api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0", serverId: storage.get('serverId')})
         .then(res => {
           ep.exitFromRoom(storage.get('id'));
           ep.updateUser({ id: storage.get('id'), field: "currentRoom", value: 0 });
@@ -131,9 +149,12 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   return (
-    <div className='roomControl'>
+    <StylingComponents.RoomControls.StyledRoomControlsContainer>
       <Tooltip title={ping + " ms"} onMouseEnter={updatePing} onMouseLeave={stopUpdatePing} placement="top" arrow TransitionComponent={Zoom} followCursor enterTouchDelay={20}>
-        <div className="voiceConnected"><p>{rtcConnectionState}</p> <p><SignalCellularAlt /></p></div>
+        <StylingComponents.RoomControls.StyledRoomControlsConnection>
+          <p style={{ color: rtcConnectionStateColor }}>{rtcConnectionState}</p>
+          <p style={{ color: rtcConnectionStateColor }}><SignalCellularAlt /></p>
+        </StylingComponents.RoomControls.StyledRoomControlsConnection>
       </Tooltip>
       <ButtonGroup variant='text'>
         <Tooltip title={!muted ? "Mute" : "Unmute"} placement="top" arrow enterDelay={1} enterTouchDelay={20}>
@@ -154,7 +175,7 @@ function RoomControl({ state, setState, screenSharing }) {
           </Button>
         </Tooltip>
       </ButtonGroup>
-    </div>
+    </StylingComponents.RoomControls.StyledRoomControlsContainer>
   )
 }
 

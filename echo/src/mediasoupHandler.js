@@ -348,7 +348,6 @@ class mediasoupHandler {
 
     this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
     this.context = new AudioContext();
-
     const src = this.context.createMediaStreamSource(this.outStream);
     const dst = this.context.createMediaStreamDestination();
     this.outChannelCount = src.channelCount;
@@ -697,10 +696,10 @@ class mediasoupHandler {
   }
 
   setTestVoiceDetectionVolume(volume) {
-    if(this.testVadNode){
+    if (this.testVadNode) {
       this.testVadNode.gain.cancelAndHoldAtTime(0);
 
-      if(volume === 1.0) {
+      if (volume === 1.0) {
         this.testVadNode.gain.value = 1.0;
       } else {
         this.testVadNode.gain.linearRampToValueAtTime(0.0, this.testContext.currentTime + 2);
@@ -759,7 +758,7 @@ class mediasoupHandler {
         }
       }
 
-      if(this.testAnalyser) {
+      if (this.testAnalyser) {
         let audioOutputLevels = this.calculateAudioLevels(this.testAnalyser.analyser, this.testAnalyser.freqs, this.outChannelCount);
         if (!this.hasSpokenLocal && this._round(audioOutputLevels.reduce((a, b) => a + b, 0) / 2) >= this.talkingTreshold) {
           this.hasSpokenLocal = true;
@@ -777,6 +776,10 @@ class mediasoupHandler {
    * @param {number} volume - The desired volume level (0-1).
    */
   setOutVolume(volume) {
+    if(!volume){
+      console.warn("Volume is undefined, setting to 1");
+      volume = 1.0;
+    }
     this.volume = volume;
     if (this.outGainNode) {
       this.outGainNode.gain.value = volume;

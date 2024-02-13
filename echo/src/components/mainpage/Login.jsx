@@ -3,10 +3,11 @@ import { motion } from 'framer-motion'
 import { Alert, Button, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 
-import BackButton from '../settings/BackButton';
 import imgLogo from "../../img/headphones.svg"
 
 import { storage } from "../../index";
+import StyledComponents from '../../StylingComponents';
+
 var api = require('../../api')
 
 const Login = () => {
@@ -29,6 +30,10 @@ const Login = () => {
   const handleClose = () => {
     //Close error message handler
     setOpen(false);
+  }
+
+  const handleRegister = () => {
+    navigate("/register");
   }
 
   const checkCredentials = async (e) => {
@@ -81,12 +86,11 @@ const Login = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <BackButton />
-      <div className="customForm" style={{ height: "28rem" }}>
-        <div className="boxedLogoContainer">
-          <img className="boxedLogo" src={imgLogo} alt='echoLogo' />
-          <div className="ripple"></div>
-        </div>
+      <StyledComponents.Login.StyledForm>
+        <StyledComponents.Login.StyledBoxedLogo>
+          <img src={imgLogo} alt='echoLogo' />
+          <StyledComponents.Register.StyledRipple />
+        </StyledComponents.Login.StyledBoxedLogo>
         <h1>Login</h1>
         <input
           id="usernameBox"
@@ -103,8 +107,9 @@ const Login = () => {
           placeholder="Password"
           onKeyDown={checkCredentials}
         />
-        <Button variant="contained" onClick={checkCredentials}>Login</Button>
-      </div>
+        <StyledComponents.Login.StyledButtonPrimary variant="contained" onClick={checkCredentials}>Login</StyledComponents.Login.StyledButtonPrimary>
+        <StyledComponents.Login.StyledButtonSecondary variant="contained" onClick={handleRegister}>Go to Register</StyledComponents.Login.StyledButtonSecondary>
+      </StyledComponents.Login.StyledForm>
 
       <Snackbar
         open={open}

@@ -2,23 +2,23 @@ import React from 'react'
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from 'framer-motion'
 
-import MainLogo from './MainLogo'
-import MainPage from './MainPage'
+// import MainLogo from './MainLogo'
+import MainPage from './MainPage';
+import MainPageServer from './MainPageServer'
 import Login from './Login';
 import Register from './Register'
 
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <AnimatePresence>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" exact element={<MainLogo/>} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/register" element={<Register/>} />
-          <Route path="/main" element={<MainPage/>} />
-        </Routes>
+    <AnimatePresence mode='wait'>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" exact element={<MainPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/main" element={<MainPageServer />} />
+      </Routes>
     </AnimatePresence>
-    
   )
 }
 

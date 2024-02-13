@@ -4,6 +4,10 @@ echo/package-lock.json
 electron/package-lock.json
 echo/build
 electron/out
+echo-statuspage.io/package-lock.json
+echo-statuspage.io/config.json
+echo-website/package-lock.json
+echo-website/build/
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,visualstudiocode

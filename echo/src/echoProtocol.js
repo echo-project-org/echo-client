@@ -75,6 +75,8 @@ class EchoProtocol {
     });
 
     this.socket.on("server.userJoinedChannel", (data) => {
+      data.roomId = data.roomId.slice(0, data.roomId.lastIndexOf('@'));
+      console.log(data);
       if (data.isConnected) this.startReceiving(data.id);
       this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
       this.updateUser({ id: data.id, field: "muted", value: data.muted });
@@ -463,7 +465,7 @@ class EchoProtocol {
     const audioState = this.getAudioState();
     this.mh.startStatsInterval();
     // join the transmission on current room
-    this.socket.emit("client.join", { id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted });
+    this.socket.emit("client.join", { serverId: storage.get('serverId'), id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted }); //TODO Multi server - add serverId and join room would call server function and join router serverId@roomId
     this.joinedRoom();
   }
 
@@ -582,6 +584,7 @@ class EchoProtocol {
   }
 
   stopScreenSharing() {
+    this.updateUser({ id: storage.get("id"), field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
       this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
@@ -642,7 +645,7 @@ class EchoProtocol {
   }
 
   getAudioState(id = false) {
-    if (id && this.mh) {
+    if (id) {
       const cachedUser = this.cachedUsers.get(id);
       if (cachedUser && !cachedUser.self) {
         return {
@@ -652,7 +655,14 @@ class EchoProtocol {
         }
       }
     }
-    return this.mh.getAudioState();
+    if (this.mh) {
+      return this.mh.getAudioState();
+    }
+
+    return {
+      isMuted: false,
+      isDeaf: false
+    }
   }
 
   // cache rooms functions
@@ -675,6 +685,10 @@ class EchoProtocol {
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
 
+  getUser(id) {
+    return this.cachedUsers.get(id);
+  }
+
   updatePersonalSettings({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
       this.socket.emit("client.updateUser", { id, field, value });
@@ -683,31 +697,36 @@ class EchoProtocol {
   }
 
   updateUser({ id, field, value }) {
-    if (this.cachedUsers.get(id)) {
-      this.cachedUsers.update(id, field, value);
-      const rooms = this.cachedRooms.values();
-      for (const room of rooms) {
-        room.chat.updateUser({ id, field, value });
-        if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+    try {
+      if (this.cachedUsers.get(id)) {
+        this.cachedUsers.update(id, field, value);
+        const rooms = this.cachedRooms.values();
+        for (const room of rooms) {
+          room.chat.updateUser({ id, field, value });
+          if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+        }
+        this.usersCacheUpdated(this.cachedUsers.get(id));
       }
-      this.usersCacheUpdated(this.cachedUsers.get(id));
+      else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
+    } catch (error) {
+      console.error(error);
     }
-    else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
   }
 
   addFriend(friend) {
     this.cachedFriends.add(friend);
-    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+    this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
   updateFriends({ id, field, value }) {
     this.cachedFriends.update(id, field, value);
-    this.friendCacheUpdated(this.cachedFriends.get(id));
+    this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
-  removeFriend(friend) {
-    this.cachedFriends.remove(friend.id);
-    this.friendCacheUpdated(this.cachedFriends.get(friend.id));
+  removeFriend(id) {
+    console.log("ep.removeFriend", id);
+    this.cachedFriends.remove(id);
+    this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
   getFriend(id) {
@@ -716,7 +735,8 @@ class EchoProtocol {
     if (friend && userFriend) {
       return userFriend;
     } else {
-      console.warn("Friend not found in cache, probably offline and we don't handle it")
+      // this.needUserCacheUpdate({ id, call: { function: "getFriend", args: { id } } });
+      console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", id)
     }
   }
 
@@ -735,51 +755,6 @@ class EchoProtocol {
     } else {
       return "no"
     }
-  }
-
-  getFriends() {
-    let friends = this.cachedFriends.getAccepted();
-    let usersFriends = [];
-    friends.forEach((friend) => {
-      let f = this.cachedUsers.get(friend.id)
-      if (f) {
-        usersFriends.push(f);
-      } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it")
-      }
-    });
-
-    return usersFriends;
-  }
-
-  getFriendRequests() {
-    let friends = this.cachedFriends.getRequested();
-    let usersFriends = [];
-    friends.forEach((friend) => {
-      let f = this.cachedUsers.get(friend.id)
-      if (f) {
-        usersFriends.push(f);
-      } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it")
-      }
-    });
-
-    return usersFriends;
-  }
-
-  getFriendRequested() {
-    let friends = this.cachedFriends.getNotAccepted();
-    let usersFriends = [];
-    friends.forEach((friend) => {
-      let f = this.cachedUsers.get(friend.id)
-      if (f) {
-        usersFriends.push(f);
-      } else {
-        console.warn("Friend not found in cache, probably offline and we don't handle it")
-      }
-    });
-
-    return usersFriends;
   }
 
   getRoom(id) {

@@ -10,6 +10,10 @@ router.use((req, res, next) => {
     next();
 });
 
+router.get('/', (req, res) => {
+    res.status(200).send({ message: "pong" });
+});
+
 router.get("/:id", (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).send({ message: "You messed up the request." });
@@ -180,67 +184,78 @@ router.get('/friends/:id', (req, res) => {
 
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("SELECT otherId FROM user_friends WHERE id = ? AND id IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
+    req.database.query(`
+        SELECT
+            CASE
+                WHEN f1.id = ? AND f2.id IS NOT NULL THEN 'friend'
+                WHEN f2.id = ? AND f1.id IS NOT NULL THEN 'friend'
+                WHEN f1.id = ? AND f2.id IS NULL THEN 'sent'
+                WHEN f2.id = ? AND f1.id IS NULL THEN 'incoming'
+                ELSE 'incoming'
+            END AS relationship,
+            CASE
+                WHEN f1.id = ? THEN f1.otherId
+                ELSE f1.id
+            END AS otherUserId,
+            u.name AS otherUsername,
+            u.img AS otherUserImage,
+            CASE
+                WHEN u.online = '1' THEN us.status
+                ELSE '0'
+            END AS otherUserStatus,
+            f1.otherId AS otherId
+        FROM user_friends f1
+        LEFT JOIN user_friends f2 ON (f1.id = f2.otherId AND f1.otherId = f2.id)
+        LEFT JOIN users u ON u.id = CASE WHEN f1.id = ? THEN f1.otherId ELSE f1.id END
+        LEFT JOIN user_status us ON us.userId = CASE WHEN f1.id = ? THEN f1.otherId ELSE f1.id END
+        WHERE f1.id = ? OR f1.otherId = ?;
+    `, [id, id, id, id, id, id, id, id, id], function (err, result, fields) {
+        if (err) {
+            console.error(err);
+            return res.status(400).send({ error: "You messed up the request." });
+        }
 
-        var jsonOut = [];
+        const friendMap = {
+            friended: [],
+            sent: [],
+            incoming: [],
+        };
         if (result.length > 0) {
-            result.map(function (friends) {
-                jsonOut.push({
-                    "id": friends.otherId,
-                });
-            })
-            res.status(200).send(jsonOut);
+            result.map((friends) => {
+                // check if user is friended by other user
+                if (friends.relationship === "friend" && friends.otherId !== Number(id)) {
+                    friendMap.friended.push({
+                        id: friends.otherUserId,
+                        img: friends.otherUserImage,
+                        name: friends.otherUsername,
+                        status: friends.otherUserStatus,
+                    })
+                } else
+                // check if user sent friend request
+                if (friends.relationship === "sent") {
+                    friendMap.sent.push({
+                        id: friends.otherUserId,
+                        img: friends.otherUserImage,
+                        name: friends.otherUsername,
+                        status: friends.otherUserStatus,
+                    })
+                } else
+                // check if user has incoming friend request
+                if (friends.relationship === "incoming") {
+                    friendMap.incoming.push({
+                        id: friends.otherUserId,
+                        img: friends.otherUserImage,
+                        name: friends.otherUsername,
+                        status: friends.otherUserStatus,
+                    })
+                }
+            });
+            res.status(200).send(friendMap);
         } else {
-            res.status(200).send(jsonOut);
+            res.status(200).send(friendMap);
         }
     });
 })
-
-// get friend requests of user
-router.get('/friends/requests/:id', (req, res) => {
-    const { id } = req.params;
-
-    if (!id) return res.status(400).send({ message: "You messed up the request." });
-
-    req.database.query("SELECT id FROM user_friends WHERE otherId = ? AND id NOT IN (SELECT otherId WHERE id = ?)", [id, id], function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
-
-        var jsonOut = [];
-        if (result.length > 0) {
-            result.map(function (friends) {
-                jsonOut.push({
-                    "id": friends.id,
-                });
-            })
-            res.status(200).send(jsonOut);
-        } else {
-            res.status(200).send(jsonOut);
-        }
-    });
-});
-
-router.get('/friends/sentRequests/:id', (req, res) => {
-    const { id } = req.params;
-
-    if (!id) return res.status(400).send({ message: "You messed up the request." });
-
-    req.database.query("SELECT otherId as id FROM user_friends WHERE id = ? AND id NOT IN (SELECT id WHERE otherId = ?)", [id, id], function (err, result, fields) {
-        if (err) return res.status(400).send({ error: "You messed up the request." });
-
-        var jsonOut = [];
-        if (result.length > 0) {
-            result.map(function (friends) {
-                jsonOut.push({
-                    "id": friends.id,
-                });
-            })
-            res.status(200).send(jsonOut);
-        } else {
-            res.status(200).send(jsonOut);
-        }
-    });
-});
 
 // operation on friend request
 router.post('/friend/request', (req, res) => {
