@@ -201,11 +201,19 @@ function UserSettings() {
       .catch((err) => { console.error(err); });
     setStatusHover(false);
   }
-  
+
   let navigate = useNavigate();
   const logout = () => {
-    storage.clear();
-    navigate("/");
+    api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0", serverId: storage.get('serverId') })
+      .then(res => {
+        ep.exitFromRoom(storage.get('id'));
+        ep.closeConnection();
+        storage.clear();
+        navigate("/");
+      })
+      .catch(err => {
+        console.error(err);
+      });
   }
 
   return (
