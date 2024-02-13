@@ -89,7 +89,7 @@ function RoomControl({ state, setState, screenSharing }) {
           storage.clear();
         });
     } else {
-      api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0" })
+      api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0", serverId: storage.get('serverId')})
         .then(res => {
           ep.exitFromRoom(storage.get('id'));
           ep.updateUser({ id: storage.get('id'), field: "currentRoom", value: 0 });

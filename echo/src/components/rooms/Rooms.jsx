@@ -19,14 +19,15 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   ])
 
   const updateRooms = () => {
-    api.call("rooms")
+    let serverId = storage.get("serverId");
+    api.call("rooms/" + serverId)
       .then((result) => {
         if (result.json.length > 0) {
           setRemoteRooms(result.json);
           result.json.forEach((room) => {
             ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
           
-            api.call("rooms/" + room.id + "/users")
+            api.call("rooms/" + room.id + "/" + serverId + "/users")
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
                   res.json.forEach((user) => {
@@ -66,7 +67,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
-      api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: joiningId })
+      api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: joiningId, serverId: storage.get("serverId")})
         .then((res) => {
           if (res.ok) {
             ap.playJoinSound();
