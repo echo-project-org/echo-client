@@ -394,7 +394,7 @@ class Rooms {
             return;
         }
         this.connectedClients.forEach((user, _) => {
-            if (a.id !== user.id) {
+            if (a.serverId !== user.serverId && a.id !== user.id) {
                 const userRoom = user.getCurrentRoom();
                 a.isConnected = userRoom === a.roomId;
                 user.userJoinedChannel({

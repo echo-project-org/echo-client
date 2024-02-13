@@ -3,6 +3,7 @@ class User {
         this.id = id;
         this.socket = socket;
         this.socketId = socket.id;
+        this.serverId = null;
         this.currentRoom = 0;
         this.isDeaf = false;
         this.isMuted = false;
@@ -41,7 +42,10 @@ class User {
         // room stuff
         this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
         this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
-        this.socket.on("client.join", (data) => this.triggerEvent("join", data));
+        this.socket.on("client.join", (data) => {
+            this.serverId = data.serverId;
+            this.triggerEvent("join", data);
+        });
         this.socket.on("client.end", (data) => { this.clientDisconnected(data) });
         this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
         this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
@@ -200,6 +204,7 @@ class User {
 
         this.triggerEvent("userFullyConnectedToRoom", {
             id: this.id,
+            serverId: this.serverId,
             roomId: this.currentRoom,
             muted: this.isMuted,
             deaf: this.isDeaf,
