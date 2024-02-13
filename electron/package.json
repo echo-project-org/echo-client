@@ -1,6 +1,6 @@
 {
   "name": "echo",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Echo project - The better messaging and voice chat app",
   "productName": "Echo",
   "main": "main.js",
@@ -18,6 +18,7 @@
   "build": {
     "appId": "com.echo.kuricki",
     "productName": "Echo",
+    "artifactName": "${productName}-Setup-${version}.${ext}",
     "win": {
       "target": "nsis"
     },
