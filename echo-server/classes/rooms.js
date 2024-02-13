@@ -543,6 +543,11 @@ class Rooms {
                 user.clearTransports();
                 const room = this.rooms.get(roomId);
                 room.users.delete(data.id);
+
+                if(room.users.size === 0) {
+                    room.mediasoupRouter.close();
+                    this.rooms.delete(roomId);
+                }
             }
         }
     }
