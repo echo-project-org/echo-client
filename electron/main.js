@@ -143,20 +143,20 @@ app.whenReady().then(() => {
   }
 
   autoUpdater.on('update-available', () => {
-    dialog.showMessageBox({
+    dialog.showMessageBoxSync({
       type: 'info',
       title: 'Echo',
       message: 'Update available. Downloading...',
-      buttons: []
+      buttons: ["OK"]
     });
   });
 
   autoUpdater.on('update-downloaded', () => {
-    dialog.showMessageBox({
+    dialog.showMessageBoxSync({
       type: 'info',
       title: 'Echo',
       message: 'Update downloaded. Restarting...',
-      buttons: []
+      buttons: ["OK"]
     });
 
     autoUpdater.quitAndInstall();
