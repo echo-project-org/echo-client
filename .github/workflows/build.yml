@@ -41,9 +41,6 @@ jobs:
         working-directory: ./electron
         run: |
           $build_output = npm run dist
-          $out_path = ./dist
-          echo "artifact_path=$out_path" >> $ENV:GITHUB_OUTPUT
-          echo "Build Output: $out_path"
 
       - name: Extract echo version from package.json
         id: extract_echo_version
