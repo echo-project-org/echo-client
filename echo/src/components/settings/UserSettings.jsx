@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Typography } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
-
+import { useNavigate } from 'react-router-dom';
 import { ep, storage } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
@@ -166,6 +166,7 @@ function UserSettings() {
     };
     fileInput.click();
   }
+
   const statusSelectOn = () => {
     setStatusHover(true);
   }
@@ -199,6 +200,12 @@ function UserSettings() {
       .then((res) => { })
       .catch((err) => { console.error(err); });
     setStatusHover(false);
+  }
+  
+  let navigate = useNavigate();
+  const logout = () => {
+    storage.clear();
+    navigate("/");
   }
 
   return (
@@ -269,10 +276,19 @@ function UserSettings() {
             variant="contained"
             sx={{
               fontSize: "1.2rem",
-              width: "50%",
+              width: "25%",
               margin: "3rem 0 1rem 0"
             }}
           >Update</Button>
+          <Button
+            onClick={logout}
+            variant="contained"
+            sx={{
+              fontSize: "1.2rem",
+              width: "25%",
+              margin: "3rem 0 1rem 2rem"
+            }}
+          >Logout</Button>
         </Grid>
       </StyledGridContainer>
     </StyledComponents.Settings.StyledSettingsModalSubdiv>
