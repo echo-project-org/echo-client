@@ -455,8 +455,11 @@ class Rooms {
     sendAudioState(data) {
         if (this.connectedClients.has(data.id)) {
             const user = this.connectedClients.forEach((user, id) => {
-                if (String(id) !== String(data.id))
-                    user.sendAudioState(data);
+                if(data.serverId === user.serverId){
+                    if (String(id) !== String(data.id)){
+                        user.sendAudioState(data);
+                    }
+                }
             });
         }
     }

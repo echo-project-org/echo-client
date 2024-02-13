@@ -40,7 +40,10 @@ class User {
         }, 5000);
 
         // room stuff
-        this.socket.on("client.audioState", (data) => { this.triggerEvent("audioState", data) });
+        this.socket.on("client.audioState", (data) => { 
+            data.serverId = this.serverId;
+            this.triggerEvent("audioState", data) 
+        });
         this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => {
             this.serverId = data.serverId;
