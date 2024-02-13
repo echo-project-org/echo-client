@@ -1,6 +1,6 @@
 {
   "name": "echo",
-  "version": "0.0.8.1",
+  "version": "0.0.9",
   "description": "Echo project - The better messaging and voice chat app",
   "productName": "Echo",
   "main": "main.js",
