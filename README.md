@@ -8,10 +8,7 @@ In the electron folder, execute `npm start`. The process will automatically comp
 
 # Prod build
 
-In the echo folder execute `npm run build` and wait for react and webpack to finish building and packaging the frontend.
-Then go to the electron folder and run `npm run make` to package the built frontend in the electron app with squirrel executable.
-
-The executable together with the installer will be put inside /electron/out. The app can me compiled for Windows, Linux and Mac (not tested).
+Then go to the electron folder and run `npm run dist` to package the built frontend in the electron app with squirrel executable.
 
 # API
 
