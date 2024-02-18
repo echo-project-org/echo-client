@@ -36,6 +36,11 @@ function ScreenShareSelector() {
   }, [])
 
   const handleClick = (event) => {
+    if(!ep.isAudioFullyConnected()) {
+      console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
+      return;
+    }
+    
     let user = ep.getUser();
     if (user && user.currentRoom !== "0") {
       if (screenSharing) {
