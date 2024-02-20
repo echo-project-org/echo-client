@@ -46,6 +46,7 @@ class User {
         });
         this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => {
+            data.id = this.id;
             this.serverId = data.serverId;
             this.triggerEvent("join", data);
         });
