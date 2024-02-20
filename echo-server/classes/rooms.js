@@ -28,6 +28,8 @@ const codecs = [{
     }
 }];
 
+const API_URL = "https://echo.kuricki.com/api/";
+
 class Rooms {
     constructor(io, socket) {
         this.emitter = io;
@@ -89,18 +91,40 @@ class Rooms {
 
         this.emitter.on('connection', async (socket) => {
             const request = socket.request;
-            const id = request._query["id"];
-            if (!id) return reject("no-id-in-query");
-            if (this.connectedClients.has(id)) {
-                //get the user
-                const user = this.connectedClients.get(id);
-                await user.clearTransports();
-            }
+            const token = request._query["token"];
+            if (!token) return reject("no-token-in-query");
 
-            const newUser = new User(socket, id);
-            this.connectedClients.set(id, newUser);
-            console.log(colors.changeColor("yellow", "New socket connection from client " + id));
-            this.registerClientEvents(newUser);
+            //fetch api to validate token
+            const options = {
+                method: "get",
+                cache: 'no-cache',
+                cors: false,
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": token
+                }
+            };
+
+            fetch(API_URL + "auth/validate", options)
+            .then(async (response) => {
+                if(response.ok) {
+                    let json = await response.json();
+                    let id = json.id;
+
+                    if (this.connectedClients.has(id)) {
+                        //get the user
+                        const user = this.connectedClients.get(id);
+                        await user.clearTransports();
+                    }
+        
+                    const newUser = new User(socket, id);
+                    this.connectedClients.set(id, newUser);
+                    console.log(colors.changeColor("yellow", "New socket connection from client " + id));
+                    this.registerClientEvents(newUser);
+                } else {
+                    return reject("invalid-token");
+                }
+            })
         });
     }
 
@@ -455,8 +479,8 @@ class Rooms {
     sendAudioState(data) {
         if (this.connectedClients.has(data.id)) {
             const user = this.connectedClients.forEach((user, id) => {
-                if(data.serverId === user.serverId){
-                    if (String(id) !== String(data.id)){
+                if (data.serverId === user.serverId) {
+                    if (String(id) !== String(data.id)) {
                         user.sendAudioState(data);
                     }
                 }
@@ -547,7 +571,7 @@ class Rooms {
                 const room = this.rooms.get(roomId);
                 room.users.delete(data.id);
 
-                if(room.users.size === 0) {
+                if (room.users.size === 0) {
                     room.mediasoupRouter.close();
                     this.rooms.delete(roomId);
                 }
@@ -569,7 +593,7 @@ class Rooms {
         if (this.connectedClients.has(id)) {
             if (this.rooms.has(actualRoomId)) {
                 const user = this.connectedClients.get(id);
-                user.join({roomId: actualRoomId});
+                user.join({ roomId: actualRoomId });
                 this.rooms.get(actualRoomId).users.set(user.id, user);
 
                 let newUser = this.connectedClients.get(id);
