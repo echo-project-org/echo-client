@@ -90,7 +90,7 @@ function Chat({ currentRoomId, onMouseDown }) {
 
       <StyledContainer>
         {messages.length > 0 ? messages.map((message, id) => {
-          if (String(message.userId) === String(storage.get("id"))) {
+          if (String(message.userId) === String(sessionStorage.getItem("id"))) {
             return <MessageLeft key={id} message={message} />
           } else {
             return <MessageRight key={id} message={message} />

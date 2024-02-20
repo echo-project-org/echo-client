@@ -195,8 +195,8 @@ function UserSettings() {
     }
     statusId = String(statusId);
     storage.set("online", statusId);
-    ep.updatePersonalSettings({ id: storage.get("id"), field: "online", value: statusId });
-    api.call("users/customStatus", "POST", { id: storage.get("id"), status: statusId })
+    ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "online", value: statusId });
+    api.call("users/customStatus", "POST", { id: sessionStorage.getItem("id"), status: statusId })
       .then((res) => { })
       .catch((err) => { console.error(err); });
     setStatusHover(false);
@@ -204,11 +204,11 @@ function UserSettings() {
 
   let navigate = useNavigate();
   const logout = () => {
-    api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0", serverId: storage.get('serverId') })
+    api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
       .then(res => {
-        ep.exitFromRoom(storage.get('id'));
+        ep.exitFromRoom(sessionStorage.getItem('id'));
         ep.closeConnection();
-        storage.clear();
+        sessionStorage.clear();
         navigate("/");
       })
       .catch(err => {
@@ -230,7 +230,7 @@ function UserSettings() {
             invisible
           >
             <ComputeUserImage hover={hover} uploadPicture={uploadPicture} onAvatarHover={onAvatarHover} loading={loading} />
-            <StyledAvatar src={storage.get("userImage")} onMouseEnter={onAvatarHover} />
+            <StyledAvatar src={sessionStorage.getItem("userImage")} onMouseEnter={onAvatarHover} />
           </Badge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">
@@ -251,7 +251,7 @@ function UserSettings() {
                 fullWidth
                 placeholder="Type your nickname here"
                 size="small"
-                defaultValue={storage.get("name")}
+                defaultValue={sessionStorage.getItem("name")}
               />
             </Grid>
             <Grid item lg={5.9} xs={12}>
@@ -274,7 +274,7 @@ function UserSettings() {
                 placeholder="Type your password here"
                 size="small"
                 type='password'
-                defaultValue={storage.get("password")}
+                defaultValue={sessionStorage.getItem("password")}
               />
             </Grid>
           </StyledGridContainer>

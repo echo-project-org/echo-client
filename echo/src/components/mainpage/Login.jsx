@@ -52,12 +52,13 @@ const Login = () => {
           api.call('auth/login', "POST", { email, password: hashed })
             .then((data) => {
               hideError();
-              storage.set("id", data.json.id);
-              storage.set("name", data.json.name);
-              storage.set("email", data.json.email);
-              storage.set("userImage", data.json.img);
+              sessionStorage.setItem("id", data.json.id);
+              sessionStorage.setItem("name", data.json.name);
+              sessionStorage.setItem("email", data.json.email);
+              sessionStorage.setItem("userImage", data.json.img);
               storage.set("online", data.json.online);
-              storage.set("token", data.json.token);
+              sessionStorage.setItem("token", data.json.token);
+              storage.set("email", data.json.email);
 
               navigate("/");
             })
@@ -97,7 +98,7 @@ const Login = () => {
           type="text"
           className="input"
           placeholder="Email"
-          defaultValue={storage.get("lastEmail") || ""}
+          defaultValue={storage.get("email") || ""}
           onKeyDown={checkCredentials}
         />
         <input

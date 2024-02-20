@@ -29,7 +29,7 @@ class EchoProtocol {
   _makeIO(id) {
     this.socket = io(this.SERVER_URL, {
       path: "/socket.io",
-      query: { token: storage.get("token") },
+      query: { token: sessionStorage.getItem("token") },
     });
   }
 
@@ -52,7 +52,7 @@ class EchoProtocol {
 
     this.socket.io.on("close", () => {
       this.rtcConnectionStateChange({ state: "disconnected" });
-      this.localUserCrashed({ id: storage.get("id") });
+      this.localUserCrashed({ id: sessionStorage.getItem("id") });
     })
 
     this.socket.io.on("error", (error) => {
@@ -65,7 +65,7 @@ class EchoProtocol {
       }
 
       this.rtcConnectionStateChange({ state: "disconnected" });
-      this.localUserCrashed({ id: storage.get("id") });
+      this.localUserCrashed({ id: sessionStorage.getItem("id") });
     });
 
     this.socket.on("portalTurret.areYouStillThere?", (data) => {
@@ -119,7 +119,7 @@ class EchoProtocol {
       const rooms = this.cachedRooms.values();
       for (const room of rooms) {
         room.chat.updateUser(data);
-        if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+        if (room.id === this.cachedUsers.get(sessionStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
       }
       this.usersCacheUpdated(this.cachedUsers.get(id));
     });
@@ -505,7 +505,7 @@ class EchoProtocol {
 
   closeConnection(id = null) {
     if (this.socket) {
-      if (!id) id = storage.get('id');
+      if (!id) id = sessionStorage.getItem('id');
       this.socket.emit("client.end", { id });
       clearInterval(this.currentConnectionStateInterval);
     }
@@ -608,10 +608,10 @@ class EchoProtocol {
   }
 
   stopScreenSharing() {
-    this.updateUser({ id: storage.get("id"), field: "screenSharing", value: false });
+    this.updateUser({ id: sessionStorage.getItem("id"), field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
-      this.socket.emit("client.stopScreenSharing", { id: storage.get("id") });
+      this.socket.emit("client.stopScreenSharing", { id: sessionStorage.getItem("id") });
     }
   }
 
@@ -713,10 +713,6 @@ class EchoProtocol {
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
 
-  getUser(id) {
-    return this.cachedUsers.get(id);
-  }
-
   updatePersonalSettings({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
       this.socket.emit("client.updateUser", { id, field, value });
@@ -731,7 +727,7 @@ class EchoProtocol {
         const rooms = this.cachedRooms.values();
         for (const room of rooms) {
           room.chat.updateUser({ id, field, value });
-          if (room.id === this.cachedUsers.get(storage.get("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+          if (room.id === this.cachedUsers.get(sessionStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
         }
         this.usersCacheUpdated(this.cachedUsers.get(id));
       }
@@ -794,7 +790,7 @@ class EchoProtocol {
     if (id) {
       return this.cachedUsers.get(id);
     } else {
-      return this.cachedUsers.get(storage.get("id"));
+      return this.cachedUsers.get(sessionStorage.getItem("id"));
     }
   }
 
@@ -902,7 +898,7 @@ EchoProtocol.prototype.rtcConnectionStateChange = function (data) {
   if (data.state === 'failed') {
     alert("Mediasoup connection failed. Websocket is working but your firewall might be blocking it.")
     this.closeConnection();
-    this.localUserCrashed({ id: storage.get("id") });
+    this.localUserCrashed({ id: sessionStorage.getItem("id") });
     return;
   }
 

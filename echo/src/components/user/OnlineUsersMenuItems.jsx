@@ -13,8 +13,8 @@ function FriendButton({ user, handleClose }) {
   const handleFriendAdd = () => {
     setFriendStatus('requested');
     //notify api or whatever needs to be updated
-    api.call("users/friend/request", 'POST', { id: storage.get("id"), friendId: user.id, operation: 'add' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+    api.call("users/friend/request", 'POST', { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add' });
     ep.addFriend({ id: user.id, requested: true, accepted: false })
     handleClose();
   }
@@ -22,23 +22,23 @@ function FriendButton({ user, handleClose }) {
   const handleFriendRemove = () => {
     setFriendStatus('no');
     //notify api or whatever needs to be updated
-    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove' });
     ep.removeFriend(user.id);
     handleClose();
   }
 
   const handleFriendAccept = () => {
     //notify api or whatever needs to be updated
-    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add' });
     ep.updateFriends({id: user.id, field: "requested", value: true});
     handleClose();
   }
 
   const handleFriendReject = () => {
-    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove' });
     ep.removeFriend(user.id);
     handleClose();
   }
@@ -71,7 +71,7 @@ function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
     ep.startReceivingVideo(user.id);
   }
 
-  if (storage.get("id") !== user.id) {
+  if (sessionStorage.getItem("id") !== user.id) {
     return (
       <>
         {broadcastingVideo ? <MenuItem onClick={startWatchingBroadcast}><ScreenShare fontSize="10px" style={{ marginRight: ".3rem" }} />Watch broadcast</MenuItem> : null}

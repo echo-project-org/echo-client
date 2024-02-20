@@ -53,21 +53,21 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       }
 
       const joiningId = data.roomId;
-      const currentRoom = ep.getUser(storage.get("id")).currentRoom;
+      const currentRoom = ep.getUser(sessionStorage.getItem("id")).currentRoom;
       if (String(joiningId) === currentRoom) return;
-      if (currentRoom !== 0) ep.exitFromRoom(storage.get("id"));
+      if (currentRoom !== 0) ep.exitFromRoom(sessionStorage.getItem("id"));
       // update audio state of the user
       const userAudioState = ep.getAudioState();
-      ep.updateUser({ id: storage.get("id"), field: "muted", value: userAudioState.isMuted });
-      ep.updateUser({ id: storage.get("id"), field: "deaf", value: userAudioState.isDeaf });
+      ep.updateUser({ id: sessionStorage.getItem("id"), field: "muted", value: userAudioState.isMuted });
+      ep.updateUser({ id: sessionStorage.getItem("id"), field: "deaf", value: userAudioState.isDeaf });
       // join room
-      ep.joinRoom(storage.get("id"), joiningId);
-      ep.updateUser({ id: storage.get("id"), field: "currentRoom", value: String(joiningId) });
+      ep.joinRoom(sessionStorage.getItem("id"), joiningId);
+      ep.updateUser({ id: sessionStorage.getItem("id"), field: "currentRoom", value: String(joiningId) });
       // update active room id
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
-      api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: joiningId, serverId: storage.get("serverId")})
+      api.call("rooms/join", "POST", { userId: sessionStorage.getItem("id"), roomId: joiningId, serverId: storage.get("serverId")})
         .then((res) => {
           if (res.ok) {
             ap.playJoinSound();

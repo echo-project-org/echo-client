@@ -51,12 +51,15 @@ function MainPage() {
   useEffect(() => {
     ep.on("tokenExpired", "MainPage.tokenExpired", (data) => {
       ep.closeConnection();
-      storage.clear();
+      storage.remove("token");
+      storage.remove("id");
+      storage.remove("name")
+      
       navigate("/login");
     });
 
     // if id is not set, redirect to login page
-    if (!storage.get("id")) {
+    if (!sessionStorage.getItem("id")) {
       navigate("/login");
     }
 

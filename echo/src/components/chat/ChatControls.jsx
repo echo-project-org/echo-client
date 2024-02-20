@@ -28,7 +28,7 @@ function ChatControls({ onEmojiOn, roomId }) {
       if (prev === "\n") return;
       if (prev.length === 0) return;
       console.log("sendChatMessage", prev)
-      ep.sendChatMessage({ roomId, userId: storage.get("id"), message: prev, self: true, date: new Date().toISOString() });
+      ep.sendChatMessage({ roomId, userId: sessionStorage.getItem("id"), message: prev, self: true, date: new Date().toISOString() });
       return "";
     });
     setMessageHtml("");
@@ -36,7 +36,7 @@ function ChatControls({ onEmojiOn, roomId }) {
 
   useEffect(() => {
     ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
-      if (String(data.userId) === storage.get("id")) {
+      if (String(data.userId) === sessionStorage.getItem("id")) {
         ap.playNewSelfMessageSound();
         data.userId = Number(data.id);
         console.log("ChatControls.receiveChatMessage", data)

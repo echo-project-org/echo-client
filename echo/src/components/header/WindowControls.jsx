@@ -11,7 +11,7 @@ const { ipcRenderer } = window.require('electron');
 function WindowControls({ }) {
   const closeApp = async () => {
     ep.closeConnection();
-    api.call('users/' + storage.get("id") + '/status', "POST", { status: "0" });
+    api.call('users/' + sessionStorage.getItem("id") + '/status', "POST", { status: "0" });
     ipcRenderer.send("exitApplication", true);
   }
   const toggleFullscreen = async () => {

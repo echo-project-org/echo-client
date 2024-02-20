@@ -30,15 +30,15 @@ function MainPageServers({ }) {
   const enterServer = async (serverId) => {
     // TODO: check the initial status of user (maybe get it from the login form?)
     // and check if we need to update it or not
-    api.call('users/status', "POST", { id: storage.get('id'), status: "1" })
+    api.call('users/status', "POST", { id: sessionStorage.getItem('id'), status: "1" })
       .then((res) => {
-        ep.openConnection(storage.get('id'));
+        ep.openConnection(sessionStorage.getItem('id'));
         navigate("/main");
 
         ep.addUser({
-          id: storage.get('id'),
-          name: storage.get('name'),
-          userImage: storage.get('userImage'),
+          id: sessionStorage.getItem('id'),
+          name: sessionStorage.getItem('name'),
+          userImage: sessionStorage.getItem('userImage'),
           online: storage.get('online'),
           roomId: 0
         }, true);

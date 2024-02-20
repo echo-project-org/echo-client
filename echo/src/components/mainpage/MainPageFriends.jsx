@@ -13,7 +13,7 @@ function MainPageFriends({ }) {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    api.call('users/friends/' + storage.get("id"), "GET")
+    api.call('users/friends/' + sessionStorage.getItem("id"), "GET")
       .then((res) => {
         const _friends = [];
         for (var i in res.json.friended) {

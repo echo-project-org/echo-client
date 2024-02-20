@@ -10,20 +10,20 @@ const api = require('../../api');
 
 function RoomConentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {
-    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'add' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'add' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add' });
     ep.updateFriends({ id: user.id, field: "type", value: "friended" });
   }
 
   const handleFriendReject = (e) => {
-    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove' });
     ep.removeFriend(user.id);
   }
 
   const handleRemoveSentRequest = (e) => {
-    api.call("users/friend/request", "POST", { id: storage.get("id"), friendId: user.id, operation: 'remove' });
-    ep.sendFriendAction({ id: storage.get("id"), targetId: user.id, operation: 'remove' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove' });
     ep.removeFriend(user.id);
   }
 

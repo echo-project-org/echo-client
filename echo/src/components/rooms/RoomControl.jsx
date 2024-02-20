@@ -24,8 +24,8 @@ function RoomControl({ state, setState, screenSharing }) {
   const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
   const [rtcConnectionStateColor, setRtcConnectionStateColor] = useState(theme.palette.error.main);
 
-  useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
-  useEffect(() => { ep.sendAudioState(storage.get("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
+  useEffect(() => { ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
+  useEffect(() => { ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
   useEffect(() => {
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
       switch (data.state) {
@@ -76,7 +76,7 @@ function RoomControl({ state, setState, screenSharing }) {
     // Notify api
     setState(false);
     if (!state) {
-      api.call("users/status", "POST", { id: storage.get('id'), status: "0" })
+      api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
         .then(res => {
           ep.closeConnection();
           // TODO: check if user is connected in room, if so change icon and action when clicked
@@ -85,20 +85,20 @@ function RoomControl({ state, setState, screenSharing }) {
         .catch(err => {
           console.error(err);
           navigate("/");
-          // clean cache and local storage
-          storage.clear();
+          // clean cache and session storage
+          sessionStorage.clear();
         });
     } else {
-      api.call("rooms/join", "POST", { userId: storage.get('id'), roomId: "0", serverId: storage.get('serverId')})
+      api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId')})
         .then(res => {
-          ep.exitFromRoom(storage.get('id'));
-          ep.updateUser({ id: storage.get('id'), field: "currentRoom", value: 0 });
+          ep.exitFromRoom(sessionStorage.getItem('id'));
+          ep.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
           ap.playLeaveSound();
         })
         .catch(err => {
           console.error(err);
           navigate("/");
-          storage.clear();
+          sessionStorage.clear();
         });
     }
   }
@@ -123,10 +123,6 @@ function RoomControl({ state, setState, screenSharing }) {
   const muteAndDeaf = () => { setMuted(true); setDeaf(true); computeAudio(false); }
 
   const muteMic = () => {
-    // if(ep.getUser(storage.get('id')).currentRoom === '0'){
-    //   console.warn("User must must be in room to mute");
-    //   return;
-    // }
     if (muted) undeafOnMute();
     setMuted(!muted);
     if (!deaf) setWasMuted(true);
@@ -137,10 +133,6 @@ function RoomControl({ state, setState, screenSharing }) {
   }
 
   const deafHeadphones = () => {
-    // if(ep.getUser(storage.get('id')).currentRoom === '0'){
-    //   console.warn("User must must be in room to deafen");
-    //   return;
-    // }
     if (!muted) muteOnDeaf()
     else if (muted && !deaf) muteAndDeaf()
     else unmuteOnDeaf();

@@ -43,9 +43,9 @@ class Users {
         data = this.typeCheck(data);
 
         if (self) {
-            storage.set("id", data.id);
-            storage.set("name", data.name);
-            storage.set("userImage", data.userImage);
+            sessionStorage.setItem("id", data.id);
+            sessionStorage.setItem("name", data.name);
+            sessionStorage.setItem("userImage", data.userImage);
             storage.set("online", data.online);
         }
 

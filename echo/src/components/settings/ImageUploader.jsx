@@ -17,7 +17,7 @@ const ImageUploader = ({ open, data }) => {
   }, [open]);
 
   if (!data) data = {};
-  if (!data.image) data.image = storage.get("userImage");
+  if (!data.image) data.image = sessionStorage.getItem("userImage");
 
   const handleZoomChange = (event, newValue) => {
     setZoom(newValue);
@@ -53,11 +53,11 @@ const ImageUploader = ({ open, data }) => {
                       onClick={() => {
                         const canvas = imageEditorRef.current.getImage().toDataURL();
 
-                        api.call("users/image", "POST", { id: storage.get("id"), image: canvas })
+                        api.call("users/image", "POST", { id: sessionStorage.getItem("id"), image: canvas })
                           .then((res) => {
                             ep.emit("closeUploader");
-                            ep.updatePersonalSettings({ id: storage.get("id"), field: "userImage", value: canvas });
-                            storage.set("userImage", canvas);
+                            ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "userImage", value: canvas });
+                            sessionStorage.setItem("userImage", canvas);
                           })
                           .catch(err => {
                             console.error(err);
