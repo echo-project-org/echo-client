@@ -29,7 +29,7 @@ class EchoProtocol {
   _makeIO(id) {
     this.socket = io(this.SERVER_URL, {
       path: "/socket.io",
-      query: { id }
+      query: { token: storage.get("token") },
     });
   }
 
