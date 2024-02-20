@@ -16,7 +16,7 @@ export async function call(path, method = "GET", body = null, forceString = true
       cors: false,
       headers: {
         'Content-Type': forceContentType ? null : 'application/json',
-        "Authorization": sessionStorage.getItem("token")
+        "Authorization": storage.get("token")
       },
       body: body ? (forceString ? JSON.stringify(body) : body) : null
     };

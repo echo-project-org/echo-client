@@ -57,7 +57,7 @@ const Login = () => {
               sessionStorage.setItem("email", data.json.email);
               sessionStorage.setItem("userImage", data.json.img);
               storage.set("online", data.json.online);
-              sessionStorage.setItem("token", data.json.token);
+              storage.set("token", data.json.token);
               storage.set("email", data.json.email);
 
               navigate("/");

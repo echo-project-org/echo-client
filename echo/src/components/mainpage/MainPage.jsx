@@ -9,6 +9,8 @@ import MainPageServers from './MainPageServers';
 import { storage, ep } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
+const api = require('../../api');
+
 function MainPage() {
   const navigate = useNavigate();
   const [sidebarButtons, setSidebarButtons] = useState([
@@ -51,16 +53,31 @@ function MainPage() {
   useEffect(() => {
     ep.on("tokenExpired", "MainPage.tokenExpired", (data) => {
       ep.closeConnection();
+      sessionStorage.clear();
       storage.remove("token");
-      storage.remove("id");
-      storage.remove("name")
-      
       navigate("/login");
     });
 
-    // if id is not set, redirect to login page
+    // if id is not set, try to get it from the token
     if (!sessionStorage.getItem("id")) {
-      navigate("/login");
+      if (storage.get("token") === undefined || storage.get("token") === null) {
+        navigate("/login");
+      } else {
+        api.call("auth/verify", "GET")
+          .then((data) => {
+            sessionStorage.setItem("id", data.json.id);
+            sessionStorage.setItem("name", data.json.name);
+            sessionStorage.setItem("email", data.json.email);
+            sessionStorage.setItem("userImage", data.json.img);
+            storage.set("online", data.json.online);
+            storage.set("token", data.json.token);
+            storage.set("email", data.json.email);
+          })
+          .catch((err) => {
+            console.log(err);
+            navigate("/login");
+          });
+      }
     }
 
     return () => {
@@ -74,32 +91,32 @@ function MainPage() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -100, opacity: 0 }}
     >
-    <Grid container>
-      <Grid item>
-        <Slide direction="right" in={true} mountOnEnter unmountOnExit>
-          <StyledComponents.MainPage.StyledContainerSidebar>
-            {sidebarButtons.map((button, id) => {
-              return (
-                <Tooltip key={id} title={button.name} placement="right" arrow>
-                  <StyledComponents.MainPage.StyledIconContainer onClick={changeSelected} data-id={id}>
-                    {button.selected ?
-                      <StyledComponents.MainPage.StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledSelectedIcon>
-                      :
-                      <StyledComponents.MainPage.StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledUnselectedIcon>
-                    }
-                  </StyledComponents.MainPage.StyledIconContainer>
-                </Tooltip>
-              )
-            })}
-          </StyledComponents.MainPage.StyledContainerSidebar>
-        </Slide>
+      <Grid container>
+        <Grid item>
+          <Slide direction="right" in={true} mountOnEnter unmountOnExit>
+            <StyledComponents.MainPage.StyledContainerSidebar>
+              {sidebarButtons.map((button, id) => {
+                return (
+                  <Tooltip key={id} title={button.name} placement="right" arrow>
+                    <StyledComponents.MainPage.StyledIconContainer onClick={changeSelected} data-id={id}>
+                      {button.selected ?
+                        <StyledComponents.MainPage.StyledSelectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledSelectedIcon>
+                        :
+                        <StyledComponents.MainPage.StyledUnselectedIcon>{button.icon.toLocaleLowerCase()}</StyledComponents.MainPage.StyledUnselectedIcon>
+                      }
+                    </StyledComponents.MainPage.StyledIconContainer>
+                  </Tooltip>
+                )
+              })}
+            </StyledComponents.MainPage.StyledContainerSidebar>
+          </Slide>
+        </Grid>
+        <Grid item>
+          <StyledComponents.MainPage.StyledContainer>
+            {getSelected().element}
+          </StyledComponents.MainPage.StyledContainer>
+        </Grid>
       </Grid>
-      <Grid item>
-        <StyledComponents.MainPage.StyledContainer>
-          {getSelected().element}
-        </StyledComponents.MainPage.StyledContainer>
-      </Grid>
-    </Grid>
     </motion.div>
   )
 }
