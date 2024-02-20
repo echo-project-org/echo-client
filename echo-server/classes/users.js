@@ -40,9 +40,10 @@ class User {
         }, 5000);
 
         // room stuff
-        this.socket.on("client.audioState", (data) => { 
+        this.socket.on("client.audioState", (data) => {
             data.serverId = this.serverId;
-            this.triggerEvent("audioState", data) 
+            data.id = this.id;
+            this.triggerEvent("audioState", data)
         });
         this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => {
@@ -50,15 +51,27 @@ class User {
             this.serverId = data.serverId;
             this.triggerEvent("join", data);
         });
-        this.socket.on("client.end", (data) => { this.clientDisconnected(data) });
-        this.socket.on("client.sendChatMessage", (data) => this.triggerEvent("sendChatMessage", data));
-        this.socket.on("client.exit", (data) => this.triggerEvent("exit", data));
-        this.socket.on("client.updateUser", (data) => this.triggerEvent("updateUser", data));
+        this.socket.on("client.end", (data) => {
+            data.id = this.id;
+            this.clientDisconnected(data)
+        });
+        this.socket.on("client.sendChatMessage", (data) => {
+            data.id = this.id;
+            this.triggerEvent("sendChatMessage", data)
+        });
+        this.socket.on("client.exit", (data) =>{
+            data.id = this.id;    
+            this.triggerEvent("exit", data)
+        });
+        this.socket.on("client.updateUser", (data) => {
+            data.id = this.id;   
+            this.triggerEvent("updateUser", data)
+        });
 
         // mediasoup
-        this.socket.on("client.sendTransportConnect", (data, cb) =>
+        this.socket.on("client.sendTransportConnect", (data, cb) =>{ 
             this.receiveTransportConnect(data, cb)
-        );
+        });
 
         this.socket.on("client.sendTransportProduce", (data, cb) => {
             this.receiveTransportProduce(data, cb);
@@ -172,7 +185,7 @@ class User {
         console.log("[USER-" + this.id + "] DISCONNECTED");
         clearInterval(this.pingInterval);
         clearInterval(this.crashCountdown);
-        
+
         this.triggerEvent("exit", {
             id: this.id,
             roomId: this.currentRoom,
@@ -186,11 +199,11 @@ class User {
     }
 
     async receiveTransportConnect(data, cb) {
-        if(!this.receiveTransport) {
+        if (!this.receiveTransport) {
             console.log("USER-" + this.id + " receiveTransport not found, can't connect audio");
-            cb({ 
+            cb({
                 response: "error",
-                reason: "receiveTransport not found"        
+                reason: "receiveTransport not found"
             });
             return;
         }
@@ -202,11 +215,11 @@ class User {
     }
 
     async receiveTransportProduce(data, cb) {
-        if(!this.receiveTransport) {
+        if (!this.receiveTransport) {
             console.log("USER-" + this.id + " receiveTransport not found, can't produce audio");
-            cb({ 
+            cb({
                 response: "error",
-                reason: "receiveTransport not found"           
+                reason: "receiveTransport not found"
             });
             return;
         }
@@ -237,9 +250,9 @@ class User {
     }
 
     async sendTransportConnect(data, cb) {
-        if(!this.sendTransport) {
+        if (!this.sendTransport) {
             console.log("USER-" + this.id + " sendTransport not found, can't connect audio");
-            cb({ 
+            cb({
                 response: "error",
                 reason: "sendTransport not found"
             });
@@ -249,13 +262,13 @@ class User {
             dtlsParameters: data.dtlsParameters
         });
 
-        cb({ response: "success"});
+        cb({ response: "success" });
     }
 
     async receiveVideoTransportConnect(data, cb) {
-        if(!this.receiveVideoTransport) {
+        if (!this.receiveVideoTransport) {
             console.log("USER-" + this.id + " receiveVideoTransport not found, can't connect video");
-            cb({ 
+            cb({
                 response: "error",
                 reason: "receiveVideoTransport not found"
             });
@@ -270,11 +283,11 @@ class User {
     }
 
     async receiveVideoTransportProduce(data, cb) {
-        if(!this.receiveVideoTransport) {
+        if (!this.receiveVideoTransport) {
             console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
-            cb({ 
+            cb({
                 response: "error",
-                reason: "receiveVideoTransport not found"            
+                reason: "receiveVideoTransport not found"
             });
             return;
         }
@@ -304,9 +317,9 @@ class User {
     }
 
     sendVideoTransportConnect(data, cb) {
-        if(!this.sendVideoTransport) {
+        if (!this.sendVideoTransport) {
             console.log("USER-" + this.id + " sendVideoTransport not found, can't connect video");
-            cb({ 
+            cb({
                 response: "error",
                 reason: "sendVideoTransport not found"
             });
@@ -317,7 +330,7 @@ class User {
             dtlsParameters: data.dtlsParameters
         });
 
-        cb({response: "success"});
+        cb({ response: "success" });
     }
 
     async stopScreenSharing(data) {
@@ -338,9 +351,9 @@ class User {
             }
         });
 
-        if(!this.sendVideoTransport) {
+        if (!this.sendVideoTransport) {
             console.log("USER-" + this.id + " sendVideoTransport not found, can't consume video");
-            cb({ 
+            cb({
                 response: "error",
                 reason: "sendVideoTransport not found"
             });
@@ -392,9 +405,9 @@ class User {
             }
         });
 
-        if(!this.sendTransport) {
+        if (!this.sendTransport) {
             console.log("USER-" + this.id + " sendTransport not found, can't consume audio");
-            cb({ 
+            cb({
                 response: "error",
                 reason: "sendTransport not found"
             });
