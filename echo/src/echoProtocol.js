@@ -877,10 +877,18 @@ class EchoProtocol {
       this.socket.emit("client.friendAction", data);
     }
   }
+
+  apiUnauthorized() {
+    //prompt user to login again
+    this.tokenExpired();
+  }
 }
 
 Emitter.mixin(EchoProtocol);
 
+EchoProtocol.prototype.tokenExpired = function () {
+  this.emit("tokenExpired");
+}
 
 EchoProtocol.prototype.roomClicked = function (data) {
   this.emit("roomClicked", data);

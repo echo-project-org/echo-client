@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
 
-import { storage } from "../../index";
+import { storage, ep } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
 function MainPage() {
@@ -49,9 +49,19 @@ function MainPage() {
   }
 
   useEffect(() => {
+    ep.on("tokenExpired", "MainPage.tokenExpired", (data) => {
+      ep.closeConnection();
+      storage.clear();
+      navigate("/login");
+    });
+
     // if id is not set, redirect to login page
     if (!storage.get("id")) {
       navigate("/login");
+    }
+
+    return () => {
+      ep.releaseGroup("MainPage.tokenExpired");
     }
   }, [navigate]);
 

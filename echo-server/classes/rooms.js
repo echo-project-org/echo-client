@@ -88,7 +88,6 @@ class Rooms {
 
         console.log(colors.changeColor("green", "Listening for new client connections"));
 
-
         this.emitter.on('connection', async (socket) => {
             const request = socket.request;
             const token = request._query["token"];

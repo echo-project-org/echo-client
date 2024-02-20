@@ -1,4 +1,5 @@
-import { storage } from './index';
+import { storage, ep } from './index';
+
 
 const API_URL = "https://echo.kuricki.com/api/";
 // const API_URL = "http://localhost:6980/api/";
@@ -43,39 +44,36 @@ export async function call(path, method = "GET", body = null, forceString = true
 
 const handleErrors = (status, response) => {
   if (status !== 200) {
-    if (response.message) {
-      return false;
+    switch (status) {
+      case 400:
+        // Bad request
+        console.warn(status + ": Bad request");
+        break;
+      case 401:
+        // Unauthorized
+        ep.apiUnauthorized();
+        console.warn(status + ": Unauthorized");
+        break;
+      case 403:
+        // Forbidden
+        console.warn(status + ": Forbidden");
+        break;
+      case 413:
+        // Payload too large
+        console.warn(status + ": Payload too large");
+        break;
+      case 404:
+        // Not found
+        console.warn(status + ": Not found");
+        break;
+      case 500:
+        // Internal server error
+        console.warn(status + ": Internal server error");
+        break;
+      default:
+        console.warn(status + ": Unknown error");
+        break;
     }
-    else
-      switch (status) {
-        case 400:
-          // Bad request
-          console.warn(status + ": Bad request");
-          break;
-        case 401:
-          // Unauthorized
-          console.warn(status + ": Unauthorized");
-          break;
-        case 403:
-          // Forbidden
-          console.warn(status + ": Forbidden");
-          break;
-        case 413:
-          // Payload too large
-          console.warn(status + ": Payload too large");
-          break;
-        case 404:
-          // Not found
-          console.warn(status + ": Not found");
-          break;
-        case 500:
-          // Internal server error
-          console.warn(status + ": Internal server error");
-          break;
-        default:
-          console.warn(status + ": Unknown error");
-          break;
-      }
   }
   return response;
 }
