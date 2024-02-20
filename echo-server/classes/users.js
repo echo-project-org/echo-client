@@ -185,14 +185,31 @@ class User {
     }
 
     async receiveTransportConnect(data, cb) {
+        if(!this.receiveTransport) {
+            console.log("USER-" + this.id + " receiveTransport not found, can't connect audio");
+            cb({ 
+                response: "error",
+                reason: "receiveTransport not found"        
+            });
+            return;
+        }
         await this.receiveTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
 
-        cb(true);
+        cb({ response: "success" });
     }
 
     async receiveTransportProduce(data, cb) {
+        if(!this.receiveTransport) {
+            console.log("USER-" + this.id + " receiveTransport not found, can't produce audio");
+            cb({ 
+                response: "error",
+                reason: "receiveTransport not found"           
+            });
+            return;
+        }
+
         if (this.audioProducer) {
             await this.audioProducer.close();
             this.audioProducer = null;
@@ -213,27 +230,54 @@ class User {
             deaf: this.isDeaf,
         })
         cb({
+            response: "success",
             id: this.audioProducer.id
         });
     }
 
     async sendTransportConnect(data, cb) {
+        if(!this.sendTransport) {
+            console.log("USER-" + this.id + " sendTransport not found, can't connect audio");
+            cb({ 
+                response: "error",
+                reason: "sendTransport not found"
+            });
+            return;
+        }
         await this.sendTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
 
-        cb(true);
+        cb({ response: "success"});
     }
 
     async receiveVideoTransportConnect(data, cb) {
+        if(!this.receiveVideoTransport) {
+            console.log("USER-" + this.id + " receiveVideoTransport not found, can't connect video");
+            cb({ 
+                response: "error",
+                reason: "receiveVideoTransport not found"
+            });
+            return;
+        }
+
         await this.receiveVideoTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
 
-        cb(true);
+        cb({ response: "success" });
     }
 
     async receiveVideoTransportProduce(data, cb) {
+        if(!this.receiveVideoTransport) {
+            console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
+            cb({ 
+                response: "error",
+                reason: "receiveVideoTransport not found"            
+            });
+            return;
+        }
+
         if (this.videoProducer) {
             await this.videoProducer.close();
             this.videoProducer = null;
@@ -253,16 +297,26 @@ class User {
         });
 
         cb({
+            response: "success",
             id: this.videoProducer.id
         });
     }
 
     sendVideoTransportConnect(data, cb) {
+        if(!this.sendVideoTransport) {
+            console.log("USER-" + this.id + " sendVideoTransport not found, can't connect video");
+            cb({ 
+                response: "error",
+                reason: "sendVideoTransport not found"
+            });
+            return;
+        }
+
         this.sendVideoTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
 
-        cb(true);
+        cb({response: "success"});
     }
 
     async stopScreenSharing(data) {
@@ -282,6 +336,15 @@ class User {
                 this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
             }
         });
+
+        if(!this.sendVideoTransport) {
+            console.log("USER-" + this.id + " sendVideoTransport not found, can't consume video");
+            cb({ 
+                response: "error",
+                reason: "sendVideoTransport not found"
+            });
+            return;
+        }
         const consumer = await this.sendVideoTransport.consume({
             producerId: data.id + "-video",
             rtpCapabilities: data.rtpCapabilities,
@@ -294,6 +357,7 @@ class User {
         });
 
         cb({
+            response: "success",
             id: consumer.id,
             producerId: data.id,
             kind: consumer.kind,
@@ -326,6 +390,16 @@ class User {
                 this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
             }
         });
+
+        if(!this.sendTransport) {
+            console.log("USER-" + this.id + " sendTransport not found, can't consume audio");
+            cb({ 
+                response: "error",
+                reason: "sendTransport not found"
+            });
+            return;
+        }
+
         const consumer = await this.sendTransport.consume({
             producerId: data.id + "-audio",
             rtpCapabilities: data.rtpCapabilities,
@@ -338,6 +412,7 @@ class User {
         });
 
         cb({
+            response: "success",
             id: consumer.id,
             producerId: data.id,
             kind: consumer.kind,

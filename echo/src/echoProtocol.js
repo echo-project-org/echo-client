@@ -329,6 +329,10 @@ class EchoProtocol {
   sendTransportProduce(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendTransportProduce", data, (a) => {
+        if(a.response === "error") {
+          console.error("Error sending transport produce", a);
+          return;
+        }
         cb(a);
       });
     }
@@ -337,6 +341,10 @@ class EchoProtocol {
   receiveTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.receiveTransportConnect", data, (a) => {
+        if(a.response === "error") {
+          console.error("Error receiving transport connect", a);
+          return;
+        }
         cb(a);
       });
     }
@@ -345,6 +353,10 @@ class EchoProtocol {
   sendVideoTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendVideoTransportConnect", data, (a) => {
+        if(a.response === "error") {
+          console.error("Error sending video transport connect", a);
+          return;
+        }
         cb(a);
       });
     }
@@ -353,6 +365,10 @@ class EchoProtocol {
   sendVideoTransportProduce(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendVideoTransportProduce", data, (a) => {
+        if(a.response === "error") {
+          console.error("Error sending video transport produce", a);
+          return;
+        }
         cb(a);
       });
     }
@@ -361,6 +377,10 @@ class EchoProtocol {
   receiveVideoTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.receiveVideoTransportConnect", data, (a) => {
+        if(a.response === "error") {
+          console.error("Error receiving video transport connect", a);
+          return;
+        }
         cb(a);
       });
     }
@@ -541,6 +561,10 @@ class EchoProtocol {
       let a = this.mh.getRtpCapabilities()
 
       this.socket.emit("client.subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
+        if (data.response === "error") {
+          console.error("Error subscribing audio", data);
+          return;
+        }
         this.mh.consume({
           id: data.id,
           producerId: data.producerId,
@@ -595,6 +619,10 @@ class EchoProtocol {
     if (this.mh) {
       let a = this.mh.getRtpCapabilities()
       this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
+        if(description.response === "error") {
+          console.error("Error starting receiving video", description);
+          return;
+        }
         this.mh.consumeVideo(description);
       });
     }
