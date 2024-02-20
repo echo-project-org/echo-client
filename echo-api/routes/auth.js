@@ -39,7 +39,7 @@ router.post("/login", (req, res) => {
         if (!result) return res.status(401).send({ message: "Wrong credentials." });
 
         if (result && result.length > 0) {
-            const token = req.authenticator.generateJWTToken(email);
+            const token = req.authenticator.generateJWTToken(result[0].id);
             req.database.query("UPDATE users SET online = ? WHERE id = ?", ["1", result[0].id], (err, result, fields) => {
                 if (err) console.error(err);
             });
@@ -54,6 +54,16 @@ router.post("/login", (req, res) => {
         }
 
         res.status(406).json({ message: "Username does not exist or password is incorrect." });
+    });
+    
+    router.get("/validate", (req, res) => {
+        const token = req.headers.authorization;
+        const result = req.authenticator.getUserId(token);
+        if (result) {
+            res.status(200).json({ id: result });
+        } else {
+            res.status(401).send({ message: "Unauthorized" });
+        }
     });
 });
 

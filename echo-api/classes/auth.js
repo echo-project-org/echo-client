@@ -77,6 +77,19 @@ class Auth {
       return false;
     }
   }
+
+  // get the user id from a token
+  getUserId(token) {
+    if (!this.tokens[token]) return false;
+    try {
+      const keyBuffer = Buffer.from(this.tokens[token].key);
+      const requestData = jwt.verify(token, keyBuffer);
+      return requestData.body.sub;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 }
 
 module.exports = Auth;
