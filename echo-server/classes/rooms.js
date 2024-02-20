@@ -109,7 +109,7 @@ class Rooms {
             .then(async (response) => {
                 if(response.ok) {
                     let json = await response.json();
-                    let id = json.id;
+                    let id = String(json.id);
 
                     if (this.connectedClients.has(id)) {
                         //get the user
