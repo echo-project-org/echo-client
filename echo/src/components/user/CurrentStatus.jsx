@@ -7,16 +7,7 @@ import { storage } from "../../index";
 import StylingComponents from "../../StylingComponents";
 
 function CurrentStatus({ icon, align, height, online }) {
-  const [status, setStatus] = useState(0); // 0 - offline, 1 - online, 2 - away, 3 - do not disturb, 4 - invisible
-
-  useEffect(() => {
-    const _online = storage.get("online");
-    if (online === "none") {
-      setStatus(_online);
-    } else {
-      setStatus(online);
-    }
-  }, []);
+  if (online === "none") online = storage.get("online");
 
   switch (online) {
     case "0":
