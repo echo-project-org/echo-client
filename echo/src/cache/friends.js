@@ -51,6 +51,11 @@ class Friends {
     return this.friends[id];
   }
 
+  has(id) {
+    id = this.typeCheck(id);
+    return this.friends[id] ? true : false;
+  }
+
   update(id, field, value) {
     id = this.typeCheck(id);
     field = this.typeCheck(field);

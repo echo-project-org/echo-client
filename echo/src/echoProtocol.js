@@ -226,17 +226,17 @@ class EchoProtocol {
     this.socket.on("server.friendAction", (data) => {
       if (data.operation === "add") {
         if (this.cachedFriends.has(data.id)) {
-          this.updateFriends({
-            id: data.id,
-            field: "accepted",
-            value: data.requested
-          })
+          // this.updateFriends({
+          //   id: data.id,
+          //   field: "accepted",
+          //   value: data.requested
+          // })
 
-          this.updateFriends({
-            id: data.id,
-            field: "requested",
-            value: data.accepted
-          });
+          // this.updateFriends({
+          //   id: data.id,
+          //   field: "requested",
+          //   value: data.accepted
+          // });
         } else {
           this.addFriend(data);
         }
