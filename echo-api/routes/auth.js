@@ -39,10 +39,15 @@ router.post("/login", (req, res) => {
         if (!result) return res.status(401).send({ message: "Wrong credentials." });
 
         if (result && result.length > 0) {
+            //remove any old tokens
+            req.authenticator.revokeTokenFromUser(result[0].id);
+            //generate a new token
             const token = req.authenticator.generateJWTToken(result[0].id);
+            //update the user status to online
             req.database.query("UPDATE users SET online = ? WHERE id = ?", ["1", result[0].id], (err, result, fields) => {
                 if (err) console.error(err);
             });
+            //send the token to user
             return res.status(200).json({
                 id: result[0].id,
                 name: result[0].name,
@@ -72,6 +77,9 @@ router.post("/login", (req, res) => {
         if (result) {
             //generate a new token
             const newToken = req.authenticator.generateJWTToken(result);
+            //revoke the old token
+            req.authenticator.revokeToken(token);
+            //send the new token to user
             req.database.query(`
                 SELECT id, name, email, img, status FROM users
                 INNSER JOIN user_status ON userId = id

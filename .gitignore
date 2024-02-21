@@ -174,3 +174,5 @@ dist
 echo-api/config.json
 
 electron/frontend
+electron/frontend/asset-manifest.json
+electron/frontend/index.html

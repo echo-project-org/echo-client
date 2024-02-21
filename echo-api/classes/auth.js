@@ -62,6 +62,22 @@ class Auth {
     return token;
   }
 
+  revokeToken(token) {
+    if (this.tokens[token]) {
+      delete this.tokens[token];
+      return true;
+    }
+    return false;
+  }
+
+  revokeTokenFromUser(user) {
+    for (let token in this.tokens) {
+      if (this.tokens[token].user === user) {
+        delete this.tokens[token];
+      }
+    }
+  }
+
   // check if a token is valid
   checkToken(req, res) {
     if (config.env === "dev") return { scope: "self" };
