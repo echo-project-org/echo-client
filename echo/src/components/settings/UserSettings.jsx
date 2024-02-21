@@ -209,6 +209,7 @@ function UserSettings() {
         ep.exitFromRoom(sessionStorage.getItem('id'));
         ep.closeConnection();
         sessionStorage.clear();
+        storage.remove("token");
         navigate("/");
       })
       .catch(err => {
