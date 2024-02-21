@@ -91,7 +91,7 @@ class Rooms {
         this.emitter.on('connection', async (socket) => {
             const request = socket.request;
             const token = request._query["token"];
-            if (!token) return reject("no-token-in-query");
+            if (!token) return "no-token-in-query";
 
             //fetch api to validate token
             const options = {
@@ -121,7 +121,7 @@ class Rooms {
                     console.log(colors.changeColor("yellow", "New socket connection from client " + id));
                     this.registerClientEvents(newUser);
                 } else {
-                    return reject("invalid-token");
+                    return "invalid-token";
                 }
             })
         });
