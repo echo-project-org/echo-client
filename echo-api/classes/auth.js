@@ -52,7 +52,8 @@ class Auth {
     // Sign the token with the key
     var jwtData = jwt.create(claims, key);
     // expiration if needed
-    // jwtData.setExpiration(new Date().getTime() + (60*60*1000));
+    // 30 days
+    jwtData.setExpiration(new Date().getTime() + (30*24*60*60*1000));
     // nbf if needed
     // jwtData.setNotBefore(new Date().getTime() + (60*60*1000));
     // compact the token
