@@ -60,50 +60,50 @@ router.post("/login", (req, res) => {
 
         res.status(406).json({ message: "Username does not exist or password is incorrect." });
     });
+});
     
-    router.get("/validate", (req, res) => {
-        const token = req.headers.authorization;
-        const result = req.authenticator.getUserId(token);
-        if (result) {
-            res.status(200).json({ id: result });
-        } else {
-            res.status(401).send({ message: "Unauthorized" });
-        }
-    });
+router.get("/validate", (req, res) => {
+    const token = req.headers.authorization;
+    const result = req.authenticator.getUserId(token);
+    if (result) {
+        res.status(200).json({ id: result });
+    } else {
+        res.status(401).send({ message: "Unauthorized" });
+    }
+});
 
-    router.get("/verify", (req, res) => {
-        const token = req.headers.authorization;
-        const result = req.authenticator.getUserId(token);
-        if (result) {
-            //generate a new token
-            const newToken = req.authenticator.generateJWTToken(result);
-            //revoke the old token
-            req.authenticator.revokeToken(token);
-            //send the new token to user
-            req.database.query(`
-                SELECT id, name, email, img, status FROM users
-                INNSER JOIN user_status ON userId = id
-                WHERE id = ${result}
-            `, (err, result, fields) => {
-                if (err) console.error(err);
-                if (err) return res.status(400).send({ message: "You messed up the request." });
-                if (result && result.length > 0) {
-                    return res.status(200).json({
-                        id: result[0].id,
-                        name: result[0].name,
-                        email: result[0].email,
-                        img: result[0].img,
-                        online: result[0].status,
-                        token: newToken
-                    });
-                }
+router.get("/verify", (req, res) => {
+    const token = req.headers.authorization;
+    const result = req.authenticator.getUserId(token);
+    if (result) {
+        //generate a new token
+        const newToken = req.authenticator.generateJWTToken(result);
+        //revoke the old token
+        req.authenticator.revokeToken(token);
+        //send the new token to user
+        req.database.query(`
+            SELECT id, name, email, img, status FROM users
+            INNSER JOIN user_status ON userId = id
+            WHERE id = ${result}
+        `, (err, result, fields) => {
+            if (err) console.error(err);
+            if (err) return res.status(400).send({ message: "You messed up the request." });
+            if (result && result.length > 0) {
+                return res.status(200).json({
+                    id: result[0].id,
+                    name: result[0].name,
+                    email: result[0].email,
+                    img: result[0].img,
+                    online: result[0].status,
+                    token: newToken
+                });
+            }
 
-                res.status(406).json({ message: "Username does not exist or password is incorrect." });
-            });
-        } else {
-            res.status(401).send({ message: "Unauthorized" });
-        }
-    });
+            res.status(406).json({ message: "Username does not exist or password is incorrect." });
+        });
+    } else {
+        res.status(401).send({ message: "Unauthorized" });
+    }
 });
 
 module.exports = router;
