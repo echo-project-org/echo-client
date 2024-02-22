@@ -1,4 +1,14 @@
-import { Container, Grid, Icon, styled, Button, ButtonGroup, Box, Avatar } from '@mui/material';
+import {
+  styled,
+  Container,
+  Grid,
+  Icon,
+  Button,
+  ButtonGroup,
+  Box,
+  Avatar,
+  Typography
+} from '@mui/material';
 
 /* App */
 
@@ -645,6 +655,50 @@ const StyledCurrentStatusContainer = styled(Container)(({ theme }) => ({
   }
 }));
 
+/* ScreenShareUserContainer */
+
+const StyledScreenShareUserButton = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.text.light,
+    borderRadius: "1rem",
+    fontSize: "1.3rem",
+    padding: ".6rem 1.2rem .6rem 1.2rem",
+    gap: ".5rem",
+    boxShadow: "0 .3rem .8rem .1rem " + theme.palette.primary.dark,
+    transition: "all .2s ease-in-out",
+    ":hover": {
+      backgroundColor: theme.palette.primary.light,
+      boxShadow: "0 .3rem .8rem .1rem " + theme.palette.primary.main,
+      color: theme.palette.text.light,
+      transition: "all .2s ease-in-out",
+    }
+  }
+}));
+
+const StyledScreenShareAvatar = styled(Avatar)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    // put image in the center of parent div
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "5rem",
+    height: "5rem",
+  },
+}));
+
+const StyledScreenShareTypography = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    position: "absolute",
+    top: "15%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    color: theme.palette.text.main,
+    opacity: "0.3",
+  },
+}));
+
 export default {
   App: {
     AppStyledContainer,
@@ -652,6 +706,11 @@ export default {
   },
   CurrentStatus: {
     StyledCurrentStatusContainer,
+  },
+  ScreenShare: {
+    StyledScreenShareUserButton,
+    StyledScreenShareAvatar,
+    StyledScreenShareTypography,
   },
   OnlineUserIcon: {
     StyledOnlineUserIconContainer,

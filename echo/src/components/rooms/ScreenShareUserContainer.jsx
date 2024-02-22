@@ -1,30 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Avatar, Container, Grid, Typography, styled, Badge } from '@mui/material'
+import { Container, Grid } from '@mui/material'
+import { Visibility } from '@mui/icons-material';
 
 import { ep, ap } from '../..';
 
-const StyledAvatar = styled(Avatar)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    // put image in the center of parent div
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "5rem",
-    height: "5rem",
-  },
-}));
-
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    position: "absolute",
-    top: "15%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    color: theme.palette.text.main,
-    opacity: "0.3",
-  },
-}));
+import StylingComponents from '../../StylingComponents';
 
 function ScreenShareUserContainer({ user, selectUser }) {
   const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);
@@ -61,17 +41,19 @@ function ScreenShareUserContainer({ user, selectUser }) {
   if (broadcastingVideo) {
     return (
       <Grid item className={talking ? "talking screenshareUserContainer" : "screenshareUserContainer"} key={user.id} onMouseDown={() => { selectUser(user); }}>
-        <Container className="screenshareUser" sx={{ background: "red" }}></Container>
-        <StyledAvatar className="screenshareUserAvatar" src={user.userImage} />
-        <StyledTypography variant="h4">{user.name}</StyledTypography>
+        <Container className="screenshareUser" sx={{ background: "rgba(140, 40, 40, 1)" }}></Container>
+        <StylingComponents.ScreenShare.StyledScreenShareUserButton
+          onClick={() => { selectUser(user); }}
+          size='large'
+        ><Visibility /> Watch stream</StylingComponents.ScreenShare.StyledScreenShareUserButton>
       </Grid>
     );
   } else {
     return (
       <Grid item className={talking ? "talking screenshareUserContainer" : "screenshareUserContainer"} key={user.id}>
         <Container className="screenshareUser" sx={{ background: (user.userImage ? `url(${user.userImage})` : "white") }}></Container>
-        <StyledAvatar className="screenshareUserAvatar" src={user.userImage} />
-        <StyledTypography variant="h4">{user.name}</StyledTypography>
+        <StylingComponents.ScreenShare.StyledScreenShareAvatar className="screenshareUserAvatar" src={user.userImage} />
+        <StylingComponents.ScreenShare.StyledScreenShareTypography variant="h4">{user.name}</StylingComponents.ScreenShare.StyledScreenShareTypography>
       </Grid>
     );
   }

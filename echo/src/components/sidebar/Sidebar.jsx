@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import Rooms from '../rooms/Rooms'
-import RoomControl from '../rooms/RoomControl'
 import { Divider } from '@mui/material'
 
 import StylingComponents from '../../StylingComponents';
+
+import Rooms from '../rooms/Rooms'
+import RoomControl from '../rooms/RoomControl'
+import RoomsControlsContainer from '../rooms/RoomsControlsContainer'
 
 function Sidebar({ updateCurrentRoom }) {
   const [connectionState, setConnectionState] = useState(false);
@@ -14,6 +16,8 @@ function Sidebar({ updateCurrentRoom }) {
 
   return (
     <StylingComponents.Sidebar.StyledSidebarWrapper>
+      <Divider style={{ background: '#f5e8da' }} variant="middle" />
+      <RoomsControlsContainer />
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
       <Rooms setState={updateConnectionState} connected={connectionState} updateCurrentRoom={updateCurrentRoom} />
       <Divider style={{ background: '#f5e8da' }} variant="middle" />

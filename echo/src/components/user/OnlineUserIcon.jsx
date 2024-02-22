@@ -85,7 +85,7 @@ function OnlineUserIcon({ user }) {
       >
         <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
         <p className='onlineUserNick'>{user.name}</p>
-        <Grid container direction="row" justifyContent="right" sx={{ color: "white", paddingRight: ".9rem" }}>
+        <Grid container direction="row" justifyContent="right" sx={{ color: "white", paddingRight: ".9rem", gap: ".4rem" }}>
           {deaf ? <VolumeOff fontSize="small" /> : null}
           {muted ? <MicOffRounded fontSize="small" /> : null}
           {broadcastingVideo ? <ScreenShareIcon fontSize="small" style={{ color: "red" }} /> : null}
