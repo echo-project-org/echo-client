@@ -14,10 +14,10 @@ export async function call(path, method = "GET", body = null, forceString = true
       method: method,
       cache: 'no-cache',
       cors: false,
-      headers: {
+      headers: new Headers({
         'Content-Type': forceContentType ? null : 'application/json',
         "Authorization": storage.get("token")
-      },
+      }),
       body: body ? (forceString ? JSON.stringify(body) : body) : null
     };
 

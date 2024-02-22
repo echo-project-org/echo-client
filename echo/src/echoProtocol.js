@@ -608,10 +608,12 @@ class EchoProtocol {
   }
 
   stopScreenSharing() {
-    this.updateUser({ id: sessionStorage.getItem("id"), field: "screenSharing", value: false });
+    const id = sessionStorage.getItem("id");
+    if (!id) return console.error("No id found in session storage");
+    this.updateUser({ id, field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
-      this.socket.emit("client.stopScreenSharing", { id: sessionStorage.getItem("id") });
+      this.socket.emit("client.stopScreenSharing", { id });
     }
   }
 
@@ -733,6 +735,7 @@ class EchoProtocol {
       }
       else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
     } catch (error) {
+      console.error(id, field, value);
       console.error(error);
     }
   }

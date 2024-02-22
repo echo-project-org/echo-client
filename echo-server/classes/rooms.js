@@ -171,6 +171,7 @@ class Rooms {
             //find the user
             if (this.connectedClients.has(data.targetId)) {
                 const user = this.connectedClients.get(data.targetId);
+                data.type === "sent" ? data.type = "incoming" : data.type = "sent";
                 user.friendAction(data);
             }
         });

@@ -3,6 +3,9 @@ const router = express.Router();
 const fs = require("fs");
 
 router.use((req, res, next) => {
+    // check if endpoint starts with /image
+    if (req.path.startsWith("/image")) return next();
+
     const body = req.authenticator.checkToken(req, res);
     if (!body) return res.status(401).send({ message: "You are not authorized to do this." });
     if (body.scope !== "self") return res.status(401).send({ message: "You are not authorized to do this." });
