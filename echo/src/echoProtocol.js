@@ -10,7 +10,7 @@ import { storage } from "./index";
 const io = require("socket.io-client");
 
 class EchoProtocol {
-  constructor() {
+  constructor () {
     this.socket = null;
     this.ping = 0;
     this.pingInterval = null;
@@ -22,6 +22,17 @@ class EchoProtocol {
 
     this.currentConnectionState = "";
     this.currentConnectionStateInterval = null;
+
+    this.mh = new mediasoupHandler(
+      storage.get('inputAudioDeviceId'),
+      storage.get('outputAudioDeviceId'), 
+      storage.get('micVolume'),
+      storage.get('noiseSuppression') === 'true' || false,
+      storage.get('echoCancellation') === 'true' || false,
+      storage.get('autoGainControl') === 'true' || false,
+    );
+
+    this.mh.init();
 
     this.SERVER_URL = "https://echo.kuricki.com";
   }
@@ -329,7 +340,7 @@ class EchoProtocol {
   sendTransportProduce(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendTransportProduce", data, (a) => {
-        if(a.response === "error") {
+        if (a.response === "error") {
           console.error("Error sending transport produce", a);
           return;
         }
@@ -341,7 +352,7 @@ class EchoProtocol {
   receiveTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.receiveTransportConnect", data, (a) => {
-        if(a.response === "error") {
+        if (a.response === "error") {
           console.error("Error receiving transport connect", a);
           return;
         }
@@ -353,7 +364,7 @@ class EchoProtocol {
   sendVideoTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendVideoTransportConnect", data, (a) => {
-        if(a.response === "error") {
+        if (a.response === "error") {
           console.error("Error sending video transport connect", a);
           return;
         }
@@ -365,7 +376,7 @@ class EchoProtocol {
   sendVideoTransportProduce(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.sendVideoTransportProduce", data, (a) => {
-        if(a.response === "error") {
+        if (a.response === "error") {
           console.error("Error sending video transport produce", a);
           return;
         }
@@ -377,7 +388,7 @@ class EchoProtocol {
   receiveVideoTransportConnect(data, cb, errCb) {
     if (this.socket) {
       this.socket.emit("client.receiveVideoTransportConnect", data, (a) => {
-        if(a.response === "error") {
+        if (a.response === "error") {
           console.error("Error receiving video transport connect", a);
           return;
         }
@@ -518,7 +529,14 @@ class EchoProtocol {
     this.socket = null;
     this.ping = 0;
     this.pingInterval = null;
-    this.mh = null;
+    this.mh = new mediasoupHandler(
+      storage.get('inputAudioDeviceId'),
+      storage.get('outputAudioDeviceId'), 
+      storage.get('micVolume'),
+      storage.get('noiseSuppression') === 'true' || false,
+      storage.get('echoCancellation') === 'true' || false,
+      storage.get('autoGainControl') === 'true' || false,
+    );
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
@@ -621,7 +639,7 @@ class EchoProtocol {
     if (this.mh) {
       let a = this.mh.getRtpCapabilities()
       this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
-        if(description.response === "error") {
+        if (description.response === "error") {
           console.error("Error starting receiving video", description);
           return;
         }
