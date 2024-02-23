@@ -77,14 +77,11 @@ function ThemeSettings() {
 
   return (
     <StyledComponents.Settings.StyledSettingsModalSubdiv>
+          <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
+            Theme settings
+          </Typography>
       <Grid container sx={{ alignItems: "flex-start", justifyContent: "space-around" }}>
         <Grid item xs={12}>
-          <div className="noselect" sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            textAlign: "center",
-            width: "100%",
-          }}>Theme Settings</div>
         </Grid>
         <Grid item xs={2}>
           <div className="input-color-container">
