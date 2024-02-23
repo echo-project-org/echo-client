@@ -26,6 +26,10 @@ function ExtraAudioSettings() {
     setAutoGainControl(storage.get('autoGainControl') === 'true' || false);
     setSoundQueuesVolume(Math.floor(storage.get('soundQueuesVolume') * 100) || 60);
     ap.setVolume(storage.get('soundQueuesVolume') || 0.6);
+
+    return () => {
+      ep.setMicrophoneTest(false);
+    }
   }, [])
 
   const handleVadTresholdChange = (event, newValue) => {
