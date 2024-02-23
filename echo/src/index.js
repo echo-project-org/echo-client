@@ -7,9 +7,10 @@ import EchoProtocol from './echoProtocol';
 import Storage from './cache/storage';
 import AudioPlayer from './audioPlayer';
 
-let ep = new EchoProtocol();
 const storage = new Storage();
 const sessionStorage = new Storage('session');
+
+let ep = new EchoProtocol();
 
 const ap = new AudioPlayer(storage.get('soundQueuesVolume') || 0.6);
 export { ep, storage, ap };
