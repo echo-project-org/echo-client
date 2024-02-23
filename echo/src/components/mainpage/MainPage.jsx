@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
+import SettingsView from '../settings/SettingsView';
 
 import { storage, ep } from "../../index";
 import StyledComponents from '../../StylingComponents';
@@ -25,6 +26,12 @@ function MainPage() {
       selected: false,
       icon: "people_alt",
       element: <MainPageFriends />,
+    },
+    {
+      name: "Settings",
+      selected: false,
+      icon: "settings",
+      element: <SettingsView />,
     }
   ]);
 
