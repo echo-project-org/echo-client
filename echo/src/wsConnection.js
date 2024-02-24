@@ -14,6 +14,7 @@ class wsConnection {
             query: { token: token },
         });
 
+        // Connection events
         this.socket.on("close", () => {
             ep.wsConnectionClosed();
         });
@@ -22,13 +23,17 @@ class wsConnection {
             ep.wsConnectionError(error);
         });
 
-        //Custom events
+        this.socket.on("server.endConnection", (data) => {
+            ep.endConnection(data);
+        });
+
         this.socket.on("portalTurret.areYouStillThere?", (data) => {
             if (this.socket) {
                 this.send("thereYouAre");
             }
         });
 
+        //Custom events
         this.socket.on("server.userJoinedChannel", (data) => {
             ep.wsUserJoinedChannel(data);
         });
@@ -39,10 +44,6 @@ class wsConnection {
 
         this.socket.on("server.receiveChatMessage", (data) => {
             ep.wsReceiveChatMessage(data);
-        });
-
-        this.socket.on("server.endConnection", (data) => {
-            ep.endConnection(data);
         });
 
         this.socket.on("server.userUpdated", (data) => {
