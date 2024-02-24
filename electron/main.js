@@ -91,6 +91,11 @@ app.whenReady().then(() => {
     {
       label: "Check for update",
       click: function () {
+        autoUpdater.removeAllListeners("update-not-available");
+        autoUpdater.on('update-not-available', () => {
+          dialog.showMessageBox({type: 'info', title: 'Echo', message: 'No updates available', buttons: ["OK"]});
+        });
+        //check for updates
         autoUpdater.checkForUpdatesAndNotify();
       }
     },
@@ -140,37 +145,12 @@ app.whenReady().then(() => {
   }
 })
 
-// app.on('window-all-closed', () => {
-//   if (process.platform !== 'darwin') {
-//     app.quit()
-//   }
-// })
-
-// Used for testing
-/*autoUpdater.on('update-not-available', () => {
+autoUpdater.on('update-available', (info) => {
   if(mainWindow) {
     //hide the main window
-    mainWindow.setProgressBar(0.5);
-  }
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Echo',
-    message: 'No update available.',
-    buttons: ["OK"]
-  });
-});*/
-
-autoUpdater.on('update-available', () => {
-  if(mainWindow) {
-    //hide the main window
+    mainWindow.webContents.send("updateAvailable", {"version": info.version, "releaseNotes": info.releaseNotes});
     mainWindow.setProgressBar(0);
   }
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Echo',
-    message: 'Update available. Downloading...',
-    buttons: ["OK"]
-  });
 });
 
 autoUpdater.on('download-progress', (e) => {
