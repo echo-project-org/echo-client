@@ -110,6 +110,7 @@ app.whenReady().then(() => {
           rtcInternals = createRtcInternalsWindow();
         }
 
+        rtcInternals.loadURL("chrome://webrtc-internals");
         rtcInternals.show();
       }
     })
@@ -132,15 +133,8 @@ app.whenReady().then(() => {
   //WebRTC internals window
 
   if (!app.isPackaged) {
-    if (!rtcInternals) {
-      rtcInternals = createRtcInternalsWindow();
-    }
-
     // open dev tools
     mainWindow.webContents.openDevTools();
-    // open rtc internals for degugging
-    rtcInternals.loadURL("chrome://webrtc-internals");
-    rtcInternals.show();
   }
 })
 
