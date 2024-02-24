@@ -69,7 +69,11 @@ let tray = null;
 app.whenReady().then(() => {
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
-  tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
+  if(app.isPackaged) {
+    tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
+  } else {
+    tray = new Tray(path.join(process.cwd(), 'images', 'icon.png'))
+  }
   const TrayMenu = [
     {
       label: "Echo",
@@ -129,8 +133,6 @@ app.whenReady().then(() => {
     mainWindow.show();
   })
   tray.setContextMenu(contextMenu)
-
-  //WebRTC internals window
 
   if (!app.isPackaged) {
     // open dev tools
