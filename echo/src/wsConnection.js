@@ -5,9 +5,6 @@ const io = require("socket.io-client");
 class wsConnection {
     constructor() {
         this.socket = null;
-        this.ping = 0;
-        this.pingInterval = null;
-
         this.SERVER_URL = "https://echo.kuricki.com";
     }
 
@@ -91,6 +88,7 @@ class wsConnection {
             if (cb) {
                 if(a.response === "error") {
                     console.error(request, a);
+                    ep.localUserCrashed();
                     return;
                 }
                 cb(a);
