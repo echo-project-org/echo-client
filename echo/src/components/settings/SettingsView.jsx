@@ -48,13 +48,14 @@ function SettingsView() {
 
     return (
         <StyledComponents.Settings.StyledSettingsContainer>
-            <Typography variant="h3" className="noselect">
-                Echo settings
-            </Typography>
-
             <ImageUploader open={openUploader} data={uploaderData} />
 
             <Grid container spacing={2}>
+                <Grid item lg={12} md={12} xs={12}>
+                    <StyledComponents.Settings.StyledSettingsModalSubdiv>
+                        <Typography variant="h3">Echo Settings</Typography>
+                    </StyledComponents.Settings.StyledSettingsModalSubdiv>
+                </Grid>
                 <Grid item lg={6} md={12} xs={12}>
                     <InputDevicesSettings inputDevices={inputDevices} />
                 </Grid>
