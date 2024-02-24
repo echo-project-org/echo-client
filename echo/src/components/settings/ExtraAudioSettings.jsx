@@ -109,10 +109,10 @@ function ExtraAudioSettings() {
       </div>
       <div style={{ paddingRight: "2%", width: "95%" }}>
         <Stack spacing={2} direction="row" alignItems={"center"} justifyContent={"space-between"}>
-          <FormControlLabel control={<Switch checked={micTest} onChange={handleTestChange} />} label="Test your input device" />
-          <FormControlLabel control={<Switch checked={echoCancellation} onChange={handleEchoCancellationChange} />} label="Echo cancellation" />
-          <FormControlLabel control={<Switch checked={noiseSuppression} onChange={handleNoiseSuppressionChange} />} label="Noise suppression" />
-          <FormControlLabel control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Auto gain control" />
+          <FormControlLabel className="noselect" control={<Switch checked={micTest} onChange={handleTestChange} />} label="Test your input device" />
+          <FormControlLabel className="noselect" control={<Switch checked={echoCancellation} onChange={handleEchoCancellationChange} />} label="Echo cancellation" />
+          <FormControlLabel className="noselect" control={<Switch checked={noiseSuppression} onChange={handleNoiseSuppressionChange} />} label="Noise suppression" />
+          <FormControlLabel className="noselect" control={<Switch checked={autoGainControl} onChange={handleAutoGainControlChange} />} label="Auto gain control" />
         </Stack>
       </div>
     </StyledComponents.Settings.StyledSettingsModalSubdiv>

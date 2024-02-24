@@ -14,42 +14,42 @@ function CurrentStatus({ icon, align, height, online }) {
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <Circle style={{ color: "#f5e8da" }} fontSize="small" /> : null }
-          <p>Offline</p>
+          <p className="noselect">Offline</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     case "1":
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <Circle style={{ color: "#44b700" }} fontSize="small" /> : null }
-          <p>Online</p>
+          <p className="noselect">Online</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     case "2":
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <DarkMode style={{ color: "#ff8800" }} fontSize="small" /> : null }
-          <p>Away</p>
+          <p className="noselect">Away</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     case "3":
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <DoNotDisturbOn style={{ color: "#fd4949" }} fontSize="small" /> : null }
-          <p>Do not disturb</p>
+          <p className="noselect">Do not disturb</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     case "4":
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <Circle style={{ color: "#f5e8da" }} fontSize="small" /> : null }
-          <p>Invisible</p>
+          <p className="noselect">Invisible</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     default:
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           <Circle style={{ color: "#f5e8da" }} />
-          <p>Offline</p>
+          <p className="noselect">Offline</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
   }

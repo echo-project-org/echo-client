@@ -87,25 +87,25 @@ function ThemeSettings() {
           <div className="input-color-container">
             <input id="input-color" value={background} className="input-color" type="color" onChange={handleChange} data-type="background" />
           </div>
-          <Typography className="input-color-label">Change background color</Typography>
+          <Typography className="input-color-label noselect">Change background color</Typography>
         </Grid>
         <Grid item xs={2}>
           <div className="input-color-container">
             <input id="input-color" value={primary} className="input-color" type="color" onChange={handleChange} data-type="primary" />
           </div>
-          <Typography className="input-color-label">Change primary color</Typography>
+          <Typography className="input-color-label noselect">Change primary color</Typography>
         </Grid>
         <Grid item xs={2}>
           <div className="input-color-container">
             <input id="input-color" value={secondary} className="input-color" type="color" onChange={handleChange} data-type="secondary" />
           </div>
-          <Typography className="input-color-label">Change secondary color</Typography>
+          <Typography className="input-color-label noselect">Change secondary color</Typography>
         </Grid>
         <Grid item xs={2}>
           <div className="input-color-container">
             <input id="input-color" value={text} className="input-color" type="color" onChange={handleChange} data-type="text" />
           </div>
-          <Typography className="input-color-label">Change text color</Typography>
+          <Typography className="input-color-label noselect">Change text color</Typography>
         </Grid>
         <Grid item xs={12}>
           <Grid container justifyContent="center" direction={"row"}>

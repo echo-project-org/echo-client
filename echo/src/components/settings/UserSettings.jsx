@@ -59,20 +59,20 @@ const StyledTextField = styled(TextField)({
 const ComputeSelectList = ({ statusHover, changeStatus, statusSelectOn }) => {
   if (statusHover)
     return (
-      <Grid container className="selectContainer-items" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
+      <Grid container className="selectContainer-items noselect" direction={"column"} spacing={2} sx={{ textAlign: "center" }} onMouseEnter={statusSelectOn}>
         <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
           <Circle style={{ color: "#44b700" }} />
           Online
         </Grid>
-        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+        <Grid item className="selectContainer-item noselect" lg={12} xs={12} onMouseDown={changeStatus}>
           <DarkMode style={{ color: "#ff8800" }} />
           Away
         </Grid>
-        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+        <Grid item className="selectContainer-item noselect" lg={12} xs={12} onMouseDown={changeStatus}>
           <DoNotDisturbOn style={{ color: "#fd4949" }} />
           Do not disturb
         </Grid>
-        <Grid item className="selectContainer-item" lg={12} xs={12} onMouseDown={changeStatus}>
+        <Grid item className="selectContainer-item noselect" lg={12} xs={12} onMouseDown={changeStatus}>
           <Circle style={{ color: "#f5e8da" }} />
           Invisible
         </Grid>
@@ -245,7 +245,7 @@ function UserSettings() {
         <Grid item lg={10} md={9} xs={6}>
           <StyledGridContainer container direction={"row"} spacing={3}>
             <Grid item lg={5.9} xs={12}>
-              <p style={{ fontSize: '1.5rem', marginBottom: ".8rem", marginTop: "0" }}>Nickname</p>
+              <p className="noselect" style={{ fontSize: '1.5rem', marginBottom: ".8rem", marginTop: "0" }}>Nickname</p>
               <StyledTextField
                 hiddenLabel
                 id="nameSettingsBox"
@@ -256,7 +256,7 @@ function UserSettings() {
               />
             </Grid>
             <Grid item lg={5.9} xs={12}>
-              <p style={{ fontSize: '1.5rem', marginBottom: ".8rem", marginTop: "0" }}>Email</p>
+              <p className="noselect" style={{ fontSize: '1.5rem', marginBottom: ".8rem", marginTop: "0" }}>Email</p>
               <StyledTextField
                 hiddenLabel
                 id="emailSettingsBox"
@@ -267,7 +267,7 @@ function UserSettings() {
               />
             </Grid>
             <Grid item lg={11.8} xs={12}>
-              <p style={{ fontSize: '1.5rem', marginBottom: ".8rem", marginTop: "0" }}>Password</p>
+              <p className="noselect" style={{ fontSize: '1.5rem', marginBottom: ".8rem", marginTop: "0" }}>Password</p>
               <StyledTextField
                 hiddenLabel
                 id="passwordSettingsBox"

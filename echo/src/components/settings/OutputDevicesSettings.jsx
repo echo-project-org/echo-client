@@ -77,7 +77,7 @@ function OutputDevicesSettings({ outputDevices }) {
       <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
         Output device
       </Typography>
-      <div className="deviceSelector-root" onMouseDown={deviceListToggle}>
+      <div className="deviceSelector-root noselect" onMouseDown={deviceListToggle}>
         <ClickAwayListener onClickAway={() => deviceListToggle(false)}>
           <div className="deviceSelectorContainer">
             <CurrentDevice outputDevices={outputDevices} outputDevice={outputDevice} showList={showList} />
