@@ -24,7 +24,10 @@
     },
     "directories": {
       "output": "dist"
-    }
+    },
+    "extraResources": [
+      "./images/**"
+    ]
   },
   "author": "Kury & Thundy",
   "license": "ISC",

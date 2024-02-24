@@ -69,7 +69,7 @@ let tray = null;
 app.whenReady().then(() => {
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
-  tray = new Tray(path.join(process.cwd(), 'images', 'icon.png'))
+  tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
   const TrayMenu = [
     {
       label: "Echo",
