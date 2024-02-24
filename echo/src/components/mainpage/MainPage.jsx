@@ -31,7 +31,7 @@ function MainPage() {
       name: "Settings",
       selected: false,
       icon: "settings",
-      element: <SettingsView />,
+      element: <StyledComponents.Settings.StyledSettingsView><SettingsView /></StyledComponents.Settings.StyledSettingsView>,
     }
   ]);
 

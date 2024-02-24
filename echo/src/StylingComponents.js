@@ -480,6 +480,17 @@ const StyledSettingsBox = styled(Box)(({ theme }) => ({
   }
 }));
 
+const StyledSettingsView = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: theme.palette.background.main,
+    color: theme.palette.text.main,
+    overflow: 'auto',
+    outline: 'none',
+  }
+}));
+
 const StyledImageUploaderContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     position: "fixed",
@@ -769,6 +780,7 @@ export default {
   Settings: {
     StyledSettingsContainer,
     StyledSettingsBox,
+    StyledSettingsView,
     StyledImageUploaderContainer,
     StyledImageUploaderBackground,
     StyledImageUploaderContentContainer,
