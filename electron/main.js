@@ -141,30 +141,6 @@ app.whenReady().then(() => {
     rtcInternals.loadURL("chrome://webrtc-internals");
     rtcInternals.show();
   }
-
-  autoUpdater.on('update-available', () => {
-    dialog.showMessageBoxSync({
-      type: 'info',
-      title: 'Echo',
-      message: 'Update available. Downloading...',
-      buttons: ["OK"]
-    });
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    dialog.showMessageBoxSync({
-      type: 'info',
-      title: 'Echo',
-      message: 'Update downloaded. Restarting...',
-      buttons: ["OK"]
-    });
-
-    autoUpdater.quitAndInstall();
-  });
-
-  autoUpdater.on('error', (err) => {
-    dialog.showErrorBox('Error: ', err == null ? "unknown" : (err.stack || err).toString());
-  });
 })
 
 // app.on('window-all-closed', () => {
@@ -172,6 +148,61 @@ app.whenReady().then(() => {
 //     app.quit()
 //   }
 // })
+
+// Used for testing
+/*autoUpdater.on('update-not-available', () => {
+  if(mainWindow) {
+    //hide the main window
+    mainWindow.setProgressBar(0.5);
+  }
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Echo',
+    message: 'No update available.',
+    buttons: ["OK"]
+  });
+});*/
+
+autoUpdater.on('update-available', () => {
+  if(mainWindow) {
+    //hide the main window
+    mainWindow.setProgressBar(0);
+  }
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Echo',
+    message: 'Update available. Downloading...',
+    buttons: ["OK"]
+  });
+});
+
+autoUpdater.on('download-progress', (e) => {
+  if(mainWindow) {
+    //hide the main window
+    mainWindow.setProgressBar(e.percent / 100);
+  }
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Echo',
+    message: 'Update available. Downloading...',
+    buttons: ["OK"]
+  });
+});
+
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBoxSync({
+    type: 'info',
+    title: 'Echo',
+    message: 'Update downloaded. Restarting...',
+    buttons: ["OK"]
+  });
+
+  autoUpdater.quitAndInstall(true, true);
+});
+
+autoUpdater.on('error', (err) => {
+  dialog.showErrorBox('Error downloading update: ', err == null ? "unknown" : (err.stack || err).toString());
+});
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
