@@ -34,6 +34,7 @@ function SettingsView() {
       setOpenUploader(true);
       setUploaderData(data);
     });
+    
     ep.on("closeUploader", "SettingsView.closeUploader", () => {
       setOpenUploader(false);
       setUploaderData(null);
