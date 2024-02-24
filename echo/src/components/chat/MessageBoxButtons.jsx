@@ -17,8 +17,8 @@ function MessageBoxButtons({ onEmojiOn, onClick }) {
         <Button onClick={onEmojiOn} sx={buttonStyle}>
           <EmojiEmotions />
         </Button>
-        <Button sx={buttonStyle}>
-          <Send onClick={onClick} />
+        <Button sx={buttonStyle} onClick={onClick} >
+          <Send />
         </Button>
       </ButtonGroup>
     </InputAdornment>
