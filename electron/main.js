@@ -110,7 +110,7 @@ app.whenReady().then(() => {
     TrayMenu.splice(2, 0, {
       label: "Open rtc-internals",
       click: function () {
-        if (rtcInternals.isDestroyed()) {
+        if (!rtcInternals || rtcInternals.isDestroyed()) {
           rtcInternals = createRtcInternalsWindow();
         }
 
