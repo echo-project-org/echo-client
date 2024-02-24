@@ -7,7 +7,8 @@ import {
   ButtonGroup,
   Box,
   Avatar,
-  Typography
+  Typography,
+  TextField
 } from '@mui/material';
 
 /* App */
@@ -710,6 +711,53 @@ const StyledScreenShareTypography = styled(Typography)(({ theme }) => ({
   },
 }));
 
+/* ChatControls */
+
+const StyledTextBoxChat = styled(TextField)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    backgroundColor: "transparent",
+    color: theme.palette.text.light,
+    fontSize: "1rem",
+    margin: "0",
+    padding: "0",
+    ":focus": {
+      border: "none",
+      boxShadow: "none",
+    },
+    ":hover": {
+      border: "none",
+      boxShadow: "none",
+    },
+    "& .MuiInputBase-root": {
+      border: "none",
+      boxShadow: "none",
+      padding: "0 0 0 .4rem",
+      ":focus": {
+        border: "none",
+        boxShadow: "none",
+      },
+      ":hover": {
+        border: "none",
+        boxShadow: "none",
+      },
+    },
+    "& .MuiOutlinedInput-notchedOutline": {
+      border: "none",
+      boxShadow: "none",
+      padding: "0",
+      ":focus": {
+        border: "none",
+        boxShadow: "none",
+      },
+      ":hover": {
+        border: "none",
+        boxShadow: "none",
+      },
+    },
+  }
+}));
+
 export default {
   App: {
     AppStyledContainer,
@@ -772,6 +820,7 @@ export default {
     StyledRoomContentItems,
     StyledRoomTitleContainer,
     StyledRoomDescriptionContainer,
+    StyledTextBoxChat,
   },
   RoomControls: {
     StyledRoomControlsContainer,

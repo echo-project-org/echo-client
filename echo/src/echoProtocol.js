@@ -287,11 +287,13 @@ class EchoProtocol {
   }
 
   reciveChatMessageFromSocket(data) {
-    if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
+    console.log("reciveChatMessageFromSocket", data)
+    if (typeof data.room !== "string") data.room = data.room.toString();
     if (typeof data.id !== "string") data.id = data.id.toString();
     if (typeof data.userId !== "string") data.userId = data.id;
+
     // check if the room is cached
-    const room = this.cachedRooms.get(data.roomId);
+    const room = this.cachedRooms.get(data.room);
     if (room) {
       const user = this.cachedUsers.get(data.id);
       if (user) {
@@ -299,7 +301,7 @@ class EchoProtocol {
         data.img = user.userImage;
         data.name = user.name;
         const newMessage = room.chat.add(data);
-        newMessage.roomId = data.roomId;
+        newMessage.roomId = data.room;
         this.receiveChatMessage(newMessage);
       }
       else this.needUserCacheUpdate({ id: data.id, call: { function: "reciveChatMessageFromSocket", args: data } });
@@ -829,10 +831,12 @@ class EchoProtocol {
 
   // chat messages function
   sendChatMessage(data) {
+    console.log(data);
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
     if (typeof data.userId !== "string") data.userId = data.userId.toString();
     const room = this.cachedRooms.get(data.roomId);
     if (room) {
+      data.roomId = data.roomId + "@" + data.serverId;
       if (this.socket) this.socket.emit("client.sendChatMessage", { ...data, id: data.userId });
       else console.error("Socket not found");
     }

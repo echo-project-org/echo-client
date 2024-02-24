@@ -466,7 +466,6 @@ class Rooms {
 
     sendChatMessage(data) {
         if (this.connectedClients.has(data.id)) {
-            data.roomId = Number(data.roomId);
             const room = this.rooms.get(data.roomId);
             if (room) {
                 room.users.forEach((user, id) => {
@@ -530,6 +529,7 @@ class Rooms {
                 console.log(colors.changeColor("cyan", "[R-" + r.id + "] Mediasoup transport created with id " + transport.id));
             });
 
+            console.log(colors.changeColor("green", "New room " + id + " created"));
             this.rooms.set(id, {
                 id,
                 private: false,
