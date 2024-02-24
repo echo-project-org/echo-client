@@ -156,6 +156,7 @@ autoUpdater.on('update-available', (info) => {
 autoUpdater.on('download-progress', (e) => {
   if(mainWindow) {
     //hide the main window
+    mainWindow.webContents.send("downloadProgress", {"percent": e.percent, "bps": e.bytesPerSecond});
     mainWindow.setProgressBar(e.percent / 100);
   }
 });
