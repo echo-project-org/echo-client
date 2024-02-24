@@ -181,12 +181,6 @@ autoUpdater.on('download-progress', (e) => {
     //hide the main window
     mainWindow.setProgressBar(e.percent / 100);
   }
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'Echo',
-    message: 'Update available. Downloading...',
-    buttons: ["OK"]
-  });
 });
 
 autoUpdater.on('update-downloaded', () => {
