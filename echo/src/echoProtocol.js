@@ -4,17 +4,17 @@ import Emitter from "wildemitter";
 import Users from "./cache/user";
 import Room from "./cache/room";
 import Friends from "./cache/friends";
+import wsConnection from "./wsConnection";
 
 import { storage } from "./index";
 
-const io = require("socket.io-client");
-
 class EchoProtocol {
-  constructor () {
-    this.socket = null;
+  constructor() {
+    this.wsConnection = new wsConnection();
     this.ping = 0;
     this.pingInterval = null;
     this.mh = null;
+    this.id = null;
 
     this.cachedUsers = new Users();
     this.cachedRooms = new Map();
@@ -25,7 +25,7 @@ class EchoProtocol {
 
     this.mh = new mediasoupHandler(
       storage.get('inputAudioDeviceId'),
-      storage.get('outputAudioDeviceId'), 
+      storage.get('outputAudioDeviceId'),
       storage.get('micVolume'),
       storage.get('noiseSuppression') === 'true' || false,
       storage.get('echoCancellation') === 'true' || false,
@@ -37,11 +37,122 @@ class EchoProtocol {
     this.SERVER_URL = "https://echo.kuricki.com";
   }
 
-  _makeIO(id) {
-    this.socket = io(this.SERVER_URL, {
-      path: "/socket.io",
-      query: { token: storage.get("token") },
-    });
+  wsConnectionClosed() {
+    this.rtcConnectionStateChange({ state: "disconnected" });
+    this.localUserCrashed({ id: sessionStorage.getItem("id") });
+  }
+
+  wsConnectionError(error) {
+    console.error(error);
+    alert("Can't conect to the server! \nCheck your internet connection (or the server is down). \n\nIf your internet connection is working try pinging echo.kuricki.com, if it doesn't respond, contact Kury or Thundy :D");
+    this.stopTransmitting();
+    this.stopReceiving();
+    if (this.wsConnection) {
+      this.wsConnection.close();
+    }
+
+    this.rtcConnectionStateChange({ state: "disconnected" });
+    this.localUserCrashed({ id: sessionStorage.getItem("id") });
+  }
+
+  wsUserJoinedChannel(data) {
+    data.roomId = data.roomId.slice(0, data.roomId.lastIndexOf('@'));
+    console.log(data);
+    if (data.isConnected) this.startReceiving(data.id);
+    this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
+    this.updateUser({ id: data.id, field: "muted", value: data.muted });
+    this.updateUser({ id: data.id, field: "deaf", value: data.deaf });
+    this.updateUser({ id: data.id, field: "broadcastingVideo", value: data.broadcastingVideo });
+    if (data.broadcastingVideo) {
+      this.videoBroadcastStarted({ id: data.id, streamId: null });
+    }
+    this.userJoinedChannel(data);
+  }
+
+  wsUserLeftChannel(data) {
+    if (data.crashed) {
+      console.log("User " + data.id + " crashed");
+    }
+
+    if (data.isConnected) this.stopReceiving(data.id);
+    this.userLeftChannel(data);
+  }
+
+  wsSendAudioState(data) {
+    if (!data.deaf || !data.mute) {
+      this.updatedAudioState(data);
+    }
+  }
+
+  wsUserUpdated(data) {
+    this.updateUser(data);
+    // update rooms cache chat with new user data
+    const rooms = this.cachedRooms.values();
+    for (const room of rooms) {
+      room.chat.updateUser(data);
+      if (room.id === this.cachedUsers.get(sessionStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
+    }
+    this.usersCacheUpdated(this.cachedUsers.get(this.id));
+  }
+
+  wsVideoBroadcastStarted(data) {
+    this.updateUser({ id: data.id, field: "broadcastingVideo", value: true });
+    this.videoBroadcastStarted(data);
+  }
+
+  wsVideoBroadcastStop(data) {
+    this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
+    this.videoBroadcastStop(data);
+  }
+
+  wsReceiveTransportCreated(data) {
+    if (this.mh) {
+      //Server will receive and what client sends
+      this.mh.createSendTransport(data);
+    }
+  }
+
+  wsSendTransportCreated(data) {
+    if (this.mh) {
+      //Client will receive and what server sends
+      this.mh.createReceiveTransport(data);
+    }
+  }
+
+  wseReceiveVideoTransportCreated(data) {
+    if (this.mh) {
+      //Server will receive and what client sends
+      this.mh.createSendVideoTransport(data);
+    }
+  }
+
+  wsSendVideoTransportCreated(data) {
+    if (this.mh) {
+      //Client will receive and what server sends
+      this.mh.createReceiveVideoTransport(data);
+    }
+  }
+
+  wsFriendAction(data) {
+    if (data.operation === "add") {
+      if (this.cachedFriends.has(data.id)) {
+        // this.updateFriends({
+        //   id: data.id,
+        //   field: "accepted",
+        //   value: data.requested
+        // })
+
+        // this.updateFriends({
+        //   id: data.id,
+        //   field: "requested",
+        //   value: data.accepted
+        // });
+      } else {
+        this.addFriend(data);
+      }
+    } else if (data.operation === "remove") {
+      this.removeFriend(data);
+    }
   }
 
   getPing() {
@@ -55,206 +166,12 @@ class EchoProtocol {
   }
 
   openConnection(id) {
-    this._makeIO(id);
+    this.id = id;
+    if (!this.wsConnection) {
+      this.wsConnection = new wsConnection();
+    }
+    this.wsConnection.connect(storage.get('token'));
     this.startTransmitting(id);
-
-    this.socket.on("server.ready", (remoteId) => {
-    });
-
-    this.socket.io.on("close", () => {
-      this.rtcConnectionStateChange({ state: "disconnected" });
-      this.localUserCrashed({ id: sessionStorage.getItem("id") });
-    })
-
-    this.socket.io.on("error", (error) => {
-      console.error(error);
-      alert("Can't conect to the server! \nCheck your internet connection (or the server is down). \n\nIf your internet connection is working try pinging echo.kuricki.com, if it doesn't respond, contact Kury or Thundy :D");
-      this.stopTransmitting();
-      this.stopReceiving();
-      if (this.socket) {
-        this.socket.close();
-      }
-
-      this.rtcConnectionStateChange({ state: "disconnected" });
-      this.localUserCrashed({ id: sessionStorage.getItem("id") });
-    });
-
-    this.socket.on("portalTurret.areYouStillThere?", (data) => {
-      if (this.socket) {
-        this.socket.emit("client.thereYouAre");
-      }
-    });
-
-    this.socket.on("server.userJoinedChannel", (data) => {
-      data.roomId = data.roomId.slice(0, data.roomId.lastIndexOf('@'));
-      console.log(data);
-      if (data.isConnected) this.startReceiving(data.id);
-      this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
-      this.updateUser({ id: data.id, field: "muted", value: data.muted });
-      this.updateUser({ id: data.id, field: "deaf", value: data.deaf });
-      this.updateUser({ id: data.id, field: "broadcastingVideo", value: data.broadcastingVideo });
-      if (data.broadcastingVideo) {
-        this.videoBroadcastStarted({ id: data.id, streamId: null });
-      }
-      this.userJoinedChannel(data);
-      // render the component Room with the new user
-    });
-
-    this.socket.on("server.userLeftChannel", (data) => {
-      if (data.crashed) {
-        console.log("User " + data.id + " crashed");
-      }
-
-      if (data.isConnected) this.stopReceiving(data.id);
-      this.userLeftChannel(data);
-    });
-
-    this.socket.on("server.sendAudioState", (data) => {
-      if (!data.deaf || !data.mute) {
-        this.updatedAudioState(data);
-        //startReceiving();
-      }
-    });
-
-    this.socket.on("server.receiveChatMessage", (data) => {
-      this.reciveChatMessageFromSocket(data);
-    });
-
-    this.socket.on("server.endConnection", (data) => {
-      this.endConnection(data);
-    });
-
-    this.socket.on("server.userUpdated", (data) => {
-      this.updateUser(data);
-      // update rooms cache chat with new user data
-      const rooms = this.cachedRooms.values();
-      for (const room of rooms) {
-        room.chat.updateUser(data);
-        if (room.id === this.cachedUsers.get(sessionStorage.getItem("id")).currentRoom) this.messagesCacheUpdated(room.chat.get());
-      }
-      this.usersCacheUpdated(this.cachedUsers.get(id));
-    });
-
-    this.socket.on("server.videoBroadcastStarted", (data) => {
-      this.updateUser({ id: data.id, field: "broadcastingVideo", value: true });
-      this.videoBroadcastStarted(data);
-    });
-
-    this.socket.on("server.videoBroadcastStop", (data) => {
-      this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
-      this.videoBroadcastStop(data);
-    });
-
-    this.socket.on("server.receiveTransportCreated", (data) => {
-      if (this.mh) {
-        //Server will receive and what client sends
-        this.mh.createSendTransport(data);
-      }
-    });
-
-    this.socket.on("server.sendTransportCreated", (data) => {
-      if (this.mh) {
-        //Client will receive and what server sends
-        this.mh.createReceiveTransport(data);
-      }
-    });
-
-    this.socket.on("server.receiveVideoTransportCreated", (data) => {
-      if (this.mh) {
-        //Server will receive and what client sends
-        this.mh.createSendVideoTransport(data);
-      }
-    });
-
-    this.socket.on("server.sendVideoTransportCreated", (data) => {
-      if (this.mh) {
-        //Client will receive and what server sends
-        this.mh.createReceiveVideoTransport(data);
-      }
-    });
-
-    //private call stuff
-    this.socket.on("server.privateCallRinging", (data) => {
-      //the person im calling is ringing
-      // data.id is my id
-      // data.targedId is the person im calling
-      // data.roomId is the private room id
-
-    });
-
-    this.socket.on("server.someoneCallingMe", (data) => {
-      //someone is calling me
-      //data.id is the person calling me
-      //data.targedId is my id
-      //data.roomId is the private room id
-    });
-
-    this.socket.on("server.privateCallAccepted", (data) => {
-      //someone accepted my call
-      //data.id is my id
-      //data.targedId is the person im calling
-      //data.roomId is the private room id
-    });
-
-    this.socket.on("server.privateCallRejected", (data) => {
-      //someone rejected my call
-      //data.id is my id
-      //data.targedId is the person im calling
-      //data.roomId is the private room id
-    });
-
-    this.socket.on("server.privateCallHangup", (data) => {
-      //someone ended my call
-      //data.id who hanged up
-      //data.targetId is my id
-      //data.roomId is the private room id
-    });
-
-    this.socket.on("server.privateCallSetReceiveTransport", (data) => {
-      if (this.mh) {
-        this.mh.createSendTransport(data);
-      }
-    });
-
-    this.socket.on("server.privateCallSetSendTransport", (data) => {
-      if (this.mh) {
-        this.mh.createReceiveTransport(data);
-      }
-    });
-
-    this.socket.on("server.privateCallSetReceiveVideoTransport", (data) => {
-      if (this.mh) {
-        this.mh.createSendVideoTransport(data);
-      }
-    });
-
-    this.socket.on("server.privateCallSetSendVideoTransport", (data) => {
-      if (this.mh) {
-        this.mh.createReceiveVideoTransport(data);
-      }
-    });
-
-    this.socket.on("server.friendAction", (data) => {
-      if (data.operation === "add") {
-        if (this.cachedFriends.has(data.id)) {
-          // this.updateFriends({
-          //   id: data.id,
-          //   field: "accepted",
-          //   value: data.requested
-          // })
-
-          // this.updateFriends({
-          //   id: data.id,
-          //   field: "requested",
-          //   value: data.accepted
-          // });
-        } else {
-          this.addFriend(data);
-        }
-      } else if (data.operation === "remove") {
-        this.removeFriend(data);
-      }
-    });
   }
 
   endConnection(data) {
@@ -262,32 +179,8 @@ class EchoProtocol {
     this.userLeftChannel(data);
   }
 
-  startPrivateCall(data) {
-    if (this.socket) {
-      this.socket.emit("client.startPrivateCall", data);
-    }
-  }
-
-  acceptPrivateCall(data) {
-    if (this.socket) {
-      this.socket.emit("client.acceptPrivateCall", data);
-    }
-  }
-
-  rejectPrivateCall(data) {
-    if (this.socket) {
-      this.socket.emit("client.rejectPrivateCall", data);
-    }
-  }
-
-  hangupPrivateCall(data) {
-    if (this.socket) {
-      this.socket.emit("client.hangupPrivateCall", data);
-    }
-  }
-
-  reciveChatMessageFromSocket(data) {
-    console.log("reciveChatMessageFromSocket", data)
+  wsReceiveChatMessage(data) {
+    console.log("wsReceiveChatMessage", data)
     if (typeof data.room !== "string") data.room = data.room.toString();
     if (typeof data.id !== "string") data.id = data.id.toString();
     if (typeof data.userId !== "string") data.userId = data.id;
@@ -304,7 +197,7 @@ class EchoProtocol {
         newMessage.roomId = data.room;
         this.receiveChatMessage(newMessage);
       }
-      else this.needUserCacheUpdate({ id: data.id, call: { function: "reciveChatMessageFromSocket", args: data } });
+      else this.needUserCacheUpdate({ id: data.id, call: { function: "wsReceiveChatMessage", args: data } });
     } else console.error("Room not found in cache");
   }
 
@@ -332,68 +225,48 @@ class EchoProtocol {
   }
 
   sendTransportConnect(data, cb, errCb) {
-    if (this.socket) {
-      this.socket.emit("client.sendTransportConnect", data, (a) => {
+    if (this.wsConnection) {
+      this.wsConnection.send("sendTransportConnect", data, (a) => {
         cb(a);
       });
     }
   }
 
   sendTransportProduce(data, cb, errCb) {
-    if (this.socket) {
-      this.socket.emit("client.sendTransportProduce", data, (a) => {
-        if (a.response === "error") {
-          console.error("Error sending transport produce", a);
-          return;
-        }
+    if (this.wsConnection) {
+      this.wsConnection.send("sendTransportProduce", data, (a) => {
         cb(a);
       });
     }
   }
 
   receiveTransportConnect(data, cb, errCb) {
-    if (this.socket) {
-      this.socket.emit("client.receiveTransportConnect", data, (a) => {
-        if (a.response === "error") {
-          console.error("Error receiving transport connect", a);
-          return;
-        }
+    if (this.wsConnection) {
+      this.wsConnection.send("receiveTransportConnect", data, (a) => {
         cb(a);
       });
     }
   }
 
   sendVideoTransportConnect(data, cb, errCb) {
-    if (this.socket) {
-      this.socket.emit("client.sendVideoTransportConnect", data, (a) => {
-        if (a.response === "error") {
-          console.error("Error sending video transport connect", a);
-          return;
-        }
+    if (this.wsConnection) {
+      this.wsConnection.send("sendVideoTransportConnect", data, (a) => {
         cb(a);
       });
     }
   }
 
   sendVideoTransportProduce(data, cb, errCb) {
-    if (this.socket) {
-      this.socket.emit("client.sendVideoTransportProduce", data, (a) => {
-        if (a.response === "error") {
-          console.error("Error sending video transport produce", a);
-          return;
-        }
+    if (this.wsConnection) {
+      this.wsConnection.send("sendVideoTransportProduce", data, (a) => {
         cb(a);
       });
     }
   }
 
   receiveVideoTransportConnect(data, cb, errCb) {
-    if (this.socket) {
-      this.socket.emit("client.receiveVideoTransportConnect", data, (a) => {
-        if (a.response === "error") {
-          console.error("Error receiving video transport connect", a);
-          return;
-        }
+    if (this.wsConnection) {
+      this.wsConnection.send("receiveVideoTransportConnect", data, (a) => {
         cb(a);
       });
     }
@@ -412,8 +285,8 @@ class EchoProtocol {
   stopReceivingVideo(remoteId) {
     if (this.mh) {
       this.mh.stopConsumingVideo(remoteId);
-      if (this.socket) {
-        this.socket.emit("client.stopReceivingVideo", { id: remoteId });
+      if (this.wsConnection) {
+        this.wsConnection.send("stopReceivingVideo", { id: remoteId });
       }
     }
   }
@@ -498,13 +371,27 @@ class EchoProtocol {
     const audioState = this.getAudioState();
     this.mh.startStatsInterval();
     // join the transmission on current room
-    this.socket.emit("client.join", { serverId: storage.get('serverId'), id, roomId, deaf: audioState.isDeaf, muted: audioState.isMuted }); //TODO Multi server - add serverId and join room would call server function and join router serverId@roomId
+    if (this.wsConnection) {
+      this.wsConnection.send("join", {
+        serverId: storage.get('serverId'),
+        id,
+        roomId,
+        deaf: audioState.isDeaf,
+        muted: audioState.isMuted
+      });
+    }
     this.joinedRoom();
   }
 
   sendAudioState(id, data) {
     this.updatedAudioState({ id, deaf: data.deaf, muted: data.muted });
-    if (this.socket) this.socket.emit("client.audioState", { id, deaf: data.deaf, muted: data.muted });
+    if (this.wsConnection) {
+      this.wsConnection.send("audioState", {
+        id,
+        deaf: data.deaf,
+        muted: data.muted
+      });
+    }
   }
 
   exitFromRoom(id) {
@@ -513,13 +400,15 @@ class EchoProtocol {
     this.stopReceivingVideo();
     this.mh.leaveRoom();
     this.exitedFromRoom();
-    if (this.socket) this.socket.emit("client.exit", { id });
+    if (this.wsConnection) {
+      this.wsConnection.send("exit", { id });
+    }
   }
 
   closeConnection(id = null) {
-    if (this.socket) {
+    if (this.wsConnection) {
       if (!id) id = sessionStorage.getItem('id');
-      this.socket.emit("client.end", { id });
+      this.wsConnection.send("end", { id });
       clearInterval(this.currentConnectionStateInterval);
     }
 
@@ -528,12 +417,12 @@ class EchoProtocol {
     this.stopTransmitting();
     this.stopScreenSharing();
 
-    this.socket = null;
+    this.wsConnection = null;
     this.ping = 0;
     this.pingInterval = null;
     this.mh = new mediasoupHandler(
       storage.get('inputAudioDeviceId'),
-      storage.get('outputAudioDeviceId'), 
+      storage.get('outputAudioDeviceId'),
       storage.get('micVolume'),
       storage.get('noiseSuppression') === 'true' || false,
       storage.get('echoCancellation') === 'true' || false,
@@ -546,45 +435,39 @@ class EchoProtocol {
     this.currentConnectionState = "";
     this.currentConnectionStateInterval = null;
 
-    if (this.socket) {
-      this.socket.close();
-      this.socket = null;
+    if (this.wsConnection) {
+      this.wsConnection.close();
+      this.wsConnection = null;
     }
     clearInterval(this.pingInterval);
-    // if we let client handle disconnection, then recursive happens cause of the event "close"
-    // socket.close();
   }
 
   broadcastAudio(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.broadcastAudio", data, (description) => {
+    if (this.wsConnection) {
+      this.wsConnection.send("broadcastAudio", data, (description) => {
         cb(description);
       });
     }
   }
 
   streamChanged(data) {
-    if (this.socket) {
-      this.socket.emit("client.streamChanged", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("streamChanged", data);
     }
   }
 
   videoStreamChanged(data) {
-    if (this.socket) {
-      this.socket.emit("client.videoStreamChanged", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("videoStreamChanged", data);
     }
   }
 
   subscribeAudio(data) {
-    if (this.socket) {
+    if (this.wsConnection) {
       let remoteId = data.id;
       let a = this.mh.getRtpCapabilities()
 
-      this.socket.emit("client.subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
-        if (data.response === "error") {
-          console.error("Error subscribing audio", data);
-          return;
-        }
+      this.wsConnection.send("subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
         this.mh.consume({
           id: data.id,
           producerId: data.producerId,
@@ -597,26 +480,26 @@ class EchoProtocol {
     }
   }
   resumeStream(data) {
-    if (this.socket) {
-      this.socket.emit("client.resumeStream", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("resumeStream", data);
     }
   }
 
   resumeStreams(data) {
-    if (this.socket) {
-      this.socket.emit("client.resumeStreams", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("resumeStreams", data);
     }
   }
 
   unsubscribeAudio(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.unsubscribeAudio", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("unsubscribeAudio", data);
     }
   }
 
   stopAudioBroadcast(data) {
-    if (this.socket) {
-      this.socket.emit("client.stopAudioBroadcast", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("stopAudioBroadcast", data);
     }
   }
 
@@ -633,26 +516,26 @@ class EchoProtocol {
     this.updateUser({ id, field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
-      this.socket.emit("client.stopScreenSharing", { id });
+      if (this.wsConnection) {
+        this.wsConnection.send("stopScreenSharing", { id });
+      }
     }
   }
 
   startReceivingVideo(remoteId) {
     if (this.mh) {
       let a = this.mh.getRtpCapabilities()
-      this.socket.emit("client.startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
-        if (description.response === "error") {
-          console.error("Error starting receiving video", description);
-          return;
-        }
-        this.mh.consumeVideo(description);
-      });
+      if (this.wsConnection) {
+        this.wsConnection.send("startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
+          this.mh.consumeVideo(description);
+        });
+      }
     }
   }
 
   resumeVideoStream(data) {
-    if (this.socket) {
-      this.socket.emit("client.resumeVideoStream", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("resumeVideoStream", data);
     }
   }
 
@@ -677,14 +560,14 @@ class EchoProtocol {
   }
 
   stopVideoBroadcast(data) {
-    if (this.socket) {
-      this.socket.emit("client.stopVideoBroadcast", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("stopVideoBroadcast", data);
     }
   }
 
   unsubscribeVideo(data, cb) {
-    if (this.socket) {
-      this.socket.emit("client.unsubscribeVideo", data, (description) => {
+    if (this.wsConnection) {
+      this.wsConnection.send("unsubscribeVideo", data, (description) => {
         cb(description);
       });
     }
@@ -737,7 +620,9 @@ class EchoProtocol {
 
   updatePersonalSettings({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
-      this.socket.emit("client.updateUser", { id, field, value });
+      if (this.wsConnection) {
+        this.wsConnection.send("updateUser", { id, field, value });
+      }
       this.updateUser({ id, field, value });
     }
   }
@@ -837,8 +722,11 @@ class EchoProtocol {
     const room = this.cachedRooms.get(data.roomId);
     if (room) {
       data.roomId = data.roomId + "@" + data.serverId;
-      if (this.socket) this.socket.emit("client.sendChatMessage", { ...data, id: data.userId });
-      else console.error("Socket not found");
+      if (this.wsConnection) {
+        this.wsConnection.send("sendChatMessage", { ...data, id: data.userId });
+      } else {
+        console.error("Socket not found");
+      }
     }
     else console.error("Room not found in cache");
   }
@@ -894,8 +782,8 @@ class EchoProtocol {
   }
 
   sendFriendAction(data) {
-    if (this.socket) {
-      this.socket.emit("client.friendAction", data);
+    if (this.wsConnection) {
+      this.wsConnection.send("friendAction", data);
     }
   }
 
