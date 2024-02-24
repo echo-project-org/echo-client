@@ -87,6 +87,7 @@ app.whenReady().then(() => {
     {
       label: "Check for update",
       click: function () {
+        autoUpdater.checkForUpdatesAndNotify();
       }
     },
     {
