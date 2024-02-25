@@ -40,7 +40,9 @@ jobs:
         id: build_electron_app
         shell: pwsh
         working-directory: ./electron
-        run: npm run dist
+        run: |
+          npm run dist
+          dir .\dist
 
       - name: Extract echo version from package.json
         id: extract_echo_version
@@ -65,10 +67,15 @@ jobs:
           $version = "${{ steps.extract_echo_version.outputs.release_echo_version }}"
           echo "Version: $version"
           $first_digit = $version.Split('.')[0]
-          if ($first_digit -ne '0') {
+          $override = $true
+          if ($override -eq $true) {
             echo "is_prerelease=false" >> $ENV:GITHUB_OUTPUT
           } else {
-            echo "is_prerelease=true" >> $ENV:GITHUB_OUTPUT
+            if ($first_digit -ne '0') {
+              echo "is_prerelease=false" >> $ENV:GITHUB_OUTPUT
+            } else {
+              echo "is_prerelease=true" >> $ENV:GITHUB_OUTPUT
+            }
           }
 
       - name: Create GitHub Release
@@ -117,16 +124,16 @@ jobs:
           overwrite: true
           make_latest: true
 
-      - name: Upload builder-effective-config
-        id: upload-builder-effective-config
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.zth_token }}
-          file: ./electron/dist/builder-effective-config.yaml
-          asset_name: builder-effective-config.yaml
-          tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
-          overwrite: true
-          make_latest: true
+      # - name: Upload builder-effective-config
+      #   id: upload-builder-effective-config
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.zth_token }}
+      #     file: ./electron/dist/builder-effective-config.yaml
+      #     asset_name: builder-effective-config.yaml
+      #     tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
+      #     overwrite: true
+      #     make_latest: true
 
       - name: Upload latest.yml
         id: upload-latest-yml

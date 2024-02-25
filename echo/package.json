@@ -1,7 +1,7 @@
 {
   "homepage": "./",
   "name": "echo",
-  "version": "0.0.14",
+  "version": "0.0.13",
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
