@@ -104,6 +104,7 @@ jobs:
           asset_name: Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe.blockmap
           tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
           overwrite: true
+          make_latest: true
         
       - name: Upload builder debug
         id: upload-builder-debug
@@ -114,16 +115,18 @@ jobs:
           asset_name: builder-debug.yml
           tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
           overwrite: true
+          make_latest: true
 
       - name: Upload builder-effective-config
         id: upload-builder-effective-config
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.zth_token }}
-          file: ./electron/dist/builder-effective-config.yml
-          asset_name: builder-effective-config.yml
+          file: ./electron/dist/builder-effective-config.yaml
+          asset_name: builder-effective-config.yaml
           tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
           overwrite: true
+          make_latest: true
 
       - name: Upload latest.yml
         id: upload-latest-yml
@@ -134,3 +137,4 @@ jobs:
           asset_name: latest.yml
           tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
           overwrite: true
+          make_latest: true
