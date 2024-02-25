@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - workflow
 
 jobs:
   build-and-release-windows:
@@ -39,8 +40,7 @@ jobs:
         id: build_electron_app
         shell: pwsh
         working-directory: ./electron
-        run: |
-          $build_output = npm run dist
+        run: npm run dist
 
       - name: Extract echo version from package.json
         id: extract_echo_version
@@ -48,7 +48,6 @@ jobs:
         run: |
           $pkg_version = (Get-Content -Path .\echo\package.json | ConvertFrom-Json).version
           echo "Version: $pkg_version"
-          echo "Working Directory: ${{ steps.build_electron_app.outputs.artifact_path }}"
           echo "release_echo_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
       
       - name: Extract electron version from package.json
@@ -76,62 +75,58 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.extract_echo_version.outputs.release_echo_version }}
+          tag_name: ${{ steps.extract_echo_version.outputs.release_echo_version }}
           release_name: Release v${{ steps.extract_echo_version.outputs.release_echo_version }}
           draft: false
           prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
 
       - name: Upload Executables
         id: upload-executables
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./"
+          repo_token: ${{ secrets.zth_token }}
+          file: ./electron/dist/Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe
           asset_name: Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe
-          asset_content_type: application/zip
+          tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
+          overwrite: true
+          make_latest: true
       
       - name: Upload blockmap
         id: upload-blockmap
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./"
+          repo_token: ${{ secrets.zth_token }}
+          file: ./electron/dist/Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe.blockmap
           asset_name: Echo-Setup-${{ steps.extract_echo_version.outputs.release_echo_version }}.exe.blockmap
-          asset_content_type: application/zip
-
+          tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
+          overwrite: true
+        
       - name: Upload builder debug
         id: upload-builder-debug
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./"
+          repo_token: ${{ secrets.zth_token }}
+          file: ./electron/dist/builder-debug.yml
           asset_name: builder-debug.yml
-          asset_content_type: application/zip
+          tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
+          overwrite: true
 
       - name: Upload builder-effective-config
         id: upload-builder-effective-config
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./"
+          repo_token: ${{ secrets.zth_token }}
+          file: ./electron/dist/builder-effective-config.yml
           asset_name: builder-effective-config.yml
-          asset_content_type: application/zip
+          tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
+          overwrite: true
 
       - name: Upload latest.yml
         id: upload-latest-yml
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.zth_token }}
+        uses: svenstaro/upload-release-action@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./"
+          repo_token: ${{ secrets.zth_token }}
+          file: ./electron/dist/latest.yml
           asset_name: latest.yml
-          asset_content_type: application/zip
+          tag: ${{ steps.extract_echo_version.outputs.release_echo_version }}
+          overwrite: true
