@@ -183,7 +183,7 @@ class Rooms {
             const targetUser = this.connectedClients.get(data.targetId);
             //create a new room
             do {
-                let roomId = Math.floor(Math.random() * 1000000);
+                var roomId = Math.floor(Math.random() * 1000000);
             } while (this.rooms.has(roomId) || this.privateCallRooms.has(roomId));
             //add private call room
             let r = await this.worker.createRouter({ mediaCodecs: codecs, appData: { roomId: id } });

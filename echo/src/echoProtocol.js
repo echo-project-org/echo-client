@@ -791,6 +791,18 @@ class EchoProtocol {
     //prompt user to login again
     this.tokenExpired();
   }
+
+  checkRoomClicked(data) {
+    if (this.wsConnection.socket) {
+      this.emit("roomClicked", data);
+    } else {
+      // reconnect to socket
+      console.error("Socket not found, reconnecting...");
+      this.wsConnection.connect(storage.get('token'));
+      // retry the action (BAD, but ok for now)
+      this.checkRoomClicked(data);
+    }
+  }
 }
 
 Emitter.mixin(EchoProtocol);
