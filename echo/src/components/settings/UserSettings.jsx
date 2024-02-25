@@ -194,8 +194,8 @@ function UserSettings() {
         break;
     }
     statusId = String(statusId);
-    storage.set("online", statusId);
-    ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "online", value: statusId });
+    storage.set("status", statusId);
+    ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "status", value: statusId });
     api.call("users/customStatus", "POST", { id: sessionStorage.getItem("id"), status: statusId })
       .then((res) => { })
       .catch((err) => { console.error(err); });

@@ -11,6 +11,8 @@ import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 function OnlineUserIcon({ user }) {
   user.id = user.id.toString();
 
+  console.log("OnlineUserIcon", user)
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
   const [deaf, setDeaf] = useState(false);
@@ -102,10 +104,10 @@ function OnlineUserIcon({ user }) {
         <div style={{ width: "100%", textAlign: "-webkit-center", marginBottom: ".3rem" }}>
           <StyledComponents.OnlineUserIcon.StyledOnlineUserIconAvatarBadge>
             <Avatar alt={user.name} src={user.userImage} sx={{ height: '4rem', width: '4rem' }} style={{ border: "3px solid white" }} />
-            {user.online === "1" ? <Circle style={{ color: "#44b700" }} /> : null}
-            {user.online === "2" ? <DarkMode style={{ color: "#ff8800" }} /> : null}
-            {user.online === "3" ? <DoNotDisturbOn style={{ color: "#fd4949" }} /> : null}
-            {user.online === "4" ? <Circle style={{ color: "#f5e8da" }} /> : null}
+            {user.status === "1" ? <Circle style={{ color: "#44b700" }} /> : null}
+            {user.status === "2" ? <DarkMode style={{ color: "#ff8800" }} /> : null}
+            {user.status === "3" ? <DoNotDisturbOn style={{ color: "#fd4949" }} /> : null}
+            {user.status === "4" ? <Circle style={{ color: "#f5e8da" }} /> : null}
           </StyledComponents.OnlineUserIcon.StyledOnlineUserIconAvatarBadge>
           <p style={{ marginTop: ".8rem" }}>{user.name}</p>
         </div>

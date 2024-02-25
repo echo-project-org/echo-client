@@ -6,10 +6,10 @@ import PropTypes from 'prop-types';
 import { storage } from "../../index";
 import StylingComponents from "../../StylingComponents";
 
-function CurrentStatus({ icon, align, height, online }) {
-  if (online === "none") online = storage.get("online");
+function CurrentStatus({ icon, align, height, status }) {
+  if (status === "none") status = storage.get("status");
 
-  switch (online) {
+  switch (status) {
     case "0":
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
@@ -21,7 +21,7 @@ function CurrentStatus({ icon, align, height, online }) {
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <Circle style={{ color: "#44b700" }} fontSize="small" /> : null }
-          <p className="noselect">Online</p>
+          <p className="noselect">status</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     case "2":
@@ -59,14 +59,14 @@ CurrentStatus.propTypes = {
   icon: PropTypes.bool,
   align: PropTypes.string,
   height: PropTypes.string,
-  online: PropTypes.string
+  status: PropTypes.string
 }
 
 CurrentStatus.defaultProps = {
   icon: true,
   align: "right",
   height: "100%",
-  online: "none"
+  status: "none"
 }
 
 export default CurrentStatus;

@@ -46,7 +46,7 @@ function RoomContentFriendContainer({ user, index }) {
       </Grid>
       <Grid item style={{ width: "30%", marginLeft: "1rem" }}>
         <span>{user.name}</span>
-        <CurrentStatus icon={false} align={"left"} height={"2rem"} online={user.status} />
+        <CurrentStatus icon={false} align={"left"} height={"2rem"} status={user.status} />
       </Grid>
       <Grid item style={{ width: "70%" }}>
         <RoomConentFriendsButtons user={user} />

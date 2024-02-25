@@ -21,7 +21,12 @@ router.get("/:id", (req, res) => {
     const { id } = req.params;
     if (!id) return res.status(400).send({ message: "You messed up the request." });
 
-    req.database.query("SELECT * FROM users WHERE id = ?", [id], (err, result, fields) => {
+    req.database.query(`
+        SELECT users.id, users.name, users.email, users.img, users.online, user_status.status, users.firstJoin, users.lastSeen
+        FROM users
+        LEFT JOIN user_status ON userId = id
+        WHERE id = ?
+    `, [id], (err, result, fields) => {
         if (err) return res.status(400).send({ error: "You messed up the request." });
         if (result.length > 0) {
             res.status(200).send(result[0]);

@@ -39,6 +39,7 @@ function MainPageServers({ }) {
           id: sessionStorage.getItem('id'),
           name: sessionStorage.getItem('name'),
           userImage: sessionStorage.getItem('userImage'),
+          status: storage.get('status'),
           online: storage.get('online'),
           roomId: 0
         }, true);

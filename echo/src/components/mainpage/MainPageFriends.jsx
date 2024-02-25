@@ -67,7 +67,7 @@ function MainPageFriends({ }) {
               </Grid>
               <Grid item>
                 <h3>{friend.name}</h3>
-                <CurrentStatus icon={true} align={"left"} height={".1rem"} online={friend.status} />
+                <CurrentStatus icon={true} align={"left"} height={".1rem"} status={friend.status} />
               </Grid>
             </StylingComponents.MainPage.StyledMainPageGrid>
           </Slide>

@@ -53,7 +53,8 @@ router.post("/login", (req, res) => {
                 name: result[0].name,
                 email: result[0].email,
                 img: result[0].img,
-                online: result[0].status,
+                online: "1",
+                status: result[0].status,
                 token
             });
         }
@@ -94,7 +95,8 @@ router.get("/verify", (req, res) => {
                     name: result[0].name,
                     email: result[0].email,
                     img: result[0].img,
-                    online: result[0].status,
+                    online: "1",
+                    status: result[0].status,
                     token: newToken
                 });
             }
