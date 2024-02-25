@@ -79,6 +79,10 @@ jobs:
           release_name: Release v${{ steps.extract_echo_version.outputs.release_echo_version }}
           draft: false
           prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
+          body: |
+            This is a new release of the Echo app.
+            - This release contains the latest version of the Echo app.
+            - This release contains the latest version of the Electron app.
 
       - name: Upload Executables
         id: upload-executables
