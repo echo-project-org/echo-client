@@ -272,13 +272,19 @@ router.post('/friend/request', (req, res) => {
     switch (operation) {
         case "add":
             req.database.query("INSERT INTO user_friends (id, otherId) VALUES (?, ?)", [id, friendId], function (err, result, fields) {
-                if (err) return res.status(400).send({ error: "You messed up the request." });
+                if (err) {
+                    console.error(err);
+                    return res.status(400).send({ error: "You messed up the request." });
+                }
                 res.status(200).send({ message: "Friend added!" });
             });
             break;
         case "remove":
             req.database.query("DELETE FROM user_friends WHERE id = ? AND otherId = ? || id= ? AND otherId = ?", [id, friendId, friendId, id], function (err, result, fields) {
-                if (err) return res.status(400).send({ error: "You messed up the request." });
+                if (err) {
+                    console.error(err);
+                    return res.status(400).send({ error: "You messed up the request." });
+                }
                 res.status(200).send({ message: "Friend removed!" });
             });
             break;

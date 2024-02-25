@@ -11,20 +11,20 @@ const api = require('../../api');
 function RoomConentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
-    ep.updateFriends({ id: user.id, field: "type", value: "friended" });
   }
 
   const handleFriendReject = (e) => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
-    ep.removeFriend(user.id);
   }
 
   const handleRemoveSentRequest = (e) => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
-    ep.removeFriend(user.id);
   }
 
   return (

@@ -111,7 +111,13 @@ router.get('/:id/:serverId/users', (req, res) => {
     if (!id) return res.status(400).json({ message: "Provide a valid room id" });
     if (!serverId) return res.status(400).json({ message: "Provide a valid server id" });
 
-    req.database.query("SELECT users.id, users.name, users.img, users.online FROM users INNER JOIN room_users ON users.id = room_users.userId WHERE room_users.roomId = ? AND serverId = ?", [id, serverId], (err, result, fields) => {
+    req.database.query(`
+        SELECT users.id, users.name, users.img, users.online, user_status.status
+        FROM users
+        INNER JOIN room_users ON users.id = room_users.userId
+        INNER JOIN user_status ON users.id = user_status.userId
+        WHERE room_users.roomId = ? AND serverId = ?
+    `, [id, serverId], (err, result, fields) => {
         if (err) return console.error(err);
 
         var jsonOut = [];
@@ -122,6 +128,7 @@ router.get('/:id/:serverId/users', (req, res) => {
                     name: plate.name,
                     img: plate.img,
                     online: plate.online,
+                    status: plate.status
                 });
             });
         }

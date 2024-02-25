@@ -135,21 +135,7 @@ class EchoProtocol {
 
   wsFriendAction(data) {
     if (data.operation === "add") {
-      if (this.cachedFriends.has(data.id)) {
-        // this.updateFriends({
-        //   id: data.id,
-        //   field: "accepted",
-        //   value: data.requested
-        // })
-
-        // this.updateFriends({
-        //   id: data.id,
-        //   field: "requested",
-        //   value: data.accepted
-        // });
-      } else {
-        this.addFriend(data);
-      }
+      this.addFriend(data);
     } else if (data.operation === "remove") {
       this.removeFriend(data);
     }
@@ -614,6 +600,7 @@ class EchoProtocol {
 
   // cache users functions
   addUser(user, self = false) {
+    console.log("adduser", user)
     this.cachedUsers.add(user, self);
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
@@ -646,6 +633,16 @@ class EchoProtocol {
   }
 
   addFriend(friend) {
+    console.log("ep.addFriend", friend);
+    if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
+    // populate info with cached user data
+    if (!friend.name && !friend.img) {
+      const user = this.cachedUsers.get(friend.targetId);
+      friend.img = user.img || user.userImage;
+      friend.name = user.name;
+      friend.status = user.status;
+      friend.online = user.online;
+    }
     this.cachedFriends.add(friend);
     this.friendCacheUpdated(this.cachedFriends.getAll());
   }
@@ -655,9 +652,9 @@ class EchoProtocol {
     this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 
-  removeFriend(id) {
-    console.log("ep.removeFriend", id);
-    this.cachedFriends.remove(id);
+  removeFriend(data) {
+    console.log("ep.removeFriend", data);
+    this.cachedFriends.remove(data.targetId);
     this.friendCacheUpdated(this.cachedFriends.getAll());
   }
 

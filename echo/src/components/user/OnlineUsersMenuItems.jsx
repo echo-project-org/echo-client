@@ -14,8 +14,9 @@ function FriendButton({ user, handleClose }) {
     setFriendStatus('requested');
     //notify api or whatever needs to be updated
     api.call("users/friend/request", 'POST', { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    // send message to socket
+    console.log("sending friend request to: ", user)
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'sent' });
-    ep.addFriend({ id: user.id, requested: true, accepted: false })
     handleClose();
   }
 
@@ -23,23 +24,23 @@ function FriendButton({ user, handleClose }) {
     setFriendStatus('no');
     //notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
-    ep.removeFriend(user.id);
     handleClose();
   }
 
   const handleFriendAccept = () => {
     //notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
-    ep.updateFriends({id: user.id, field: "requested", value: true});
     handleClose();
   }
 
   const handleFriendReject = () => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
-    ep.removeFriend(user.id);
     handleClose();
   }
 

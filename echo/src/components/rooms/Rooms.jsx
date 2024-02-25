@@ -31,7 +31,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
                   res.json.forEach((user) => {
-                    ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id });
+                    ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
                   });
                 }
               })
