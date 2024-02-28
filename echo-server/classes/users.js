@@ -18,9 +18,7 @@ class User {
         this.audioConsumers = [];
 
         this.receiveVideoTransport = null;
-        this.receiveVideoAudioTransport = null;
         this.sendVideoTransport = null;
-        this.sendVideoAudioTransport = null
         this.videoProducerId = null;
         this.videoProducer = null;
         this.videoConsumers = [];
@@ -84,14 +82,6 @@ class User {
         });
 
         this.socket.on("client.sendVideoTransportConnect", (data, cb) => {
-            this.receiveVideoTransportConnect(data, cb);
-        });
-
-        this.socket.on("client.receiveVideoAudioTransportConnect", (data, cb) => {
-            this.sendVideoAudioTransportConnect(data, cb);
-        });
-
-        this.socket.on("client.sendVideoAudioTransportConnect", (data, cb) => {
             this.receiveVideoTransportConnect(data, cb);
         });
 
@@ -269,39 +259,6 @@ class User {
             return;
         }
         await this.sendTransport.connect({
-            dtlsParameters: data.dtlsParameters
-        });
-
-        cb({ response: "success" });
-    }
-
-    async receiveVideoTransportConnect(data, cb) {
-        if (!this.receiveVideoAudioTransport) {
-            console.log("USER-" + this.id + " receiveVideoTransportConnect not found, can't connect video");
-            cb({    
-                response: "error",
-                reason: "receiveVideoAudioTransport not found"
-            });
-            return;
-        }
-
-        await this.receiveVideoAudioTransport.connect({
-            dtlsParameters: data.dtlsParameters
-        });
-
-        cb({ response: "success" });
-    }
-
-    async sendVideoAudioTransportConnect(data, cb) {
-        if (!this.sendVideoAudioTransport) {
-            console.log("USER-" + this.id + " sendVideoAudioTransportConnect not found, can't connect video");
-            cb({
-                response: "error",
-                reason: "sendVideoAudioTransportConnect not found"
-            });
-            return;
-        }
-        await this.sendVideoAudioTransport.connect({
             dtlsParameters: data.dtlsParameters
         });
 
