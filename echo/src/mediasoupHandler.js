@@ -27,7 +27,9 @@ class mediasoupHandler {
     this.sendTransport = null;
     this.rcvTransport = null;
     this.videoSendTransport = null;
+    this.videoAudioSendTransport = null;
     this.videoRcvTransport = null;
+    this.videoAudioRcvTransport = null;
     this.producer = null;
     this.outChannelCount = 2;
     this.inputStreams = [];
@@ -55,8 +57,11 @@ class mediasoupHandler {
     this.videoSourceId = 'undefined'
     this.outVideoStream = null;
     this.videoProducer = null;
+    this.videoAudioProducer = null;
     this.videoConsumer = null;
+    this.videoAudioConsumer = null;
     this.inVideoStream = null;
+    this.inVideoAudioStream = null;
 
     this.constraints = {
       audio: {
@@ -75,7 +80,20 @@ class mediasoupHandler {
     }
 
     this.videoConstraints = {
-      audio: false,
+      audio: {
+        mandatory: {
+          chromeMediaSource: 'desktop',
+          channelCount: 2,
+          sampleRate: 48000,
+          sampleSize: 16,
+          volume: 1.0,
+          echoCancellation: echoCancellation,
+          noiseSuppression: noiseSuppression,
+          autoGainControl: autoGainControl,
+          googNoiseSupression: noiseSuppression,
+          googAutoGainControl: autoGainControl,
+        },
+      },
       video: {
         mandatory: {
           chromeMediaSource: 'desktop',
@@ -114,9 +132,19 @@ class mediasoupHandler {
         this.videoSendTransport = null;
       }
 
+      if (this.videoAudioSendTransport) {
+        this.videoAudioSendTransport.close();
+        this.videoAudioSendTransport = null;
+      }
+
       if (this.videoRcvTransport) {
         this.videoRcvTransport.close();
         this.videoRcvTransport = null;
+      }
+
+      if (this.videoAudioRcvTransport) {
+        this.videoAudioRcvTransport.close();
+        this.videoAudioRcvTransport = null;
       }
 
       if (this.statsInterval) {
@@ -264,6 +292,21 @@ class mediasoupHandler {
         this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
           ep.receiveVideoTransportConnect({ dtlsParameters }, cb, errback);
         });
+
+        this.videoAudioRcvTransport = this.mediasoupDevice.createRecvTransport({
+          id: data.id,
+          iceParameters: data.iceParameters,
+          iceCandidates: data.iceCandidates,
+          dtlsParameters: data.dtlsParameters,
+          sctpParameters: data.sctpParameters,
+          iceServers: data.iceServers,
+          iceTransportPolicy: data.iceTransportPolicy,
+          additionalSettings: data.additionalSettings,
+        });
+
+        this.videoAudioRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+          ep.receiveVideoAudioTransportConnect({ dtlsParameters }, cb, errback);
+        });
       }
     }
   }
@@ -311,6 +354,29 @@ class mediasoupHandler {
       }, callback, errback);
     });
 
+    this.videoAudioSendTransport = this.mediasoupDevice.createSendTransport({
+      id: data.id,
+      iceParameters: data.iceParameters,
+      iceCandidates: data.iceCandidates,
+      dtlsParameters: data.dtlsParameters,
+      sctpParameters: data.sctpParameters,
+      iceServers: data.iceServers,
+      iceTransportPolicy: data.iceTransportPolicy,
+      additionalSettings: data.additionalSettings,
+    });
+
+    this.videoAudioSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
+      ep.sendVideoAudioTransportConnect({ dtlsParameters }, cb, errback);
+    });
+
+    this.videoAudioSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+      ep.sendVideoAudioTransportProduce({
+        id: this.id + "-video-audio",
+        kind,
+        rtpParameters,
+        appData,
+      }, callback, errback);
+    });
   }
 
   /**
@@ -527,6 +593,16 @@ class mediasoupHandler {
         videoGoogleMinBitrate: 3000,
       },
     });
+
+
+    const audioTrack = this.outStream.getAudioTracks()[0];
+    this.videoAudioProducer = await this.videoAudioSendTransport.produce({
+      track: audioTrack,
+      codecOptions: {
+        opusStereo: true,
+        opusDtx: true,
+      },
+    });
   }
 
   /**
@@ -539,6 +615,8 @@ class mediasoupHandler {
     if (this.videoProducer) {
       this.videoProducer.close();
       this.videoProducer = null;
+      this.videoAudioProducer.close();
+      this.videoAudioProducer = null;
     }
 
     if (this.outVideoStream) {
@@ -573,8 +651,17 @@ class mediasoupHandler {
       rtpParameters: data.rtpParameters,
     });
 
+    this.videoAudioConsumer = await this.videoAudioRcvTransport.consume({
+      id: data.id,
+      producerId: data.producerId,
+      kind: "audio",
+      rtpParameters: data.rtpParameters,
+    });
+
     const { track } = this.videoConsumer;
-    this.inVideoStream = new MediaStream([track]);
+    const { audioTrack } = this.videoAudioConsumer;
+    //create video stream with audio track
+    this.inVideoStream = new MediaStream([track, audioTrack]);
 
     ep.resumeVideoStream({ id: this.id, producerId: data.producerId });
     ep.sendVideoStreamToFrontEnd({ id: data.producerId, stream: this.inVideoStream });
@@ -776,7 +863,7 @@ class mediasoupHandler {
    * @param {number} volume - The desired volume level (0-1).
    */
   setOutVolume(volume) {
-    if(!volume){
+    if (!volume) {
       console.warn("Volume is undefined, setting to 1");
       volume = 1.0;
     }

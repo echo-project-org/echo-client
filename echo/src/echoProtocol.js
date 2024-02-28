@@ -250,9 +250,33 @@ class EchoProtocol {
     }
   }
 
+  sendVideoAudioTransportProduce(data, cb, errCb) {
+    if (this.wsConnection) {
+      this.wsConnection.send("sendVideoAudioTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  };
+
+  sendVideoAudioTransportConnect(data, cb, errCb) {
+    if (this.wsConnection) {
+      this.wsConnection.send("sendVideoAudioTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
   receiveVideoTransportConnect(data, cb, errCb) {
     if (this.wsConnection) {
       this.wsConnection.send("receiveVideoTransportConnect", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  receiveVideoAudioTransportConnect(data, cb, errCb) {
+    if (this.wsConnection) {
+      this.wsConnection.send("receiveVideoAudioTransportConnect", data, (a) => {
         cb(a);
       });
     }
