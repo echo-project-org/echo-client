@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Alert, Button, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
@@ -69,6 +69,12 @@ const Login = () => {
         });
     }
   }
+
+  useEffect(() => {
+    if (storage.get("token")) {
+      navigate("/");
+    }
+  }, []);
 
   const hash = (string) => {
     const utf8 = new TextEncoder().encode(string);

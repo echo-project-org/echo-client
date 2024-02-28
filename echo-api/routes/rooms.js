@@ -155,7 +155,7 @@ router.get('/:id/:serverId/messages', (req, res) => {
         FROM room_messages
         INNER JOIN users ON room_messages.userId = users.id
         WHERE room_messages.roomId = ? AND room_messages.serverId = ?
-        ORDER BY room_messages.id DESC
+        ORDER BY room_messages.id ASC
         LIMIT 50
     `, [id, serverId], (err, result, fields) => {
         if (err) return console.error(err);

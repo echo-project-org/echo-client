@@ -21,7 +21,7 @@ function CurrentStatus({ icon, align, height, status }) {
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <Circle style={{ color: "#44b700" }} fontSize="small" /> : null }
-          <p className="noselect">status</p>
+          <p className="noselect">Online</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
     case "2":

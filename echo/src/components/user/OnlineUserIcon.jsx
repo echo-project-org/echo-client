@@ -11,8 +11,6 @@ import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 function OnlineUserIcon({ user }) {
   user.id = user.id.toString();
 
-  console.log("OnlineUserIcon", user)
-
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
   const [deaf, setDeaf] = useState(false);
