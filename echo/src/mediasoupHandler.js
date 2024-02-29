@@ -75,7 +75,15 @@ class mediasoupHandler {
     }
 
     this.videoConstraints = {
-      audio: false,
+      audio: {
+        mandatory: {
+          chromeMediaSource: 'desktop',
+          channelCount: 2,
+          sampleRate: 48000,
+          sampleSize: 16,
+          volume: 1.0,
+        },
+      },
       video: {
         mandatory: {
           chromeMediaSource: 'desktop',
@@ -303,14 +311,22 @@ class mediasoupHandler {
     });
 
     this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      ep.sendVideoTransportProduce({
-        id: this.id + "-video",
-        kind,
-        rtpParameters,
-        appData,
-      }, callback, errback);
+      if (kind === "video") {
+        ep.sendVideoTransportProduce({
+          id: this.id + "-video",
+          kind,
+          rtpParameters,
+          appData,
+        }, callback, errback);
+      } else if (kind === "audio") {
+        ep.sendVideoAudioTransportProduce({
+          id: this.id + "-video-audio",
+          kind,
+          rtpParameters,
+          appData,
+        }, callback, errback);
+      }
     });
-
   }
 
   /**
@@ -527,6 +543,17 @@ class mediasoupHandler {
         videoGoogleMinBitrate: 3000,
       },
     });
+
+    const audioTrack = this.outStream.getAudioTracks()[0];
+    if (audioTrack) {
+      this.videoAudioProducer = await this.videoSendTransport.produce({
+        track: audioTrack,
+        codecOptions: {
+          opusStereo: true,
+          opusDtx: true,
+        },
+      });
+    }
   }
 
   /**
@@ -566,18 +593,40 @@ class mediasoupHandler {
    * @returns {Promise<void>}
    */
   async consumeVideo(data) {
+    const videoDescription = data.videoDescription;
+    const videoAudioDescription = data.videoAudioDescription;
+
     this.videoConsumer = await this.videoRcvTransport.consume({
-      id: data.id,
-      producerId: data.producerId,
-      kind: data.kind,
-      rtpParameters: data.rtpParameters,
+      id: videoDescription.id + "video",
+      producerId: videoDescription.producerId,
+      kind: videoDescription.kind,
+      rtpParameters: videoDescription.rtpParameters,
     });
+
+    console.log(videoAudioDescription)
+    if (videoAudioDescription.id) {
+      this.videoAudioConsumer = await this.videoRcvTransport.consume({
+        id: videoAudioDescription.id + "-video-audio",
+        producerId: videoAudioDescription.producerId,
+        kind: videoAudioDescription.kind,
+        rtpParameters: videoAudioDescription.rtpParameters,
+      });
+    }
 
     const { track } = this.videoConsumer;
     this.inVideoStream = new MediaStream([track]);
 
-    ep.resumeVideoStream({ id: this.id, producerId: data.producerId });
-    ep.sendVideoStreamToFrontEnd({ id: data.producerId, stream: this.inVideoStream });
+    //add audioTrack to inVideoStream
+    if (this.AudioVideoConsumer) {
+      console.log("Adding audio track to video stream")
+      const { audioTrack } = this.videoAudioConsumer;
+      if (audioTrack) {
+        this.inVideoStream.addTrack(audioTrack);
+      }
+    }
+
+    ep.resumeVideoStream({ id: this.id, producerId: videoDescription.producerId });
+    ep.sendVideoStreamToFrontEnd({ id: videoDescription.producerId, stream: this.inVideoStream });
   }
 
   /**
@@ -776,7 +825,7 @@ class mediasoupHandler {
    * @param {number} volume - The desired volume level (0-1).
    */
   setOutVolume(volume) {
-    if(!volume){
+    if (!volume) {
       console.warn("Volume is undefined, setting to 1");
       volume = 1.0;
     }

@@ -62,6 +62,10 @@ class wsConnection {
       ep.wsVideoBroadcastStarted(data);
     });
 
+    this.socket.on("server.broadcastNowHasAudio", (data) => {
+      ep.wsBroadcastNowHasAudio(data);
+    });
+
     this.socket.on("server.videoBroadcastStop", (data) => {
       ep.wsVideoBroadcastStop(data);
     });

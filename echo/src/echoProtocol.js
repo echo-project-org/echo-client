@@ -100,6 +100,11 @@ class EchoProtocol {
     this.videoBroadcastStarted(data);
   }
 
+  wsBroadcastNowHasAudio(data) {
+    this.updateUser({ id: data.id, field: "videoBroadcastHasAudio", value: true });
+    this.videoBroadcastHasAudio(data);
+  }
+
   wsVideoBroadcastStop(data) {
     this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
     this.videoBroadcastStop(data);
@@ -245,6 +250,14 @@ class EchoProtocol {
   sendVideoTransportProduce(data, cb, errCb) {
     if (this.wsConnection) {
       this.wsConnection.send("sendVideoTransportProduce", data, (a) => {
+        cb(a);
+      });
+    }
+  }
+
+  sendVideoAudioTransportProduce(data, cb, errCb) {
+    if (this.wsConnection) {
+      this.wsConnection.send("sendVideoAudioTransportProduce", data, (a) => {
         cb(a);
       });
     }
@@ -861,6 +874,10 @@ EchoProtocol.prototype.audioStatsUpdate = function (data) {
 
 EchoProtocol.prototype.videoBroadcastStarted = function (data) {
   this.emit("videoBroadcastStarted", data);
+}
+
+EchoProtocol.prototype.videoBroadcastHasAudio = function (data) {
+  this.emit("videoBroadcastHasAudio", data);
 }
 
 EchoProtocol.prototype.videoBroadcastStop = function (data) {

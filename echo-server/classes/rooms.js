@@ -149,6 +149,9 @@ class Rooms {
         user.registerEvent("videoBroadcastStarted", (data) => {
             this.videoBroadcastStarted(data);
         });
+        user.registerEvent("broadcastNowHasAudio", (data) => {
+            this.broadcastNowHasAudio(data);
+        });
         user.registerEvent("videoBroadcastStop", (data) => {
             this.videoBroadcastStop(data);
         });
@@ -452,6 +455,14 @@ class Rooms {
         if (this.connectedClients.has(data.id)) {
             this.connectedClients.forEach((user, _) => {
                 user.videoBroadcastStarted(data);
+            });
+        }
+    }
+
+    broadcastNowHasAudio(data) {
+        if (this.connectedClients.has(data.id)) {
+            this.connectedClients.forEach((user, _) => {
+                user.broadcastNowHasAudio(data);
             });
         }
     }

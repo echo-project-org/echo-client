@@ -8,6 +8,7 @@ class User {
         this.isDeaf = false;
         this.isMuted = false;
         this.isBroadcastingVideo = false;
+        this.broadcastWithAudio = false;
         this.isPrivateCalling = false;
         this.events = {};
 
@@ -21,6 +22,7 @@ class User {
         this.sendVideoTransport = null;
         this.videoProducerId = null;
         this.videoProducer = null;
+        this.videoAudioProducer = null;
         this.videoConsumers = [];
         this.crashCountdown = null;
 
@@ -87,6 +89,10 @@ class User {
 
         this.socket.on("client.sendVideoTransportProduce", (data, cb) => {
             this.receiveVideoTransportProduce(data, cb);
+        });
+
+        this.socket.on("client.receiveVideoAudioTransportProduce", (data, cb) => {
+            this.receiveVideoAudioTransportProduce(data, cb);
         });
 
         this.socket.on("client.receiveVideoTransportConnect", (data, cb) => {
@@ -179,6 +185,10 @@ class User {
 
     getIsBroadcastingVideo() {
         return this.isBroadcastingVideo;
+    }
+
+    getIsBroadcastWithAudio() {
+        return this.broadcastWithAudio;
     }
 
     clientDisconnected(data) {
@@ -316,6 +326,40 @@ class User {
         });
     }
 
+    receiveVideoAudioTransportProduce(data, cb) {
+        if(!this.receiveVideoTransport){
+            console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
+            cb({
+                response: "error",
+                reason: "receiveVideoTransport not found"
+            });
+            return;
+        }
+
+        if (this.videoAudioProducer) {
+            this.videoAudioProducer.close();
+            this.videoAudioProducer = null;
+        }
+
+        this.videoAudioProducer = this.receiveVideoTransport.produce({
+            id: data.id,
+            kind: data.kind,
+            rtpParameters: data.rtpParameters,
+            appData: data.appData
+        });
+
+        this.broadcastWithAudio = true;
+        this.triggerEvent("broadcastNowHasAudio", {
+            id: this.id,
+            roomId: this.currentRoom,
+        });
+
+        cb({
+            response: "success",
+            id: this.videoAudioProducer.id
+        });
+    }
+
     sendVideoTransportConnect(data, cb) {
         if (!this.sendVideoTransport) {
             console.log("USER-" + this.id + " sendVideoTransport not found, can't connect video");
@@ -336,6 +380,7 @@ class User {
     async stopScreenSharing(data) {
         await this.videoProducer.close();
         this.isBroadcastingVideo = false;
+        this.broadcastWithAudio = false;
         this.triggerEvent("videoBroadcastStop", {
             id: this.id,
             roomId: this.currentRoom,
@@ -365,17 +410,36 @@ class User {
             paused: true
         });
 
+        let audioConsumer = null;
+        if(this.broadcastWithAudio){
+            audioConsumer = await this.sendVideoTransport.consume({
+                producerId: data.id + "-video-audio",
+                rtpCapabilities: data.rtpCapabilities,
+                paused: false
+            });
+        }
+
         this.videoConsumers.push({
             consumer: consumer,
+            audioConsumer: audioConsumer,
             senderId: data.id,
         });
 
         cb({
             response: "success",
-            id: consumer.id,
-            producerId: data.id,
-            kind: consumer.kind,
-            rtpParameters: consumer.rtpParameters,
+            videoDescription: {
+                id: consumer.id,
+                producerId: data.id,
+                kind: consumer.kind,
+                rtpParameters: consumer.rtpParameters,
+            },
+            videoAudioDescription: {
+                id: audioConsumer ? audioConsumer.id : null,
+                producerId: data.id,
+                kind: audioConsumer ? audioConsumer.kind : null,
+                rtpParameters: audioConsumer ? audioConsumer.rtpParameters : null,
+
+            }
         });
     }
 
@@ -504,6 +568,10 @@ class User {
 
     videoBroadcastStarted(data) {
         this.socket.emit("server.videoBroadcastStarted", data);
+    }
+
+    broadcastNowHasAudio(data) {
+        this.socket.emit("server.broadcastNowHasAudio", data);
     }
 
     videoBroadcastStop(data) {
