@@ -78,6 +78,7 @@ class mediasoupHandler {
       audio: {
         mandatory: {
           chromeMediaSource: 'desktop',
+          chromeMediaSourceId: this.videoSourceId,
           channelCount: 2,
           sampleRate: 48000,
           sampleSize: 16,
@@ -311,6 +312,7 @@ class mediasoupHandler {
     });
 
     this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+      console.log(kind)
       if (kind === "video") {
         ep.sendVideoTransportProduce({
           id: this.id + "-video",
@@ -543,8 +545,9 @@ class mediasoupHandler {
         videoGoogleMinBitrate: 3000,
       },
     });
-
+    
     const audioTrack = this.outStream.getAudioTracks()[0];
+    console.log(audioTrack)
     if (audioTrack) {
       this.videoAudioProducer = await this.videoSendTransport.produce({
         track: audioTrack,

@@ -91,6 +91,10 @@ class User {
             this.receiveVideoTransportProduce(data, cb);
         });
 
+        this.socket.on("client.sendVideoAudioTransportProduce", (data, cb) => {
+            this.receiveVideoAudioTransportProduce(data, cb);
+        });
+
         this.socket.on("client.receiveVideoAudioTransportProduce", (data, cb) => {
             this.receiveVideoAudioTransportProduce(data, cb);
         });
