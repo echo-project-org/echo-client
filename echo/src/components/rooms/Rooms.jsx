@@ -5,7 +5,7 @@ import StylingComponents from '../../StylingComponents';
 
 import Room from './Room';
 
-const api = require("../../api");
+const api = require("../../lib/api");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);

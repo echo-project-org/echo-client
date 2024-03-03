@@ -6,7 +6,7 @@ import StyledComponents from '../../StylingComponents';
 
 import CurrentStatus from "../user/CurrentStatus";
 
-const api = require('../../api');
+const api = require('../../lib/api');
 
 function RoomConentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {

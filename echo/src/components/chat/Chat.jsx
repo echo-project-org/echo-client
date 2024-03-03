@@ -7,7 +7,7 @@ import MessageLeft from './MessageLeft'
 import LoadingAnimation from '../mainpage/LoadingAnimation'
 
 import { ep, storage } from "../../index";
-const api = require('../../api');
+const api = require('../../lib/api');
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {

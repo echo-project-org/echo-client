@@ -10,7 +10,7 @@ import SettingsView from '../settings/SettingsView';
 import { storage, ep } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
-const api = require('../../api');
+const api = require('../../lib/api');
 
 function MainPage() {
   const navigate = useNavigate();

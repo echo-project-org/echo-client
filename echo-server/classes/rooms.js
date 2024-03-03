@@ -172,10 +172,13 @@ class Rooms {
         });
         user.registerEvent("friendAction", (data) => {
             //find the user
+            console.log(data);
             if (this.connectedClients.has(data.targetId)) {
-                const user = this.connectedClients.get(data.targetId);
+                console.log("User found", data.targetId)
+                const targetUser = this.connectedClients.get(data.targetId);
                 data.type === "sent" ? data.type = "incoming" : data.type = "sent";
-                user.friendAction(data);
+                console.log("Sending friend action to user", data);
+                targetUser.friendAction(data);
             }
         });
     }

@@ -6,7 +6,7 @@ import StyledComponents from '../../StylingComponents';
 
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
-const api = require('../../api');
+const api = require('../../lib/api');
 
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);

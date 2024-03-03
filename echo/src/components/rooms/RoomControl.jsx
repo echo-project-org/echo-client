@@ -11,7 +11,7 @@ import ScreenShareSelector from '../settings/ScreenShareSelector';
 import { ep, storage, ap } from "../../index";
 import StylingComponents from '../../StylingComponents';
 
-const api = require('../../api')
+const api = require('../../lib/api')
 
 function RoomControl({ state, setState, screenSharing }) {
   const theme = useTheme();

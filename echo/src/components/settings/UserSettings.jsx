@@ -7,7 +7,7 @@ import StyledComponents from '../../StylingComponents';
 
 import CurrentStatus from '../user/CurrentStatus';
 
-var api = require('../../api');
+var api = require('../../lib/api');
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {

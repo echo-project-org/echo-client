@@ -8,7 +8,7 @@ import UploadBoxButtons from './UploadBoxButtons';
 import { ep, storage, ap } from "../../index";
 import StylingComponents from "../../StylingComponents";
 
-const api = require("../../api");
+const api = require("../../lib/api");
 
 function ChatControls({ onEmojiOn, roomId }) {
   const [message, setMessage] = useState("");

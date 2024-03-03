@@ -5,7 +5,7 @@ import reportWebVitals from './reportWebVitals';
 
 import EchoProtocol from './echoProtocol';
 import Storage from './cache/storage';
-import AudioPlayer from './audioPlayer';
+import AudioPlayer from './lib/audioPlayer';
 
 const storage = new Storage();
 const sessionStorage = new Storage('session');

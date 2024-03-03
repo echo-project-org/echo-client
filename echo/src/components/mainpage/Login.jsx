@@ -8,7 +8,7 @@ import imgLogo from "../../img/headphones.svg"
 import { storage } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
-var api = require('../../api')
+var api = require('../../lib/api')
 
 const Login = () => {
   let navigate = useNavigate();

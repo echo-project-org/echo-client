@@ -6,7 +6,7 @@ import { Search } from '@mui/icons-material';
 import { storage, ep } from "../../index";
 import StyledComponents from '../../StylingComponents';
 
-const api = require("../../api");
+const api = require("../../lib/api");
 
 const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);

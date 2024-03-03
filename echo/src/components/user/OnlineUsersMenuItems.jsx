@@ -5,7 +5,7 @@ import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove, ScreenSha
 
 import { ep, storage } from "../../index";
 
-const api = require('../../api');
+const api = require('../../lib/api');
 
 function FriendButton({ user, handleClose }) {
   const [friendStatus, setFriendStatus] = useState('no');

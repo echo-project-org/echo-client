@@ -5,7 +5,7 @@ import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 import { ep, storage } from "../../index";
 import StylingComponents from '../../StylingComponents';
 
-const api = require('../../api');
+const api = require('../../lib/api');
 const { ipcRenderer } = window.require('electron');
 
 function WindowControls({ }) {

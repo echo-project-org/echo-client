@@ -1,10 +1,10 @@
-import mediasoupHandler from "./mediasoupHandler";
+import mediasoupHandler from "./lib/mediasoupHandler";
 import Emitter from "wildemitter";
 
 import Users from "./cache/user";
 import Room from "./cache/room";
 import Friends from "./cache/friends";
-import wsConnection from "./wsConnection";
+import wsConnection from "./lib/wsConnection";
 
 import { storage } from "./index";
 

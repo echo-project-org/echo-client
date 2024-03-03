@@ -1,4 +1,4 @@
-import { storage, ep } from './index';
+import { storage, ep } from '../index';
 
 
 const API_URL = "https://echo.kuricki.com/api/";

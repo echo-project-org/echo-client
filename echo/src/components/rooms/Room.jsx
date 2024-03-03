@@ -4,7 +4,7 @@ import InactiveRoom from './InactiveRoom';
 
 import { ep } from "../../index";
 
-const api = require("../../api");
+const api = require("../../lib/api");
 
 function Room({ active, data }) {
   const [onlineUsers, setOnlineUsers] = useState([]);

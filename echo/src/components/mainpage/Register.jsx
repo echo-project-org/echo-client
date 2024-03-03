@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import imgLogo from "../../img/headphones.svg"
 import StyledComponents from '../../StylingComponents';
 
-var api = require('../../api')
+var api = require('../../lib/api')
 
 const Register = () => {
   let navigate = useNavigate();

@@ -5,7 +5,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { ep, storage } from "../../index";
 import MainPageServersComponent from './MainPageServersComponent';
 
-const api = require('../../api');
+const api = require('../../lib/api');
 
 function MainPageServers({ }) {
   const [servers, setServers] = useState([]);
