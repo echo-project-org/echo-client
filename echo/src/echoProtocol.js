@@ -112,6 +112,7 @@ class EchoProtocol {
   }
 
   wsVideoBroadcastStop(data) {
+    console.log("wsVideoBroadcastStop", data);
     this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
     this.videoBroadcastStop(data);
   }

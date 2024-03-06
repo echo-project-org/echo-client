@@ -610,7 +610,7 @@ class mediasoupHandler {
    * @returns {Promise<void>}
    */
   async stopScreenShare() {
-    ep.sendToSocket("stopScreenShare", { id: this.id });
+    ep.sendToSocket("stopScreenSharing", { id: this.id });
 
     if (this.videoProducer) {
       this.videoProducer.close();
