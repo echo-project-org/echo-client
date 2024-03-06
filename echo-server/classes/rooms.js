@@ -473,7 +473,6 @@ class Rooms {
     videoBroadcastStop(data) {
         if (this.connectedClients.has(data.id)) {
             this.connectedClients.forEach((user, _) => {
-                console.log("Sending video broadcast stop to user", user.id);
                 user.videoBroadcastStop(data);
             });
         }

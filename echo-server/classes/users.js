@@ -498,18 +498,20 @@ class User {
     }
 
     resumeVideoStream(data) {
-        try {
-            //resume stream
-            this.videoConsumers.forEach(async (consumer) => {
-                if (consumer.senderId === data.producerId) {
-                    if (consumer.consumer.paused) {
+        //resume stream
+        this.videoConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.producerId) {
+                if (consumer.consumer.paused) {
+                    try {
                         await consumer.consumer.resume();
+                    } catch (error) {
+                        console.error("Error in resumeVideoStream", error);
+                        // if the consumer is already closed, remove it from the array
+                        this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
                     }
                 }
-            });
-        } catch (error) {
-            console.error("Error in resumeVideoStream", error);
-        }
+            }
+        });
     }
 
     async subscribeAudio(data, cb) {
@@ -568,18 +570,20 @@ class User {
     }
 
     async resumeStream(data) {
-        try {
-            //resume stream
-            this.audioConsumers.forEach(async (consumer) => {
-                if (consumer.senderId === data.producerId) {
-                    if (consumer.consumer.paused) {
+        //resume stream
+        this.audioConsumers.forEach(async (consumer) => {
+            if (consumer.senderId === data.producerId) {
+                if (consumer.consumer.paused) {
+                    try{
                         await consumer.consumer.resume();
+                    } catch (error) {
+                        console.error("Error in resumeStream", error);
+                        // if the consumer is already closed, remove it from the array
+                        this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
                     }
                 }
-            });
-        } catch (error) {
-            console.error("Error in resumeStream", error);
-        }
+            }
+        });
     }
 
     stopAudioBroadcast(data) {
