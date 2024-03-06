@@ -11,8 +11,6 @@ import { storage } from "./index";
 class EchoProtocol {
   constructor() {
     this.wsConnection = new wsConnection();
-    this.ping = 0;
-    this.pingInterval = null;
     this.mh = null;
     this.id = null;
 
@@ -33,8 +31,6 @@ class EchoProtocol {
     );
 
     this.mh.init();
-
-    this.SERVER_URL = "https://echo.kuricki.com";
   }
 
   sendToSocket(endpoing, data, cb) {
@@ -360,8 +356,6 @@ class EchoProtocol {
     this.stopScreenSharing();
 
     this.wsConnection = null;
-    this.ping = 0;
-    this.pingInterval = null;
     this.mh = new mediasoupHandler(
       storage.get('inputAudioDeviceId'),
       storage.get('outputAudioDeviceId'),
@@ -381,7 +375,6 @@ class EchoProtocol {
       this.wsConnection.close();
       this.wsConnection = null;
     }
-    clearInterval(this.pingInterval);
   }
 
   subscribeAudio(data) {
