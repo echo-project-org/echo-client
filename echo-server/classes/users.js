@@ -111,10 +111,6 @@ class User {
             this.resumeStream(data);
         });
 
-        this.socket.on("client.resumeStreams", (data) => {
-            this.resumeStreams(data);
-        });
-
         this.socket.on("client.resumeVideoStream", (data) => {
             this.resumeVideoStream(data);
         });
@@ -585,16 +581,6 @@ class User {
         } catch (error) {
             console.error("Error in resumeStream", error);
         }
-    }
-
-    async resumeStreams() {
-        //resume all streams
-        /*
-        this.audioConsumers.forEach(async (consumer) => {
-            if(consumer.consumer.paused){
-                await consumer.consumer.resume();
-            }
-        });*/
     }
 
     stopAudioBroadcast(data) {
