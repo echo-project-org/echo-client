@@ -12,28 +12,28 @@ function RoomConentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
     // send message to socket
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
   }
 
   const handleFriendReject = (e) => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
     // send message to socket
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
 
   const handleRemoveSentRequest = (e) => {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
     // send message to socket
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
 
   return (
     <Container className="buttonsContainer">
-      { user.type === "friended" ? <Button><ChatBubble /></Button> : null }
-      { user.type === "friended" ? <Button><Call /></Button> : null }
-      { user.type === "incoming" ? <Button onClick={handleFriendAccept}><PersonAdd /></Button> : null }
-      { user.type === "incoming" ? <Button onClick={handleFriendReject}><PersonRemove /></Button> : null }
-      { user.type === "sent" ? <Button onClick={handleRemoveSentRequest}><PersonRemove /></Button> : null }
+      {user.type === "friended" ? <Button><ChatBubble /></Button> : null}
+      {user.type === "friended" ? <Button><Call /></Button> : null}
+      {user.type === "incoming" ? <Button onClick={handleFriendAccept}><PersonAdd /></Button> : null}
+      {user.type === "incoming" ? <Button onClick={handleFriendReject}><PersonRemove /></Button> : null}
+      {user.type === "sent" ? <Button onClick={handleRemoveSentRequest}><PersonRemove /></Button> : null}
     </Container>
   )
 }

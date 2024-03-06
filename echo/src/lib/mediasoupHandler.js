@@ -107,6 +107,8 @@ class mediasoupHandler {
    */
   leaveRoom() {
     //close all tranports
+    ep.sendToSocket("exit", { id: this.id });
+
     try {
       if (this.sendTransport) {
         this.sendTransport.close();
@@ -182,7 +184,13 @@ class mediasoupHandler {
         });
 
         this.rcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-          ep.receiveTransportConnect({ dtlsParameters }, cb, errback);
+          ep.sendToSocket("receiveTransportConnect", { dtlsParameters }, (response) => {
+            if (response === 'error') {
+              errback(response);
+            } else {
+              cb(response);
+            }
+          });
         });
       }
     }
@@ -224,16 +232,28 @@ class mediasoupHandler {
     });
 
     this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-      ep.sendTransportConnect({ dtlsParameters }, cb, errback);
+      ep.sendToSocket("sendTransportConnect", { dtlsParameters }, (response) => {
+        if (response === 'error') {
+          errback(response);
+        } else {
+          cb(response);
+        }
+      });
     });
 
     this.sendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      ep.sendTransportProduce({
+      ep.sendToSocket("sendTransportProduce", {
         id: this.id + "-audio",
         kind,
         rtpParameters,
         appData,
-      }, callback, errback);
+      }, (response) => {
+        if (response === 'error') {
+          errback(response);
+        } else {
+          callback(response);
+        }
+      });
     });
 
     this.startAudioBroadcast();
@@ -271,7 +291,13 @@ class mediasoupHandler {
         });
 
         this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-          ep.receiveVideoTransportConnect({ dtlsParameters }, cb, errback);
+          ep.sendToSocket("receiveVideoTransportConnect", { dtlsParameters }, (response) => {
+            if (response === 'error') {
+              errback(response);
+            } else {
+              cb(response);
+            }
+          });
         });
       }
     }
@@ -308,25 +334,43 @@ class mediasoupHandler {
     });
 
     this.videoSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
-      ep.sendVideoTransportConnect({ dtlsParameters }, cb, errback);
+      ep.sendToSocket("sendVideoTransportConnect", { dtlsParameters }, (response) => {
+        if (response === 'error') {
+          errback(response);
+        } else {
+          cb(response);
+        }
+      });
     });
 
     this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
       console.log(kind)
       if (kind === "video") {
-        ep.sendVideoTransportProduce({
+        ep.sendToSocket("sendVideoTransportProduce", {
           id: this.id + "-video",
           kind,
           rtpParameters,
           appData,
-        }, callback, errback);
+        }, (response) => {
+          if (response === 'error') {
+            errback(response);
+          } else {
+            callback(response);
+          }
+        });
       } else if (kind === "audio") {
-        ep.sendVideoAudioTransportProduce({
+        ep.sendToSocket("sendVideoAudioTransportProduce", {
           id: this.id + "-video-audio",
           kind,
           rtpParameters,
           appData,
-        }, callback, errback);
+        }, (response) => {
+          if (response === 'error') {
+            errback(response);
+          } else {
+            callback(response);
+          }
+        });
       }
     });
   }
@@ -412,7 +456,7 @@ class mediasoupHandler {
       this.outStream = null;
     }
 
-    ep.stopAudioBroadcast({ id: this.id });
+    ep.sendToSocket("stopAudioBroadcast", { id: this.id });
   }
 
   /**
@@ -482,7 +526,7 @@ class mediasoupHandler {
       analyser: this.createAudioAnalyser(context, channelSplitter, src.channelCount),
     });
 
-    ep.resumeStream({ id: this.id, producerId: data.producerId });
+    ep.sendToSocket("resumeStream", { id: this.id, producerId: data.producerId });
   }
 
   /**
@@ -503,11 +547,11 @@ class mediasoupHandler {
         }
       });
 
-      ep.unsubscribeAudio({ id: this.id, producerId: senderId });
+      ep.sendToSocket("unsubscribeAudio", { id: this.id, producerId: senderId });
     } else {
       //Close all senders
       this.inputStreams.forEach((stream) => {
-        ep.unsubscribeAudio({ id: this.id, producerId: stream.consumer.producerId });
+        ep.sendToSocket("unsubscribeAudio", { id: this.id, producerId: stream.consumer.producerId });
         stream.consumer.close();
         stream.context.close();
         stream.stream.getTracks().forEach(track => track.stop());
@@ -545,7 +589,7 @@ class mediasoupHandler {
         videoGoogleMinBitrate: 3000,
       },
     });
-    
+
     const audioTrack = this.outStream.getAudioTracks()[0];
     console.log(audioTrack)
     if (audioTrack) {
@@ -566,6 +610,8 @@ class mediasoupHandler {
    * @returns {Promise<void>}
    */
   async stopScreenShare() {
+    ep.sendToSocket("stopScreenShare", { id: this.id });
+
     if (this.videoProducer) {
       this.videoProducer.close();
       this.videoProducer = null;
@@ -628,7 +674,7 @@ class mediasoupHandler {
       }
     }
 
-    ep.resumeVideoStream({ id: this.id, producerId: videoDescription.producerId });
+    ep.sendToSocket("resumeVideoStream", { id: this.id, producerId: videoDescription.producerId })
     ep.sendVideoStreamToFrontEnd({ id: videoDescription.producerId, stream: this.inVideoStream });
   }
 
@@ -638,6 +684,8 @@ class mediasoupHandler {
    * @param {string} senderId - The ID of the sender whose video should be stopped.
    */
   stopConsumingVideo(senderId) {
+    ep.sendToSocket("stopReceivingVideo", { id: senderId });
+
     if (this.videoConsumer) {
       this.videoConsumer.close();
       this.videoConsumer = null;
