@@ -355,7 +355,7 @@ class User {
         }
     }
 
-    receiveVideoAudioTransportProduce(data, cb) {
+    async receiveVideoAudioTransportProduce(data, cb) {
         try {
             if (!this.receiveVideoTransport) {
                 console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
@@ -367,11 +367,12 @@ class User {
             }
 
             if (this.videoAudioProducer) {
+                console.log(this.videoAudioProducer);
                 this.videoAudioProducer.close();
                 this.videoAudioProducer = null;
             }
 
-            this.videoAudioProducer = this.receiveVideoTransport.produce({
+            this.videoAudioProducer = await this.receiveVideoTransport.produce({
                 id: data.id,
                 kind: data.kind,
                 rtpParameters: data.rtpParameters,
