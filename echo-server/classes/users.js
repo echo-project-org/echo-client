@@ -363,7 +363,6 @@ class User {
             }
 
             if (this.videoAudioProducer) {
-                console.log(this.videoAudioProducer);
                 this.videoAudioProducer.close();
                 this.videoAudioProducer = null;
             }
