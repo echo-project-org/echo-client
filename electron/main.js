@@ -8,6 +8,43 @@ autoUpdater.autoInstallOnAppQuit = true;
 var mainWindow;
 var rtcInternals;
 
+const muteThumbBtn = {
+  tooltip: 'Mute microphone',
+  icon: path.join(__dirname, 'images', 'unmute.png'),
+  click() {
+    mainWindow.webContents.send("toggleMute", true);
+  }
+}
+
+const unmuteThumbBtn = {
+  tooltip: 'Unmute microphone',
+  icon: path.join(__dirname, 'images', 'mute.png'),
+  click() {
+    mainWindow.webContents.send("toggleMute", false);
+  }
+}
+
+const deafenThumbBtn = {
+  tooltip: 'Deafen audio',
+  icon: path.join(__dirname, 'images', 'undeafen.png'),
+  click() {
+    mainWindow.webContents.send("toggleDeaf", true);
+  }
+}
+
+const undeafenThumbBtn = {
+  tooltip: 'Undeafen audio',
+  icon: path.join(__dirname, 'images', 'deafen.png'),
+  click() {
+    mainWindow.webContents.send("toggleDeaf", false);
+  }
+}
+
+var thumbBtns = [
+  muteThumbBtn,
+  deafenThumbBtn
+]
+
 const createRtcInternalsWindow = () => {
   var rtcInternals = new BrowserWindow({
     width: 1000,
@@ -47,18 +84,6 @@ const createMainWindow = () => {
   } else {
     win.loadURL('http://localhost:3000'); // dev
   }
-  /*
-    win.setThumbarButtons([
-      {
-        tooltip: 'Mute microphone',
-        icon: path.join(__dirname, 'images', 'mic.png'),
-        click: function() { console.log('button1 clicked') }
-      }, {
-        tooltip: 'Deafen audio',
-        icon: path.join(__dirname, 'images', 'mic.png'),
-        click: function() { console.log('button2 clicked.') }
-      }
-    ])*/
 
   return win;
 }
@@ -69,7 +94,7 @@ let tray = null;
 app.whenReady().then(() => {
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
-  if(app.isPackaged) {
+  if (app.isPackaged) {
     tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
   } else {
     tray = new Tray(path.join(process.cwd(), 'images', 'icon.png'))
@@ -93,7 +118,7 @@ app.whenReady().then(() => {
       click: function () {
         autoUpdater.removeAllListeners("update-not-available");
         autoUpdater.on('update-not-available', () => {
-          dialog.showMessageBox({type: 'info', title: 'Echo', message: 'No updates available', buttons: ["OK"]});
+          dialog.showMessageBox({ type: 'info', title: 'Echo', message: 'No updates available', buttons: ["OK"] });
         });
         //check for updates
         autoUpdater.checkForUpdatesAndNotify();
@@ -146,17 +171,17 @@ app.whenReady().then(() => {
 })
 
 autoUpdater.on('update-available', (info) => {
-  if(mainWindow) {
+  if (mainWindow) {
     //hide the main window
-    mainWindow.webContents.send("updateAvailable", {"version": info.version, "releaseNotes": info.releaseNotes});
+    mainWindow.webContents.send("updateAvailable", { "version": info.version, "releaseNotes": info.releaseNotes });
     mainWindow.setProgressBar(0);
   }
 });
 
 autoUpdater.on('download-progress', (e) => {
-  if(mainWindow) {
+  if (mainWindow) {
     //hide the main window
-    mainWindow.webContents.send("downloadProgress", {"percent": e.percent, "bps": e.bytesPerSecond});
+    mainWindow.webContents.send("downloadProgress", { "percent": e.percent, "bps": e.bytesPerSecond });
     mainWindow.setProgressBar(e.percent / 100);
   }
 });
@@ -211,6 +236,36 @@ ipcMain.on("toggleFullscreen", (event, arg) => {
     mainWindow.maximize();
   }
 })
+
+//called with ipcRenderer.send("showThumbarButtons", true);
+ipcMain.on("showThumbarButtons", (event, arg) => {
+  if (mainWindow) {
+    if (arg === true) {
+      mainWindow.setThumbarButtons(thumbBtns);
+    } else {
+      mainWindow.setThumbarButtons([]);
+    }
+  }
+})
+
+ipcMain.on("updateThumbarButtons", (event, arg) => {
+  if (arg.muted) {
+    thumbBtns[0] = unmuteThumbBtn;
+  } else {
+    thumbBtns[0] = muteThumbBtn;
+  }
+
+  if (arg.deaf) {
+    thumbBtns[1] = undeafenThumbBtn;
+  } else {
+    thumbBtns[1] = deafenThumbBtn;
+  }
+
+  if (mainWindow) {
+    mainWindow.setThumbarButtons(thumbBtns);
+  }
+})
+
 
 ipcMain.handle("getVideoSources", async () => {
   return await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });

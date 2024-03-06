@@ -12,6 +12,7 @@ import { ep, storage, ap } from "../../index";
 import StylingComponents from '../../StylingComponents';
 
 const api = require('../../lib/api')
+const { ipcRenderer } = window.require('electron');
 
 function RoomControl({ state, setState, screenSharing }) {
   const theme = useTheme();
@@ -24,8 +25,33 @@ function RoomControl({ state, setState, screenSharing }) {
   const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
   const [rtcConnectionStateColor, setRtcConnectionStateColor] = useState(theme.palette.error.main);
 
-  useEffect(() => { ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted }); ep.toggleMute(muted); }, [muted]);
-  useEffect(() => { ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted }); ep.toggleDeaf(deaf); }, [deaf]);
+  useEffect(() => {
+    ipcRenderer.on("toggleMute", (event, arg) => {
+      console.log("toggleMute", arg)
+    });
+
+    ipcRenderer.on("toggleDeaf", (event, arg) => {
+      console.log("toggleDeaf", arg)
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners("toggleMute");
+      ipcRenderer.removeAllListeners("toggleDeaf");
+    }
+  }, []);
+  
+  useEffect(() => {
+    ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
+    ep.toggleMute(muted);
+    ipcRenderer.send("updateThumbarButtons", { muted: muted, deaf: deaf });
+  }, [muted]);
+  
+  useEffect(() => {
+    ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
+    ep.toggleDeaf(deaf);
+    ipcRenderer.send("updateThumbarButtons", { muted: muted, deaf: deaf });
+  }, [deaf]);
+
   useEffect(() => {
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
       switch (data.state) {
@@ -89,7 +115,7 @@ function RoomControl({ state, setState, screenSharing }) {
           sessionStorage.clear();
         });
     } else {
-      api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId')})
+      api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
         .then(res => {
           ep.exitFromRoom(sessionStorage.getItem('id'));
           ep.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
