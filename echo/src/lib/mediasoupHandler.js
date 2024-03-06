@@ -185,7 +185,7 @@ class mediasoupHandler {
 
         this.rcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
           ep.sendToSocket("receiveTransportConnect", { dtlsParameters }, (response) => {
-            if (response === 'error') {
+            if (response.response === 'error') {
               errback(response);
             } else {
               cb(response);
@@ -233,7 +233,7 @@ class mediasoupHandler {
 
     this.sendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
       ep.sendToSocket("sendTransportConnect", { dtlsParameters }, (response) => {
-        if (response === 'error') {
+        if (response.response === 'error') {
           errback(response);
         } else {
           cb(response);
@@ -248,7 +248,7 @@ class mediasoupHandler {
         rtpParameters,
         appData,
       }, (response) => {
-        if (response === 'error') {
+        if (response.response === 'error') {
           errback(response);
         } else {
           callback(response);
@@ -292,7 +292,7 @@ class mediasoupHandler {
 
         this.videoRcvTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
           ep.sendToSocket("receiveVideoTransportConnect", { dtlsParameters }, (response) => {
-            if (response === 'error') {
+            if (response.response === 'error') {
               errback(response);
             } else {
               cb(response);
@@ -335,7 +335,7 @@ class mediasoupHandler {
 
     this.videoSendTransport.on("connect", async ({ dtlsParameters }, cb, errback) => {
       ep.sendToSocket("sendVideoTransportConnect", { dtlsParameters }, (response) => {
-        if (response === 'error') {
+        if (response.response === 'error') {
           errback(response);
         } else {
           cb(response);
@@ -352,7 +352,7 @@ class mediasoupHandler {
           rtpParameters,
           appData,
         }, (response) => {
-          if (response === 'error') {
+          if (response.response === 'error') {
             errback(response);
           } else {
             callback(response);
@@ -365,7 +365,7 @@ class mediasoupHandler {
           rtpParameters,
           appData,
         }, (response) => {
-          if (response === 'error') {
+          if (response.response === 'error') {
             errback(response);
           } else {
             callback(response);
