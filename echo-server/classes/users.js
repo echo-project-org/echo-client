@@ -40,6 +40,7 @@ class User {
                 clearInterval(this.crashCountdown);
             }, 1000);
         }, 5000);
+        this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
 
         // room stuff
         this.socket.on("client.audioState", (data) => {
@@ -47,7 +48,6 @@ class User {
             data.id = this.id;
             this.triggerEvent("audioState", data)
         });
-        this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => {
             data.id = this.id;
             this.serverId = data.serverId;
@@ -304,11 +304,11 @@ class User {
                 });
                 return;
             }
-    
+
             await this.receiveVideoTransport.connect({
                 dtlsParameters: data.dtlsParameters
             });
-    
+
             cb({ response: "success" });
         } catch (error) {
             console.error("Error in receiveVideoTransportConnect", error);
@@ -326,7 +326,7 @@ class User {
                 });
                 return;
             }
-    
+
             if (this.videoProducer) {
                 await this.videoProducer.close();
                 this.videoProducer = null;
@@ -339,12 +339,12 @@ class User {
             });
             this.videoProducerId = this.videoProducer.id;
             this.isBroadcastingVideo = true;
-    
+
             this.triggerEvent("videoBroadcastStarted", {
                 id: this.id,
                 roomId: this.currentRoom,
             });
-    
+
             cb({
                 response: "success",
                 id: this.videoProducer.id
@@ -365,25 +365,25 @@ class User {
                 });
                 return;
             }
-    
+
             if (this.videoAudioProducer) {
                 this.videoAudioProducer.close();
                 this.videoAudioProducer = null;
             }
-    
+
             this.videoAudioProducer = this.receiveVideoTransport.produce({
                 id: data.id,
                 kind: data.kind,
                 rtpParameters: data.rtpParameters,
                 appData: data.appData
             });
-    
+
             this.broadcastWithAudio = true;
             this.triggerEvent("broadcastNowHasAudio", {
                 id: this.id,
                 roomId: this.currentRoom,
             });
-    
+
             cb({
                 response: "success",
                 id: this.videoAudioProducer.id
@@ -404,11 +404,11 @@ class User {
                 });
                 return;
             }
-    
+
             this.sendVideoTransport.connect({
                 dtlsParameters: data.dtlsParameters
             });
-    
+
             cb({ response: "success" });
         } catch (error) {
             console.error("Error in sendVideoTransportConnect", error);
@@ -439,7 +439,7 @@ class User {
                     this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
                 }
             });
-    
+
             if (!this.sendVideoTransport) {
                 console.log("USER-" + this.id + " sendVideoTransport not found, can't consume video");
                 cb({
@@ -453,7 +453,7 @@ class User {
                 rtpCapabilities: data.rtpCapabilities,
                 paused: true
             });
-    
+
             let audioConsumer = null;
             if (this.broadcastWithAudio) {
                 audioConsumer = await this.sendVideoTransport.consume({
@@ -462,13 +462,13 @@ class User {
                     paused: false
                 });
             }
-    
+
             this.videoConsumers.push({
                 consumer: consumer,
                 audioConsumer: audioConsumer,
                 senderId: data.id,
             });
-    
+
             cb({
                 response: "success",
                 videoDescription: {
@@ -482,7 +482,7 @@ class User {
                     producerId: data.id,
                     kind: audioConsumer ? audioConsumer.kind : null,
                     rtpParameters: audioConsumer ? audioConsumer.rtpParameters : null,
-    
+
                 }
             });
         } catch (error) {
@@ -525,7 +525,7 @@ class User {
                     this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
                 }
             });
-    
+
             if (!this.sendTransport) {
                 console.log("USER-" + this.id + " sendTransport not found, can't consume audio");
                 cb({
@@ -534,18 +534,18 @@ class User {
                 });
                 return;
             }
-    
+
             const consumer = await this.sendTransport.consume({
                 producerId: data.id + "-audio",
                 rtpCapabilities: data.rtpCapabilities,
                 paused: true
             });
-    
+
             this.audioConsumers.push({
                 consumer: consumer,
                 senderId: data.id,
             });
-    
+
             cb({
                 response: "success",
                 id: consumer.id,
