@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut } = require('electron');
 const { autoUpdater, AppUpdater } = require('electron-updater');
 const path = require('path')
 
@@ -264,6 +264,16 @@ ipcMain.on("updateThumbarButtons", (event, arg) => {
   if (mainWindow) {
     mainWindow.setThumbarButtons(thumbBtns);
   }
+})
+
+//register keyboard shortcuts
+//example: arg = [{combination: "Ctrl+Shift+M", action: "toggleMute"}, {combination: "Ctrl+Shift+D", action: "toggleDeaf"}]
+ipcMain.on("addKeyboardShortcut", (event, arg) => {
+  foreach(arg, (shortcut) => {
+    globalShortcut.register(shortcut.combination, () => {
+      mainWindow.webContents.send(shortcut.action);
+    })
+  })
 })
 
 
