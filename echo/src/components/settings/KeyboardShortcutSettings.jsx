@@ -31,8 +31,17 @@ function KeyboardShortcutSettings() {
             <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
                 Keyboard shortcuts
             </Typography>
-            <Grid container sx={{ alignItems: "flex-start", justifyContent: "space-around" }}>
-        
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    <Typography variant="body1" component="p" sx={{ width: "95%" }} className="noselect">
+                        Toggle mute
+                    </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                    <Typography variant="body1" component="p" sx={{ width: "95%" }} className="noselect">
+                        Toggle deafen
+                    </Typography>
+                </Grid>
             </Grid>
         </StyledComponents.Settings.StyledSettingsModalSubdiv>
     )
