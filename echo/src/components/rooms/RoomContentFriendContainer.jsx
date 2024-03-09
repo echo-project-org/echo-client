@@ -8,21 +8,24 @@ import CurrentStatus from "../user/CurrentStatus";
 
 const api = require('../../lib/api');
 
-function RoomConentFriendsButtons({ user }) {
+function RoomContentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {
-    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
+      .catch(err => console.log(err));
     // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
   }
 
   const handleFriendReject = (e) => {
-    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
+      .catch(err => console.log(err));
     // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
 
   const handleRemoveSentRequest = (e) => {
-    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' });
+    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
+      .catch(err => console.log(err));
     // send message to socket
     ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
@@ -49,7 +52,7 @@ function RoomContentFriendContainer({ user, index }) {
         <CurrentStatus icon={false} align={"left"} height={"2rem"} status={user.status} />
       </Grid>
       <Grid item style={{ width: "70%" }}>
-        <RoomConentFriendsButtons user={user} />
+        <RoomContentFriendsButtons user={user} />
       </Grid>
     </StyledComponents.Friends.StyledFriendsContainer>
   )

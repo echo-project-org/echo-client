@@ -105,25 +105,25 @@ class Rooms {
             };
 
             fetch(API_URL + "auth/validate", options)
-            .then(async (response) => {
-                if(response.ok) {
-                    let json = await response.json();
-                    let id = String(json.id);
+                .then(async (response) => {
+                    if(response.ok) {
+                        let json = await response.json();
+                        let id = String(json.id);
 
-                    if (this.connectedClients.has(id)) {
-                        //get the user
-                        const user = this.connectedClients.get(id);
-                        await user.clearTransports();
+                        if (this.connectedClients.has(id)) {
+                            //get the user
+                            const user = this.connectedClients.get(id);
+                            await user.clearTransports();
+                        }
+            
+                        const newUser = new User(socket, id);
+                        this.connectedClients.set(id, newUser);
+                        console.log(colors.changeColor("yellow", "New socket connection from client " + id));
+                        this.registerClientEvents(newUser);
+                    } else {
+                        return "invalid-token";
                     }
-        
-                    const newUser = new User(socket, id);
-                    this.connectedClients.set(id, newUser);
-                    console.log(colors.changeColor("yellow", "New socket connection from client " + id));
-                    this.registerClientEvents(newUser);
-                } else {
-                    return "invalid-token";
-                }
-            })
+                })
         });
     }
 
@@ -174,6 +174,7 @@ class Rooms {
             //find the user
             console.log(data);
             if (this.connectedClients.has(data.targetId)) {
+                if (typeof data.targetId !== "string") data.targetId = String(data.targetId);
                 console.log("User found", data.targetId)
                 const targetUser = this.connectedClients.get(data.targetId);
                 data.type === "sent" ? data.type = "incoming" : data.type = "sent";

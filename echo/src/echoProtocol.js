@@ -647,7 +647,7 @@ class EchoProtocol {
 
   addFriend(friend) {
     console.log("ep.addFriend", friend);
-    if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
+    // if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
     // populate info with cached user data
     if (!friend.name && !friend.img) {
       const user = this.cachedUsers.get(friend.targetId);
@@ -656,6 +656,7 @@ class EchoProtocol {
       friend.status = user.status;
       friend.online = user.online;
     }
+    friend.id = friend.targetId;
     this.cachedFriends.add(friend);
     this.friendCacheUpdated(this.cachedFriends.getAll());
   }

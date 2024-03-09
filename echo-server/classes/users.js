@@ -159,7 +159,25 @@ class User {
         });
     }
 
+    registerEvent(event, cb) {
+        if (!this.events[event]) this.events[event] = {};
+        this.events[event].cb = cb;
+    }
+
+    triggerEvent(event, data) {
+        // register event and save the reference function to be called
+        if (this.events[event]) this.events[event].cb(data)
+        else console.error("can't trigger event", event, "NOT FOUND", this.id);
+        // call same function if it exists
+        if (this[event]) this[event](data);
+    }
+
+    // actual code //
+
     friendAction(data) {
+        if (typeof data.targetId !== "string") data.targetId = String(data.targetId);
+        if (typeof data.id !== "string") data.id = String(data.id);
+        console.log("friendAction", data, "user class:", this.id)
         this.socket.emit("server.friendAction", data);
     }
 
@@ -538,19 +556,6 @@ class User {
                 await consumer.consumer.close();
             }
         });
-    }
-
-    registerEvent(event, cb) {
-        if (!this.events[event]) this.events[event] = {};
-        this.events[event].cb = cb;
-    }
-
-    triggerEvent(event, data) {
-        // register event and save the reference function to be called
-        if (this.events[event]) this.events[event].cb(data)
-        else console.error("can't trigger event", event, "NOT FOUND", this.id);
-        // call same function if it exists
-        if (this[event]) this[event](data);
     }
 
     userUpdated(data) {
