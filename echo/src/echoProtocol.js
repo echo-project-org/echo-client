@@ -11,8 +11,6 @@ import { storage } from "./index";
 class EchoProtocol {
   constructor() {
     this.wsConnection = new wsConnection();
-    this.ping = 0;
-    this.pingInterval = null;
     this.mh = null;
     this.id = null;
 
@@ -33,8 +31,16 @@ class EchoProtocol {
     );
 
     this.mh.init();
+  }
 
-    this.SERVER_URL = "https://echo.kuricki.com";
+  sendToSocket(endpoing, data, cb) {
+    if (this.wsConnection) {
+      this.wsConnection.send(endpoing, data, (a) => {
+        if (cb) {
+          cb(a);
+        }
+      });
+    }
   }
 
   wsConnectionClosed() {
@@ -106,6 +112,7 @@ class EchoProtocol {
   }
 
   wsVideoBroadcastStop(data) {
+    console.log("wsVideoBroadcastStop", data);
     this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
     this.videoBroadcastStop(data);
   }
@@ -215,62 +222,6 @@ class EchoProtocol {
     }
   }
 
-  sendTransportConnect(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("sendTransportConnect", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
-  sendTransportProduce(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("sendTransportProduce", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
-  receiveTransportConnect(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("receiveTransportConnect", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
-  sendVideoTransportConnect(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("sendVideoTransportConnect", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
-  sendVideoTransportProduce(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("sendVideoTransportProduce", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
-  sendVideoAudioTransportProduce(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("sendVideoAudioTransportProduce", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
-  receiveVideoTransportConnect(data, cb, errCb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("receiveVideoTransportConnect", data, (a) => {
-        cb(a);
-      });
-    }
-  }
-
   startReceiving(remoteId) {
     this.subscribeAudio({ id: remoteId });
   }
@@ -284,9 +235,6 @@ class EchoProtocol {
   stopReceivingVideo(remoteId) {
     if (this.mh) {
       this.mh.stopConsumingVideo(remoteId);
-      if (this.wsConnection) {
-        this.wsConnection.send("stopReceivingVideo", { id: remoteId });
-      }
     }
   }
 
@@ -370,27 +318,24 @@ class EchoProtocol {
     const audioState = this.getAudioState();
     this.mh.startStatsInterval();
     // join the transmission on current room
-    if (this.wsConnection) {
-      this.wsConnection.send("join", {
-        serverId: storage.get('serverId'),
-        id,
-        roomId,
-        deaf: audioState.isDeaf,
-        muted: audioState.isMuted
-      });
-    }
+    this.sendToSocket("join", {
+      serverId: storage.get('serverId'),
+      id,
+      roomId,
+      deaf: audioState.isDeaf,
+      muted: audioState.isMuted
+    });
+
     this.joinedRoom();
   }
 
   sendAudioState(id, data) {
     this.updatedAudioState({ id, deaf: data.deaf, muted: data.muted });
-    if (this.wsConnection) {
-      this.wsConnection.send("audioState", {
-        id,
-        deaf: data.deaf,
-        muted: data.muted
-      });
-    }
+    this.sendToSocket("audioState", {
+      id,
+      deaf: data.deaf,
+      muted: data.muted
+    });
   }
 
   exitFromRoom(id) {
@@ -399,17 +344,12 @@ class EchoProtocol {
     this.stopReceivingVideo();
     this.mh.leaveRoom();
     this.exitedFromRoom();
-    if (this.wsConnection) {
-      this.wsConnection.send("exit", { id });
-    }
   }
 
   closeConnection(id = null) {
-    if (this.wsConnection) {
-      if (!id) id = sessionStorage.getItem('id');
-      this.wsConnection.send("end", { id });
-      clearInterval(this.currentConnectionStateInterval);
-    }
+    if (!id) id = sessionStorage.getItem('id');
+    this.sendToSocket("end", { id });
+    clearInterval(this.currentConnectionStateInterval);
 
     this.stopReceiving();
     this.stopReceivingVideo();
@@ -417,8 +357,6 @@ class EchoProtocol {
     this.stopScreenSharing();
 
     this.wsConnection = null;
-    this.ping = 0;
-    this.pingInterval = null;
     this.mh = new mediasoupHandler(
       storage.get('inputAudioDeviceId'),
       storage.get('outputAudioDeviceId'),
@@ -438,27 +376,6 @@ class EchoProtocol {
       this.wsConnection.close();
       this.wsConnection = null;
     }
-    clearInterval(this.pingInterval);
-  }
-
-  broadcastAudio(data, cb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("broadcastAudio", data, (description) => {
-        cb(description);
-      });
-    }
-  }
-
-  streamChanged(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("streamChanged", data);
-    }
-  }
-
-  videoStreamChanged(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("videoStreamChanged", data);
-    }
   }
 
   subscribeAudio(data) {
@@ -466,7 +383,7 @@ class EchoProtocol {
       let remoteId = data.id;
       let a = this.mh.getRtpCapabilities()
 
-      this.wsConnection.send("subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
+      this.sendToSocket("subscribeAudio", { id: remoteId, rtpCapabilities: a }, (data) => {
         this.mh.consume({
           id: data.id,
           producerId: data.producerId,
@@ -476,29 +393,6 @@ class EchoProtocol {
           producerPaused: data.producerPaused,
         });
       });
-    }
-  }
-  resumeStream(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("resumeStream", data);
-    }
-  }
-
-  resumeStreams(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("resumeStreams", data);
-    }
-  }
-
-  unsubscribeAudio(data, cb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("unsubscribeAudio", data);
-    }
-  }
-
-  stopAudioBroadcast(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("stopAudioBroadcast", data);
     }
   }
 
@@ -515,9 +409,6 @@ class EchoProtocol {
     this.updateUser({ id, field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
-      if (this.wsConnection) {
-        this.wsConnection.send("stopScreenSharing", { id });
-      }
     }
   }
 
@@ -525,16 +416,10 @@ class EchoProtocol {
     if (this.mh) {
       let a = this.mh.getRtpCapabilities()
       if (this.wsConnection) {
-        this.wsConnection.send("startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
+        this.sendToSocket("startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
           this.mh.consumeVideo(description);
         });
       }
-    }
-  }
-
-  resumeVideoStream(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("resumeVideoStream", data);
     }
   }
 
@@ -556,20 +441,6 @@ class EchoProtocol {
       user: this.cachedUsers.get(data.id),
       stream: data.stream,
     })
-  }
-
-  stopVideoBroadcast(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("stopVideoBroadcast", data);
-    }
-  }
-
-  unsubscribeVideo(data, cb) {
-    if (this.wsConnection) {
-      this.wsConnection.send("unsubscribeVideo", data, (description) => {
-        cb(description);
-      });
-    }
   }
 
   getVideoDevices() {
@@ -620,9 +491,7 @@ class EchoProtocol {
 
   updatePersonalSettings({ id, field, value }) {
     if (this.cachedUsers.get(id)) {
-      if (this.wsConnection) {
-        this.wsConnection.send("updateUser", { id, field, value });
-      }
+      this.sendToSocket("updateUser", { id, field, value });
       this.updateUser({ id, field, value });
     }
   }
@@ -734,7 +603,7 @@ class EchoProtocol {
     if (room) {
       data.roomId = data.roomId + "@" + data.serverId;
       if (this.wsConnection) {
-        this.wsConnection.send("sendChatMessage", { ...data, id: data.userId });
+        this.sendToSocket("sendChatMessage", { ...data, id: data.userId });
       } else {
         console.error("Socket not found");
       }
@@ -790,12 +659,6 @@ class EchoProtocol {
       }
       else reject("Room not found in cache");
     });
-  }
-
-  sendFriendAction(data) {
-    if (this.wsConnection) {
-      this.wsConnection.send("friendAction", data);
-    }
   }
 
   apiUnauthorized() {

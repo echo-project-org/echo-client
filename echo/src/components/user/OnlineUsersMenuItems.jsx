@@ -17,7 +17,7 @@ function FriendButton({ user, handleClose }) {
       .catch(err => console.log(err));
     // send message to socket
     console.log("sending friend request to: ", user)
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'sent' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'sent' });
     handleClose();
   }
 
@@ -27,7 +27,7 @@ function FriendButton({ user, handleClose }) {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
       .catch(err => console.log(err));
     // send message to socket
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
     handleClose();
   }
 
@@ -36,7 +36,7 @@ function FriendButton({ user, handleClose }) {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
       .catch(err => console.log(err));
     // send message to socket
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
     handleClose();
   }
 
@@ -45,7 +45,7 @@ function FriendButton({ user, handleClose }) {
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
       .catch(err => console.log(err));
     // send message to socket
-    ep.sendFriendAction({ id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
+    ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
     handleClose();
   }
 

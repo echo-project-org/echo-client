@@ -95,11 +95,6 @@ class wsConnection {
     if (this.socket) {
       this.socket.emit("client." + request, data, (a) => {
         if (cb) {
-          if (a.response === "error") {
-            console.error(request, a);
-            ep.localUserCrashed();
-            return;
-          }
           cb(a);
         }
       });

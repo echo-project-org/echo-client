@@ -44,6 +44,7 @@ function AnimatedRoutes() {
       ipcRenderer.removeAllListeners("downloadProgress");
     }
   }, [navigate, location])
+  
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>

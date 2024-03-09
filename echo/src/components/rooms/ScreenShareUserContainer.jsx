@@ -46,6 +46,7 @@ function ScreenShareUserContainer({ user, selectUser }) {
           onClick={() => { selectUser(user); }}
           size='large'
         ><Visibility /> Watch stream</StylingComponents.ScreenShare.StyledScreenShareUserButton>
+        <StylingComponents.ScreenShare.StyledScreenShareTypography variant="h4">{user.name}</StylingComponents.ScreenShare.StyledScreenShareTypography>
       </Grid>
     );
   } else {

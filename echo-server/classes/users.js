@@ -40,6 +40,7 @@ class User {
                 clearInterval(this.crashCountdown);
             }, 1000);
         }, 5000);
+        this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
 
         // room stuff
         this.socket.on("client.audioState", (data) => {
@@ -47,7 +48,6 @@ class User {
             data.id = this.id;
             this.triggerEvent("audioState", data)
         });
-        this.socket.on("client.thereYouAre", (callback) => { this.pongReceived() });
         this.socket.on("client.join", (data) => {
             data.id = this.id;
             this.serverId = data.serverId;
@@ -61,17 +61,17 @@ class User {
             data.id = this.id;
             this.triggerEvent("sendChatMessage", data)
         });
-        this.socket.on("client.exit", (data) =>{
-            data.id = this.id;    
+        this.socket.on("client.exit", (data) => {
+            data.id = this.id;
             this.triggerEvent("exit", data)
         });
         this.socket.on("client.updateUser", (data) => {
-            data.id = this.id;   
+            data.id = this.id;
             this.triggerEvent("updateUser", data)
         });
 
         // mediasoup
-        this.socket.on("client.sendTransportConnect", (data, cb) =>{ 
+        this.socket.on("client.sendTransportConnect", (data, cb) => {
             this.receiveTransportConnect(data, cb)
         });
 
@@ -109,10 +109,6 @@ class User {
 
         this.socket.on("client.resumeStream", (data) => {
             this.resumeStream(data);
-        });
-
-        this.socket.on("client.resumeStreams", (data) => {
-            this.resumeStreams(data);
         });
 
         this.socket.on("client.resumeVideoStream", (data) => {
@@ -231,244 +227,292 @@ class User {
     }
 
     async receiveTransportConnect(data, cb) {
-        if (!this.receiveTransport) {
-            console.log("USER-" + this.id + " receiveTransport not found, can't connect audio");
-            cb({
-                response: "error",
-                reason: "receiveTransport not found"
+        try {
+            if (!this.receiveTransport) {
+                console.log("USER-" + this.id + " receiveTransport not found, can't connect audio");
+                cb({
+                    response: "error",
+                    reason: "receiveTransport not found"
+                });
+                return;
+            }
+            await this.receiveTransport.connect({
+                dtlsParameters: data.dtlsParameters
             });
-            return;
-        }
-        await this.receiveTransport.connect({
-            dtlsParameters: data.dtlsParameters
-        });
 
-        cb({ response: "success" });
+            cb({ response: "success" });
+        } catch (error) {
+            console.error("Error in receiveTransportConnect", error);
+            cb({ response: "error", reason: error });
+        }
     }
 
     async receiveTransportProduce(data, cb) {
-        if (!this.receiveTransport) {
-            console.log("USER-" + this.id + " receiveTransport not found, can't produce audio");
-            cb({
-                response: "error",
-                reason: "receiveTransport not found"
+        try {
+            if (!this.receiveTransport) {
+                console.log("USER-" + this.id + " receiveTransport not found, can't produce audio");
+                cb({
+                    response: "error",
+                    reason: "receiveTransport not found"
+                });
+                return;
+            }
+
+            if (this.audioProducer) {
+                await this.audioProducer.close();
+                this.audioProducer = null;
+            }
+            this.audioProducer = await this.receiveTransport.produce({
+                id: data.id,
+                kind: data.kind,
+                rtpParameters: data.rtpParameters,
+                appData: data.appData
             });
-            return;
-        }
+            this.audioProducerId = this.audioProducer.id;
 
-        if (this.audioProducer) {
-            await this.audioProducer.close();
-            this.audioProducer = null;
+            this.triggerEvent("userFullyConnectedToRoom", {
+                id: this.id,
+                serverId: this.serverId,
+                roomId: this.currentRoom,
+                muted: this.isMuted,
+                deaf: this.isDeaf,
+            })
+            cb({
+                response: "success",
+                id: this.audioProducer.id
+            });
+        } catch (error) {
+            console.error("Error in receiveTransportProduce", error);
+            cb({ response: "error", reason: error });
         }
-        this.audioProducer = await this.receiveTransport.produce({
-            id: data.id,
-            kind: data.kind,
-            rtpParameters: data.rtpParameters,
-            appData: data.appData
-        });
-        this.audioProducerId = this.audioProducer.id;
-
-        this.triggerEvent("userFullyConnectedToRoom", {
-            id: this.id,
-            serverId: this.serverId,
-            roomId: this.currentRoom,
-            muted: this.isMuted,
-            deaf: this.isDeaf,
-        })
-        cb({
-            response: "success",
-            id: this.audioProducer.id
-        });
     }
 
     async sendTransportConnect(data, cb) {
-        if (!this.sendTransport) {
-            console.log("USER-" + this.id + " sendTransport not found, can't connect audio");
-            cb({
-                response: "error",
-                reason: "sendTransport not found"
+        try {
+            if (!this.sendTransport) {
+                console.log("USER-" + this.id + " sendTransport not found, can't connect audio");
+                cb({
+                    response: "error",
+                    reason: "sendTransport not found"
+                });
+                return;
+            }
+            await this.sendTransport.connect({
+                dtlsParameters: data.dtlsParameters
             });
-            return;
-        }
-        await this.sendTransport.connect({
-            dtlsParameters: data.dtlsParameters
-        });
 
-        cb({ response: "success" });
+            cb({ response: "success" });
+        } catch (error) {
+            console.error("Error in sendTransportConnect", error);
+            cb({ response: "error", reason: error });
+        }
     }
 
     async receiveVideoTransportConnect(data, cb) {
-        if (!this.receiveVideoTransport) {
-            console.log("USER-" + this.id + " receiveVideoTransport not found, can't connect video");
-            cb({
-                response: "error",
-                reason: "receiveVideoTransport not found"
+        try {
+            if (!this.receiveVideoTransport) {
+                console.log("USER-" + this.id + " receiveVideoTransport not found, can't connect video");
+                cb({
+                    response: "error",
+                    reason: "receiveVideoTransport not found"
+                });
+                return;
+            }
+
+            await this.receiveVideoTransport.connect({
+                dtlsParameters: data.dtlsParameters
             });
-            return;
+
+            cb({ response: "success" });
+        } catch (error) {
+            console.error("Error in receiveVideoTransportConnect", error);
+            cb({ response: "error", reason: error });
         }
-
-        await this.receiveVideoTransport.connect({
-            dtlsParameters: data.dtlsParameters
-        });
-
-        cb({ response: "success" });
     }
 
     async receiveVideoTransportProduce(data, cb) {
-        if (!this.receiveVideoTransport) {
-            console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
-            cb({
-                response: "error",
-                reason: "receiveVideoTransport not found"
+        try {
+            if (!this.receiveVideoTransport) {
+                console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
+                cb({
+                    response: "error",
+                    reason: "receiveVideoTransport not found"
+                });
+                return;
+            }
+
+            if (this.videoProducer) {
+                await this.videoProducer.close();
+                this.videoProducer = null;
+            }
+            this.videoProducer = await this.receiveVideoTransport.produce({
+                id: data.id,
+                kind: data.kind,
+                rtpParameters: data.rtpParameters,
+                appData: data.appData
             });
-            return;
+            this.videoProducerId = this.videoProducer.id;
+            this.isBroadcastingVideo = true;
+
+            this.triggerEvent("videoBroadcastStarted", {
+                id: this.id,
+                roomId: this.currentRoom,
+            });
+
+            cb({
+                response: "success",
+                id: this.videoProducer.id
+            });
+        } catch (error) {
+            console.error("Error in receiveVideoTransportProduce", error);
+            cb({ response: "error", reason: error });
         }
-
-        if (this.videoProducer) {
-            await this.videoProducer.close();
-            this.videoProducer = null;
-        }
-        this.videoProducer = await this.receiveVideoTransport.produce({
-            id: data.id,
-            kind: data.kind,
-            rtpParameters: data.rtpParameters,
-            appData: data.appData
-        });
-        this.videoProducerId = this.videoProducer.id;
-        this.isBroadcastingVideo = true;
-
-        this.triggerEvent("videoBroadcastStarted", {
-            id: this.id,
-            roomId: this.currentRoom,
-        });
-
-        cb({
-            response: "success",
-            id: this.videoProducer.id
-        });
     }
 
-    receiveVideoAudioTransportProduce(data, cb) {
-        if(!this.receiveVideoTransport){
-            console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
-            cb({
-                response: "error",
-                reason: "receiveVideoTransport not found"
+    async receiveVideoAudioTransportProduce(data, cb) {
+        try {
+            if (!this.receiveVideoTransport) {
+                console.log("USER-" + this.id + " receiveVideoTransport not found, can't produce video");
+                cb({
+                    response: "error",
+                    reason: "receiveVideoTransport not found"
+                });
+                return;
+            }
+
+            if (this.videoAudioProducer) {
+                this.videoAudioProducer.close();
+                this.videoAudioProducer = null;
+            }
+
+            this.videoAudioProducer = await this.receiveVideoTransport.produce({
+                id: data.id,
+                kind: data.kind,
+                rtpParameters: data.rtpParameters,
+                appData: data.appData
             });
-            return;
+
+            this.broadcastWithAudio = true;
+            this.triggerEvent("broadcastNowHasAudio", {
+                id: this.id,
+                roomId: this.currentRoom,
+            });
+
+            cb({
+                response: "success",
+                id: this.videoAudioProducer.id
+            });
+        } catch (error) {
+            console.error("Error in receiveVideoAudioTransportProduce", error);
+            cb({ response: "error", reason: error });
         }
-
-        if (this.videoAudioProducer) {
-            this.videoAudioProducer.close();
-            this.videoAudioProducer = null;
-        }
-
-        this.videoAudioProducer = this.receiveVideoTransport.produce({
-            id: data.id,
-            kind: data.kind,
-            rtpParameters: data.rtpParameters,
-            appData: data.appData
-        });
-
-        this.broadcastWithAudio = true;
-        this.triggerEvent("broadcastNowHasAudio", {
-            id: this.id,
-            roomId: this.currentRoom,
-        });
-
-        cb({
-            response: "success",
-            id: this.videoAudioProducer.id
-        });
     }
 
     sendVideoTransportConnect(data, cb) {
-        if (!this.sendVideoTransport) {
-            console.log("USER-" + this.id + " sendVideoTransport not found, can't connect video");
-            cb({
-                response: "error",
-                reason: "sendVideoTransport not found"
+        try {
+            if (!this.sendVideoTransport) {
+                console.log("USER-" + this.id + " sendVideoTransport not found, can't connect video");
+                cb({
+                    response: "error",
+                    reason: "sendVideoTransport not found"
+                });
+                return;
+            }
+
+            this.sendVideoTransport.connect({
+                dtlsParameters: data.dtlsParameters
             });
-            return;
+
+            cb({ response: "success" });
+        } catch (error) {
+            console.error("Error in sendVideoTransportConnect", error);
+            cb({ response: "error", reason: error });
         }
-
-        this.sendVideoTransport.connect({
-            dtlsParameters: data.dtlsParameters
-        });
-
-        cb({ response: "success" });
     }
 
     async stopScreenSharing(data) {
-        await this.videoProducer.close();
-        this.isBroadcastingVideo = false;
-        this.broadcastWithAudio = false;
-        this.triggerEvent("videoBroadcastStop", {
-            id: this.id,
-            roomId: this.currentRoom,
-        });
+        try {
+            await this.videoProducer.close();
+            this.isBroadcastingVideo = false;
+            this.broadcastWithAudio = false;
+            this.triggerEvent("videoBroadcastStop", {
+                id: this.id,
+                roomId: this.currentRoom,
+            });
+        } catch (error) {
+            console.error("Error in stopScreenSharing", error);
+        }
     }
 
     async startReceivingVideo(data, cb) {
-        this.videoConsumers.forEach(async (consumer) => {
-            if (consumer.senderId === data.id) {
-                await consumer.consumer.close();
-                consumer.consumer = null;
-                this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
-            }
-        });
-
-        if (!this.sendVideoTransport) {
-            console.log("USER-" + this.id + " sendVideoTransport not found, can't consume video");
-            cb({
-                response: "error",
-                reason: "sendVideoTransport not found"
+        try {
+            this.videoConsumers.forEach(async (consumer) => {
+                if (consumer.senderId === data.id) {
+                    await consumer.consumer.close();
+                    consumer.consumer = null;
+                    this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
+                }
             });
-            return;
-        }
-        const consumer = await this.sendVideoTransport.consume({
-            producerId: data.id + "-video",
-            rtpCapabilities: data.rtpCapabilities,
-            paused: true
-        });
 
-        let audioConsumer = null;
-        if(this.broadcastWithAudio){
-            audioConsumer = await this.sendVideoTransport.consume({
-                producerId: data.id + "-video-audio",
+            if (!this.sendVideoTransport) {
+                console.log("USER-" + this.id + " sendVideoTransport not found, can't consume video");
+                cb({
+                    response: "error",
+                    reason: "sendVideoTransport not found"
+                });
+                return;
+            }
+            const consumer = await this.sendVideoTransport.consume({
+                producerId: data.id + "-video",
                 rtpCapabilities: data.rtpCapabilities,
-                paused: false
+                paused: true
             });
-        }
 
-        this.videoConsumers.push({
-            consumer: consumer,
-            audioConsumer: audioConsumer,
-            senderId: data.id,
-        });
-
-        cb({
-            response: "success",
-            videoDescription: {
-                id: consumer.id,
-                producerId: data.id,
-                kind: consumer.kind,
-                rtpParameters: consumer.rtpParameters,
-            },
-            videoAudioDescription: {
-                id: audioConsumer ? audioConsumer.id : null,
-                producerId: data.id,
-                kind: audioConsumer ? audioConsumer.kind : null,
-                rtpParameters: audioConsumer ? audioConsumer.rtpParameters : null,
-
+            let audioConsumer = null;
+            if (this.broadcastWithAudio) {
+                audioConsumer = await this.sendVideoTransport.consume({
+                    producerId: data.id + "-video-audio",
+                    rtpCapabilities: data.rtpCapabilities,
+                    paused: false
+                });
             }
-        });
+
+            this.videoConsumers.push({
+                consumer: consumer,
+                audioConsumer: audioConsumer,
+                senderId: data.id,
+            });
+
+            cb({
+                response: "success",
+                videoDescription: {
+                    id: consumer.id,
+                    producerId: data.id,
+                    kind: consumer.kind,
+                    rtpParameters: consumer.rtpParameters,
+                },
+                videoAudioDescription: {
+                    id: audioConsumer ? audioConsumer.id : null,
+                    producerId: data.id,
+                    kind: audioConsumer ? audioConsumer.kind : null,
+                    rtpParameters: audioConsumer ? audioConsumer.rtpParameters : null,
+
+                }
+            });
+        } catch (error) {
+            console.error("Error in startReceivingVideo", error);
+            cb({ response: "error", reason: error });
+        }
     }
 
     stopReceivingVideo() {
-        this.videoConsumers.forEach(async (consumer) => {
-            await consumer.consumer.close();
-        });
+        try {
+            this.videoConsumers.forEach(async (consumer) => {
+                await consumer.consumer.close();
+            });
+        } catch (error) {
+            console.error("Error in stopReceivingVideo", error);
+        }
     }
 
     resumeVideoStream(data) {
@@ -476,56 +520,71 @@ class User {
         this.videoConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
                 if (consumer.consumer.paused) {
-                    await consumer.consumer.resume();
+                    try {
+                        await consumer.consumer.resume();
+                    } catch (error) {
+                        console.error("Error in resumeVideoStream", error);
+                        // if the consumer is already closed, remove it from the array
+                        this.videoConsumers.splice(this.videoConsumers.indexOf(consumer), 1);
+                    }
                 }
             }
         });
     }
 
     async subscribeAudio(data, cb) {
-        this.audioConsumers.forEach(async (consumer) => {
-            if (consumer.senderId === data.id) {
-                await consumer.consumer.close();
-                consumer.consumer = null;
-                this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
-            }
-        });
-
-        if (!this.sendTransport) {
-            console.log("USER-" + this.id + " sendTransport not found, can't consume audio");
-            cb({
-                response: "error",
-                reason: "sendTransport not found"
+        try {
+            this.audioConsumers.forEach(async (consumer) => {
+                if (consumer.senderId === data.id) {
+                    await consumer.consumer.close();
+                    consumer.consumer = null;
+                    this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
+                }
             });
-            return;
+
+            if (!this.sendTransport) {
+                console.log("USER-" + this.id + " sendTransport not found, can't consume audio");
+                cb({
+                    response: "error",
+                    reason: "sendTransport not found"
+                });
+                return;
+            }
+
+            const consumer = await this.sendTransport.consume({
+                producerId: data.id + "-audio",
+                rtpCapabilities: data.rtpCapabilities,
+                paused: true
+            });
+
+            this.audioConsumers.push({
+                consumer: consumer,
+                senderId: data.id,
+            });
+
+            cb({
+                response: "success",
+                id: consumer.id,
+                producerId: data.id,
+                kind: consumer.kind,
+                rtpParameters: consumer.rtpParameters,
+            });
+        } catch (error) {
+            console.error("Error in subscribeAudio", error);
+            cb({ response: "error", reason: error });
         }
-
-        const consumer = await this.sendTransport.consume({
-            producerId: data.id + "-audio",
-            rtpCapabilities: data.rtpCapabilities,
-            paused: true
-        });
-
-        this.audioConsumers.push({
-            consumer: consumer,
-            senderId: data.id,
-        });
-
-        cb({
-            response: "success",
-            id: consumer.id,
-            producerId: data.id,
-            kind: consumer.kind,
-            rtpParameters: consumer.rtpParameters,
-        });
     }
 
     async unsubscribeAudio(data) {
-        this.audioConsumers.forEach(async (consumer) => {
-            if (consumer.senderId === data.producerId) {
-                await consumer.consumer.close();
-            }
-        });
+        try {
+            this.audioConsumers.forEach(async (consumer) => {
+                if (consumer.senderId === data.producerId) {
+                    await consumer.consumer.close();
+                }
+            });
+        } catch (error) {
+            console.error("Error in unsubscribeAudio", error);
+        }
     }
 
     async resumeStream(data) {
@@ -533,29 +592,29 @@ class User {
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
                 if (consumer.consumer.paused) {
-                    await consumer.consumer.resume();
+                    try{
+                        await consumer.consumer.resume();
+                    } catch (error) {
+                        console.error("Error in resumeStream", error);
+                        // if the consumer is already closed, remove it from the array
+                        this.audioConsumers.splice(this.audioConsumers.indexOf(consumer), 1);
+                    }
                 }
             }
         });
     }
 
-    async resumeStreams() {
-        //resume all streams
-        /*
-        this.audioConsumers.forEach(async (consumer) => {
-            if(consumer.consumer.paused){
-                await consumer.consumer.resume();
-            }
-        });*/
-    }
-
     stopAudioBroadcast(data) {
-        //stop stream
-        this.audioConsumers.forEach(async (consumer) => {
-            if (consumer.senderId === data.id) {
-                await consumer.consumer.close();
-            }
-        });
+        try {
+            //stop stream
+            this.audioConsumers.forEach(async (consumer) => {
+                if (consumer.senderId === data.id) {
+                    await consumer.consumer.close();
+                }
+            });
+        } catch (error) {
+            console.error("Error in stopAudioBroadcast", error);
+        }
     }
 
     userUpdated(data) {

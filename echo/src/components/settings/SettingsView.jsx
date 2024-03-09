@@ -10,6 +10,7 @@ import OutputDevicesSettings from './OutputDevicesSettings';
 import ImageUploader from './ImageUploader';
 import ExtraAudioSettings from './ExtraAudioSettings';
 import StyledComponents from '../../StylingComponents';
+import KeyboardShortcutSettings from './KeyboardShortcutSettings';
 
 function SettingsView() {
   const [inputDevices, setInputDevices] = useState([]);
@@ -34,7 +35,7 @@ function SettingsView() {
       setOpenUploader(true);
       setUploaderData(data);
     });
-    
+
     ep.on("closeUploader", "SettingsView.closeUploader", () => {
       setOpenUploader(false);
       setUploaderData(null);
@@ -73,6 +74,10 @@ function SettingsView() {
           <ThemeSettings />
         </Grid>
       </Grid>
+      <Grid item xs={12}>
+        <KeyboardShortcutSettings />
+      </Grid>
+
     </StyledComponents.Settings.StyledSettingsContainer>
   )
 }
