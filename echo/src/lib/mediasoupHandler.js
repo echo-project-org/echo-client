@@ -75,7 +75,10 @@ class mediasoupHandler {
     }
 
     this.videoConstraints = {
-      audio: true,
+      audio: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: this.videoSourceId,
+      },
       video: {
         logicalSurface: true,
         displaySurface: 'window',
@@ -1175,6 +1178,7 @@ class mediasoupHandler {
   setScreenShareDevice(deviceId) {
     ipcRenderer.send("grantDisplayMedia", { id: deviceId });
     this.videoSourceId = deviceId;
+    this.videoConstraints.audio.chromeMediaSourceId = deviceId;
   }
 
   /**
