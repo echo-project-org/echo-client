@@ -173,11 +173,10 @@ class Rooms {
         user.registerEvent("friendAction", (data) => {
             //find the user
             console.log(data);
+            if (typeof data.targetId !== "string") data.targetId = String(data.targetId);
             if (this.connectedClients.has(data.targetId)) {
-                if (typeof data.targetId !== "string") data.targetId = String(data.targetId);
                 console.log("User found", data.targetId)
                 const targetUser = this.connectedClients.get(data.targetId);
-                data.type === "sent" ? data.type = "incoming" : data.type = "sent";
                 console.log("Sending friend action to user", data);
                 targetUser.friendAction(data);
             }

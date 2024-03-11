@@ -173,7 +173,24 @@ class User {
     friendAction(data) {
         if (typeof data.targetId !== "string") data.targetId = String(data.targetId);
         if (typeof data.id !== "string") data.id = String(data.id);
-        console.log("friendAction", data, "user class:", this.id)
+        // if signaling the current user then send correct data
+        console.log("friendAction", data, "user class:", this.id, "==", typeof this.id)
+        if (data.id !== this.id) {
+            if (data.operation === "add") {
+                const reqUser = data.id;
+                data.id = data.targetId;
+                data.targetId = reqUser;
+                switch (data.type) {
+                    case "sent":
+                        data.type = "incoming";
+                        break;
+                    case "incoming":
+                        data.type = "sent";
+                        break;
+                }
+            }
+        }
+        console.log("sending friendAction", data, "user class:", this.id, "==", typeof this.id)
         this.socket.emit("server.friendAction", data);
     }
 
@@ -592,7 +609,7 @@ class User {
         this.audioConsumers.forEach(async (consumer) => {
             if (consumer.senderId === data.producerId) {
                 if (consumer.consumer.paused) {
-                    try{
+                    try {
                         await consumer.consumer.resume();
                     } catch (error) {
                         console.error("Error in resumeStream", error);
