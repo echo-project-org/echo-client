@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut, session } = require('electron');
 const { autoUpdater, AppUpdater } = require('electron-updater');
 const path = require('path')
 
@@ -277,5 +277,13 @@ ipcMain.on("addKeyboardShortcut", (event, arg) => {
 })
 
 ipcMain.handle("getVideoSources", async () => {
-  return await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });
+  this.videoSources = await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });
+  return this.videoSources
 })
+
+ipcMain.on("grantDisplayMedia", (event, arg) => {
+  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+    const selectedSource = this.videoSources.find(source => source.id === arg.id);
+    callback({ video: selectedSource });
+  })
+});
