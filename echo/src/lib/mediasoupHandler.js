@@ -84,7 +84,7 @@ class mediasoupHandler {
           frameRate: { ideal: 60, max: 60 },
         },
         systemAudio: "include",
-        
+
     }
   }
 
@@ -576,7 +576,7 @@ class mediasoupHandler {
       track: videoTrack,
       codecOptions: {
         videoGoogleStartBitrate: 3000,
-        videoGoogleMaxBitrate: 10000,
+        videoGoogleMaxBitrate: 20000,
         videoGoogleMinBitrate: 3000,
       },
     });
