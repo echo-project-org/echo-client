@@ -77,14 +77,13 @@ class mediasoupHandler {
     this.videoConstraints = {
       audio: true,
       video: {
-          chromeMediaSource: 'desktop',
-          chromeMediaSourceId: this.videoSourceId,
-          width: { ideal: 1920, max: 1920 },
-          height: { ideal: 1080, max: 1080 },
-          frameRate: { ideal: 60, max: 60 },
-        },
-        systemAudio: "include",
-
+        logicalSurface: true,
+        displaySurface: 'window',
+        width: { ideal: 1920, max: 1920 },
+        height: { ideal: 1080, max: 1080 },
+        frameRate: { ideal: 60, max: 60 },
+      },
+      systemAudio: "include",
     }
   }
 
@@ -580,8 +579,8 @@ class mediasoupHandler {
         videoGoogleMinBitrate: 3000,
       },
     });
-
-    const audioTrack = this.outStream.getAudioTracks()[0];
+    console.log(this.outVideoStream.getTracks());
+    const audioTrack = this.outVideoStream.getAudioTracks()[0];
     console.log(audioTrack)
     if (audioTrack) {
       this.videoAudioProducer = await this.videoSendTransport.produce({
@@ -657,7 +656,7 @@ class mediasoupHandler {
     this.inVideoStream = new MediaStream([track]);
 
     //add audioTrack to inVideoStream
-    if (this.AudioVideoConsumer) {
+    if (this.videoAudioConsumer) {
       console.log("Adding audio track to video stream")
       const { audioTrack } = this.videoAudioConsumer;
       if (audioTrack) {
@@ -1174,9 +1173,8 @@ class mediasoupHandler {
    * @param {string} deviceId - The ID of the screen share device to use.
    */
   setScreenShareDevice(deviceId) {
-    ipcRenderer.send("grantDisplayMedia", {id: deviceId});
+    ipcRenderer.send("grantDisplayMedia", { id: deviceId });
     this.videoSourceId = deviceId;
-    this.videoConstraints.video.chromeMediaSourceId = deviceId;
   }
 
   /**

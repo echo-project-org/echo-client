@@ -39,7 +39,7 @@ const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider }) => {
 const ScreenShareControlIcons = ({ stopPlayback }) => {
   const [showControls, setShowControls] = useState(false);
   const [screenShareStream, setScreenShareStream] = useState(ep.getVideo());
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const [pip, setPip] = useState(false);
   const [volumeSlider, setVolumeSlider] = useState(false);
 
