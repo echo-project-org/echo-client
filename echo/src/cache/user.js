@@ -109,7 +109,7 @@ class Users {
     }
 
     update(id, field, value) {
-        console.trace("[CACHE] Updating user", id, field, value)
+        //console.trace("[CACHE] Updating user", id, field, value)
         // data type check
         id = this.typeCheck(id);
         field = this.typeCheck(field);

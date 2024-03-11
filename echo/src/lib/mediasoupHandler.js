@@ -86,7 +86,6 @@ class mediasoupHandler {
         height: { ideal: 1080, max: 1080 },
         frameRate: { ideal: 60, max: 60 },
       },
-      systemAudio: "include",
     }
   }
 
@@ -572,7 +571,7 @@ class mediasoupHandler {
       return;
     }
 
-    this.outVideoStream = await navigator.mediaDevices.getDisplayMedia(this.videoConstraints, err => { console.error(err); return; });
+    this.outVideoStream = await navigator.mediaDevices.getDisplayMedia(this.videoConstraints);
     const videoTrack = this.outVideoStream.getVideoTracks()[0];
     this.videoProducer = await this.videoSendTransport.produce({
       track: videoTrack,
@@ -1178,7 +1177,7 @@ class mediasoupHandler {
   setScreenShareDevice(deviceId) {
     ipcRenderer.send("grantDisplayMedia", { id: deviceId });
     this.videoSourceId = deviceId;
-    this.videoConstraints.audio.chromeMediaSourceId = deviceId;
+    this.videoConstraints.audio.deviceId = deviceId;
   }
 
   /**
