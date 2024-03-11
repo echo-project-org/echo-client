@@ -49,10 +49,6 @@ function FriendButton({ user, handleClose }) {
     handleClose();
   }
 
-  useEffect(() => {
-    // setFriendStatus(ep.getFriendStatus(user.id));
-  }, [friendStatus, user.id]);
-
   switch (friendStatus) {
     case "no":
       return <MenuItem onClick={handleFriendAdd}><PersonAdd fontSize="10px" style={{ marginRight: ".3rem" }} /> Add friend</MenuItem>

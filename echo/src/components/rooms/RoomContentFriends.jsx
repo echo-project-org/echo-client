@@ -14,41 +14,16 @@ function RoomContentFriends({ }) {
   useEffect(() => {
     api.call('users/friends/' + sessionStorage.getItem("id"), "GET")
       .then((res) => {
-        const _friends = [];
-        for (var i in res.json.friended) {
-          const data = {
-            id: res.json.friended[i].id,
-            name: res.json.friended[i].name,
-            status: res.json.friended[i].status,
-            img: res.json.friended[i].img,
-            type: "friended"
+        for (var i in res.json) {
+          for (var j in res.json[i]) {
+            const user = res.json[i][j];
+            if (typeof user.id === "number") user.id = String(user.id);
+            user.type = i;
+            user.targetId = user.id;
+            setFriends((prev) => { return [...prev, user]; });
+            if (user) ep.addFriend(user);
           }
-          _friends.push(data);
-          ep.addFriend(data);
         }
-        for (var i in res.json.sent) {
-          const data = {
-            id: res.json.sent[i].id,
-            name: res.json.sent[i].name,
-            status: res.json.sent[i].status,
-            img: res.json.sent[i].img,
-            type: "sent"
-          }
-          _friends.push(data);
-          ep.addFriend(data);
-        }
-        for (var i in res.json.incoming) {
-          const data = {
-            id: res.json.incoming[i].id,
-            name: res.json.incoming[i].name,
-            status: res.json.incoming[i].status,
-            img: res.json.incoming[i].img,
-            type: "incoming"
-          }
-          _friends.push(data);
-          ep.addFriend(data);
-        }
-        setFriends(_friends);
       })
       .catch((err) => {
         console.error(err.message);

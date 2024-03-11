@@ -245,7 +245,8 @@ router.get('/friends/:id', (req, res) => {
                         id: friends.otherUserId,
                         img: friends.otherUserImage,
                         name: friends.otherUsername,
-                        status: friends.otherUserStatus,
+                        // status: friends.otherUserStatus,
+                        status: "-1",
                     })
                 } else
                 // check if user has incoming friend request
@@ -254,7 +255,8 @@ router.get('/friends/:id', (req, res) => {
                         id: friends.otherUserId,
                         img: friends.otherUserImage,
                         name: friends.otherUsername,
-                        status: friends.otherUserStatus,
+                        // status: friends.otherUserStatus,
+                        status: "-1",
                     })
                 }
             });

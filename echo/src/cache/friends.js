@@ -16,6 +16,7 @@ class Friends {
     if (data.name) data.name = String(data.name);
     if (data.status) data.status = String(data.status);
     if (data.online) data.online = String(data.online);
+    if (data.type) data.type = String(data.type);
 
     return data;
   }

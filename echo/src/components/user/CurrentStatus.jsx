@@ -49,7 +49,7 @@ function CurrentStatus({ icon, align, height, status }) {
       return (
         <StylingComponents.CurrentStatus.StyledCurrentStatusContainer style={{ flexDirection: align === "right" ? "row-reverse" : "row", height }}>
           { icon ? <Circle style={{ color: "#f5e8da" }} /> : null }
-          <p className="noselect">Offline</p>
+          <p className="noselect">Unknown</p>
         </StylingComponents.CurrentStatus.StyledCurrentStatusContainer>
       );
   }
