@@ -24,21 +24,6 @@ function RoomControl({ state, setState, screenSharing }) {
   const [ping, setPing] = useState(0);
   const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
   const [rtcConnectionStateColor, setRtcConnectionStateColor] = useState(theme.palette.error.main);
-
-  useEffect(() => {
-    ipcRenderer.on("toggleMute", (event, arg) => {
-      console.log("toggleMute", arg)
-    });
-
-    ipcRenderer.on("toggleDeaf", (event, arg) => {
-      console.log("toggleDeaf", arg)
-    });
-
-    return () => {
-      ipcRenderer.removeAllListeners("toggleMute");
-      ipcRenderer.removeAllListeners("toggleDeaf");
-    }
-  }, []);
   
   useEffect(() => {
     ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
@@ -53,6 +38,14 @@ function RoomControl({ state, setState, screenSharing }) {
   }, [deaf]);
 
   useEffect(() => {
+    ipcRenderer.on("toggleMute", (event, arg) => {
+      console.log("toggleMute", arg)
+    });
+
+    ipcRenderer.on("toggleDeaf", (event, arg) => {
+      console.log("toggleDeaf", arg)
+    });
+
     ep.on("rtcConnectionStateChange", "RoomControl.rtcConnectionStateChange", (data) => {
       switch (data.state) {
         case 'new' || 'disconnected' || 'closed':
@@ -86,6 +79,11 @@ function RoomControl({ state, setState, screenSharing }) {
     ep.on("localUserCrashed", (data) => {
       closeConnection();
     });
+
+    return () => {
+      ipcRenderer.removeAllListeners("toggleMute");
+      ipcRenderer.removeAllListeners("toggleDeaf");
+    }
   }, []);
 
   var interval = null;
