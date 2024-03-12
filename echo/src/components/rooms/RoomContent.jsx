@@ -83,7 +83,7 @@ function RoomContent({ roomId }) {
   }, [width, height]);
 
   return (
-    <Grid container direction={"row"} style={{ height: "97vh" }}>
+    <Grid container direction={"column"} style={{ height: "100vh", padding: "0 0 2rem 0" }}>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
         maxHeight: "43.09px",
       }}>
@@ -110,8 +110,8 @@ function RoomContent({ roomId }) {
         </StylingComponents.Rooms.StyledRoomContentHeader>
       </Grid>
       <Grid item xs={12} sm={12} md={12} lg={12} xl={12} sx={{
-        height: "calc(100vh - 5rem)",
-        maxHeight: "calc(100vh - 5rem)",
+        height: "100%",
+        maxHeight: "calc(100% - 44.09px)",
       }}>
         <StylingComponents.Rooms.StyledRoomContentItems>
           <InternalRoomContent roomId={roomId} contentSelected={contentSelected} />

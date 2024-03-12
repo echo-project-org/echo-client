@@ -286,19 +286,6 @@ const StyledServerContainer = styled("div")(({ theme }) => ({
   }
 }));
 
-/* Sidebar */
-
-const StyledSidebarWrapper = styled("div")(({ theme }) => ({
-  [theme.breakpoints.up('xs')]: {
-    width: "18rem",
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-    flex: "0 0 auto",
-  }
-}));
-
 /* Rooms & Room */
 
 const StyledRoomsContainer = styled("div")(({ theme }) => ({
@@ -306,7 +293,7 @@ const StyledRoomsContainer = styled("div")(({ theme }) => ({
     width: "100%",
     height: "0",
     margin: "0 auto",
-    flex: ".98 1 auto",
+    flex: ".94 0 auto",
     display: "flex",
     flexDirection: "column",
     overflowY: "show",
@@ -807,9 +794,6 @@ export default {
   },
   MainPageServer: {
     StyledServerContainer
-  },
-  Sidebar: {
-    StyledSidebarWrapper
   },
   Rooms: {
     StyledInactiveRoom,

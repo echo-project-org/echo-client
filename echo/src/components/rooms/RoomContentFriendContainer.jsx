@@ -10,22 +10,22 @@ const api = require('../../lib/api');
 
 function RoomContentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {
-    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
-      .catch(err => console.log(err));
+    // api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
+    //   .catch(err => console.log(err));
     // send message to socket
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
   }
 
   const handleFriendReject = (e) => {
-    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
-      .catch(err => console.log(err));
+    // api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
+    //   .catch(err => console.log(err));
     // send message to socket
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
 
   const handleRemoveSentRequest = (e) => {
-    api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
-      .catch(err => console.log(err));
+    // api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
+    //   .catch(err => console.log(err));
     // send message to socket
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
