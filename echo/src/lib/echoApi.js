@@ -18,10 +18,16 @@ class EchoFriendsAPI {
     // populate info with cached user data
     if (!friend.name && !friend.img) {
       const user = this.cachedUsers.get(friend.targetId);
-      friend.img = user.img || user.userImage;
-      friend.name = user.name;
-      friend.status = user.status;
-      friend.online = user.online;
+      console.log("user", user);
+      if (user) {
+        friend.img = user.img || user.userImage;
+        friend.name = user.name;
+        friend.status = user.status;
+        friend.online = user.online;
+      } else {
+        console.error(`User ${friend.targetId} not found in cache, adding to cache...`)
+        this.needUserCacheUpdate({ id: friend.targetId, call: { function: "addFriend", args: friend } });
+      }
     }
     friend.id = friend.targetId;
     this.cachedFriends.add(friend);
@@ -61,30 +67,13 @@ class EchoFriendsAPI {
   }
 }
 
-class EchoAPI extends EchoFriendsAPI {
+class EchoWSApi extends EchoFriendsAPI {
   constructor() {
     super();
-
     this.wsConnection = new wsConnection();
-    this.mh = null;
-    this.id = null;
-
-    this.cachedUsers = new Users();
-    this.cachedRooms = new Map();
 
     this.currentConnectionState = "";
     this.currentConnectionStateInterval = null;
-
-    this.mh = new mediasoupHandler(
-      storage.get('inputAudioDeviceId'),
-      storage.get('outputAudioDeviceId'),
-      storage.get('micVolume'),
-      storage.get('noiseSuppression') === 'true' || false,
-      storage.get('echoCancellation') === 'true' || false,
-      storage.get('autoGainControl') === 'true' || false,
-    );
-
-    this.mh.init();
   }
 
   sendToSocket(endpoing, data, cb) {
@@ -245,6 +234,61 @@ class EchoAPI extends EchoFriendsAPI {
     } else console.error("Room not found in cache");
   }
 
+  closeConnection(id = null) {
+    if (!id) id = sessionStorage.getItem('id');
+    this.sendToSocket("end", { id });
+    clearInterval(this.currentConnectionStateInterval);
+
+    this.stopReceiving();
+    this.stopReceivingVideo();
+    this.stopTransmitting();
+    this.stopScreenSharing();
+
+    this.wsConnection = null;
+    this.mh = new mediasoupHandler(
+      storage.get('inputAudioDeviceId'),
+      storage.get('outputAudioDeviceId'),
+      storage.get('micVolume'),
+      storage.get('noiseSuppression') === 'true' || false,
+      storage.get('echoCancellation') === 'true' || false,
+      storage.get('autoGainControl') === 'true' || false,
+    );
+
+    this.cachedUsers = new Users();
+    this.cachedRooms = new Map();
+
+    this.currentConnectionState = "";
+    this.currentConnectionStateInterval = null;
+
+    if (this.wsConnection) {
+      this.wsConnection.close();
+      this.wsConnection = null;
+    }
+  }
+}
+
+class EchoAPI extends EchoWSApi {
+  constructor() {
+    super();
+
+    this.mh = null;
+    this.id = null;
+
+    this.cachedUsers = new Users();
+    this.cachedRooms = new Map();
+
+    this.mh = new mediasoupHandler(
+      storage.get('inputAudioDeviceId'),
+      storage.get('outputAudioDeviceId'),
+      storage.get('micVolume'),
+      storage.get('noiseSuppression') === 'true' || false,
+      storage.get('echoCancellation') === 'true' || false,
+      storage.get('autoGainControl') === 'true' || false,
+    );
+
+    this.mh.init();
+  }
+
   async startTransmitting(id) {
     if (this.mh) {
       this.stopTransmitting();
@@ -390,38 +434,6 @@ class EchoAPI extends EchoFriendsAPI {
     this.stopReceivingVideo();
     this.mh.leaveRoom();
     this.exitedFromRoom();
-  }
-
-  closeConnection(id = null) {
-    if (!id) id = sessionStorage.getItem('id');
-    this.sendToSocket("end", { id });
-    clearInterval(this.currentConnectionStateInterval);
-
-    this.stopReceiving();
-    this.stopReceivingVideo();
-    this.stopTransmitting();
-    this.stopScreenSharing();
-
-    this.wsConnection = null;
-    this.mh = new mediasoupHandler(
-      storage.get('inputAudioDeviceId'),
-      storage.get('outputAudioDeviceId'),
-      storage.get('micVolume'),
-      storage.get('noiseSuppression') === 'true' || false,
-      storage.get('echoCancellation') === 'true' || false,
-      storage.get('autoGainControl') === 'true' || false,
-    );
-
-    this.cachedUsers = new Users();
-    this.cachedRooms = new Map();
-
-    this.currentConnectionState = "";
-    this.currentConnectionStateInterval = null;
-
-    if (this.wsConnection) {
-      this.wsConnection.close();
-      this.wsConnection = null;
-    }
   }
 
   subscribeAudio(data) {

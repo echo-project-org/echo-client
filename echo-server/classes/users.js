@@ -189,6 +189,8 @@ class User {
                     case "incoming":
                         data.type = "sent";
                         break;
+                    // friended case is not needed cause we are switching the id and targetId
+                    // before the check and the socket.emit
                 }
             }
         }
