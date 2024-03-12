@@ -284,6 +284,7 @@ const MainServersListContainer = styled(Container)(({ theme }) => ({
     flexDirection: "column",
     gap: "1rem",
     overflow: "hidden",
+    userSelect: "none",
   }
 }));
 
