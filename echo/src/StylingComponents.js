@@ -124,6 +124,12 @@ const StyledMainPageAvatar = styled(Avatar)(({ theme }) => ({
     width: "4rem",
     height: "4rem",
     margin: "1.2rem",
+    border: "2px solid " + theme.palette.text.light,
+    backgroundColor: theme.palette.background.light,
+    "& .MuiSvgIcon-root": {
+      fontSize: "2.2rem",
+      color: theme.palette.background.dark,
+    }
   },
 }));
 

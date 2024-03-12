@@ -1,9 +1,12 @@
 import { Grid, Slide } from '@mui/material'
+import { Storage } from '@mui/icons-material'
 
 import StylingComponents from '../../StylingComponents'
 import { storage } from '../..'
 
 function MainPageServersComponent({ Server, id, enterServer }) {
+  console.log(Server)
+
   const handleClick = () => {
     //set local storage to the server id
     storage.set('serverId', Server.id);
@@ -23,7 +26,9 @@ function MainPageServersComponent({ Server, id, enterServer }) {
             alignItems: "center",
           }}
         >
-          <StylingComponents.MainPage.StyledMainPageAvatar src={Server.img} />
+          <StylingComponents.MainPage.StyledMainPageAvatar src={Server.img}>
+            <Storage />
+          </StylingComponents.MainPage.StyledMainPageAvatar>
         </Grid>
         <Grid
           item

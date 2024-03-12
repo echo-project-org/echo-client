@@ -37,7 +37,6 @@ function MainPageServers({ }) {
       // change server description to a shorter version
       setServers(prev => {
         return prev.map((server) => {
-          console.log(server.description.length)
           if (server.description.length > 60) {
             server.description = server.description.substring(0, 60) + "...";
           }
