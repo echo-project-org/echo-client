@@ -5,8 +5,6 @@ import StylingComponents from '../../StylingComponents'
 import { storage } from '../..'
 
 function MainPageServersComponent({ Server, id, enterServer }) {
-  console.log(Server)
-
   const handleClick = () => {
     //set local storage to the server id
     storage.set('serverId', Server.id);
