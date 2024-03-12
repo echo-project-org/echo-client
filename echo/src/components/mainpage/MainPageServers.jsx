@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { TransitionGroup } from 'react-transition-group';
 
+import { Add } from '@mui/icons-material';
+
 import { ep, storage } from "../../index";
 import MainPageServersComponent from './MainPageServersComponent';
+
+import StylingComponents from '../../StylingComponents';
+import { Divider, Typography } from '@mui/material';
 
 const api = require('../../lib/api');
 
@@ -50,13 +55,24 @@ function MainPageServers({ }) {
   }
 
   return (
-    <TransitionGroup>
-      {servers.map((Server, id) => {
-        return (
-          MainPageServersComponent({ Server, id, enterServer })
-        )
-      })}
-    </TransitionGroup>
+    <StylingComponents.MainPageServer.MainServersListContainer>
+      <StylingComponents.MainPageServer.StyledMainPageServersComponent>
+        <StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
+          <Add style={{ color: "#f5e8da" }} fontSize="large" />
+          <Typography style={{ color: "#f5e8da", fontSize: "1.6rem" }}>CREATE SERVER</Typography>
+        </StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
+      </StylingComponents.MainPageServer.StyledMainPageServersComponent>
+      <Divider style={{ background: '#f5e8da' }} variant="middle" />
+      <StylingComponents.MainPageServer.StyledMainPageServersComponentServersList>
+        <TransitionGroup>
+          {servers.map((Server, id) => {
+            return (
+              MainPageServersComponent({ Server, id, enterServer })
+            )
+          })}
+        </TransitionGroup>
+      </StylingComponents.MainPageServer.StyledMainPageServersComponentServersList>
+    </StylingComponents.MainPageServer.MainServersListContainer>
   )
 }
 

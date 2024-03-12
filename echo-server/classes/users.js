@@ -176,10 +176,12 @@ class User {
         // if signaling the current user then send correct data
         console.log("friendAction", data, "user class:", this.id, "==", typeof this.id)
         if (data.id !== this.id) {
+            const reqUser = data.id;
+            data.id = data.targetId;
+            data.targetId = reqUser;
+            // in case of remove, we don't care cause we are switching the id and targetId
+            // before the check and the socket.emit
             if (data.operation === "add") {
-                const reqUser = data.id;
-                data.id = data.targetId;
-                data.targetId = reqUser;
                 switch (data.type) {
                     case "sent":
                         data.type = "incoming";

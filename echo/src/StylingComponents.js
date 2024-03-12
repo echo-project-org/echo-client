@@ -276,6 +276,17 @@ const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
 
 /* Main Page Server */
 
+const MainServersListContainer = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    overflow: "hidden",
+  }
+}));
+
 const StyledServerContainer = styled("div")(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     height: "100%",
@@ -283,6 +294,50 @@ const StyledServerContainer = styled("div")(({ theme }) => ({
     display: "flex",
     flexDirection: "row",
     flex: "1 1 auto",
+  }
+}));
+
+const StyledMainPageServersComponent = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "left",
+    alignItems: "left",
+    padding: "0.5rem",
+    fontSize: "0.9rem",
+  }
+}));
+
+const StyledMainPageServersComponentIcon = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "20rem",
+    height: "5rem",
+    borderRadius: "5rem",
+    gap: "1rem",
+    backgroundColor: theme.palette.background.light,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    transition: "all .1s ease-in-out",
+    fontSize: "3rem",
+    margin: "1rem 0 0 1rem",
+    position: "relative",
+    overflow: "hidden",
+    ":hover": {
+      backgroundColor: theme.palette.background.light,
+      // add brightness to the icon
+      filter: "brightness(1.2)",
+      cursor: "pointer",
+    }
+  }
+}));
+
+const StyledMainPageServersComponentServersList = styled(Container)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "auto",
   }
 }));
 
@@ -793,6 +848,10 @@ export default {
     StyledButtonGroup
   },
   MainPageServer: {
+    MainServersListContainer,
+    StyledMainPageServersComponent,
+    StyledMainPageServersComponentIcon,
+    StyledMainPageServersComponentServersList,
     StyledServerContainer
   },
   Rooms: {
