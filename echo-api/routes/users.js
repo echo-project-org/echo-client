@@ -46,7 +46,7 @@ router.get("/image/:id", (req, res) => {
             console.log(err);
             res.status(400).send({ message: "Error reading image" });
         } else {
-            res.writeHead(200, { "Content-Type": "image/png" });
+            res.writeHead(200, { "Content-Type": "image/*,image/png" });
             res.end(data);
         }
     });
@@ -58,7 +58,8 @@ router.post("/image", (req, res) => {
     const { id, image } = req.body;
     if (!id || !image) return res.status(400).send({ message: "You messed up the request." });
 
-    // save image (base64 of file) to file system
+    // save image (base64 of file) to file system from jpeg
+    // const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
     const base64Data = image.replace(/^data:image\/png;base64,/, "");
     fs.writeFile("./images/" + id + ".png", base64Data, "base64", function (err) {
         if (err) {
