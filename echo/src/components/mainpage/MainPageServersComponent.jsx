@@ -38,7 +38,7 @@ function MainPageServersComponent({ Server, id, enterServer }) {
             <div
               className='noselect'
               style={{
-                lineBreak: "anywhere",
+                lineBreak: "auto",
                 height: "fit-content",
                 paddingLeft: "0.8rem",
               }}
