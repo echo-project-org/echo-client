@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { TransitionGroup } from 'react-transition-group';
 
@@ -12,43 +12,9 @@ import StylingComponents from '../../StylingComponents';
 
 const api = require('../../lib/api');
 
-function useWindowSize() {
-  const [size, setSize] = useState([0, 0]);
-  useLayoutEffect(() => {
-    function updateSize() {
-      setSize([window.innerWidth, window.innerHeight]);
-    }
-    window.addEventListener('resize', updateSize);
-    updateSize();
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-  return size;
-}
-
 function MainPageServers({ }) {
   const [servers, setServers] = useState([]);
-  const [tempChange, setTempChange] = useState(false);
   const navigate = useNavigate();
-  const [width, height] = useWindowSize();
-
-  useEffect(() => {
-    if (width < 1200 && !tempChange) {
-      setTempChange(true);
-      // change server description to a shorter version
-      setServers(prev => {
-        return prev.map((server) => {
-          if (server.description.length > 60) {
-            server.description = server.description.substring(0, 60) + "...";
-          }
-          return server;
-        })
-      })
-    } else if (width >= 1200 && tempChange) {
-      setTempChange(false);
-      // change server description back to the original
-      updateServers();
-    }
-  }, [width, height]);
 
   const updateServers = () => {
     api.call('servers/')
