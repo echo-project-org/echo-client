@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 
-import { ep } from "../../index";
+import { ep, ap } from "../../index";
 
-const api = require("../../lib/api");
+// const api = require("../../lib/api");
 
 function Room({ active, data }) {
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -12,6 +12,7 @@ function Room({ active, data }) {
   useEffect(() => {
     ep.on("userJoinedChannel", "Room.userJoinedChannel", (data) => {
       updateUsersInRoom(data.roomId);
+      ap.playOtherJoinSound();
     });
 
     ep.on("userLeftChannel", "Room.userLeftChannel", (data) => {

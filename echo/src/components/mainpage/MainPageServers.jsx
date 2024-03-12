@@ -63,9 +63,9 @@ function MainPageServers({ }) {
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
       <StylingComponents.MainPageServer.StyledMainPageServersComponentServersList>
         <TransitionGroup>
-          {servers.map((Server, id) => {
+          {servers.map((server, id) => {
             return (
-              MainPageServersComponent({ Server, id, enterServer })
+              MainPageServersComponent({ server, id, enterServer })
             )
           })}
         </TransitionGroup>

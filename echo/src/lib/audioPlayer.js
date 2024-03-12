@@ -6,6 +6,7 @@ const deafSound = require("../audio/deaf.mp3");
 const undeafSound = require("../audio/undeaf.mp3");
 const leaveSound = require("../audio/leave.mp3");
 const joinSound = require("../audio/join.mp3");
+const otherJoinSound = require("../audio/otherjoin.mp3");
 const startStreamSound = require("../audio/streamstart.mp3");
 const endStreamSound = require("../audio/streamend.mp3");
 const ringtoneSound = require("../audio/echoRingtone.flac");
@@ -20,6 +21,7 @@ class AudioPlayer {
         this.undeafSound = new Audio(undeafSound);
         this.leaveSound = new Audio(leaveSound);
         this.joinSound = new Audio(joinSound);
+        this.otherJoinSound = new Audio(otherJoinSound);
         this.startStreamSound = new Audio(startStreamSound);
         this.endStreamSound = new Audio(endStreamSound);
         this.ringtoneSound = new Audio(ringtoneSound);
@@ -33,6 +35,7 @@ class AudioPlayer {
         this.undeafSound.volume = volume;
         this.leaveSound.volume = volume;
         this.joinSound.volume = volume;
+        this.otherJoinSound.volume = volume;
         this.startStreamSound.volume = volume;
         this.endStreamSound.volume = volume;
         this.ringtoneSound.volume = volume;
@@ -48,6 +51,7 @@ class AudioPlayer {
         this.undeafSound.volume = volume;
         this.leaveSound.volume = volume;
         this.joinSound.volume = volume;
+        this.otherJoinSound.volume = volume;
         this.startStreamSound.volume = volume;
         this.endStreamSound.volume = volume;
         this.ringtoneSound.volume = volume;
@@ -83,6 +87,10 @@ class AudioPlayer {
     
     playJoinSound() {
         this.joinSound.play();
+    }
+
+    playOtherJoinSound() {
+        this.otherJoinSound.play();
     }
     
     playStartStreamSound() {

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { ButtonGroup, Button, Zoom, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 
+import { ButtonGroup, Button, Zoom, Tooltip } from '@mui/material';
 import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabled, Logout } from '@mui/icons-material';
 
 import SettingsButton from '../settings/SettingsButton';
@@ -154,6 +154,7 @@ function RoomControl({ state, setState, screenSharing }) {
     if (muted && deaf) computeAudio(false)
     if (muted && !deaf) { computeAudio(true); }
     if (!muted && !deaf) computeAudio(true)
+    return muted;
   }
 
   const deafHeadphones = () => {
@@ -162,6 +163,7 @@ function RoomControl({ state, setState, screenSharing }) {
     else unmuteOnDeaf();
     if (wasMuted && deaf) { setMuted(true); }
     setDeaf(!deaf);
+    return deaf;
   }
 
   return (

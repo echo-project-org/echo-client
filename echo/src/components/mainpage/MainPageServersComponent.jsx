@@ -5,6 +5,8 @@ import StylingComponents from '../../StylingComponents'
 import { storage } from '../..'
 
 function MainPageServersComponent({ server, id, enterServer }) {
+  if (!server) return null;
+
   const handleClick = () => {
     //set local storage to the server id
     storage.set('serverId', server.id);
@@ -24,7 +26,7 @@ function MainPageServersComponent({ server, id, enterServer }) {
             alignItems: "center",
           }}
         >
-          <StylingComponents.MainPage.StyledMainPageAvatar src={server.img}>
+          <StylingComponents.MainPage.StyledMainPageAvatar src={server.img || ""}>
             <Storage />
           </StylingComponents.MainPage.StyledMainPageAvatar>
         </Grid>
