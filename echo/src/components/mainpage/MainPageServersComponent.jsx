@@ -4,15 +4,15 @@ import { Storage } from '@mui/icons-material'
 import StylingComponents from '../../StylingComponents'
 import { storage } from '../..'
 
-function MainPageServersComponent({ Server, id, enterServer }) {
+function MainPageServersComponent({ server, id, enterServer }) {
   const handleClick = () => {
     //set local storage to the server id
-    storage.set('serverId', Server.id);
-    enterServer(Server.id);
+    storage.set('serverId', server.id);
+    enterServer(server.id);
   }
 
   return (
-    <Slide key={Server.id} direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100} >
+    <Slide key={server.id} direction="right" in={true} mountOnEnter unmountOnExit timeout={id * 100} >
       <StylingComponents.MainPage.StyledMainPageGrid container flexDirection={"row"} onClick={handleClick}>
         <Grid
           item
@@ -24,7 +24,7 @@ function MainPageServersComponent({ Server, id, enterServer }) {
             alignItems: "center",
           }}
         >
-          <StylingComponents.MainPage.StyledMainPageAvatar src={Server.img}>
+          <StylingComponents.MainPage.StyledMainPageAvatar src={server.img}>
             <Storage />
           </StylingComponents.MainPage.StyledMainPageAvatar>
         </Grid>
@@ -37,7 +37,7 @@ function MainPageServersComponent({ Server, id, enterServer }) {
           }}
         >
           <div style={{ width: "100%" }}>
-            <h3 className='noselect'>{Server.name}</h3>
+            <h3 className='noselect'>{server.name}</h3>
             <div
               className='noselect'
               style={{
@@ -45,7 +45,7 @@ function MainPageServersComponent({ Server, id, enterServer }) {
                 height: "fit-content",
                 paddingLeft: "0.8rem",
               }}
-            >{Server.description}</div>
+            >{server.description}</div>
           </div>
         </Grid>
       </StylingComponents.MainPage.StyledMainPageGrid>
