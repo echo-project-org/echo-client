@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Divider } from '@mui/material'
+import { Divider, Grid } from '@mui/material'
 
 import StylingComponents from '../../StylingComponents';
 
@@ -15,14 +15,36 @@ function Sidebar({ updateCurrentRoom }) {
   }
 
   return (
-    <StylingComponents.Sidebar.StyledSidebarWrapper>
+    <Grid
+      container
+      direction={"column"}
+      sx={{
+        width: "18rem",
+        position: "relative",
+        gap: "1rem",
+        flex: "1 0 auto",
+      }}
+    >
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
-      <RoomsControlsContainer />
+      <Grid item>
+        <RoomsControlsContainer />
+      </Grid>
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
-      <Rooms setState={updateConnectionState} connected={connectionState} updateCurrentRoom={updateCurrentRoom} />
+      <Grid item xs={10} sm={10} md={10} lg={10} xl={10} style={{
+        flex: "0.94 0 auto",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        flexWrap: "nowrap",
+        justifyContent: "space-around"
+      }}>
+        <Rooms setState={updateConnectionState} connected={connectionState} updateCurrentRoom={updateCurrentRoom} />
+      </Grid>
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
-      <RoomControl state={connectionState} setState={updateConnectionState} />
-    </StylingComponents.Sidebar.StyledSidebarWrapper>
+      <Grid item xs={1} sm={1} md={1} lg={1} xl={1}>
+        <RoomControl state={connectionState} setState={updateConnectionState} />
+      </Grid>
+    </Grid>
   )
 }
 
