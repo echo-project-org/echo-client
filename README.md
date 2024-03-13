@@ -1,4 +1,6 @@
-[![Build and Release Electron App For Windows](https://github.com/KuryGabriele/echo-project/actions/workflows/build.yml/badge.svg)](https://github.com/KuryGabriele/echo-project/actions/workflows/build.yml)
+[![Build and Release](https://github.com/KuryGabriele/echo-project/actions/workflows/build.yml/badge.svg)](https://github.com/KuryGabriele/echo-project/actions/workflows/build.yml)
+[![Echo Version - v0.0.15](https://img.shields.io/badge/Echo_Version-v0.0.14-2ea44f)](https://echo.kuricki.com)
+
 
 # Echo project
 
