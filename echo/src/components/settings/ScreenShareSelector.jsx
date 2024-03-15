@@ -25,9 +25,36 @@ function ScreenShareSelector() {
   let [windowsDevices, setWindowsDevices] = useState([]);
   let [screenDevices, setScreenDevices] = useState([]);
   let [modalOpen, setModalOpen] = useState(false);
-
+  let [deviceInterval, setDeviceInterval] = useState(null);
+  
   const handleModalOpen = () => setModalOpen(true);
-  const handleModalClose = () => setModalOpen(false);
+  const handleModalClose = () => {
+    stopGetDevicesInterval();
+    setModalOpen(false);
+  }
+
+  const startGetDevicesInterval = () => {
+    setDeviceInterval(setInterval(() => {
+      ep.getVideoDevices().then((devices) => {
+        const screens = [];
+        const windows = [];
+        devices.forEach(device => {
+          if (device.id.includes("screen")) {
+            screens.push(device);
+          } else {
+            windows.push(device);
+          }
+        });
+        setWindowsDevices(windows);
+        setScreenDevices(screens);
+      });
+    }, 2000));
+  }
+
+  const stopGetDevicesInterval = () => {
+    clearInterval(deviceInterval);
+    setDeviceInterval(null);
+  }
 
   useEffect(() => {
     ep.on("exitedFromRoom", "ScreenShareSelector.exitedFromRoom", () => {
@@ -45,7 +72,7 @@ function ScreenShareSelector() {
   }, [])
 
   const handleClick = (event) => {
-    if(!ep.isAudioFullyConnected()) {
+    if (!ep.isAudioFullyConnected()) {
       console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
       return;
     }
@@ -69,7 +96,7 @@ function ScreenShareSelector() {
           setWindowsDevices(windows);
           setScreenDevices(screens);
         });
-
+        startGetDevicesInterval();
         handleModalOpen();
       }
     } else {
