@@ -67,6 +67,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
+      // add a field to the joining room, saying that i'm joining
       api.call("rooms/join", "POST", { userId: sessionStorage.getItem("id"), roomId: joiningId, serverId: storage.get("serverId")})
         .then((res) => {
           if (res.ok) {

@@ -6,13 +6,13 @@ import { ep, ap } from "../../index";
 
 // const api = require("../../lib/api");
 
-function Room({ active: _active, data: _data }) {
+function Room({ active, data: _data }) {
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const [active, setActive] = useState(false);
 
   useEffect(() => {
     ep.on("userJoinedChannel", "Room.userJoinedChannel", (data) => {
-      updateUsersInRoom(data.roomId);
+      updateUsersInRoom(data);
+      // ap.playOtherJoinSound();
     });
 
     ep.on("userLeftChannel", "Room.userLeftChannel", (data) => {
@@ -31,19 +31,17 @@ function Room({ active: _active, data: _data }) {
     }
   }, []);
 
-  const updateUsersInRoom = (data) => {
+  /**
+   * 
+   * @param {Object} data object with informations about the user that joined the room (also called when me joins the room)
+   */
+  const updateUsersInRoom = () => {
     // get online users in room using data.id
     const users = ep.getUsersInRoom(_data.id);
     setOnlineUsers(users);
-    if (data && data.roomId === String(_data.id)) {
-      setActive((prev) => {
-        if (prev && !_active) ap.playOtherJoinSound();
-        return _active;
-      });
-    }
   }
 
-  useEffect(() => { setActive(_active); if (!_active) updateUsersInRoom(); }, [_active])
+  useEffect(() => { if (!active) updateUsersInRoom(); }, [active])
   useEffect(() => updateUsersInRoom(), [])
 
   return (

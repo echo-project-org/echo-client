@@ -106,7 +106,7 @@ class EchoWSApi extends EchoFriendsAPI {
 
   wsUserJoinedChannel(data) {
     data.roomId = data.roomId.slice(0, data.roomId.lastIndexOf('@'));
-    // console.log(data);
+    console.log(data);
     if (data.isConnected) this.startReceiving(data.id);
     this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
     this.updateUser({ id: data.id, field: "muted", value: data.muted });
