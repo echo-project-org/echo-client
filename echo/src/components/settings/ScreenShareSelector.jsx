@@ -33,6 +33,15 @@ function ScreenShareSelector() {
     ep.on("exitedFromRoom", "ScreenShareSelector.exitedFromRoom", () => {
       setScreenSharing(false);
     });
+
+    ep.on("screenShareStopped", "ScreenShareSelector.screenShareStopped", () => {
+      setScreenSharing(false);
+    });
+
+    return () => {
+      ep.off("exitedFromRoom", "ScreenShareSelector.exitedFromRoom");
+      ep.off("screenShareStopped", "ScreenShareSelector.screenShareStopped");
+    }
   }, [])
 
   const handleClick = (event) => {

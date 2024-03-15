@@ -593,6 +593,11 @@ class mediasoupHandler {
         },
       });
     }
+
+    //catch ended event of outVideoStream
+    videoTrack.onended = () => {
+      ep.stopScreenSharing();
+    }
   }
 
   /**
@@ -613,6 +618,8 @@ class mediasoupHandler {
       this.outVideoStream.getTracks().forEach(track => track.stop());
       this.outVideoStream = null;
     }
+
+    ep.screenShareStopped();
   }
 
   /**

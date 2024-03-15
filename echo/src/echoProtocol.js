@@ -88,6 +88,10 @@ EchoProtocol.prototype.gotVideoStream = function (data) {
   this.emit("gotVideoStream", data);
 }
 
+EchoProtocol.prototype.screenShareStopped = function (data) {
+  this.emit("screenShareStopped", data);
+}
+
 EchoProtocol.prototype.localUserCrashed = function (data) {
   this.emit("localUserCrashed", data);
 }
