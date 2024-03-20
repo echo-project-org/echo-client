@@ -24,7 +24,7 @@ function RoomControl({ state, setState, screenSharing }) {
   const [ping, setPing] = useState(0);
   const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
   const [rtcConnectionStateColor, setRtcConnectionStateColor] = useState(theme.palette.error.main);
-  
+
   useEffect(() => {
     ipcRenderer.on("toggleMute", (event, arg) => {
       muteMic();
@@ -38,7 +38,7 @@ function RoomControl({ state, setState, screenSharing }) {
       ipcRenderer.removeAllListeners("toggleMute");
     }
   }, [muted]);
-  
+
   useEffect(() => {
     ipcRenderer.on("toggleDeaf", (event, arg) => {
       deafHeadphones();
