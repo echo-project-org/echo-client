@@ -26,7 +26,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
           setRemoteRooms(result.json);
           result.json.forEach((room) => {
             ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
-          
+
             api.call("rooms/" + room.id + "/" + serverId + "/users")
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
@@ -47,7 +47,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     updateRooms();
 
     ep.on("roomClicked", "Rooms.roomClicked", (data) => {
-      if(!ep.isAudioFullyConnected()) {
+      if (!ep.isAudioFullyConnected()) {
         console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
         return;
       }
@@ -68,7 +68,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
       // add a field to the joining room, saying that i'm joining
-      api.call("rooms/join", "POST", { userId: sessionStorage.getItem("id"), roomId: joiningId, serverId: storage.get("serverId")})
+      api.call("rooms/join", "POST", { userId: sessionStorage.getItem("id"), roomId: joiningId, serverId: storage.get("serverId") })
         .then((res) => {
           if (res.ok) {
             ap.playJoinSound();
@@ -83,7 +83,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     ep.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (data) => {
       const id = data.id;
       const func = data.call;
-      
+
       api.call("users/" + id, "GET")
         .then((res) => {
           if (res.ok) {
@@ -115,7 +115,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     <StylingComponents.Rooms.StyledRoomsContainer>
       {
         remoteRooms.map((room) => (
-          <Room active={room.id === activeRoomId ? true : false} key={room.id} data={room} />
+          <Room  active={room.id === activeRoomId ? true : false} key={room.id} data={room} />
         ))
       }
     </StylingComponents.Rooms.StyledRoomsContainer>

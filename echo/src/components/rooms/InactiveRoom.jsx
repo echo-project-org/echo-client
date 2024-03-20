@@ -18,7 +18,7 @@ function InactiveRoom({ users, data }) {
 
   return (
     <StylingComponents.Rooms.StyledInactiveRoom onClick={handleClick}>
-      <Typography variant="h6">{data.name}</Typography>
+      <Typography variant="h6" className='noselect'>{data.name}</Typography>
       <StyledAvatarGroup max={15} sx={{ justifyContent: 'flex-end', marginLeft: '.5rem', marginBottom: '.25rem' }}>
         {
           users.map((user, id) => (

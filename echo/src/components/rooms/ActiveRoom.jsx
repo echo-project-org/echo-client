@@ -8,7 +8,7 @@ import StylingComponents from '../../StylingComponents';
 function ActiveRoom({ users, data }) {
   return (
     <StylingComponents.Rooms.StyledActiveRoom>
-      <Typography variant="h6">{data.name}</Typography>
+      <Typography variant="h6" className='noselect'>{data.name}</Typography>
       <StylingComponents.Rooms.StyledRoomUsers>
         {
           users.sort().map((user, id) => (

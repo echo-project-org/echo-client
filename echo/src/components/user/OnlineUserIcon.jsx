@@ -84,7 +84,7 @@ function OnlineUserIcon({ user }) {
         aria-expanded={open ? 'true' : undefined}
       >
         <Avatar className={talking ? "talking" : ""} alt={user.name} src={user.userImage} sx={{ height: '1.8rem', width: '1.8rem' }} />
-        <p className='onlineUserNick'>{user.name}</p>
+        <p className='onlineUserNick noselect'>{user.name}</p>
         <Grid container direction="row" justifyContent="right" sx={{ color: "white", paddingRight: ".9rem", gap: ".4rem" }}>
           {deaf ? <VolumeOff fontSize="small" /> : null}
           {muted ? <MicOffRounded fontSize="small" /> : null}
@@ -107,7 +107,7 @@ function OnlineUserIcon({ user }) {
             {user.status === "3" ? <DoNotDisturbOn style={{ color: "#fd4949" }} /> : null}
             {user.status === "4" ? <Circle style={{ color: "#f5e8da" }} /> : null}
           </StyledComponents.OnlineUserIcon.StyledOnlineUserIconAvatarBadge>
-          <p style={{ marginTop: ".8rem" }}>{user.name}</p>
+          <p style={{ marginTop: ".8rem" }} className='noselect'>{user.name}</p>
         </div>
 
         <MenuItem>
