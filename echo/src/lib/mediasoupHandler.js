@@ -63,7 +63,6 @@ class mediasoupHandler {
         channelCount: 2,
         sampleRate: 48000,
         sampleSize: 16,
-        volume: 1.0,
         echoCancellation: echoCancellation,
         noiseSuppression: noiseSuppression,
         autoGainControl: autoGainControl,
@@ -76,8 +75,13 @@ class mediasoupHandler {
 
     this.videoConstraints = {
       audio: {
+        sampleRate: 48000,
+        sampleSize: 16,
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
         chromeMediaSource: 'desktop',
-        chromeMediaSourceId: this.videoSourceId,
+        deviceId: this.videoSourceId,
       },
       video: {
         logicalSurface: true,
@@ -86,6 +90,7 @@ class mediasoupHandler {
         height: { ideal: 1080, max: 1080 },
         frameRate: { ideal: 60, max: 60 },
       },
+      systemAudio: "include"
     }
   }
 
