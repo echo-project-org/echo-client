@@ -115,7 +115,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     <StylingComponents.Rooms.StyledRoomsContainer>
       {
         remoteRooms.map((room) => (
-          <Room  active={room.id === activeRoomId ? true : false} key={room.id} data={room} />
+          <Room active={room.id === activeRoomId ? true : false} key={room.id} data={room} />
         ))
       }
     </StylingComponents.Rooms.StyledRoomsContainer>
