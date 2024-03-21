@@ -1371,10 +1371,14 @@ class mediasoupHandler {
    * @returns {Promise<Array<Object>>} An array of video sources with valid thumbnail sizes.
    */
   static async getVideoSources() {
-    const srcs = await ipcRenderer.invoke("getVideoSources");
-    return srcs.filter((src) => {
-      return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
-    });
+    try {
+      const srcs = await ipcRenderer.invoke("getVideoSources");
+      return srcs.filter((src) => {
+        return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
+      });
+    } catch (err) {
+      return [];
+    }
   }
 
   /**
