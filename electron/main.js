@@ -284,7 +284,7 @@ ipcMain.handle("getVideoSources", async () => {
 ipcMain.on("grantDisplayMedia", (event, arg) => {
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
     const selectedSource = this.videoSources.find(source => source.id === arg.id);
-    //console.log(selectedSource);
+    
     callback({ video: selectedSource, audio: 'loopback' });
   })
 });
