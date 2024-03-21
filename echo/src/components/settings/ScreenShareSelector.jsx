@@ -1,4 +1,4 @@
-import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
+import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid, Snackbar, Alert } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
@@ -26,16 +26,32 @@ function ScreenShareSelector() {
   let [screenDevices, setScreenDevices] = useState([]);
   let [modalOpen, setModalOpen] = useState(false);
   let [deviceInterval, setDeviceInterval] = useState(null);
-  
+  let [errorMessageShow, setErrorMessageShow] = useState(false);
+  let [errorMessage, setErrorMessage] = useState("");
+
   const handleModalOpen = () => setModalOpen(true);
   const handleModalClose = () => {
     stopGetDevicesInterval();
     setModalOpen(false);
   }
 
+  const showError = (msg) => {
+    setErrorMessage(msg);
+    setErrorMessageShow(true);
+  }
+
+  const closeErrorMessage = () => {
+    setErrorMessageShow(false);
+  }
+
   const startGetDevicesInterval = () => {
     setDeviceInterval(setInterval(() => {
       ep.getVideoDevices().then((devices) => {
+        if(devices.length === 0) {
+          showError("No devices found");
+          stopGetDevicesInterval();
+          return;
+        }
         const screens = [];
         const windows = [];
         devices.forEach(device => {
@@ -76,7 +92,7 @@ function ScreenShareSelector() {
       console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
       return;
     }
-    
+
     let user = ep.getUser();
     if (user && user.currentRoom !== "0") {
       if (screenSharing) {
@@ -84,6 +100,10 @@ function ScreenShareSelector() {
         setScreenSharing(false);
       } else {
         ep.getVideoDevices().then((devices) => {
+          if (devices.length === 0) {
+            showError("No devices found");
+            return;
+          }
           const screens = [];
           const windows = [];
           devices.forEach(device => {
@@ -95,8 +115,8 @@ function ScreenShareSelector() {
           });
           setWindowsDevices(windows);
           setScreenDevices(screens);
+          startGetDevicesInterval();
         });
-        startGetDevicesInterval();
         handleModalOpen();
       }
     } else {
@@ -151,6 +171,15 @@ function ScreenShareSelector() {
                 }
               </Grid>
             </div>
+            <Snackbar
+              open={errorMessageShow}
+              onClose={closeErrorMessage}
+              message={errorMessage}
+            >
+              <Alert onClose={closeErrorMessage} severity="error" sx={{ width: '100%' }}>
+                {errorMessage}
+              </Alert>
+            </Snackbar>
           </Box>
         </Zoom>
       </Modal>
