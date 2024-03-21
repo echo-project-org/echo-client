@@ -255,7 +255,7 @@ function App() {
         },
       }
     }),
-  [primary, secondary, text, background]);
+    [primary, secondary, text, background]);
   const responsiveFontTheme = responsiveFontSizes(muiTheme, {
     breakpoints: ['xs', 'sm', 'md', 'lg', 'xl'],
     disableAlign: true,
