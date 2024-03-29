@@ -6,9 +6,7 @@ import ReactPlayer from 'react-player';
 
 import { ep } from '../..';
 
-const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider }) => {
-  const [volume, setVolume] = useState(0);
-
+const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider, volume, setVolume }) => {
   if (!showVolumeSlider) return (<></>)
 
   return (
@@ -42,6 +40,7 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
   const [muted, setMuted] = useState(false);
   const [pip, setPip] = useState(false);
   const [volumeSlider, setVolumeSlider] = useState(false);
+  const [volume, setVolume] = useState(0);
 
   const handleMouseEnter = () => {
     setShowControls(true);
@@ -91,6 +90,7 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         muted={muted}
         width={"100%"}
         height={"100%"}
+        volume={volume/100}
         pip={pip}
         onDisablePIP={disablePip}
         config={{
@@ -122,7 +122,7 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
         }}>
           <ButtonGroup variant='text'>
             <>
-              <VolumeSlider showVolumeSlider={volumeSlider} hideVolumeSlider={hideVolumeSlider} />
+              <VolumeSlider volume={volume} setVolume={setVolume} showVolumeSlider={volumeSlider} hideVolumeSlider={hideVolumeSlider} />
               <Button disableRipple onClick={toggleMuteStream} onMouseEnter={showVolumeSlider}>
                 {muted ? <VolumeOff /> : <VolumeUp />}
               </Button>
