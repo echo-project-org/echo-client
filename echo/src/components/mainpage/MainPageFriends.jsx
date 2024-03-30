@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { Grid, Slide } from '@mui/material';
 import { TransitionGroup } from 'react-transition-group';
 
-import { ep, storage } from "../../index";
-import StylingComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StylingComponents from '@root/StylingComponents';
 
-import CurrentStatus from "../user/CurrentStatus";
+import CurrentStatus from "@components/user/CurrentStatus";
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 
 function MainPageFriends({ }) {
   const [friends, setFriends] = useState([]);

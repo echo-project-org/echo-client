@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react'
 import { MenuItem } from '@mui/material'
 import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove, ScreenShare } from '@mui/icons-material'
 
-import { ep, storage } from "../../index";
+import { ep, storage } from "@root/index";
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 
 function FriendButton({ user, handleClose }) {
   const [friendStatus, setFriendStatus] = useState('no');

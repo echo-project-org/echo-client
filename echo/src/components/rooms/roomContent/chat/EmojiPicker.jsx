@@ -1,10 +1,10 @@
-import "../../css/emoji.css"
+import "@css/emoji.css"
 
 import EmojiPickerReact from "emoji-picker-react";
 import { useState } from "react";
 import { EmojiClickData, Emoji, EmojiStyle } from "emoji-picker-react";
 
-import { ep } from "../../index";
+import { ep } from "@root/index";
 
 function EmojiPicker({ show }) {
   // const [emojiPicker, setEmojiPicker] = useState(false);

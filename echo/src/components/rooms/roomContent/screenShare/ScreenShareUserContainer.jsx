@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { Container, Grid } from '@mui/material'
 import { Visibility } from '@mui/icons-material';
 
-import { ep, ap } from '../..';
+import { ep, ap } from '@root';
 
-import StylingComponents from '../../StylingComponents';
+import StylingComponents from '@root/StylingComponents';
 
 function ScreenShareUserContainer({ user, selectUser }) {
   const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);

@@ -5,13 +5,13 @@ import { useTheme } from '@emotion/react';
 import { ButtonGroup, Button, Zoom, Tooltip } from '@mui/material';
 import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabled, Logout } from '@mui/icons-material';
 
-import SettingsButton from '../settings/SettingsButton';
-import ScreenShareSelector from '../settings/ScreenShareSelector';
+import SettingsButton from '@components/settings/SettingsButton';
+import ScreenShareSelector from '@components/settings/ScreenShareSelector';
 
-import { ep, storage, ap } from "../../index";
-import StylingComponents from '../../StylingComponents';
+import { ep, storage, ap } from "@root/index";
+import StylingComponents from '@root/StylingComponents';
 
-const api = require('../../lib/api')
+const api = require('@lib/api')
 const { ipcRenderer } = window.require('electron');
 
 function RoomControl({ state, setState, screenSharing }) {

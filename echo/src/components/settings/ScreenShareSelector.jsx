@@ -2,7 +2,7 @@ import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid, Snackbar, Alert } 
 import { useEffect, useState } from 'react';
 import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
-import { ep } from "../../index";
+import { ep } from "@root/index";
 import ScreenShareOption from './ScreenShareOption';
 
 const modalStyle = {

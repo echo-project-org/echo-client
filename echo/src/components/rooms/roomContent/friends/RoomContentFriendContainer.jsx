@@ -1,12 +1,12 @@
 import { Avatar, Grid, Container, Button } from "@mui/material";
 import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
 
-import { ep, storage } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
-import CurrentStatus from "../user/CurrentStatus";
+import CurrentStatus from "@components/user/CurrentStatus";
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 
 function RoomContentFriendsButtons({ user }) {
   const handleFriendAccept = (e) => {

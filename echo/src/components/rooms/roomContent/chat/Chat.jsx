@@ -4,10 +4,10 @@ import { Container, styled } from '@mui/material';
 
 import MessageRight from './MessageRight'
 import MessageLeft from './MessageLeft'
-import LoadingAnimation from '../mainpage/LoadingAnimation'
+import LoadingAnimation from '@components/mainpage/LoadingAnimation'
 
-import { ep, storage } from "../../index";
-const api = require('../../lib/api');
+import { ep, storage } from "@root/index";
+const api = require('@lib/api');
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {

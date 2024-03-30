@@ -1,8 +1,8 @@
 import { Grid, Slide } from '@mui/material'
 import { Storage } from '@mui/icons-material'
 
-import StylingComponents from '../../StylingComponents'
-import { storage } from '../..'
+import StylingComponents from '@root/StylingComponents'
+import { storage } from '@root'
 
 function MainPageServersComponent({ server, id, enterServer }) {
   if (!server) return null;

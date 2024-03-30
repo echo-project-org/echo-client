@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Typography } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { ep, storage } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
-import CurrentStatus from '../user/CurrentStatus';
+import CurrentStatus from '@components/user/CurrentStatus';
 
-var api = require('../../lib/api');
+var api = require('@lib/api');
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {

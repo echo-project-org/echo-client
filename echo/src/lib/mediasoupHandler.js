@@ -1,4 +1,4 @@
-import { ep } from "../index";
+import { ep } from "@root/index";
 const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 

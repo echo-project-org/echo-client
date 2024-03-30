@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
-import { ep, storage } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
 const CurrentDevice = ({ outputDevices, outputDevice, showList }) => {
   var currentDevice = outputDevices.find(device => device.id === outputDevice);

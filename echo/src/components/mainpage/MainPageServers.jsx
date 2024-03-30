@@ -5,12 +5,12 @@ import { TransitionGroup } from 'react-transition-group';
 import { Divider, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
-import { ep, storage } from "../../index";
+import { ep, storage } from "@root/index";
 import MainPageServersComponent from './MainPageServersComponent';
 
-import StylingComponents from '../../StylingComponents';
+import StylingComponents from '@root/StylingComponents';
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 
 function MainPageServers({ }) {
   const [servers, setServers] = useState([]);

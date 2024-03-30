@@ -1,4 +1,4 @@
-import { ep } from "../index";
+import { ep } from "@root/index";
 
 const io = require("socket.io-client");
 

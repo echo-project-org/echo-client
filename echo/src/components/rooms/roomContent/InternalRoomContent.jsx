@@ -1,8 +1,8 @@
 import React from 'react'
 
-import RoomContentChat from "./RoomContentChat";
-import RoomContentScreenShares from "./RoomContentScreenShares";
-import RoomContentFriends from "./RoomContentFriends";
+import RoomContentChat from "./chat/RoomContentChat";
+import RoomContentScreenShares from "./screenShare/RoomContentScreenShares";
+import RoomContentFriends from "./friends/RoomContentFriends";
 
 function InternalRoomContent({ contentSelected, roomId }) {
     switch (contentSelected) {

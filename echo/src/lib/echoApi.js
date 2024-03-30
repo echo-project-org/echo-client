@@ -1,11 +1,11 @@
 import mediasoupHandler from "./mediasoupHandler";
 
-import Users from "../cache/user";
-import Room from "../cache/room";
-import Friends from "../cache/friends";
+import Users from "@cache/user";
+import Room from "@cache/room";
+import Friends from "@cache/friends";
 import wsConnection from "./wsConnection";
 
-import { storage } from "../index";
+import { storage } from "@root/index";
 
 class EchoFriendsAPI {
   constructor() {

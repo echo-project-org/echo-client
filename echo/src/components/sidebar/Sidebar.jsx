@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Divider, Grid } from '@mui/material'
 
-import StylingComponents from '../../StylingComponents';
+import StylingComponents from '@root/StylingComponents';
 
-import Rooms from '../rooms/Rooms'
-import RoomControl from '../rooms/RoomControl'
-import RoomsControlsContainer from '../rooms/RoomsControlsContainer'
+import Rooms from '@components/rooms/Rooms'
+import RoomControl from '@components/rooms/RoomControl'
+import RoomsControlsContainer from '@components/rooms/RoomsControlsContainer'
 
 function Sidebar({ updateCurrentRoom }) {
   const [connectionState, setConnectionState] = useState(false);

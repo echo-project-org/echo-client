@@ -1,4 +1,4 @@
-import { storage } from '../index';
+import { storage } from '@root/index';
 
 class Users {
     constructor() {

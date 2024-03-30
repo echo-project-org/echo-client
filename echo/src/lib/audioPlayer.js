@@ -1,15 +1,15 @@
-const newMessageSound = require("../audio/newmessage.mp3");
-const newSelfMessageSound = require("../audio/newmessageself.mp3");
-const muteSound = require("../audio/mute.mp3");
-const unmuteSound = require("../audio/unmute.mp3");
-const deafSound = require("../audio/deaf.mp3");
-const undeafSound = require("../audio/undeaf.mp3");
-const leaveSound = require("../audio/leave.mp3");
-const joinSound = require("../audio/join.mp3");
-const otherJoinSound = require("../audio/otherjoin.mp3");
-const startStreamSound = require("../audio/streamstart.mp3");
-const endStreamSound = require("../audio/streamend.mp3");
-const ringtoneSound = require("../audio/echoRingtone.flac");
+const newMessageSound = require("@audio/newmessage.mp3");
+const newSelfMessageSound = require("@audio/newmessageself.mp3");
+const muteSound = require("@audio/mute.mp3");
+const unmuteSound = require("@audio/unmute.mp3");
+const deafSound = require("@audio/deaf.mp3");
+const undeafSound = require("@audio/undeaf.mp3");
+const leaveSound = require("@audio/leave.mp3");
+const joinSound = require("@audio/join.mp3");
+const otherJoinSound = require("@audio/otherjoin.mp3");
+const startStreamSound = require("@audio/streamstart.mp3");
+const endStreamSound = require("@audio/streamend.mp3");
+const ringtoneSound = require("@audio/echoRingtone.flac");
 
 class AudioPlayer {
     constructor(volume = 0.6) {

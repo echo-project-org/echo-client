@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 import { Alert, Button, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 
-import imgLogo from "../../img/headphones.svg"
-import StyledComponents from '../../StylingComponents';
+import imgLogo from "@root/img/headphones.svg"
+import StyledComponents from '@root/StylingComponents';
 
-var api = require('../../lib/api')
+var api = require('@lib/api')
 
 const Register = () => {
   let navigate = useNavigate();

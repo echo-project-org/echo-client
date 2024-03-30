@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ToggleButtonGroup, ToggleButton, Badge } from '@mui/material';
 import { ChatBubble, PeopleAlt, Window } from '@mui/icons-material';
 
-import { ep } from '../..';
+import { ep } from '@root';
 
 function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
   const [nNewMessages, setNNewMessages] = useState(0);

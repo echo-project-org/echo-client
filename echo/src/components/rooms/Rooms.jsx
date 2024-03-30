@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
-import { ep, storage, ap } from "../../index";
-import StylingComponents from '../../StylingComponents';
+import { ep, storage, ap } from "@root/index";
+import StylingComponents from '@root/StylingComponents';
 
 import Room from './Room';
 
-const api = require("../../lib/api");
+const api = require("@lib/api");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);

@@ -8,7 +8,7 @@ import MainPageServer from './MainPageServer'
 import Login from './Login';
 import Register from './Register'
 import Updating from './Updating';
-import { ep } from "../../index";
+import { ep } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');
 

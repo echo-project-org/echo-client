@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Container } from "@mui/material";
 
-import { ep, storage } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);

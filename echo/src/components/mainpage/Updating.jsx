@@ -1,5 +1,5 @@
 import React from 'react'
-import StyledComponents from '../../StylingComponents';
+import StyledComponents from '@root/StylingComponents';
 import { Typography, Grid, CircularProgress } from "@mui/material";
 function Updating({ version, releaseNotes, downloadPercentage, bps }) {
     return (

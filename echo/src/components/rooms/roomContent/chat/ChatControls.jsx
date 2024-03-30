@@ -1,14 +1,14 @@
-import "../../css/chatinput.css";
+import "@css/chatinput.css";
 
 import { useState, useEffect } from 'react'
 
 import MessageBoxButtons from './MessageBoxButtons';
 import UploadBoxButtons from './UploadBoxButtons';
 
-import { ep, storage, ap } from "../../index";
-import StylingComponents from "../../StylingComponents";
+import { ep, storage, ap } from "@root/index";
+import StylingComponents from "@root/StylingComponents";
 
-const api = require("../../lib/api");
+const api = require("@lib/api");
 
 function ChatControls({ onEmojiOn, roomId }) {
   const [message, setMessage] = useState("");

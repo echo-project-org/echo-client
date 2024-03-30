@@ -5,12 +5,12 @@ import { motion } from 'framer-motion'
 
 import MainPageFriends from './MainPageFriends';
 import MainPageServers from './MainPageServers';
-import SettingsView from '../settings/SettingsView';
+import SettingsView from '@components/settings/SettingsView';
 
-import { storage, ep } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { storage, ep } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 
 function MainPage() {
   const navigate = useNavigate();

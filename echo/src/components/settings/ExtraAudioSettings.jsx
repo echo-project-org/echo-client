@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Stack, Slider, Tooltip, FormControlLabel, Switch, Typography } from '@mui/material';
 import { RecordVoiceOver, Headphones } from '@mui/icons-material';
 
-import { storage, ep, ap } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { storage, ep, ap } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
 function ExtraAudioSettings() {
   const [echoCancellation, setEchoCancellation] = useState(false);

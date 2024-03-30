@@ -1,10 +1,10 @@
-import "../../css/settings.css";
+import "@css/settings.css";
 
 import { useState, useEffect } from 'react'
 import { Grid, Button, Typography } from "@mui/material";
 
-import { ep, storage } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
 import { useTheme } from "@emotion/react";
 

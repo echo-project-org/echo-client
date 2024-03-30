@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { Circle, DoNotDisturbOn, DarkMode } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 
-import { storage } from "../../index";
-import StylingComponents from "../../StylingComponents";
+import { storage } from "@root/index";
+import StylingComponents from "@root/StylingComponents";
 
 function CurrentStatus({ icon, align, height, status }) {
   if (status === "none") status = storage.get("status");

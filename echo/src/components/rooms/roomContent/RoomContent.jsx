@@ -1,10 +1,10 @@
-import "../../css/chat.css";
+import "@css/chat.css";
 
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
 
-import { ep, storage } from "../../index";
-import StylingComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StylingComponents from '@root/StylingComponents';
 
 import RoomContentSelector from "./RoomContentSelector.jsx";
 import InternalRoomContent from "./InternalRoomContent.jsx";

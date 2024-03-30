@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { Typography, Grid } from "@mui/material";
-import { ep } from "../../index";
+import { ep } from "@root/index";
 
 import UserSettings from "./UserSettings";
 import ThemeSettings from "./ThemeSettings";
@@ -9,7 +9,7 @@ import InputDevicesSettings from './InputDevicesSettings';
 import OutputDevicesSettings from './OutputDevicesSettings';
 import ImageUploader from './ImageUploader';
 import ExtraAudioSettings from './ExtraAudioSettings';
-import StyledComponents from '../../StylingComponents';
+import StyledComponents from '@root/StylingComponents';
 import KeyboardShortcutSettings from './KeyboardShortcutSettings';
 
 function SettingsView() {

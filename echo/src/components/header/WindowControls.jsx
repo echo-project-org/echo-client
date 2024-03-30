@@ -2,10 +2,10 @@ import React from 'react'
 import { ButtonGroup, Button } from '@mui/material'
 import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 
-import { ep, storage } from "../../index";
-import StylingComponents from '../../StylingComponents';
+import { ep, storage } from "@root/index";
+import StylingComponents from '@root/StylingComponents';
 
-const api = require('../../lib/api');
+const api = require('@lib/api');
 const { ipcRenderer } = window.require('electron');
 
 function WindowControls({ }) {

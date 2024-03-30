@@ -4,7 +4,7 @@ import { ButtonGroup, Button, Tooltip, Container, ClickAwayListener, Grid, Slide
 import { CancelPresentation, VolumeUp, VolumeOff, PictureInPictureAlt } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
 
-import { ep } from '../..';
+import { ep } from '@root';
 
 const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider, volume, setVolume }) => {
   if (!showVolumeSlider) return (<></>)

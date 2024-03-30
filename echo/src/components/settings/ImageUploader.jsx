@@ -3,10 +3,10 @@ import AvatarEditor from 'react-avatar-editor'
 import { Button, Grid, Typography, Zoom, Slider, Stack } from "@mui/material";
 import { Search } from '@mui/icons-material';
 
-import { storage, ep } from "../../index";
-import StyledComponents from '../../StylingComponents';
+import { storage, ep } from "@root/index";
+import StyledComponents from '@root/StylingComponents';
 
-const api = require("../../lib/api");
+const api = require("@lib/api");
 
 const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);

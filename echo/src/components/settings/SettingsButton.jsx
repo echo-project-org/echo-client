@@ -2,9 +2,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
 import { useEffect, useState } from 'react';
 
-import { ep } from "../../index";
+import { ep } from "@root/index";
 import SettingsView from './SettingsView';
-import StyledComponents from '../../StylingComponents';
+import StyledComponents from '@root/StylingComponents';
 
 function SettingsButton() {
   const [modalOpen, setModalOpen] = useState(false);

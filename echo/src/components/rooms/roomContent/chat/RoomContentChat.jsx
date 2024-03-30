@@ -2,11 +2,11 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { Container, styled } from '@mui/material'
 
-import Chat from '../chat/Chat'
-import ChatControls from '../chat/ChatControls'
-import EmojiPicker from "../chat/EmojiPicker";
+import Chat from './Chat'
+import ChatControls from './ChatControls'
+import EmojiPicker from "./EmojiPicker";
 
-import { ep } from "../../index";
+import { ep } from "@root/index";
 
 function RoomContentChat({ roomId }) {
   const [emojiPicker, setEmojiPicker] = useState(false);

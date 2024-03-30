@@ -1,4 +1,4 @@
-import "../../css/screenshare.css";
+import "@css/screenshare.css";
 
 import React from 'react'
 import { useState, useEffect } from 'react'
@@ -6,7 +6,7 @@ import { Container, Grid, styled } from '@mui/material'
 import ScreenShareControlIcons from './ScreenShareControlIcons';
 import ScreenShareUserContainer from "./ScreenShareUserContainer";
 
-import { ep } from '../..';
+import { ep } from '@root';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {

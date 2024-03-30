@@ -1,9 +1,9 @@
-import Sidebar from '../sidebar/Sidebar';
-import RoomContent from '../rooms/RoomContent';
+import Sidebar from '@components/sidebar/Sidebar';
+import RoomContent from '@components/rooms/roomContent/RoomContent';
 import { useState, useEffect } from 'react';
 
-import { ep } from "../../index";
-import StylingComponents from '../../StylingComponents';
+import { ep } from "@root/index";
+import StylingComponents from '@root/StylingComponents';
 import { motion } from 'framer-motion';
 
 const { ipcRenderer } = window.require('electron');
