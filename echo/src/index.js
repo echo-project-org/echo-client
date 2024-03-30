@@ -4,8 +4,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import EchoProtocol from './echoProtocol';
-import Storage from './cache/storage';
-import AudioPlayer from './lib/audioPlayer';
+import Storage from '@cache/storage';
+import AudioPlayer from '@lib/audioPlayer';
 
 const storage = new Storage();
 const sessionStorage = new Storage('session');

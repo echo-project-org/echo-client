@@ -1,5 +1,5 @@
 import Emitter from "wildemitter";
-import EchoAPI from "./lib/echoApi";
+import EchoAPI from "@lib/echoApi";
 
 class EchoProtocol extends EchoAPI {
   constructor() {
