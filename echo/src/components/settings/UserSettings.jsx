@@ -206,11 +206,12 @@ function UserSettings() {
   const logout = () => {
     api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
       .then(res => {
+        ep.logout();
         ep.exitFromRoom(sessionStorage.getItem('id'));
         ep.closeConnection();
         sessionStorage.clear();
         storage.remove("token");
-        navigate("/");
+        navigate("/login");
       })
       .catch(err => {
         console.error(err);
