@@ -3,11 +3,11 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from 'framer-motion'
 
 // import MainLogo from './MainLogo'
-import MainPage from './MainPage';
-import MainPageServer from './MainPageServer'
-import Login from './Login';
-import Register from './Register'
-import Updating from './Updating';
+import MainPage from '@views/MainPage';
+import MainPageServer from '@views/MainPageServer'
+import Login from '@views/Login';
+import Register from '@views/Register'
+import Updating from '@views/Updating';
 import { ep } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');

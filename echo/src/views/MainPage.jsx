@@ -3,8 +3,8 @@ import { Grid, Tooltip, Slide } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { motion } from 'framer-motion'
 
-import MainPageFriends from './MainPageFriends';
-import MainPageServers from './MainPageServers';
+import MainPageFriends from '../components/mainpage/MainPageFriends';
+import MainPageServers from '../components/mainpage/MainPageServers';
 import SettingsView from '@components/settings/SettingsView';
 
 import { storage, ep } from "@root/index";
