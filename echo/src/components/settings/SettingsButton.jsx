@@ -18,6 +18,16 @@ function SettingsButton() {
     handleModalOpen();
   };
 
+  useEffect(() => {
+    ep.on("logout", "SettingsButton.logout", () => {
+      handleModalClose();
+    });
+
+    return () => {
+      ep.releaseGroup("SettingsButton.logout");
+    };
+  }, []);
+
   return (
     <>
       <Tooltip title="Settings" placement="top" arrow enterDelay={1} enterTouchDelay={20}>
