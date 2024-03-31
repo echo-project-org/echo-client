@@ -101,4 +101,8 @@ EchoProtocol.prototype.friendCacheUpdated = function (data) {
   this.emit("friendCacheUpdated", data);
 }
 
+EchoProtocol.prototype.logout = function () {
+  this.emit("logout");
+}
+
 export default EchoProtocol;
