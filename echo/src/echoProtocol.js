@@ -105,4 +105,8 @@ EchoProtocol.prototype.logout = function () {
   this.emit("logout");
 }
 
+EchoProtocol.canSafelyCloseApp = function (){
+  this.emit("canSafelyCloseApp");
+}
+
 export default EchoProtocol;
