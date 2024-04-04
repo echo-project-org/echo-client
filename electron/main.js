@@ -11,7 +11,7 @@ var rtcInternals;
 var fakeDownloadInterval;
 var fakeDownloadPercent = 0;
 var fakeDownloadBps = 0;
-const fakePatchNotes = "Fake release notes";
+const fakePatchNotes = "<p>Fake release notes</p><ul><li>Added fake feature</li><li>Added fake feature</li><li>Added fake feature</li><li>Fixed fake bug</li></ul><p>Enjoy!</p";
 
 const muteThumbBtn = {
   tooltip: 'Mute microphone',
@@ -179,7 +179,7 @@ app.whenReady().then(() => {
     TrayMenu.splice(5, 0, {
       label: "Start fake update",
       click: function () {
-        mainWindow.webContents.send("updateAvailable", { "version": "1.0.0", "releaseNotes": "Fake release notes" });
+        mainWindow.webContents.send("updateAvailable", { "version": "1.0.0", "releaseNotes": fakePatchNotes });
         clearInterval(fakeDownloadInterval);
         fakeDownloadInterval = setInterval(() => {
           fakeDownloadBps = Math.random() * 1000000;
