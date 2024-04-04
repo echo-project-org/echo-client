@@ -7,7 +7,7 @@ import StylingComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
 const { ipcRenderer } = window.require('electron');
-
+ 
 function WindowControls({ }) {
   const closeApp = async () => {
     ep.closeConnection();
