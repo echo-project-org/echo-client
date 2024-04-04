@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ButtonGroup, Button } from '@mui/material'
 import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 
@@ -11,8 +11,9 @@ const { ipcRenderer } = window.require('electron');
 function WindowControls({ }) {
   const closeApp = async () => {
     ep.closeConnection();
-    api.call('users/' + sessionStorage.getItem("id") + '/status', "POST", { status: "0" });
-    ipcRenderer.send("exitApplication", true);
+    api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" }).then(() => {
+      ipcRenderer.send("exitApplication", true);
+    });
   }
   const toggleFullscreen = async () => {
     ipcRenderer.send("toggleFullscreen", true);
@@ -21,6 +22,16 @@ function WindowControls({ }) {
     // remote.BrowserWindow.getFocusedWindow().minimize();
     ipcRenderer.send("minimize", true);
   }
+
+  useEffect(() => {
+    ep.on("canSafelyCloseApp", "WindowControls.canSafelyCloseApp", () => {
+      closeApp();
+    });
+
+    return () => {
+      ep.remove("canSafelyCloseApp", "WindowControls.canSafelyCloseApp");
+    }
+  }, [])
 
   return (
     <StylingComponents.WindowControls.StyledButtonGroup variant='text' size="small">
