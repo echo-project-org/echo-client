@@ -124,9 +124,10 @@ class EchoWSApi extends EchoFriendsAPI {
       this.updateUser({ id: user.id, field: "muted", value: user.muted })
       this.updateUser({ id: user.id, field: "deaf", value: user.deaf });
       this.updateUser({ id: user.id, field: "broadcastingVideo", value: user.broadcastingVideo });
+      data.roomId = user.roomId;
     });
 
-    this.userJoinedChannel()
+    this.userJoinedChannel(data)
   }
 
   wsUserLeftChannel(data) {
