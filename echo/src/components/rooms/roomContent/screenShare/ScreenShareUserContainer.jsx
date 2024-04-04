@@ -14,7 +14,9 @@ function ScreenShareUserContainer({ user, selectUser }) {
     ep.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true);
-        ap.playStartStreamSound();
+        if(!data.silent){
+          ap.playStartStreamSound();
+        }
       }
     });
 
