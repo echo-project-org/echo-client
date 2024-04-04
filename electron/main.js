@@ -189,7 +189,13 @@ app.whenReady().then(() => {
           }
 
           mainWindow.setProgressBar(fakeDownloadPercent / 100);
-          mainWindow.webContents.send("downloadProgress", { "percent": fakeDownloadPercent, "bps": fakeDownloadBps });
+          mainWindow.webContents.send("downloadProgress", {
+            "progress": "idk what this is lol",
+            "percent": fakeDownloadPercent,
+            "bps": fakeDownloadBps,
+            "totalToDownload": 1000000,
+            "transferred": 1000000 * (fakeDownloadPercent / 100)
+          });
         }, 1000);
       }
     })
