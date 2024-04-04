@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from 'framer-motion'
 
@@ -14,11 +14,10 @@ const { ipcRenderer } = window.require('electron');
 
 function AnimatedRoutes() {
   const navigate = useNavigate();
-  const [newVersion, setNewVersion] = React.useState("0.0.0");
-  const [downloadPercentage, setDownloadPercentage] = React.useState(2);
-  const [releaseNotes, setReleaseNotes] = React.useState("No release notes available");
-  const [bps, setBps] = React.useState(0);
   const location = useLocation();
+
+  const [newVersion, setNewVersion] = useState("0.0.0");
+  const [releaseNotes, setReleaseNotes] = useState("No release notes available");
 
   useEffect(() => {
     ipcRenderer.on("updateAvailable", (e, msg) => {
@@ -29,27 +28,16 @@ function AnimatedRoutes() {
       navigate("/updating");
     });
 
-    ipcRenderer.on("downloadProgress", (e, msg) => {
-      setDownloadPercentage(msg.percent);
-      //convert bytes to kilobytes
-      setBps(Math.round(msg.bps / 1024));
-      //if location is not updating, navigate to updating
-      if (location.pathname !== "/updating") {
-        navigate("/updating");
-      }
-    });
-
     ipcRenderer.on("goToMainPage", () => {
       navigate("/");
     });
-    
+
     return () => {
       ipcRenderer.removeAllListeners("updateAvailable");
-      ipcRenderer.removeAllListeners("downloadProgress");
       ipcRenderer.removeAllListeners("goToMainPage");
     }
   }, [navigate, location])
-  
+
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
@@ -57,7 +45,7 @@ function AnimatedRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/main" element={<MainPageServer />} />
-        <Route path="/updating" element={<Updating version={newVersion} releaseNotes={releaseNotes} downloadPercentage={downloadPercentage} bps={bps} />} />
+        <Route path="/updating" element={<Updating version={newVersion} releaseNotes={releaseNotes} />} />
       </Routes>
     </AnimatePresence>
   )

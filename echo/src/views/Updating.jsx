@@ -1,7 +1,37 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import StyledComponents from '@root/StylingComponents';
 import { Typography, Grid, CircularProgress } from "@mui/material";
-function Updating({ version, releaseNotes, downloadPercentage, bps }) {
+import { useLocation, useNavigate } from "react-router-dom";
+
+const { ipcRenderer } = window.require('electron');
+
+function Updating({ version, releaseNotes }) {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const [progress, setProgress] = useState(0);
+    const [transferred, setTransferred] = useState(0);
+    const [totalToDownload, setTotalToDownload] = useState(0);
+    const [downloadPercentage, setDownloadPercentage] = useState(2);
+    const [bps, setBps] = useState(0);
+
+    useEffect(() => {
+        ipcRenderer.on("downloadProgress", (e, msg) => {
+            console.log(msg)
+            setProgress(msg.progress);
+            setTransferred(msg.transferred);
+            setTotalToDownload(msg.totalToDownload);
+            setDownloadPercentage(msg.percent);
+            //convert bytes to kilobytes
+            setBps(Math.round(msg.bps / 1024));
+
+        });
+
+        return () => {
+            ipcRenderer.removeAllListeners("downloadProgress");
+        }
+    }, [setDownloadPercentage, setBps, navigate, location]);
+
     return (
         <StyledComponents.Settings.StyledSettingsView>
             <StyledComponents.Settings.StyledSettingsContainer>
