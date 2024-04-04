@@ -9,7 +9,6 @@ import StyledComponents from '@root/StylingComponents';
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 function OnlineUserIcon({ user }) {
-  console.log(user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -18,7 +17,6 @@ function OnlineUserIcon({ user }) {
   const [muted, setMuted] = useState(user.muted || false);
   const [talking, setTalking] = useState(false);
   const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);
-
   const open = Boolean(anchorEl);
 
   useEffect(() => {

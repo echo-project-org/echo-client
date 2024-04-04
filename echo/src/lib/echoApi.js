@@ -119,13 +119,14 @@ class EchoWSApi extends EchoFriendsAPI {
   }
 
   wsRoomHasTheseUsers(data) {
+    console.log("wsRoomHasTheseUsers", data)
     data.forEach(user => {
       user.roomId = user.roomId.slice(0, user.roomId.lastIndexOf('@'));
       if (user.isConnected) this.startReceiving(user.id);
       this.updateUser({ id: user.id, field: "currentRoom", value: user.roomId });
-      this.updateUser({ id: user.id, field: "muted", value: user.muted })
-      this.updateUser({ id: user.id, field: "deaf", value: user.deaf });
       this.updateUser({ id: user.id, field: "broadcastingVideo", value: user.broadcastingVideo });
+
+      this.updatedAudioState({ id: user.id, deaf: user.deaf, muted: user.muted });
       data.roomId = user.roomId;
 
       if (user.broadcastingVideo) {
