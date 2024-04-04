@@ -197,7 +197,7 @@ app.whenReady().then(() => {
     TrayMenu.splice(6, 0, {
       label: "Stop fake update",
       click: function () {
-        if(fakeDownloadInterval) {
+        if (fakeDownloadInterval) {
           clearInterval(fakeDownloadInterval);
           mainWindow.setProgressBar(-1);
           mainWindow.webContents.send("goToMainPage");
@@ -234,7 +234,13 @@ autoUpdater.on('update-available', (info) => {
 autoUpdater.on('download-progress', (e) => {
   if (mainWindow) {
     //hide the main window
-    mainWindow.webContents.send("downloadProgress", { "percent": e.percent, "bps": e.bytesPerSecond });
+    mainWindow.webContents.send("downloadProgress", {
+      "progress": e.progress,
+      "percent": e.percent,
+      "bps": e.bytesPerSecond,
+      "totalToDownload": e.total,
+      "transferred": e.transferred
+    });
     mainWindow.setProgressBar(e.percent / 100);
   }
 });
