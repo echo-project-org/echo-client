@@ -118,6 +118,17 @@ class EchoWSApi extends EchoFriendsAPI {
     this.userJoinedChannel(data);
   }
 
+  wsRoomHasTheseUsers(data) {
+    data.forEach(user => {
+      this.updateUser({ id: user.id, field: "currentRoom", value: user.roomId });
+      this.updateUser({ id: user.id, field: "muted", value: user.muted })
+      this.updateUser({ id: user.id, field: "deaf", value: user.deaf });
+      this.updateUser({ id: user.id, field: "broadcastingVideo", value: user.broadcastingVideo });
+    });
+
+    this.userJoinedChannel()
+  }
+
   wsUserLeftChannel(data) {
     if (data.crashed) {
       console.log("User " + data.id + " crashed");

@@ -40,6 +40,10 @@ class wsConnection {
       ep.wsUserJoinedChannel(data);
     });
 
+    this.socket.on("server.roomHasTheseUsers", (data) => {
+      ep.wsRoomHasTheseUsers(data);
+    });
+
     this.socket.on("server.userLeftChannel", (data) => {
       ep.wsUserLeftChannel(data);
     });
