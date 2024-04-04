@@ -88,8 +88,28 @@ function RoomControl({ state, setState, screenSharing }) {
       closeConnection();
     });
 
+    ipcRenderer.on("appClose", (event, arg) => {
+      //exit from room and close connection
+      api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
+        .then(res => {
+          ep.exitFromRoom(sessionStorage.getItem('id'));
+          ep.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
+          ap.playLeaveSound();
+          ep.closeConnection();
+          ep.canSafelyCloseApp();
+        })
+        .catch(err => {
+          console.error(err);
+          navigate("/");
+          // clean cache and session storage
+          sessionStorage.clear();
+        });
+    });
+
     return () => {
       ipcRenderer.removeAllListeners("toggleDeaf");
+      ipcRenderer.removeAllListeners("toggleMute");
+      ipcRenderer.removeAllListeners("appClose");
       ep.releaseGroup("RoomControl.rtcConnectionStateChange");
       ep.releaseGroup("RoomControl.exitedFromRoom");
       ep.releaseGroup("localUserCrashed");
