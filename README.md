@@ -1,5 +1,5 @@
 [![Build and Release](https://github.com/KuryGabriele/echo-project/actions/workflows/build.yml/badge.svg)](https://github.com/KuryGabriele/echo-project/actions/workflows/build.yml)
-[![Echo Version - v](https://img.shields.io/badge/Echo_Version-v0.0.16-2ea44f)](https://echo.kuricki.com)
+[![Echo Version - v](https://img.shields.io/badge/Echo_Version-v-2ea44f)](https://echo.kuricki.com)
 
 
 # Echo project
