@@ -38,10 +38,15 @@ function AnimatedRoutes() {
         navigate("/updating");
       }
     });
+
+    ipcRenderer.on("goToMainPage", () => {
+      navigate("/");
+    });
     
     return () => {
       ipcRenderer.removeAllListeners("updateAvailable");
       ipcRenderer.removeAllListeners("downloadProgress");
+      ipcRenderer.removeAllListeners("goToMainPage");
     }
   }, [navigate, location])
   
