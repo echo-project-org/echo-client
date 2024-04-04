@@ -146,7 +146,7 @@ app.whenReady().then(() => {
     {
       label: "Quit echo",
       click: function () {
-        // mainWindow.close();
+        mainWindow.close();
         app.quit();
       }
     },
