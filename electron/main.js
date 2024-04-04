@@ -1,3 +1,4 @@
+const { clear } = require('console');
 const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut, session } = require('electron');
 const { autoUpdater, AppUpdater } = require('electron-updater');
 const path = require('path')
@@ -7,6 +8,10 @@ autoUpdater.autoInstallOnAppQuit = true;
 
 var mainWindow;
 var rtcInternals;
+var fakeDownloadInterval;
+var fakeDownloadPercent = 0;
+var fakeDownloadBps = 0;
+const fakePatchNotes = "Fake release notes";
 
 const muteThumbBtn = {
   tooltip: 'Mute microphone',
@@ -166,6 +171,43 @@ app.whenReady().then(() => {
         mainWindow.webContents.openDevTools();
       }
     })
+
+    TrayMenu.splice(4, 0, {
+      type: 'separator',
+    });
+
+    TrayMenu.splice(5, 0, {
+      label: "Start fake update",
+      click: function () {
+        mainWindow.webContents.send("updateAvailable", { "version": "1.0.0", "releaseNotes": "Fake release notes" });
+        clearInterval(fakeDownloadInterval);
+        fakeDownloadInterval = setInterval(() => {
+          fakeDownloadBps = Math.random() * 1000000;
+          fakeDownloadPercent += 15;
+          if (fakeDownloadPercent >= 100) {
+            fakeDownloadPercent = 0;
+          }
+
+          mainWindow.setProgressBar(fakeDownloadPercent / 100);
+          mainWindow.webContents.send("downloadProgress", { "percent": fakeDownloadPercent, "bps": fakeDownloadBps });
+        }, 1000);
+      }
+    })
+
+    TrayMenu.splice(6, 0, {
+      label: "Stop fake update",
+      click: function () {
+        if(fakeDownloadInterval) {
+          clearInterval(fakeDownloadInterval);
+          mainWindow.setProgressBar(-1);
+          mainWindow.webContents.send("goToMainPage");
+        }
+      }
+    })
+
+    TrayMenu.splice(7, 0, {
+      type: 'separator',
+    });
   }
 
   const contextMenu = Menu.buildFromTemplate(TrayMenu);
@@ -295,7 +337,7 @@ ipcMain.handle("getVideoSources", async () => {
 ipcMain.on("grantDisplayMedia", (event, arg) => {
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
     const selectedSource = this.videoSources.find(source => source.id === arg.id);
-    
+
     callback({ video: selectedSource, audio: 'loopback' });
   })
 });
