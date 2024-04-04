@@ -9,12 +9,13 @@ import StyledComponents from '@root/StylingComponents';
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
 
 function OnlineUserIcon({ user }) {
+  console.log(user)
   user.id = user.id.toString();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [userVolume, setUserVolulme] = useState(100);
-  const [deaf, setDeaf] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [deaf, setDeaf] = useState(user.deaf || false);
+  const [muted, setMuted] = useState(user.muted || false);
   const [talking, setTalking] = useState(false);
   const [broadcastingVideo, setBroadcastingVideo] = useState(user.broadcastingVideo);
 
