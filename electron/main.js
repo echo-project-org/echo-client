@@ -94,6 +94,17 @@ let tray = null;
 app.whenReady().then(() => {
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
+
+  //catch close event and send to renderer
+
+  mainWindow.on('close', (e) => {
+    if (mainWindow.isVisible()) {
+      e.preventDefault();
+      mainWindow.webContents.send("appClose");
+      mainWindow.hide();
+    }
+  })
+
   if (app.isPackaged) {
     tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
   } else {
