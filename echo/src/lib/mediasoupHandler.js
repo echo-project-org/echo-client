@@ -679,6 +679,9 @@ class mediasoupHandler {
       }
     }
 
+    this.receivingVideoFrom = videoDescription.producerId;
+    console.log(this.receivingVideoFrom)
+
     ep.sendToSocket("resumeVideoStream", { id: this.id, producerId: videoDescription.producerId })
     ep.sendVideoStreamToFrontEnd({ id: videoDescription.producerId, stream: this.inVideoStream });
   }
@@ -700,6 +703,8 @@ class mediasoupHandler {
       this.inVideoStream.getTracks().forEach(track => track.stop());
       this.inVideoStream = null;
     }
+
+    this.receivingVideoFrom = null;
   }
 
   /**
@@ -709,6 +714,14 @@ class mediasoupHandler {
    */
   getVideo() {
     return this.inVideoStream;
+  }
+
+  checkIncomingVideo(remoteId) {
+    if (this.receivingVideoFrom === remoteId) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

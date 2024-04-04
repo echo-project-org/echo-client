@@ -472,11 +472,17 @@ class EchoAPI extends EchoWSApi {
 
   startReceivingVideo(remoteId) {
     if (this.mh) {
-      let a = this.mh.getRtpCapabilities()
-      if (this.wsConnection) {
-        this.sendToSocket("startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
-          this.mh.consumeVideo(description);
-        });
+      //check if im already the stream
+      if (this.mh.checkIncomingVideo(remoteId)) {
+        //already receiving stream
+        this.sendVideoStreamToFrontEnd({ id: remoteId, stream: this.mh.getVideo() });
+      } else {
+        let a = this.mh.getRtpCapabilities()
+        if (this.wsConnection) {
+          this.sendToSocket("startReceivingVideo", { id: remoteId, rtpCapabilities: a }, (description) => {
+            this.mh.consumeVideo(description);
+          });
+        }
       }
     }
   }
