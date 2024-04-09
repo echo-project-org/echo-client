@@ -65,8 +65,8 @@ function AnimatedRoutes() {
       ipcRenderer.removeAllListeners("updateAvailable");
       ipcRenderer.removeAllListeners("goToMainPage");
       ipcRenderer.removeAllListeners("appClose");
-      ep.removeListener("requestAppClose", "AnimatedRoutes.requestAppClose");
-      ep.removeListener("canSafelyCloseApp", "AnimatedRouter.canSafelyCloseApp");
+      ep.releaseGroup("AnimatedRoutes.requestAppClose");
+      ep.releaseGroup("AnimatedRouter.canSafelyCloseApp");
     }
   }, [navigate, location])
 
