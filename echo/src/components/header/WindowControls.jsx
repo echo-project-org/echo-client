@@ -11,9 +11,15 @@ const { ipcRenderer } = window.require('electron');
 function WindowControls({ }) {
   const closeApp = async () => {
     ep.closeConnection();
-    api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" }).then(() => {
-      ipcRenderer.send("exitApplication", true);
-    });
+    api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
+      .then(() => {
+        ipcRenderer.send("exitApplication", true);
+      })
+      .catch((err) => {
+        console.error(err);
+        ipcRenderer.send("log", { type: "error", message: err });
+        ipcRenderer.send("exitApplication", true);
+      });
   }
   const toggleFullscreen = async () => {
     ipcRenderer.send("toggleFullscreen", true);

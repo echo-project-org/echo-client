@@ -1,10 +1,16 @@
 const { clear } = require('console');
-const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut, session } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut, session, netLog } = require('electron');
 const { autoUpdater, AppUpdater } = require('electron-updater');
+const log = require('electron-log');
 const path = require('path')
+
+Object.assign(console, log.functions);
+log.transports.file.resolvePathFn = () => path.join(app.getPath('exe'), 'logs', 'echo.log');
 
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
+
+let tray = null;
 
 var mainWindow;
 var rtcInternals;
@@ -93,28 +99,166 @@ const createMainWindow = () => {
   return win;
 }
 
-let tray = null;
+autoUpdater.on('update-available', (info) => {
+  if (mainWindow) {
+    //hide the main window
+    mainWindow.webContents.send("updateAvailable", { "version": info.version, "releaseNotes": info.releaseNotes });
+    mainWindow.setProgressBar(0);
+  }
+});
 
+autoUpdater.on('download-progress', (e) => {
+  if (mainWindow) {
+    //hide the main window
+    mainWindow.webContents.send("downloadProgress", {
+      "progress": e.progress,
+      "percent": e.percent,
+      "bps": e.bytesPerSecond,
+      "totalToDownload": e.total,
+      "transferred": e.transferred
+    });
+    mainWindow.setProgressBar(e.percent / 100);
+  }
+});
 
-app.whenReady().then(() => {
-  autoUpdater.checkForUpdatesAndNotify();
-  mainWindow = createMainWindow()
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBoxSync({
+    type: 'info',
+    title: 'Echo',
+    message: 'Update downloaded. Restarting...',
+    buttons: ["OK"]
+  });
 
-  //catch close event and send to renderer
+  autoUpdater.quitAndInstall(true, true);
+});
 
-  mainWindow.on('close', (e) => {
-    if (mainWindow.isVisible()) {
-      e.preventDefault();
-      mainWindow.webContents.send("appClose");
-      mainWindow.hide();
+autoUpdater.on('error', (err) => {
+  dialog.showErrorBox('Error downloading update: ', err == null ? "unknown" : (err.stack || err).toString());
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createMainWindow()
+  }
+})
+
+ipcMain.on("exitApplication", async (event, arg) => {
+  if (!app.isPackaged) {
+    if (rtcInternals && !rtcInternals.isDestroyed()) {
+      rtcInternals.close();
     }
-  })
+  } else {
+    const path = await netLog.stopLogging();
+    console.log('Netlog path:', path);
+  }
 
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.close();
+  }
+
+  app.quit();
+  // TODO: option that hides the app to tray instead of closing it
+  // if (tray) {
+  //   return mainWindow.hide();
+  // }
+})
+
+ipcMain.on("minimize", (event, arg) => {
+  return mainWindow.minimize();
+})
+
+ipcMain.on("toggleFullscreen", (event, arg) => {
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+})
+
+//called with ipcRenderer.send("showThumbarButtons", true);
+ipcMain.on("showThumbarButtons", (event, arg) => {
+  if (mainWindow) {
+    if (arg === true) {
+      mainWindow.setThumbarButtons(thumbBtns);
+    } else {
+      mainWindow.setThumbarButtons([]);
+    }
+  }
+})
+
+ipcMain.on("updateThumbarButtons", (event, arg) => {
+  if (arg.muted) {
+    thumbBtns[0] = unmuteThumbBtn;
+  } else {
+    thumbBtns[0] = muteThumbBtn;
+  }
+
+  if (arg.deaf) {
+    thumbBtns[1] = undeafenThumbBtn;
+  } else {
+    thumbBtns[1] = deafenThumbBtn;
+  }
+
+  if (mainWindow) {
+    mainWindow.setThumbarButtons(thumbBtns);
+  }
+})
+
+//register keyboard shortcuts
+//example: arg = [{combination: "Ctrl+Shift+M", action: "toggleMute"}, {combination: "Ctrl+Shift+D", action: "toggleDeaf"}]
+ipcMain.on("addKeyboardShortcut", (event, arg) => {
+  foreach(arg, (shortcut) => {
+    globalShortcut.register(shortcut.combination, () => {
+      mainWindow.webContents.send(shortcut.action);
+    })
+  })
+})
+
+ipcMain.handle("getVideoSources", async () => {
+  this.videoSources = await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });
+  return this.videoSources
+})
+
+ipcMain.on("grantDisplayMedia", (event, arg) => {
+  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+    const selectedSource = this.videoSources.find(source => source.id === arg.id);
+
+    callback({ video: selectedSource, audio: 'loopback' });
+  })
+});
+
+ipcMain.on("mainLog", (event, arg) => {
+  switch (arg.type) {
+    case "error":
+      log.error(arg.message);
+      break;
+    case "warn":
+      log.warn(arg.message);
+      break;
+    case "info":
+      log.info(arg.message);
+      break;
+    case "verbose":
+      log.verbose(arg.message);
+      break;
+    case "debug":
+      log.debug(arg.message);
+      break;
+    case "silly":
+      log.silly(arg.message);
+      break;
+    default:
+      log.info(arg.message);
+  }
+});
+
+const makeSysTray = () => {
   if (app.isPackaged) {
     tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
   } else {
     tray = new Tray(path.join(process.cwd(), 'images', 'icon.png'))
   }
+
   const TrayMenu = [
     {
       label: "Echo",
@@ -227,129 +371,25 @@ app.whenReady().then(() => {
     // open dev tools
     mainWindow.webContents.openDevTools();
   }
-})
+}
 
-autoUpdater.on('update-available', (info) => {
-  if (mainWindow) {
-    //hide the main window
-    mainWindow.webContents.send("updateAvailable", { "version": info.version, "releaseNotes": info.releaseNotes });
-    mainWindow.setProgressBar(0);
+app.whenReady().then(async () => {
+  if (app.isPackaged) {
+    await netLog.startLogging('/logs/netlog');
   }
-});
 
-autoUpdater.on('download-progress', (e) => {
-  if (mainWindow) {
-    //hide the main window
-    mainWindow.webContents.send("downloadProgress", {
-      "progress": e.progress,
-      "percent": e.percent,
-      "bps": e.bytesPerSecond,
-      "totalToDownload": e.total,
-      "transferred": e.transferred
-    });
-    mainWindow.setProgressBar(e.percent / 100);
-  }
-});
+  autoUpdater.checkForUpdatesAndNotify();
+  mainWindow = createMainWindow()
 
-autoUpdater.on('update-downloaded', () => {
-  dialog.showMessageBoxSync({
-    type: 'info',
-    title: 'Echo',
-    message: 'Update downloaded. Restarting...',
-    buttons: ["OK"]
-  });
+  //catch close event and send to renderer
 
-  autoUpdater.quitAndInstall(true, true);
-});
-
-autoUpdater.on('error', (err) => {
-  dialog.showErrorBox('Error downloading update: ', err == null ? "unknown" : (err.stack || err).toString());
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow()
-  }
-})
-
-ipcMain.on("exitApplication", (event, arg) => {
-  if (!app.isPackaged) {
-    if (rtcInternals && !rtcInternals.isDestroyed()) {
-      rtcInternals.close();
+  mainWindow.on('close', (e) => {
+    if (mainWindow.isVisible()) {
+      e.preventDefault();
+      mainWindow.webContents.send("appClose");
+      mainWindow.hide();
     }
-  }
-
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.close();
-  }
-
-  app.quit();
-  // TODO: option that hides the app to tray instead of closing it
-  // if (tray) {
-  //   return mainWindow.hide();
-  // }
-})
-
-ipcMain.on("minimize", (event, arg) => {
-  return mainWindow.minimize();
-})
-
-ipcMain.on("toggleFullscreen", (event, arg) => {
-  if (mainWindow.isMaximized()) {
-    mainWindow.unmaximize();
-  } else {
-    mainWindow.maximize();
-  }
-})
-
-//called with ipcRenderer.send("showThumbarButtons", true);
-ipcMain.on("showThumbarButtons", (event, arg) => {
-  if (mainWindow) {
-    if (arg === true) {
-      mainWindow.setThumbarButtons(thumbBtns);
-    } else {
-      mainWindow.setThumbarButtons([]);
-    }
-  }
-})
-
-ipcMain.on("updateThumbarButtons", (event, arg) => {
-  if (arg.muted) {
-    thumbBtns[0] = unmuteThumbBtn;
-  } else {
-    thumbBtns[0] = muteThumbBtn;
-  }
-
-  if (arg.deaf) {
-    thumbBtns[1] = undeafenThumbBtn;
-  } else {
-    thumbBtns[1] = deafenThumbBtn;
-  }
-
-  if (mainWindow) {
-    mainWindow.setThumbarButtons(thumbBtns);
-  }
-})
-
-//register keyboard shortcuts
-//example: arg = [{combination: "Ctrl+Shift+M", action: "toggleMute"}, {combination: "Ctrl+Shift+D", action: "toggleDeaf"}]
-ipcMain.on("addKeyboardShortcut", (event, arg) => {
-  foreach(arg, (shortcut) => {
-    globalShortcut.register(shortcut.combination, () => {
-      mainWindow.webContents.send(shortcut.action);
-    })
   })
+
+  makeSysTray();
 })
-
-ipcMain.handle("getVideoSources", async () => {
-  this.videoSources = await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });
-  return this.videoSources
-})
-
-ipcMain.on("grantDisplayMedia", (event, arg) => {
-  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
-    const selectedSource = this.videoSources.find(source => source.id === arg.id);
-
-    callback({ video: selectedSource, audio: 'loopback' });
-  })
-});

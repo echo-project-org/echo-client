@@ -7,7 +7,9 @@ import MessageLeft from './MessageLeft'
 import LoadingAnimation from '@components/mainpage/LoadingAnimation'
 
 import { ep, storage } from "@root/index";
+
 const api = require('@lib/api');
+const { ipcRenderer } = window.require('electron');
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -43,6 +45,7 @@ function Chat({ currentRoomId, onMouseDown }) {
             ep.setMessagesCache({ messages: res.json, roomId: currentRoomId });
           })
           .catch((err) => {
+            ipcRenderer.send("log", { type: "error", message: err });
             console.error(err);
             setLoadingVisibility(false);
             setMessages([]);

@@ -1,6 +1,5 @@
 import { storage, ep } from '@root/index';
 
-
 const API_URL = "https://echo.kuricki.com/api/";
 // const API_URL = "http://localhost:6980/api/";
 

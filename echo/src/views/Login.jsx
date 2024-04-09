@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Alert, Button, Snackbar } from '@mui/material'
+import { Alert, Snackbar } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 
 import imgLogo from "@root/img/headphones.svg"
@@ -9,6 +9,7 @@ import { storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 var api = require('@lib/api')
+const { ipcRenderer } = window.require('electron');
 
 const Login = () => {
   let navigate = useNavigate();
@@ -64,6 +65,7 @@ const Login = () => {
               navigate("/");
             })
             .catch((err) => {
+              ipcRenderer.send("log", { type: "error", message: err.message });
               showError(err.message);
             });
         });

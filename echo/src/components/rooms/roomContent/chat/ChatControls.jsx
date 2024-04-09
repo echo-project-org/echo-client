@@ -9,6 +9,7 @@ import { ep, storage, ap } from "@root/index";
 import StylingComponents from "@root/StylingComponents";
 
 const api = require("@lib/api");
+const { ipcRenderer } = window.require('electron');
 
 function ChatControls({ onEmojiOn, roomId }) {
   const [message, setMessage] = useState("");
@@ -32,7 +33,12 @@ function ChatControls({ onEmojiOn, roomId }) {
         ap.playNewSelfMessageSound();
         data.userId = Number(data.id);
         // make api call after the server received it
-        api.call("rooms/messages", "POST", data).then((res) => { }).catch((err) => { console.log(err); });
+        api.call("rooms/messages", "POST", data)
+          .then((res) => { })
+          .catch((err) => {
+            ipcRenderer.send("log", { type: "error", message: err });
+            console.log(err);
+          });
       } else {
         ap.playNewMessageSound();
       };

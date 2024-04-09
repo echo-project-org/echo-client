@@ -99,6 +99,7 @@ function RoomControl({ state, setState, screenSharing }) {
           ep.canSafelyCloseApp();
         })
         .catch(err => {
+          ipcRenderer.send("log", { type: "error", message: err });
           console.error(err);
           navigate("/");
           // clean cache and session storage
@@ -137,6 +138,7 @@ function RoomControl({ state, setState, screenSharing }) {
           navigate("/");
         })
         .catch(err => {
+          ipcRenderer.send("log", { type: "error", message: err });
           console.error(err);
           navigate("/");
           // clean cache and session storage
@@ -150,6 +152,7 @@ function RoomControl({ state, setState, screenSharing }) {
           ap.playLeaveSound();
         })
         .catch(err => {
+          ipcRenderer.send("log", { type: "error", message: err });
           console.error(err);
           navigate("/");
           sessionStorage.clear();
