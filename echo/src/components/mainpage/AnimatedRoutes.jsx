@@ -21,6 +21,22 @@ function AnimatedRoutes() {
   const [releaseNotes, setReleaseNotes] = useState("No release notes available");
 
   useEffect(() => {
+    const appCloseRequested = () => {
+      //exit from room and close connection
+      api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
+        .then(res => {
+          if (location.pathname === "/main") {
+            ep.appClosing();
+          } else {
+            ep.canSafelyCloseApp();
+          }
+        })
+        .catch(err => {
+          console.error("Failed setting user to offline", err);
+          ep.canSafelyCloseApp();
+        });
+    }
+
     ipcRenderer.on("updateAvailable", (e, msg) => {
       ep.closeConnection();
       console.log("update available", msg.version)
@@ -34,28 +50,23 @@ function AnimatedRoutes() {
     });
 
     ipcRenderer.on("appClose", (event, arg) => {
-      //exit from room and close connection
-      api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
-        .then(res => {
-          if(location.pathname === "/main") {
-            ep.appClosing();
-          } else {
-            ep.canSafelyCloseApp();
-          }
-        })
-        .catch(err => {
-          console.error("Failed setting user to offline", err);
-          ep.canSafelyCloseApp();
-        });
+      appCloseRequested();
     });
-    
-    ep.on("canSafelyCloseApp", () => {
+
+    ep.on("requestAppClose", "AnimatedRoutes.requestAppClose", () => {
+      appCloseRequested();
+    });
+
+    ep.on("canSafelyCloseApp", "AnimatedRouter.canSafelyCloseApp", () => {
       ipcRenderer.send("exitApplication", true);
     });
 
     return () => {
       ipcRenderer.removeAllListeners("updateAvailable");
       ipcRenderer.removeAllListeners("goToMainPage");
+      ipcRenderer.removeAllListeners("appClose");
+      ep.removeListener("requestAppClose", "AnimatedRoutes.requestAppClose");
+      ep.removeListener("canSafelyCloseApp", "AnimatedRouter.canSafelyCloseApp");
     }
   }, [navigate, location])
 

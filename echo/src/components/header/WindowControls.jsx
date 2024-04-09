@@ -10,14 +10,12 @@ const { ipcRenderer } = window.require('electron');
  
 function WindowControls({ }) {
   const closeApp = async () => {
-    ep.closeConnection();
     api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
-      .then(() => {
-        ipcRenderer.send("exitApplication", true);
+    .then(() => {
+      ep.requestAppClose();
       })
       .catch((err) => {
-        console.error(err);
-        ipcRenderer.send("log", { type: "error", message: err });
+        console.error("Error setting user offline", err);
         ipcRenderer.send("exitApplication", true);
       });
   }
