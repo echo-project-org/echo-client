@@ -1,6 +1,8 @@
 import Emitter from "wildemitter";
 import EchoAPI from "@lib/echoApi";
 
+const { log } = require('@lib/logger');
+
 class EchoProtocol extends EchoAPI {
   constructor() {
     super();
@@ -97,7 +99,7 @@ EchoProtocol.prototype.localUserCrashed = function (data) {
 }
 
 EchoProtocol.prototype.friendCacheUpdated = function (data) {
-  console.log("friendCacheUpdated", data)
+  log("friendCacheUpdated", data)
   this.emit("friendCacheUpdated", data);
 }
 

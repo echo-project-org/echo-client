@@ -7,6 +7,7 @@ import { storage, ep } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const api = require("@lib/api");
+const { error, log } = require("@lib/logger");
 
 const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);
@@ -60,7 +61,7 @@ const ImageUploader = ({ open, data }) => {
                             sessionStorage.setItem("userImage", canvas);
                           })
                           .catch(err => {
-                            console.error(err);
+                            error(err);
                           });
                       }}
                       sx={{

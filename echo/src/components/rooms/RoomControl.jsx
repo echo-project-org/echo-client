@@ -11,8 +11,9 @@ import ScreenShareSelector from '@components/settings/ScreenShareSelector';
 import { ep, storage, ap } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
-const api = require('@lib/api')
 const { ipcRenderer } = window.require('electron');
+const api = require('@lib/api');
+const { log, error } = require('@lib/logger');
 
 function RoomControl({ state, setState, screenSharing }) {
   const theme = useTheme();
@@ -92,7 +93,7 @@ function RoomControl({ state, setState, screenSharing }) {
     });
 
     ep.on("appClosing", "RoomControl.appClosing", () => {
-      console.log("app closing")
+      log("app closing")
       ep.exitFromRoom(sessionStorage.getItem('id'));
       ap.playLeaveSound();
       ep.closeConnection();
@@ -131,8 +132,7 @@ function RoomControl({ state, setState, screenSharing }) {
           navigate("/");
         })
         .catch(err => {
-          ipcRenderer.send("log", { type: "error", message: err });
-          console.error(err);
+          error(err);
           navigate("/");
           // clean cache and session storage
           sessionStorage.clear();
@@ -145,8 +145,7 @@ function RoomControl({ state, setState, screenSharing }) {
           ap.playLeaveSound();
         })
         .catch(err => {
-          ipcRenderer.send("log", { type: "error", message: err });
-          console.error(err);
+          error(err);
           navigate("/");
           sessionStorage.clear();
         });

@@ -45,7 +45,6 @@ function ExtraAudioSettings() {
   };
 
   const handleEchoCancellationChange = (event) => {
-    console.log(event.target.checked)
     setEchoCancellation(event.target.checked);
     ep.setEchoCancellation(event.target.checked);
     storage.set('echoCancellation', event.target.checked);

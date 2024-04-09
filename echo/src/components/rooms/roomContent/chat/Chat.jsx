@@ -9,7 +9,7 @@ import LoadingAnimation from '@components/mainpage/LoadingAnimation'
 import { ep, storage } from "@root/index";
 
 const api = require('@lib/api');
-const { ipcRenderer } = window.require('electron');
+const { error } = require('@lib/logger');
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -36,7 +36,7 @@ function Chat({ currentRoomId, onMouseDown }) {
         setLoadingVisibility(false);
       })
       .catch((err) => {
-        console.error(err);
+        error(err);
         setMessages([]);
 
         // get messages from api
@@ -45,8 +45,7 @@ function Chat({ currentRoomId, onMouseDown }) {
             ep.setMessagesCache({ messages: res.json, roomId: currentRoomId });
           })
           .catch((err) => {
-            ipcRenderer.send("log", { type: "error", message: err });
-            console.error(err);
+            error(err);
             setLoadingVisibility(false);
             setMessages([]);
           });

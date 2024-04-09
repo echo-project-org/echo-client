@@ -7,6 +7,7 @@ import StyledComponents from '@root/StylingComponents';
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
 const api = require('@lib/api');
+const { error, log } = require('@lib/logger');
 
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);
@@ -26,11 +27,11 @@ function RoomContentFriends({ }) {
         }
       })
       .catch((err) => {
-        console.error(err.message);
+        error(err.message);
       });
 
     ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (data) => {
-      console.log("RoomContentFriends.usersCacheUpdated: ", data);
+      log("RoomContentFriends.usersCacheUpdated: ", data);
       setFriends((prev) => {
         const newV = [];
         for (var i in data) {

@@ -1,5 +1,7 @@
 import { storage } from "@root/index";
 
+const { error, warn } = require("@lib/logger");
+
 class Friends {
   constructor() {
     this.friends = {};
@@ -22,13 +24,13 @@ class Friends {
   }
 
   add(data) {
-    if (!data) return console.error("[CACHE] Data is required to add a friend to the cache");
+    if (!data) return error("[CACHE] Data is required to add a friend to the cache");
     data = this.typeCheck(data);
     
     if (typeof data.id === "string") data.id = Number(data.id);
-    if (!data.id) return console.error("[CACHE] ID is required to add a friend to the cache");
-    if (!data.type) return console.error("[CACHE] Type is required to add a friend to the cache");
-    if (this.friends[data.id]) return console.warn(`[CACHE] Friend ${data.id} already exists in cache`);
+    if (!data.id) return error("[CACHE] ID is required to add a friend to the cache");
+    if (!data.type) return error("[CACHE] Type is required to add a friend to the cache");
+    if (this.friends[data.id]) return warn(`[CACHE] Friend ${data.id} already exists in cache`);
 
     this.friends[data.id] = {
       id: data.id,
@@ -42,7 +44,7 @@ class Friends {
 
   remove(id) {
     id = this.typeCheck(id);
-    if (!this.friends[id]) return console.error(`[CACHE] Friend ${id} does not exist in cache`);
+    if (!this.friends[id]) return error(`[CACHE] Friend ${id} does not exist in cache`);
     delete this.friends[id];
   }
 
@@ -64,7 +66,7 @@ class Friends {
     id = this.typeCheck(id);
     field = this.typeCheck(field);
     value = this.typeCheck(value);
-    if (!this.friends[id]) return console.error(`[CACHE] Friend ${id} does not exist in cache`);
+    if (!this.friends[id]) return error(`[CACHE] Friend ${id} does not exist in cache`);
     this.friends[id][field] = value;
   }
 }

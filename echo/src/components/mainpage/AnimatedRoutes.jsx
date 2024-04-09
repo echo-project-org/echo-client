@@ -12,6 +12,7 @@ import { ep } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');
 const api = require('@lib/api');
+const { error, log } = require('@lib/logger');
 
 function AnimatedRoutes() {
   const navigate = useNavigate();
@@ -32,14 +33,14 @@ function AnimatedRoutes() {
           }
         })
         .catch(err => {
-          console.error("Failed setting user to offline", err);
+          error("Failed setting user to offline", err);
           ep.canSafelyCloseApp();
         });
     }
 
     ipcRenderer.on("updateAvailable", (e, msg) => {
       ep.closeConnection();
-      console.log("update available", msg.version)
+      log("update available", msg.version)
       setNewVersion(msg.version);
       if (msg.releaseNotes) setReleaseNotes(msg.releaseNotes);
       navigate("/updating");

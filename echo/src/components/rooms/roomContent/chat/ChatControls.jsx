@@ -9,7 +9,7 @@ import { ep, storage, ap } from "@root/index";
 import StylingComponents from "@root/StylingComponents";
 
 const api = require("@lib/api");
-const { ipcRenderer } = window.require('electron');
+const { error, log } = require("@lib/logger");
 
 function ChatControls({ onEmojiOn, roomId }) {
   const [message, setMessage] = useState("");
@@ -17,7 +17,7 @@ function ChatControls({ onEmojiOn, roomId }) {
   const sendChatMessage = (e) => {
     if (!message) return;
     if (message.length === 0) return;
-    console.log("about to send this message", message, roomId, sessionStorage.getItem("id"));
+    log("about to send this message", message, roomId, sessionStorage.getItem("id"));
     setMessage((prev) => {
       if (!prev) return;
       if (prev.length === 0) return;
@@ -34,10 +34,11 @@ function ChatControls({ onEmojiOn, roomId }) {
         data.userId = Number(data.id);
         // make api call after the server received it
         api.call("rooms/messages", "POST", data)
-          .then((res) => { })
+          .then((res) => {
+            log("message sent", res);
+          })
           .catch((err) => {
-            ipcRenderer.send("log", { type: "error", message: err });
-            console.log(err);
+            error(err);
           });
       } else {
         ap.playNewMessageSound();
@@ -60,7 +61,7 @@ function ChatControls({ onEmojiOn, roomId }) {
     <div className='chatControls'>
       <div className='chatInputContainer'>
         <div className="messageBoxButtons">
-          <UploadBoxButtons onClick={() => { console.log("click upload") }} />
+          <UploadBoxButtons onClick={() => { log("click upload") }} />
         </div>
         <div
           className='chatInputText'

@@ -7,7 +7,8 @@ import StyledComponents from '@root/StylingComponents';
 
 import CurrentStatus from '@components/user/CurrentStatus';
 
-var api = require('@lib/api');
+const api = require('@lib/api');
+const { error, log } = require('@lib/logger');
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -198,7 +199,7 @@ function UserSettings() {
     ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "status", value: statusId });
     api.call("users/customStatus", "POST", { id: sessionStorage.getItem("id"), status: statusId })
       .then((res) => { })
-      .catch((err) => { console.error(err); });
+      .catch((err) => { error(err); });
     setStatusHover(false);
   }
 
@@ -214,7 +215,7 @@ function UserSettings() {
         navigate("/login");
       })
       .catch(err => {
-        console.error(err);
+        error(err);
       });
   }
 

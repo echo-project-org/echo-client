@@ -1,5 +1,7 @@
 import { storage } from '@root/index';
 
+const { error, warn } = require('@lib/logger');
+
 class Users {
     constructor() {
         this.users = {};
@@ -39,7 +41,7 @@ class Users {
     }
 
     add(data, self = false) {
-        if (!data) return console.error("[CACHE] Data is required to add a user to the cache");
+        if (!data) return error("[CACHE] Data is required to add a user to the cache");
         // data type check
         data = this.typeCheck(data);
 
@@ -50,11 +52,11 @@ class Users {
             storage.set("online", data.online);
         }
 
-        if (!data.id) return console.error("[CACHE] ID is required to add a user to the cache");
-        if (!data.name) return console.error("[CACHE] Name is required to add a user to the cache");
-        if (!data.online) return console.error("[CACHE] Online is required to add a user to the cache");
+        if (!data.id) return error("[CACHE] ID is required to add a user to the cache");
+        if (!data.name) return error("[CACHE] Name is required to add a user to the cache");
+        if (!data.online) return error("[CACHE] Online is required to add a user to the cache");
 
-        if (this.users[data.id]) return console.warn(`[CACHE] User ${data.id} already exists in cache`);
+        if (this.users[data.id]) return warn(`[CACHE] User ${data.id} already exists in cache`);
         
         this.users[data.id] = {
             id: data.id,
@@ -114,7 +116,7 @@ class Users {
         id = this.typeCheck(id);
         field = this.typeCheck(field);
         value = this.typeCheck(value);
-        if (!this.users[id]) return console.error(`[CACHE] User ${id} not found in cache`);
+        if (!this.users[id]) return error(`[CACHE] User ${id} not found in cache`);
         this.users[id][field] = value;
     }
 }

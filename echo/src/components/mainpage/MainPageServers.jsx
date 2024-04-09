@@ -11,7 +11,7 @@ import MainPageServersComponent from './MainPageServersComponent';
 import StylingComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
-const { ipcRenderer } = window.require('electron');
+const { error } = require('@lib/logger');
 
 function MainPageServers({ }) {
   const [servers, setServers] = useState([]);
@@ -23,8 +23,7 @@ function MainPageServers({ }) {
         setServers(res.json);
       })
       .catch((err) => {
-        ipcRenderer.send("log", { type: "error", message: err });
-        console.error(err.message);
+        error(err.message);
       });
   }
 
@@ -50,8 +49,7 @@ function MainPageServers({ }) {
         }, true);
       })
       .catch((err) => {
-        ipcRenderer.send("log", { type: "error", message: err });
-        console.error(err.message);
+        error(err.message);
       });
   }
 

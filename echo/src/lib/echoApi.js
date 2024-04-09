@@ -7,25 +7,27 @@ import wsConnection from "./wsConnection";
 
 import { storage } from "@root/index";
 
+const { error, warn, log } = require("@lib/logger");
+
 class EchoFriendsAPI {
   constructor() {
     this.cachedFriends = new Friends();
   }
 
   addFriend(friend) {
-    console.log("ep.addFriend", friend);
+    log("ep.addFriend", friend);
     // if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
     // populate info with cached user data
     if (!friend.name && !friend.img) {
       const user = this.cachedUsers.get(friend.targetId);
-      console.log("user", user);
+      log("user", user);
       if (user) {
         friend.img = user.img || user.userImage;
         friend.name = user.name;
         friend.status = user.status;
         friend.online = user.online;
       } else {
-        console.error(`User ${friend.targetId} not found in cache, adding to cache...`)
+        error(`User ${friend.targetId} not found in cache, adding to cache...`)
         this.needUserCacheUpdate({ id: friend.targetId, call: { function: "addFriend", args: friend } });
       }
     }
@@ -40,7 +42,7 @@ class EchoFriendsAPI {
   }
 
   removeFriend(data) {
-    console.log("ep.removeFriend", data);
+    log("ep.removeFriend", data);
     this.cachedFriends.remove(data.targetId);
     this.friendCacheUpdated(this.cachedFriends.getAll());
   }
@@ -52,12 +54,12 @@ class EchoFriendsAPI {
       return userFriend;
     } else {
       // this.needUserCacheUpdate({ id, call: { function: "getFriend", args: { id } } });
-      console.warn("Friend not found in cache, probably offline and we don't handle it, ID:", id)
+      warn("Friend not found in cache, probably offline and we don't handle it, ID:", id)
     }
   }
 
   wsFriendAction(data) {
-    console.log("wsFriendAction", data)
+    log("wsFriendAction", data)
 
     if (data.operation === "add") {
       this.addFriend(data);
@@ -92,7 +94,7 @@ class EchoWSApi extends EchoFriendsAPI {
   }
 
   wsConnectionError(error) {
-    console.error(error);
+    error(error);
     alert("Can't conect to the server! \nCheck your internet connection (or the server is down). \n\nIf your internet connection is working try pinging echo.kuricki.com, if it doesn't respond, contact Kury or Thundy :D");
     this.stopTransmitting();
     this.stopReceiving();
@@ -106,7 +108,7 @@ class EchoWSApi extends EchoFriendsAPI {
 
   wsUserJoinedChannel(data) {
     data.roomId = data.roomId.slice(0, data.roomId.lastIndexOf('@'));
-    console.log(data);
+    log(data);
     if (data.isConnected) this.startReceiving(data.id);
     this.updateUser({ id: data.id, field: "currentRoom", value: data.roomId });
     this.updateUser({ id: data.id, field: "muted", value: data.muted });
@@ -119,7 +121,7 @@ class EchoWSApi extends EchoFriendsAPI {
   }
 
   wsRoomHasTheseUsers(data) {
-    console.log("wsRoomHasTheseUsers", data)
+    log("wsRoomHasTheseUsers", data)
     data.forEach(user => {
       user.roomId = user.roomId.slice(0, user.roomId.lastIndexOf('@'));
       if (user.isConnected) this.startReceiving(user.id);
@@ -139,7 +141,7 @@ class EchoWSApi extends EchoFriendsAPI {
 
   wsUserLeftChannel(data) {
     if (data.crashed) {
-      console.log("User " + data.id + " crashed");
+      log("User " + data.id + " crashed");
     }
 
     if (data.isConnected) this.stopReceiving(data.id);
@@ -174,7 +176,7 @@ class EchoWSApi extends EchoFriendsAPI {
   }
 
   wsVideoBroadcastStop(data) {
-    console.log("wsVideoBroadcastStop", data);
+    log("wsVideoBroadcastStop", data);
     this.updateUser({ id: data.id, field: "broadcastingVideo", value: false });
     this.videoBroadcastStop(data);
   }
@@ -232,7 +234,7 @@ class EchoWSApi extends EchoFriendsAPI {
   }
 
   wsReceiveChatMessage(data) {
-    console.log("wsReceiveChatMessage", data)
+    log("wsReceiveChatMessage", data)
     if (typeof data.room !== "string") data.room = data.room.toString();
     if (typeof data.id !== "string") data.id = data.id.toString();
     if (typeof data.userId !== "string") data.userId = data.id;
@@ -250,7 +252,7 @@ class EchoWSApi extends EchoFriendsAPI {
         this.receiveChatMessage(newMessage);
       }
       else this.needUserCacheUpdate({ id: data.id, call: { function: "wsReceiveChatMessage", args: data } });
-    } else console.error("Room not found in cache");
+    } else error("Room not found in cache");
   }
 
   closeConnection(id = null) {
@@ -482,7 +484,7 @@ class EchoAPI extends EchoWSApi {
 
   stopScreenSharing() {
     const id = sessionStorage.getItem("id");
-    if (!id) return console.error("No id found in session storage");
+    if (!id) return error("No id found in session storage");
     this.updateUser({ id, field: "screenSharing", value: false });
     if (this.mh && this.mh.isScreenSharing()) {
       this.mh.stopScreenShare();
@@ -515,7 +517,7 @@ class EchoAPI extends EchoWSApi {
       let stream = this.mh.getVideo(remoteId);
       return stream;
     } else {
-      console.error("VideoRtc not initialized");
+      error("VideoRtc not initialized");
     }
   }
 
@@ -561,13 +563,13 @@ class EchoAPI extends EchoWSApi {
     const room = this.cachedRooms.get(id);
     if (room)
       if (room["update" + field]) room["update" + field](value);
-      else console.error("Room does not have field " + field + " or field function update" + field);
-    else console.error("Room not found in cache");
+      else error("Room does not have field " + field + " or field function update" + field);
+    else error("Room not found in cache");
   }
 
   // cache users functions
   addUser(user, self = false) {
-    console.log("adduser", user)
+    log("adduser", user)
     this.cachedUsers.add(user, self);
     this.usersCacheUpdated(this.cachedUsers.get(user.id));
   }
@@ -592,8 +594,8 @@ class EchoAPI extends EchoWSApi {
       }
       else this.needUserCacheUpdate({ id, call: { function: "updateUser", args: { id, field, value } } });
     } catch (error) {
-      console.error(id, field, value);
-      console.error(error);
+      error(id, field, value);
+      error(error);
     }
   }
 
@@ -624,7 +626,7 @@ class EchoAPI extends EchoWSApi {
 
   // chat messages function
   sendChatMessage(data) {
-    console.log(data);
+    log(data);
     if (typeof data.roomId !== "string") data.roomId = data.roomId.toString();
     if (typeof data.userId !== "string") data.userId = data.userId.toString();
     const room = this.cachedRooms.get(data.roomId);
@@ -633,10 +635,10 @@ class EchoAPI extends EchoWSApi {
       if (this.wsConnection) {
         this.sendToSocket("sendChatMessage", { ...data, id: data.userId });
       } else {
-        console.error("Socket not found");
+        error("Socket not found");
       }
     }
-    else console.error("Room not found in cache");
+    else error("Room not found in cache");
   }
 
   setMessagesCache({ messages, roomId }) {
@@ -665,13 +667,13 @@ class EchoAPI extends EchoWSApi {
           });
           this.messagesCacheUpdated(room.chat.get());
         } else {
-          console.error("User not found in cache");
+          error("User not found in cache");
           this.needUserCacheUpdate({ id: userId, call: { function: "setMessagesCache", args: { messages, roomId } } });
           this.messagesCacheUpdated([]);
           return;
         }
       } else {
-        console.error("Room not found in cache");
+        error("Room not found in cache");
         this.messagesCacheUpdated([]);
       }
     });
@@ -699,7 +701,7 @@ class EchoAPI extends EchoWSApi {
       this.emit("roomClicked", data);
     } else {
       // reconnect to socket
-      console.error("Socket not found, reconnecting...");
+      error("Socket not found, reconnecting...");
       this.wsConnection.connect(storage.get('token'));
       // retry the action (BAD, but ok for now)
       this.checkRoomClicked(data);

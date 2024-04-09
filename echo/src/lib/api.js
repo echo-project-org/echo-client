@@ -1,5 +1,7 @@
 import { storage, ep } from '@root/index';
 
+const { warn } = require('@lib/logger');
+
 const API_URL = "https://echo.kuricki.com/api/";
 // const API_URL = "http://localhost:6980/api/";
 
@@ -47,31 +49,31 @@ const handleErrors = (status, response) => {
     switch (status) {
       case 400:
         // Bad request
-        console.warn(status + ": Bad request");
+        warn(status + ": Bad request");
         break;
       case 401:
         // Unauthorized
         ep.apiUnauthorized();
-        console.warn(status + ": Unauthorized");
+        warn(status + ": Unauthorized");
         break;
       case 403:
         // Forbidden
-        console.warn(status + ": Forbidden");
+        warn(status + ": Forbidden");
         break;
       case 413:
         // Payload too large
-        console.warn(status + ": Payload too large");
+        warn(status + ": Payload too large");
         break;
       case 404:
         // Not found
-        console.warn(status + ": Not found");
+        warn(status + ": Not found");
         break;
       case 500:
         // Internal server error
-        console.warn(status + ": Internal server error");
+        warn(status + ": Internal server error");
         break;
       default:
-        console.warn(status + ": Unknown error");
+        warn(status + ": Unknown error");
         break;
     }
   }

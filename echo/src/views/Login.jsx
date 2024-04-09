@@ -8,8 +8,8 @@ import imgLogo from "@root/img/headphones.svg"
 import { storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
-var api = require('@lib/api')
 const { ipcRenderer } = window.require('electron');
+const api = require('@lib/api');
 
 const Login = () => {
   let navigate = useNavigate();

@@ -6,7 +6,7 @@ import StylingComponents from '@root/StylingComponents';
 import Room from './Room';
 
 const api = require("@lib/api");
-const { ipcRenderer } = window.require('electron');
+const { error } = require("@lib/logger");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
@@ -37,15 +37,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
                 }
               })
               .catch((err) => {
-                ipcRenderer.send("log", { type: "error", message: err });
-                console.error(err);
+                error(err);
               });
           });
         }
       })
       .catch((err) => {
-        ipcRenderer.send("log", { type: "error", message: err });
-        console.error(err);
+        error(err);
       });
   }
 
@@ -54,7 +52,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
 
     ep.on("roomClicked", "Rooms.roomClicked", (data) => {
       if (!ep.isAudioFullyConnected()) {
-        console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
+        error("Audio is not fully connected yet. Please wait a few seconds and try again.");
         return;
       }
 
@@ -82,8 +80,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
           }
         })
         .catch((err) => {
-          ipcRenderer.send("log", { type: "error", message: err });
-          console.error(err);
+          error(err);
         });
     });
 
@@ -101,8 +98,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
           }
         })
         .catch((err) => {
-          ipcRenderer.send("log", { type: "error", message: err });
-          console.error(err);
+          error(err);
         });
     });
 

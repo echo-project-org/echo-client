@@ -11,6 +11,7 @@ import { storage, ep } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
+const { error } = require('@lib/logger');
 
 function MainPage() {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ function MainPage() {
             storage.set("email", data.json.email);
           })
           .catch((err) => {
-            console.log(err);
+            error(err);
             navigate("/login");
           });
       }

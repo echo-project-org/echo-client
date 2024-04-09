@@ -377,26 +377,6 @@ app.whenReady().then(async () => {
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
 
-  // catch all logs from the renderer
-  mainWindow.webContents.on('console-message', (e, level, message, line, sourceId) => {
-    // translate level (int) in string
-    switch (level) {
-      case 0:
-        level = "debug";
-        break;
-      case 1:
-        level = 'info';
-        break;
-      case 2:
-        level = 'warn';
-        break;
-      case 3:
-        level = 'error';
-        break;
-    }
-    _logger({ type: level, message: "[Renderer] " + message });
-  })
-
   mainWindow.on('close', (e) => {
     if (mainWindow.isVisible()) {
       e.preventDefault();

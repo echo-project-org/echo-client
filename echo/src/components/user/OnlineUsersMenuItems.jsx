@@ -6,6 +6,7 @@ import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove, ScreenSha
 import { ep, storage } from "@root/index";
 
 const api = require('@lib/api');
+const { error, log } = require('@lib/logger');
 
 function FriendButton({ user, handleClose }) {
   const [friendStatus, setFriendStatus] = useState('no');
@@ -14,9 +15,9 @@ function FriendButton({ user, handleClose }) {
     setFriendStatus('requested');
     // notify api or whatever needs to be updated
     api.call("users/friend/request", 'POST', { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
-      .catch(err => console.log(err));
+      .catch(err => error(err));
     // send message to socket
-    console.log("sending friend request to: ", user)
+    log("sending friend request to: ", user)
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'sent' });
     handleClose();
   }
@@ -25,7 +26,7 @@ function FriendButton({ user, handleClose }) {
     setFriendStatus('no');
     // notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
-      .catch(err => console.log(err));
+      .catch(err => error(err));
     // send message to socket
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
     handleClose();
@@ -34,7 +35,7 @@ function FriendButton({ user, handleClose }) {
   const handleFriendAccept = () => {
     // notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
-      .catch(err => console.log(err));
+      .catch(err => error(err));
     // send message to socket
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
     handleClose();
@@ -43,7 +44,7 @@ function FriendButton({ user, handleClose }) {
   const handleFriendReject = () => {
     // notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
-      .catch(err => console.log(err));
+      .catch(err => error(err));
     // send message to socket
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
     handleClose();

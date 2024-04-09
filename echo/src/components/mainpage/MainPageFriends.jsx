@@ -8,7 +8,7 @@ import StylingComponents from '@root/StylingComponents';
 import CurrentStatus from "@components/user/CurrentStatus";
 
 const api = require('@lib/api');
-const { ipcRenderer } = window.require('electron');
+const { error } = require('@lib/logger');
 
 function MainPageFriends({ }) {
   const [friends, setFriends] = useState([]);
@@ -28,8 +28,7 @@ function MainPageFriends({ }) {
         }
       })
       .catch((err) => {
-        ipcRenderer.send("log", { type: "error", message: err });
-        console.error(err.message);
+        error(err.message);
       });
   }, []);
 

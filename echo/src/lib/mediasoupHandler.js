@@ -2,6 +2,8 @@ import { ep } from "@root/index";
 const { ipcRenderer } = window.require('electron');
 const mediasoup = require("mediasoup-client");
 
+const { warn, error, log } = require("@lib/logger");
+
 /**
  * Class representing a mediasoup handler.
  * @class
@@ -133,7 +135,7 @@ class mediasoupHandler {
         this.statsInterval = null;
       }
     } catch (error) {
-      console.error(error);
+      error(error);
     }
   }
 
@@ -342,7 +344,7 @@ class mediasoupHandler {
     });
 
     this.videoSendTransport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-      console.log(kind)
+      log(kind)
       if (kind === "video") {
         ep.sendToSocket("sendVideoTransportProduce", {
           id: this.id + "-video",
@@ -402,11 +404,11 @@ class mediasoupHandler {
    */
   async startAudioBroadcast() {
     if (!this.mediasoupDevice.canProduce("audio")) {
-      console.error("Cannot produce audio");
+      error("Cannot produce audio");
       return;
     }
 
-    this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+    this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { error(err); return; });
     this.context = new AudioContext();
     const src = this.context.createMediaStreamSource(this.outStream);
     const dst = this.context.createMediaStreamDestination();
@@ -568,12 +570,12 @@ class mediasoupHandler {
    */
   async startScreenShare() {
     if (!this.mediasoupDevice.canProduce("video")) {
-      console.error("Cannot produce video");
+      error("Cannot produce video");
       return;
     }
 
     if (this.videoSourceId === 'undefined') {
-      console.error("No video source id");
+      error("No video source id");
       return;
     }
 
@@ -587,9 +589,9 @@ class mediasoupHandler {
         videoGoogleMinBitrate: 3000,
       },
     });
-    console.log(this.outVideoStream.getTracks());
+    log(this.outVideoStream.getTracks());
     const audioTrack = this.outVideoStream.getAudioTracks()[0];
-    console.log(audioTrack)
+    log(audioTrack)
     if (audioTrack) {
       this.videoAudioProducer = await this.videoSendTransport.produce({
         track: audioTrack,
@@ -657,7 +659,7 @@ class mediasoupHandler {
       rtpParameters: videoDescription.rtpParameters,
     });
 
-    console.log(videoAudioDescription)
+    log(videoAudioDescription)
     if (videoAudioDescription.id) {
       this.videoAudioConsumer = await this.videoRcvTransport.consume({
         id: videoAudioDescription.id + "-video-audio",
@@ -672,7 +674,7 @@ class mediasoupHandler {
 
     //add audioTrack to inVideoStream
     if (this.videoAudioConsumer) {
-      console.log("Adding audio track to video stream")
+      log("Adding audio track to video stream")
       const { audioTrack } = this.videoAudioConsumer;
       if (audioTrack) {
         this.inVideoStream.addTrack(audioTrack);
@@ -680,7 +682,7 @@ class mediasoupHandler {
     }
 
     this.receivingVideoFrom = videoDescription.producerId;
-    console.log(this.receivingVideoFrom)
+    log(this.receivingVideoFrom)
 
     ep.sendToSocket("resumeVideoStream", { id: this.id, producerId: videoDescription.producerId })
     ep.sendVideoStreamToFrontEnd({ id: videoDescription.producerId, stream: this.inVideoStream });
@@ -798,7 +800,7 @@ class mediasoupHandler {
    */
   setVoiceDetectionVolume(volume) {
     if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
+      error("Volume must be between 0.0 and 1.0", volume);
       volume = 1.0;
     }
 
@@ -895,7 +897,7 @@ class mediasoupHandler {
    */
   setOutVolume(volume) {
     if (!volume) {
-      console.warn("Volume is undefined, setting to 1");
+      warn("Volume is undefined, setting to 1");
       volume = 1.0;
     }
     this.volume = volume;
@@ -937,7 +939,7 @@ class mediasoupHandler {
    */
   async startListeningLocalStream() {
     if (!this.outStream) {
-      this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      this.outStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { error(err); return; });
     }
 
     this.testContext = new AudioContext();
@@ -1020,7 +1022,7 @@ class mediasoupHandler {
     this.constraints.audio.deviceId = deviceId;
 
     if (this.outStream) {
-      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { error(err); return; });
       this.context = new AudioContext();
 
       const src = this.context.createMediaStreamSource(newStream);
@@ -1062,7 +1064,7 @@ class mediasoupHandler {
 
     this.constraints.audio.echoCancellation = value;
     if (this.outStream) {
-      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { error(err); return; });
       this.context = new AudioContext();
 
       const src = this.context.createMediaStreamSource(newStream);
@@ -1112,7 +1114,7 @@ class mediasoupHandler {
     this.constraints.audio.noiseSuppression = value;
     this.constraints.audio.googNoiseSupression = value;
     if (this.outStream) {
-      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { error(err); return; });
       this.context = new AudioContext();
 
       const src = this.context.createMediaStreamSource(newStream);
@@ -1161,7 +1163,7 @@ class mediasoupHandler {
     this.constraints.audio.autoGainControl = value;
     this.constraints.audio.googAutoGainControl = value;
     if (this.outStream) {
-      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { console.error(err); return; });
+      let newStream = await navigator.mediaDevices.getUserMedia(this.constraints, err => { error(err); return; });
       this.context = new AudioContext();
 
       const src = this.context.createMediaStreamSource(newStream);
@@ -1234,7 +1236,7 @@ class mediasoupHandler {
    */
   setSpeakerVolume(volume) {
     if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
+      error("Volume must be between 0.0 and 1.0", volume);
       volume = 1.0;
     }
 
@@ -1255,7 +1257,7 @@ class mediasoupHandler {
    */
   setPersonalVolume(userId, volume) {
     if (volume > 1.0 || volume < 0.0) {
-      console.error("Volume must be between 0.0 and 1.0", volume);
+      error("Volume must be between 0.0 and 1.0", volume);
       volume = 1.0;
     }
 

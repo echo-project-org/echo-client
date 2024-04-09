@@ -5,6 +5,8 @@ import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 import { ep } from "@root/index";
 import ScreenShareOption from './ScreenShareOption';
 
+const { error, warn } = require('@lib/logger');
+
 const modalStyle = {
   position: "relative",
   top: "5%",
@@ -89,7 +91,7 @@ function ScreenShareSelector() {
 
   const handleClick = (event) => {
     if (!ep.isAudioFullyConnected()) {
-      console.error("Audio is not fully connected yet. Please wait a few seconds and try again.");
+      error("Audio is not fully connected yet. Please wait a few seconds and try again.");
       return;
     }
 
@@ -120,7 +122,7 @@ function ScreenShareSelector() {
         handleModalOpen();
       }
     } else {
-      console.warn("You must be in a room to share your screen")
+      warn("You must be in a room to share your screen")
     }
 
   };

@@ -1,6 +1,7 @@
 import { ep } from "@root/index";
 
 const io = require("socket.io-client");
+const { error, log } = require("@lib/logger");
 
 class wsConnection {
   constructor() {
@@ -9,7 +10,7 @@ class wsConnection {
   }
 
   connect(token) {
-    console.log("Connecting to: ", this.SERVER_URL);
+    log("Connecting to: ", this.SERVER_URL);
 
     this.socket = io(this.SERVER_URL, {
       path: "/socket.io",
@@ -57,7 +58,7 @@ class wsConnection {
     });
 
     this.socket.on("server.friendAction", (data) => {
-      console.log("server.friendAction: ", data)
+      log("server.friendAction: ", data)
       ep.wsFriendAction(data);
     });
 
