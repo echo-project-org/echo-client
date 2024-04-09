@@ -25,6 +25,35 @@
     "directories": {
       "output": "dist"
     },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "include": "build/installer.nsh",
+      "installerIcon": "./images/icon.ico",
+      "uninstallerIcon": "./images/icon.ico",
+      "installerHeaderIcon": "./images/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "deleteAppDataOnUninstall": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Echo"
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm"
+      ],
+      "category": "Utility",
+      "executableName": "echo",
+      "icon": "./images/icon.png"
+    },
+    "msi": {
+      "runAfterFinish": false,
+      "oneClick": false,
+      "createStartMenuShortcut": true,
+      "createDesktopShortcut": true
+    },
     "extraResources": [
       "./images/**"
     ]
