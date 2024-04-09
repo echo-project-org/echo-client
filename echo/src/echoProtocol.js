@@ -113,4 +113,8 @@ EchoProtocol.prototype.appClosing = function (){
   this.emit("appClosing");
 }
 
+EchoProtocol.prototype.requestAppClose = function (){
+  this.emit("requestAppClose");
+}
+
 export default EchoProtocol;
