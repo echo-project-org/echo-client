@@ -29,16 +29,6 @@ function WindowControls({ }) {
     ipcRenderer.send("minimize", true);
   }
 
-  useEffect(() => {
-    ep.on("canSafelyCloseApp", "WindowControls.canSafelyCloseApp", () => {
-      closeApp();
-    });
-
-    return () => {
-      ep.remove("canSafelyCloseApp", "WindowControls.canSafelyCloseApp");
-    }
-  }, [])
-
   return (
     <StylingComponents.WindowControls.StyledButtonGroup variant='text' size="small">
       <Button onClick={minimize} disableRipple>

@@ -84,27 +84,19 @@ function RoomControl({ state, setState, screenSharing }) {
       setRtcConnectionStateColor(theme.palette.error.main);
     });
 
-    ep.on("localUserCrashed", (data) => {
-      closeConnection();
+    ep.on("localUserCrashed", "RoomControl.localUserCrashed", (data) => {
+      ep.exitFromRoom(sessionStorage.getItem('id'));
+      ap.playLeaveSound();
+      ep.closeConnection();
+      navigate("/");
     });
 
-    ipcRenderer.on("appClose", (event, arg) => {
-      //exit from room and close connection
-      api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
-        .then(res => {
-          ep.exitFromRoom(sessionStorage.getItem('id'));
-          ep.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
-          ap.playLeaveSound();
-          ep.closeConnection();
-          ep.canSafelyCloseApp();
-        })
-        .catch(err => {
-          ipcRenderer.send("log", { type: "error", message: err });
-          console.error(err);
-          navigate("/");
-          // clean cache and session storage
-          sessionStorage.clear();
-        });
+    ep.on("appClosing", "RoomControl.appClosing", () => {
+      console.log("app closing")
+      ep.exitFromRoom(sessionStorage.getItem('id'));
+      ap.playLeaveSound();
+      ep.closeConnection();
+      ep.canSafelyCloseApp();
     });
 
     return () => {
@@ -127,6 +119,7 @@ function RoomControl({ state, setState, screenSharing }) {
     clearInterval(interval);
     interval = null;
   }
+
   const closeConnection = () => {
     // Notify api
     setState(false);
@@ -159,6 +152,7 @@ function RoomControl({ state, setState, screenSharing }) {
         });
     }
   }
+
   const computeAudio = (isDeaf) => {
     if (isDeaf)
       if (!muted) {
