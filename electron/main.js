@@ -291,7 +291,6 @@ const makeSysTray = () => {
       label: "Quit echo",
       click: function () {
         mainWindow.close();
-        app.quit();
       }
     },
   ]
@@ -388,6 +387,10 @@ app.whenReady().then(async () => {
       e.preventDefault();
       mainWindow.webContents.send("appClose");
       mainWindow.hide();
+      //start a timeout to quit the app if it doesn't close in 5 seconds
+      setTimeout(() => {
+        app.quit();
+      }, 5000);
     }
   })
 
