@@ -11,6 +11,7 @@ import Updating from '@views/Updating';
 import { ep } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');
+const api = require('@lib/api');
 
 function AnimatedRoutes() {
   const navigate = useNavigate();
@@ -30,6 +31,26 @@ function AnimatedRoutes() {
 
     ipcRenderer.on("goToMainPage", () => {
       navigate("/");
+    });
+
+    ipcRenderer.on("appClose", (event, arg) => {
+      //exit from room and close connection
+      api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
+        .then(res => {
+          if(location.pathname === "/main") {
+            ep.appClosing();
+          } else {
+            ep.canSafelyCloseApp();
+          }
+        })
+        .catch(err => {
+          console.error("Failed setting user to offline", err);
+          ep.canSafelyCloseApp();
+        });
+    });
+    
+    ep.on("canSafelyCloseApp", () => {
+      ipcRenderer.send("exitApplication", true);
     });
 
     return () => {
