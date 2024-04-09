@@ -1,11 +1,13 @@
 const { clear } = require('console');
-const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut, session, netLog } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, desktopCapturer, dialog, globalShortcut, session } = require('electron');
 const { autoUpdater, AppUpdater } = require('electron-updater');
 const log = require('electron-log');
 const path = require('path')
 
 Object.assign(console, log.functions);
-log.transports.file.resolvePathFn = () => path.join(app.getPath('exe'), 'logs', 'echo.log');
+const logsPath = path.join(app.getPath('exe').split("Echo.exe")[0], 'logs', 'echo.log');
+console.log('Logs path:', logsPath);
+log.transports.file.resolvePathFn = () => logsPath;
 
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -105,6 +107,7 @@ autoUpdater.on('update-available', (info) => {
     mainWindow.webContents.send("updateAvailable", { "version": info.version, "releaseNotes": info.releaseNotes });
     mainWindow.setProgressBar(0);
   }
+  console.info("Update available: ", info.version);
 });
 
 autoUpdater.on('download-progress', (e) => {
@@ -119,6 +122,7 @@ autoUpdater.on('download-progress', (e) => {
     });
     mainWindow.setProgressBar(e.percent / 100);
   }
+  console.info("Download progress: ", e.percent+ "%" + " - " + e.bytesPerSecond + " bps");
 });
 
 autoUpdater.on('update-downloaded', () => {
@@ -134,6 +138,7 @@ autoUpdater.on('update-downloaded', () => {
 
 autoUpdater.on('error', (err) => {
   dialog.showErrorBox('Error downloading update: ', err == null ? "unknown" : (err.stack || err).toString());
+  console.error(err);
 });
 
 app.on('activate', () => {
@@ -147,9 +152,6 @@ ipcMain.on("exitApplication", async (event, arg) => {
     if (rtcInternals && !rtcInternals.isDestroyed()) {
       rtcInternals.close();
     }
-  } else {
-    const path = await netLog.stopLogging();
-    console.log('Netlog path:', path);
   }
 
   if (mainWindow && !mainWindow.isDestroyed()) {
@@ -227,30 +229,29 @@ ipcMain.on("grantDisplayMedia", (event, arg) => {
   })
 });
 
-ipcMain.on("mainLog", (event, arg) => {
+const _logger = (arg) => {
+  if (typeof arg === "string") arg = { message: arg };
+  if (!arg.type) arg.type = "log";
+
   switch (arg.type) {
     case "error":
-      log.error(arg.message);
+      console.error(arg.message);
       break;
     case "warn":
-      log.warn(arg.message);
+      console.warn(arg.message);
       break;
     case "info":
-      log.info(arg.message);
-      break;
-    case "verbose":
-      log.verbose(arg.message);
+      console.info(arg.message);
       break;
     case "debug":
-      log.debug(arg.message);
-      break;
-    case "silly":
-      log.silly(arg.message);
+      console.debug(arg.message);
       break;
     default:
-      log.info(arg.message);
+      console.log(arg.message);
   }
-});
+}
+
+ipcMain.on("log", (event, arg) => _logger(arg));
 
 const makeSysTray = () => {
   if (app.isPackaged) {
@@ -374,14 +375,28 @@ const makeSysTray = () => {
 }
 
 app.whenReady().then(async () => {
-  if (app.isPackaged) {
-    await netLog.startLogging('/logs/netlog');
-  }
-
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
 
-  //catch close event and send to renderer
+  // catch all logs from the renderer
+  mainWindow.webContents.on('console-message', (e, level, message, line, sourceId) => {
+    // translate level (int) in string
+    switch (level) {
+      case 0:
+        level = "debug";
+        break;
+      case 1:
+        level = 'info';
+        break;
+      case 2:
+        level = 'warn';
+        break;
+      case 3:
+        level = 'error';
+        break;
+    }
+    _logger({ type: level, message: "[Renderer] " + message });
+  })
 
   mainWindow.on('close', (e) => {
     if (mainWindow.isVisible()) {

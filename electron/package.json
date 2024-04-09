@@ -21,8 +21,7 @@
     "artifactName": "${productName}-Setup-${version}.${ext}",
     "win": {
       "target": [
-        "nsis",
-        "msi"
+        "nsis"
       ]
     },
     "directories": {

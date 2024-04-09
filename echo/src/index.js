@@ -8,7 +8,17 @@ import Storage from '@cache/storage';
 import AudioPlayer from '@lib/audioPlayer';
 
 const storage = new Storage();
-const sessionStorage = new Storage('session');
+// const sessionStorage = new Storage('session');
+
+// const { ipcRenderer } = window.require('electron');
+// const _logger = (type, args) => {
+//   ipcRenderer.send('log', { type, message: args });
+// }
+// console.log = (args) => _logger('log', args);
+// console.error = (args) => _logger('error', args);
+// console.warn = (args) => _logger('warn', args);
+// console.info = (args) => _logger('info', args);
+// console.debug = (args) => _logger('debug', args);
 
 let ep = new EchoProtocol();
 

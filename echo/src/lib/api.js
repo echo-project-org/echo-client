@@ -22,14 +22,15 @@ export async function call(path, method = "GET", body = null, forceString = true
 
     fetch(API_URL + path, options)
       .then((response) => {
-        return new Promise((resolve) => response.json()
+        return new Promise((resolve, reject) => response.json()
           .then((json) => resolve(
             {
               status: response.status,
               ok: response.ok,
               json,
             }
-          )));
+          ))
+          .catch(reject));
       })
       .then(({ status, json, ok }) => {
         if (!handleErrors(status, json)) return reject({ status, message: json.message || "Something went wrong :(" });
