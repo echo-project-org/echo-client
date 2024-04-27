@@ -7,7 +7,6 @@ function MessageBoxButtons({ onEmojiOn, onClick }) {
   const theme = useTheme();
   const buttonStyle = {
     color: theme.palette.text.main,
-    backgroundColor: theme.palette.background.dark,
     textAlign: "center",
   }
 
