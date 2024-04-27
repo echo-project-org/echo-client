@@ -3,7 +3,7 @@ import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
 
 import { ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
-
+import { info } from "@lib/logger";
 import CurrentStatus from "@components/user/CurrentStatus";
 
 const api = require('@lib/api');
@@ -13,6 +13,7 @@ function RoomContentFriendsButtons({ user }) {
     // api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
     //   .catch(err => console.log(err));
     // send message to socket
+    info("[RoomContentFriendsButtons] Accepting friend request");
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'add', type: 'friended' });
   }
 
@@ -20,6 +21,7 @@ function RoomContentFriendsButtons({ user }) {
     // api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
     //   .catch(err => console.log(err));
     // send message to socket
+    info("[RoomContentFriendsButtons] Rejecting friend request");
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
 
@@ -27,6 +29,7 @@ function RoomContentFriendsButtons({ user }) {
     // api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
     //   .catch(err => console.log(err));
     // send message to socket
+    info("[RoomContentFriendsButtons] Removing sent friend request");
     ep.sendToSocket("friendAction", { id: sessionStorage.getItem("id"), targetId: user.id, operation: 'remove', type: 'none' });
   }
 

@@ -3,12 +3,14 @@ import { Storage } from '@mui/icons-material'
 
 import StylingComponents from '@root/StylingComponents'
 import { storage } from '@root'
+import { info } from '@lib/logger'
 
 function MainPageServersComponent({ server, id, enterServer }) {
   if (!server) return null;
 
   const handleClick = () => {
     //set local storage to the server id
+    info("[MainPageServersComponent] User clicked server")
     storage.set('serverId', server.id);
     enterServer(server.id);
   }

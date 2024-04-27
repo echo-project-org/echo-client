@@ -2,7 +2,7 @@ import "@css/chat.css";
 
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
-
+import { info } from '@lib/logger';
 import { ep, storage } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
@@ -40,6 +40,7 @@ function RoomContent({ roomId }) {
   }, [roomId]);
 
   const setContentSelectedWrap = (content) => {
+    info("[RoomContent] Setting room content selected")
     storage.set("lastContentSelected", content);
     setContentSelected(content);
   }

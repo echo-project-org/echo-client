@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import { info } from '@lib/logger';
 import { ButtonGroup, Button, Container, Tooltip } from '@mui/material';
 import { Add, Edit, Remove, DriveFileRenameOutline } from '@mui/icons-material';
 
@@ -8,6 +9,7 @@ function RoomsControlsContainer({ }) {
   const [hover, setHover] = useState([false, false, false]);
 
   const handleEdit = () => {
+    info("[RoomsControlsContainer] User toggled edit")
     setEdit(!edit)
   }
 
@@ -32,7 +34,7 @@ function RoomsControlsContainer({ }) {
             onMouseLeave={() => setHover([false, false, false])}
           ><Add /></Button>
         </Tooltip>
-        <Tooltip title = "Delete channel" arrow disableInteractive open={hover[1]}>
+        <Tooltip title="Delete channel" arrow disableInteractive open={hover[1]}>
           <Button
             disabled={!edit}
             disableRipple

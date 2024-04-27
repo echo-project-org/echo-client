@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Grid } from '@mui/material'
 import { Visibility } from '@mui/icons-material';
-
+import { info } from '@lib/logger';
 import { ep, ap } from '@root';
 
 import StylingComponents from '@root/StylingComponents';
@@ -14,7 +14,7 @@ function ScreenShareUserContainer({ user, selectUser }) {
     ep.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true);
-        if(!data.silent){
+        if (!data.silent) {
           ap.playStartStreamSound();
         }
       }

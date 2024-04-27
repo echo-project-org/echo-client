@@ -9,12 +9,13 @@ import { ep, storage, ap } from "@root/index";
 import StylingComponents from "@root/StylingComponents";
 
 const api = require("@lib/api");
-const { error, log } = require("@lib/logger");
+const { error, log, info } = require("@lib/logger");
 
 function ChatControls({ onEmojiOn, roomId }) {
   const [message, setMessage] = useState("");
 
   const sendChatMessage = (e) => {
+    info("[ChatControls] User sent a message")
     if (!message) return;
     if (message.length === 0) return;
     log("about to send this message", message, roomId, sessionStorage.getItem("id"));

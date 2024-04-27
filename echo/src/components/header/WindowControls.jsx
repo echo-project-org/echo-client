@@ -7,10 +7,11 @@ import StylingComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
 const { ipcRenderer } = window.require('electron');
-const { error } = require('@lib/logger');
+const { error, info } = require('@lib/logger');
 
 function WindowControls({ }) {
   const closeApp = async () => {
+    info("Closing application");
     api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
       .then(() => {
         ep.requestAppClose();
@@ -21,10 +22,12 @@ function WindowControls({ }) {
       });
   }
   const toggleFullscreen = async () => {
+    info("Toggling fullscreen");
     ipcRenderer.send("toggleFullscreen", true);
   }
   const minimize = async () => {
     // remote.BrowserWindow.getFocusedWindow().minimize();
+    info("Minimizing window");
     ipcRenderer.send("minimize", true);
   }
 

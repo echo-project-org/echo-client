@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { Container, Grid, styled } from '@mui/material'
 import ScreenShareControlIcons from './ScreenShareControlIcons';
 import ScreenShareUserContainer from "./ScreenShareUserContainer";
-
+import { info } from '@lib/logger';
 import { ep } from '@root';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -42,12 +42,14 @@ function RoomContentScreenShares({ roomId }) {
 
   useEffect(() => {
     ep.on("gotVideoStream", "RoomContentScreenShares.gotVideoStream", (data) => {
+      info("[RoomContentScreenShares] Got video stream")
       setFocusedUser(data.user.id);
       var myDiv = document.getElementById('screenShareContainer');
       if (myDiv) myDiv.scrollTop = (99999999999999 * -1);
     });
 
     ep.on("videoBroadcastStop", "RoomContentScreenShares.videoBroadcastStop", (data) => {
+      info("[RoomContentScreenShares] Video broadcast stopped")
       if (data.id === focusedUser) {
         setFocusedUser('undefined');
       }
@@ -82,23 +84,26 @@ function RoomContentScreenShares({ roomId }) {
       ep.releaseGroup("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated");
     }
   }, [users]);
-  
+
   const updateUsers = () => {
+    info("[RoomContentScreenShares] Updating users")
     setUsers(ep.getUsersInRoom(roomId));
   }
 
   const selectUser = (user) => {
-    if(focusedUser === user.id){
+    info("[RoomContentScreenShares] Selecting user")
+    if (focusedUser === user.id) {
       return;
     }
 
-    if(focusedUser !== 'undefined'){
+    if (focusedUser !== 'undefined') {
       stopPlayback();
     }
-    
+
     ep.startReceivingVideo(user.id);
   }
   const stopPlayback = () => {
+    info("[RoomContentScreenShares] Stopping playback")
     ep.stopReceivingVideo(focusedUser.id);
     setFocusedUser('undefined');
   }

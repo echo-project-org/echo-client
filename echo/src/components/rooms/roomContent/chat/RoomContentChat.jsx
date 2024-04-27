@@ -7,14 +7,17 @@ import ChatControls from './ChatControls'
 import EmojiPicker from "./EmojiPicker";
 
 import { ep } from "@root/index";
+import { info } from "@lib/logger";
 
 function RoomContentChat({ roomId }) {
   const [emojiPicker, setEmojiPicker] = useState(false);
   const handleEmojiPicker = () => {
+    info("[RoomContentChat] Opening emoji picker")
     setEmojiPicker(!emojiPicker);
   };
 
   const closeEmojiPicker = () => {
+    info("[RoomContentChat] Closing emoji picker")
     setEmojiPicker(false);
   };
 

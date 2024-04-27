@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ToggleButtonGroup, ToggleButton, Badge } from '@mui/material';
 import { ChatBubble, PeopleAlt, Window } from '@mui/icons-material';
-
+import { info } from '@lib/logger';
 import { ep } from '@root';
 
 function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
@@ -17,13 +17,14 @@ function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
   }
 
   useEffect(() => {
+    info("[RoomContentSelector] Content selected changed: " + contentSelected)
     if (contentSelected === 'chat') {
       setNNewMessages(0);
     }
   }, [contentSelected]);
 
   const addMessage = (message) => {
-    console.log("addMessage", message, roomId, nNewMessages)
+    info("[RoomContentSelector] Adding message")
     if (contentSelected === 'chat') return;
     if (String(message.roomId) === String(roomId)) {
       setNNewMessages(nNewMessages + 1);

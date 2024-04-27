@@ -11,13 +11,14 @@ import MainPageServersComponent from './MainPageServersComponent';
 import StylingComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
-const { error } = require('@lib/logger');
+const { error, info } = require('@lib/logger');
 
 function MainPageServers({ }) {
   const [servers, setServers] = useState([]);
   const navigate = useNavigate();
 
   const updateServers = () => {
+    info("[MainPageServers] Updating servers")
     api.call('servers/')
       .then((res) => {
         setServers(res.json);
@@ -34,6 +35,7 @@ function MainPageServers({ }) {
   const enterServer = async (serverId) => {
     // TODO: check the initial status of user (maybe get it from the login form?)
     // and check if we need to update it or not
+    info("[MainPageServers] Entering server");
     api.call('users/status', "POST", { id: sessionStorage.getItem('id'), status: "1" })
       .then((res) => {
         ep.openConnection(sessionStorage.getItem('id'));

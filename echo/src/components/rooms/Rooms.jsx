@@ -6,7 +6,7 @@ import StylingComponents from '@root/StylingComponents';
 import Room from './Room';
 
 const api = require("@lib/api");
-const { error } = require("@lib/logger");
+const { error, info } = require("@lib/logger");
 
 function Rooms({ setState, connected, updateCurrentRoom }) {
   const [activeRoomId, setActiveRoomId] = useState(0);
@@ -20,6 +20,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   ])
 
   const updateRooms = () => {
+    info("[Rooms] Getting rooms list");
     let serverId = storage.get("serverId");
     api.call("rooms/" + serverId)
       .then((result) => {

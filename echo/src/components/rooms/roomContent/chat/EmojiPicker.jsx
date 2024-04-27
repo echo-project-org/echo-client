@@ -5,6 +5,7 @@ import { useState } from "react";
 import { EmojiClickData, Emoji, EmojiStyle } from "emoji-picker-react";
 
 import { ep } from "@root/index";
+import { info } from "@lib/logger";
 
 function EmojiPicker({ show }) {
   // const [emojiPicker, setEmojiPicker] = useState(false);
@@ -13,6 +14,7 @@ function EmojiPicker({ show }) {
   // function for emoji selection
   function handleSelectEmoji(emojiData, event) {
     // setSelectEmoji(emojiData.unified);
+    info("[EmojiPicker] User selected an emoji")
     ep.emit("selectedEmoji", emojiData)
   }
 
@@ -23,7 +25,7 @@ function EmojiPicker({ show }) {
 
   if (!show) return (<></>);
 
-  const style={
+  const style = {
     position: "absolute",
     bottom: "5rem",
     right: "1rem",

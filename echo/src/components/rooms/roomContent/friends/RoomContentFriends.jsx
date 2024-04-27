@@ -7,12 +7,13 @@ import StyledComponents from '@root/StylingComponents';
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
 const api = require('@lib/api');
-const { error, log } = require('@lib/logger');
+const { error, log, info } = require('@lib/logger');
 
 function RoomContentFriends({ }) {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
+    info("[RoomContentFriends] Getting friends list")
     api.call('users/friends/' + sessionStorage.getItem("id"), "GET")
       .then((res) => {
         for (var i in res.json) {

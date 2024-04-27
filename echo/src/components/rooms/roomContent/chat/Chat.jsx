@@ -9,7 +9,7 @@ import LoadingAnimation from '@components/mainpage/LoadingAnimation'
 import { ep, storage } from "@root/index";
 
 const api = require('@lib/api');
-const { error } = require('@lib/logger');
+const { error, info } = require('@lib/logger');
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -29,6 +29,7 @@ function Chat({ currentRoomId, onMouseDown }) {
   const [messages, setMessages] = useState([]);
 
   const updateMessages = () => {
+    info("[Chat] Getting messages list");
     ep.checkMessagesCache(currentRoomId)
       .then((res) => {
         // duplicate array

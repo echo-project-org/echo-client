@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ButtonGroup, Button, Tooltip, Container, ClickAwayListener, Grid, Slider } from '@mui/material';
 import { CancelPresentation, VolumeUp, VolumeOff, PictureInPictureAlt } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
-
+import { info } from '@lib/logger';
 import { ep } from '@root';
 
 const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider, volume, setVolume }) => {
@@ -49,27 +49,34 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
     // setShowControls(false);
   }
   const toggleMuteStream = () => {
+    info("[ScreenShareControlIcons] Toggling mute")
     setMuted(!muted);
   }
   const stopWaching = () => {
+    info("[ScreenShareControlIcons] Stopping watching")
     stopPlayback();
   }
   const enablePip = () => {
+    info("[ScreenShareControlIcons] Enabling pip")
     setPip(true);
   }
   const disablePip = () => {
+    info("[ScreenShareControlIcons] Disabling pip")
     setPip(false);
   }
 
   const showVolumeSlider = () => {
+    info("[ScreenShareControlIcons] Showing volume slider")
     setVolumeSlider(true);
   }
   const hideVolumeSlider = () => {
+    info("[ScreenShareControlIcons] Hiding volume slider")
     setVolumeSlider(false);
   }
 
   useEffect(() => {
     ep.on("gotVideoStream", (data) => {
+      info("[ScreenShareControlIcons] Got video stream")
       if (data.active) {
         setScreenShareStream(ep.getVideo());
       }

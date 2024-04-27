@@ -3,6 +3,7 @@ import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 
 import { ep, ap } from "@root/index";
+import { info } from "@lib/logger";
 
 function Room({ active, data: _data }) {
   const [onlineUsers, setOnlineUsers] = useState([]);

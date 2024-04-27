@@ -12,7 +12,7 @@ import { ep } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');
 const api = require('@lib/api');
-const { error, log } = require('@lib/logger');
+const { error, log, info } = require('@lib/logger');
 
 function AnimatedRoutes() {
   const navigate = useNavigate();
@@ -22,7 +22,9 @@ function AnimatedRoutes() {
   const [releaseNotes, setReleaseNotes] = useState("No release notes available");
 
   useEffect(() => {
+    info("[AnimatedRoutes] path: " + location.pathname)
     const appCloseRequested = () => {
+      info("App close requested");
       //exit from room and close connection
       api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
         .then(res => {

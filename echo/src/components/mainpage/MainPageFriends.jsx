@@ -8,12 +8,13 @@ import StylingComponents from '@root/StylingComponents';
 import CurrentStatus from "@components/user/CurrentStatus";
 
 const api = require('@lib/api');
-const { error } = require('@lib/logger');
+const { error, info } = require('@lib/logger');
 
 function MainPageFriends({ }) {
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
+    info("[MainPageFriends] Getting friends list");
     api.call('users/friends/' + sessionStorage.getItem("id"), "GET")
       .then((res) => {
         for (var i in res.json) {
