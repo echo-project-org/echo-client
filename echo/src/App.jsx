@@ -6,6 +6,8 @@ import "./css/form.css";
 import "./css/wave.css";
 import "./css/scrollbar.css";
 
+import hexToRgba from '@lib/hexToRgba';
+
 import { useEffect, useMemo, useState } from 'react'
 import { HashRouter } from "react-router-dom";
 import AnimatedRoutes from './components/mainpage/AnimatedRoutes';
@@ -49,8 +51,8 @@ function App() {
         mode: 'dark',
         background: themePaletteMaker.palette.augmentColor({
           color: {
-            main: background,
-          }
+            main: hexToRgba(background, 0.5),
+          },
         }),
         text: themePaletteMaker.palette.augmentColor({
           color: {
