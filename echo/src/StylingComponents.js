@@ -566,7 +566,7 @@ const StyledImageUploaderBackground = styled("div")(({ theme }) => ({
     width: "100%",
     height: "100%",
     position: "fixed",
-    backgroundColor: theme.palette.backgroundSolid.main,
+    backgroundColor: "transparent",
     top: 0,
     left: 0,
     zIndex: 3
