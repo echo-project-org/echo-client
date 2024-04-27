@@ -56,7 +56,7 @@ function App() {
         }),
         backgroundSolid: themePaletteMaker.palette.augmentColor({
           color: {
-            main: hexToRgba(background, 0.9),
+            main: hexToRgba(background, 1),
           },
         }),
         text: themePaletteMaker.palette.augmentColor({
@@ -117,7 +117,7 @@ function App() {
             styleOverrides: {
               ".MuiAvatar-fallback": {
                 objectFit: "cover",
-                background: theme.palette.background.main,
+                background: theme.palette.backgroundSolid.main,
               }
             }
           })
@@ -128,7 +128,7 @@ function App() {
               color: theme.palette.text.light,
               fontSize: ".9rem",
               border: "1px solid " + theme.palette.background.light,
-              backgroundColor: theme.palette.background.main,
+              backgroundColor: theme.palette.backgroundSolid.main,
               borderRadius: 10,
               padding: 8
             }),
@@ -137,8 +137,8 @@ function App() {
               width: 17,
               "::before": {
                 border: "1px solid " + theme.palette.background.light,
-                backgroundColor: theme.palette.background.main,
-                color: theme.palette.background.main,
+                backgroundColor: theme.palette.backgroundSolid.main,
+                color: theme.palette.backgroundSolid.main,
                 boxSizing: "border-box"
               }
             })
@@ -157,12 +157,12 @@ function App() {
               })
             }),
             valueLabel: ({ theme }) => ({
-              backgroundColor: theme.palette.background.main,
+              backgroundColor: theme.palette.backgroundSolid.main,
               color: theme.palette.text.light,
               borderRadius: "10px",
             }),
             valueLabelOpen: ({ theme }) => ({
-              backgroundColor: theme.palette.background.main,
+              backgroundColor: theme.palette.backgroundSolid.main,
               color: theme.palette.text.light,
               borderRadius: "10px",
             }),

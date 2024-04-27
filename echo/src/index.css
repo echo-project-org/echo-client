@@ -65,7 +65,7 @@ html {
 .userMenuModal {
   color: var(--mui-palette-text-light);
   min-width: 12rem;
-  background-color: var(--mui-palette-background-light);
+  background-color: var(--mui-palette-backgroundSolid-light);
 }
 
 .modalDiv {

@@ -103,7 +103,7 @@
   height: 2.5rem;
   margin: auto;
   /* margin-top: 1rem; */
-  background-color: var(--mui-palette-background-main);
+  background-color: var(--mui-palette-backgroundSolid-main);
   border: 1px solid var(--mui-palette-text-light);
   border-radius: .2rem;
   cursor: pointer;
@@ -142,13 +142,13 @@
   padding: .6rem !important;
   width: 100%;
   margin: auto;
-  background-color: var(--mui-palette-background-main);
+  background-color: var(--mui-palette-backgroundSolid-main);
   cursor: pointer;
   position: relative;
 }
 
 .deviceSelectorContainer-item:hover {
-  background-color: var(--mui-palette-background-light);
+  background-color: var(--mui-palette-backgroundSolid-light);
 }
 
 .deviceSelectorContainer-item svg {

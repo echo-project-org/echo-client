@@ -2,7 +2,6 @@
   position: relative;
   height: 100%;
   width: 100%;
-  background-color: var(--mui-palette-background-dark);
   border-radius: 0 0 1rem 1rem;
   line-break: anywhere;
 }

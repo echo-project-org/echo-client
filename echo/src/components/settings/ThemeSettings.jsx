@@ -1,7 +1,7 @@
 import "@css/settings.css";
 
 import { useState, useEffect } from 'react'
-import { Grid, Button, Typography } from "@mui/material";
+import { Grid, Button, Typography, hexToRgb } from "@mui/material";
 
 import { ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
@@ -62,7 +62,8 @@ function ThemeSettings() {
     storage.set("secondary", secondary);
     storage.set("text", text);
 
-    theme.palette.background.main = background;
+    theme.palette.background.main = hexToRgb(background, 0.5);
+    theme.palette.backgroundSolid.main = hexToRgb(background, 1);
     theme.palette.primary.main = primary;
     theme.palette.secondary.main = secondary;
     theme.palette.text.main = text;

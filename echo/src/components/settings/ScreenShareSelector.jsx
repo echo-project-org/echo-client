@@ -13,7 +13,7 @@ const modalStyle = {
   margin: "auto",
   height: '80%',
   width: '70%',
-  bgcolor: 'var(--mui-palette-background-main)',
+  bgcolor: 'var(--mui-palette-backgroundSolid-main)',
   color: 'var(--mui-palette-text-light)',
   overflow: 'auto',
   border: '2px solid #000',
