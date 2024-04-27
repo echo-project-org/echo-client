@@ -506,6 +506,7 @@ const StyledRoomControlsConnection = styled("div")(({ theme }) => ({
 
 const StyledSettingsContainer = styled("div")(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
+
     display: "flex",
     flexDirection: "column",
     gap: "1rem",
@@ -534,7 +535,6 @@ const StyledSettingsView = styled(Box)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
     height: '100%',
     width: '100%',
-    backgroundColor: theme.palette.background.main,
     color: theme.palette.text.main,
     overflow: 'auto',
     outline: 'none',
@@ -584,7 +584,6 @@ const StyledImageUploaderContentContainer = styled("div")(({ theme }) => ({
 
 const StyledSettingsModalSubdiv = styled("div")(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
-    backgroundColor: theme.palette.background.dark,
     padding: "1rem",
     justifyContent: "center",
     alignItems: "center",
