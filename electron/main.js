@@ -82,6 +82,8 @@ const createMainWindow = () => {
     title: "Echo",
     frame: false,
     icon: 'images/icon',
+    vibrancy: 'fullscreen-ui',
+    backgroundMaterial: 'acrylic',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
