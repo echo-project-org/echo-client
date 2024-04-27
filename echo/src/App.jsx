@@ -54,6 +54,11 @@ function App() {
             main: hexToRgba(background, 0.5),
           },
         }),
+        backgroundSolid: themePaletteMaker.palette.augmentColor({
+          color: {
+            main: hexToRgba(background, 0.9),
+          },
+        }),
         text: themePaletteMaker.palette.augmentColor({
           color: {
             main: text,

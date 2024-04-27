@@ -553,7 +553,7 @@ const StyledImageUploaderContainer = styled(Container)(({ theme }) => ({
     paddingBottom: "1rem",
     paddingTop: "1rem",
     margin: "auto",
-    backgroundColor: theme.palette.background.main,
+    backgroundColor: theme.palette.backgroundSolid.main,
     boxShadow: "0 8px 15px 8px rgba(0, 0, 0, .8)",
     border: "1px solid " + theme.palette.text.light,
     borderRadius: "20px",
@@ -566,6 +566,7 @@ const StyledImageUploaderBackground = styled("div")(({ theme }) => ({
     width: "100%",
     height: "100%",
     position: "fixed",
+    backgroundColor: theme.palette.backgroundSolid.main,
     top: 0,
     left: 0,
     zIndex: 3
