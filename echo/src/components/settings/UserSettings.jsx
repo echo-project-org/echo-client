@@ -8,7 +8,7 @@ import StyledComponents from '@root/StylingComponents';
 import CurrentStatus from '@components/user/CurrentStatus';
 
 const api = require('@lib/api');
-const { error, log } = require('@lib/logger');
+const { error, info } = require('@lib/logger');
 
 const StyledAvatar = styled(Avatar)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -138,6 +138,7 @@ function UserSettings() {
   }
 
   const uploadPicture = () => {
+    info("[UserSettings] Uploading picture")
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "image/*";
@@ -169,12 +170,15 @@ function UserSettings() {
   }
 
   const statusSelectOn = () => {
+    info("[UserSettings] Status select on")
     setStatusHover(true);
   }
   const statusSelectOff = () => {
+    info("[UserSettings] Status select off")
     setStatusHover(false);
   }
   const changeStatus = (e) => {
+    info("[UserSettings] Changing status")
     const status = e.target.innerText;
     let statusId = 0;
     switch (status) {
@@ -205,6 +209,7 @@ function UserSettings() {
 
   let navigate = useNavigate();
   const logout = () => {
+    info("[UserSettings] Logging out")
     api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
       .then(res => {
         ep.logout();

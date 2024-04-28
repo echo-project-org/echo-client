@@ -5,7 +5,7 @@ import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 import { ep } from "@root/index";
 import ScreenShareOption from './ScreenShareOption';
 
-const { error, warn } = require('@lib/logger');
+const { error, warn, info } = require('@lib/logger');
 
 const modalStyle = {
   position: "relative",
@@ -31,25 +31,33 @@ function ScreenShareSelector() {
   let [errorMessageShow, setErrorMessageShow] = useState(false);
   let [errorMessage, setErrorMessage] = useState("");
 
-  const handleModalOpen = () => setModalOpen(true);
+  const handleModalOpen = () => {
+    info("[ScreenShareSelector] Opening screen share modal")
+    setModalOpen(true);
+  }
+
   const handleModalClose = () => {
+    info("[ScreenShareSelector] Closing screen share modal")
     stopGetDevicesInterval();
     setModalOpen(false);
   }
 
   const showError = (msg) => {
+    info("[ScreenShareSelector] Showing error message: " + msg);
     setErrorMessage(msg);
     setErrorMessageShow(true);
   }
 
   const closeErrorMessage = () => {
+    info("[ScreenShareSelector] Closing error message");
     setErrorMessageShow(false);
   }
 
   const startGetDevicesInterval = () => {
     setDeviceInterval(setInterval(() => {
+      info("[ScreenShareSelector] Getting devices")
       ep.getVideoDevices().then((devices) => {
-        if(devices.length === 0) {
+        if (devices.length === 0) {
           showError("No devices found");
           stopGetDevicesInterval();
           return;
@@ -70,6 +78,7 @@ function ScreenShareSelector() {
   }
 
   const stopGetDevicesInterval = () => {
+    info("[ScreenShareSelector] Stopping get devices interval")
     clearInterval(deviceInterval);
     setDeviceInterval(null);
   }
@@ -90,6 +99,7 @@ function ScreenShareSelector() {
   }, [])
 
   const handleClick = (event) => {
+    info("[ScreenShareSelector] Screen share button clicked")
     if (!ep.isAudioFullyConnected()) {
       error("Audio is not fully connected yet. Please wait a few seconds and try again.");
       return;
@@ -127,6 +137,7 @@ function ScreenShareSelector() {
 
   };
   const deviceSelected = (deviceId) => {
+    info("[ScreenShareSelector] Device selected: " + deviceId)
     ep.startScreenSharing(deviceId);
     setScreenSharing(true);
     handleModalClose();

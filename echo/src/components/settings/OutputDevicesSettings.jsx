@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
-
+import { info } from '@lib/logger';
 import { ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
@@ -56,12 +56,15 @@ function OutputDevicesSettings({ outputDevices }) {
   }, []);
 
   const handleOutputDeviceChange = (event) => {
-    storage.set('outputAudioDeviceId', event.target.dataset.value);
-    setOutputDevice(event.target.dataset.value);
-    ep.setSpeakerDevice(event.target.dataset.value)
+    let device = event.target.dataset.value;
+    info("[OutputDevicesSettings] Output device changed to " + device);
+    storage.set('outputAudioDeviceId', device);
+    setOutputDevice(device);
+    ep.setSpeakerDevice(device)
   };
 
   const handleSoundVolumeChange = (event, newValue) => {
+    info("[OutputDevicesSettings] Sound volume changed to " + newValue);
     //set user volume
     storage.set('audioVolume', newValue / 100);
     setSoundVolulme(newValue);
@@ -69,6 +72,7 @@ function OutputDevicesSettings({ outputDevices }) {
   };
 
   const deviceListToggle = (status = true) => {
+    info("[OutputDevicesSettings] Device list toggled to " + status);
     setShowList(status);
   }
 

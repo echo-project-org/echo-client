@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Divider, Grid } from '@mui/material'
-
-import StylingComponents from '@root/StylingComponents';
-
+import { info } from '@lib/logger'
 import Rooms from '@components/rooms/Rooms'
 import RoomControl from '@components/rooms/RoomControl'
 import RoomsControlsContainer from '@components/rooms/RoomsControlsContainer'
@@ -11,6 +9,7 @@ function Sidebar({ updateCurrentRoom }) {
   const [connectionState, setConnectionState] = useState(false);
 
   const updateConnectionState = (state) => {
+    info("[Sidebar] Connection state changed")
     setConnectionState(state)
   }
 

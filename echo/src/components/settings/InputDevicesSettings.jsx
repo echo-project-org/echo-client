@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip, FormControlLabel, Switch } from '@mui/material';
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
-
+import { info } from '@lib/logger';
 import { ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
@@ -57,19 +57,22 @@ function InputDevicesSettings({ inputDevices }) {
   }, []);
 
   const handleInputDeviceChange = (event) => {
-    storage.set('inputAudioDeviceId', event.target.dataset.value);
-    setInputDevice(event.target.dataset.value);
-    ep.setMicrophoneDevice(event.target.dataset.value);
+    let device = event.target.dataset.value;
+    info("[InputDevicesSettings] Input device changed to " + device);
+    storage.set('inputAudioDeviceId', device);
+    setInputDevice(device);
+    ep.setMicrophoneDevice(device);
   };
 
   const handleMicVolumeChange = (event, newValue) => {
-    //set user volume
+    info("[InputDevicesSettings] Mic volume changed to " + newValue);
     storage.set('micVolume', newValue / 100);
     setMicVolulme(newValue);
     ep.setMicrophoneVolume(newValue / 100);
   };
 
   const deviceListToggle = (status = true) => {
+    info("[InputDevicesSettings] Device list toggled " + status);
     setShowList(status);
   }
 

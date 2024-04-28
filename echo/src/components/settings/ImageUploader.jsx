@@ -7,7 +7,7 @@ import { storage, ep } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const api = require("@lib/api");
-const { error, log } = require("@lib/logger");
+const { error, info } = require("@lib/logger");
 
 const ImageUploader = ({ open, data }) => {
   const imageEditorRef = useRef(null);
@@ -21,6 +21,7 @@ const ImageUploader = ({ open, data }) => {
   if (!data.image) data.image = sessionStorage.getItem("userImage");
 
   const handleZoomChange = (event, newValue) => {
+    info("[ImageUploader] Zoom changed to " + newValue + "%")
     setZoom(newValue);
   };
 

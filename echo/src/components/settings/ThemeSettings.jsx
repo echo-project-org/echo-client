@@ -5,7 +5,7 @@ import { Grid, Button, Typography, hexToRgb } from "@mui/material";
 
 import { ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
-
+import { info } from '@lib/logger';
 import { useTheme } from "@emotion/react";
 
 function ThemeSettings() {
@@ -18,6 +18,7 @@ function ThemeSettings() {
   const theme = useTheme();
 
   const handleChange = (event) => {
+    info("[ThemeSettings] Theme changed")
     setValueChanged(true);
     switch (event.target.dataset.type) {
       case "background":
@@ -38,6 +39,7 @@ function ThemeSettings() {
   };
 
   const resetTheme = () => {
+    info("[ThemeSettings] Theme reset")
     storage.remove("background");
     storage.remove("primary");
     storage.remove("secondary");
@@ -57,6 +59,7 @@ function ThemeSettings() {
   }
 
   const updateTheme = () => {
+    info("[ThemeSettings] Updating theme")
     storage.set("background", background);
     storage.set("primary", primary);
     storage.set("secondary", secondary);
@@ -78,9 +81,9 @@ function ThemeSettings() {
 
   return (
     <StyledComponents.Settings.StyledSettingsModalSubdiv>
-          <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
-            Theme settings
-          </Typography>
+      <Typography variant="h6" component="h2" sx={{ width: "95%" }} className="noselect">
+        Theme settings
+      </Typography>
       <Grid container sx={{ alignItems: "flex-start", justifyContent: "space-around" }}>
         <Grid item xs={12}>
         </Grid>

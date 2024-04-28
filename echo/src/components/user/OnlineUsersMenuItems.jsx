@@ -6,12 +6,13 @@ import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove, ScreenSha
 import { ep, storage } from "@root/index";
 
 const api = require('@lib/api');
-const { error, log } = require('@lib/logger');
+const { error, log, info } = require('@lib/logger');
 
 function FriendButton({ user, handleClose }) {
   const [friendStatus, setFriendStatus] = useState('no');
 
   const handleFriendAdd = () => {
+    info("[FriendButton] Adding friend")
     setFriendStatus('requested');
     // notify api or whatever needs to be updated
     api.call("users/friend/request", 'POST', { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
@@ -23,6 +24,7 @@ function FriendButton({ user, handleClose }) {
   }
 
   const handleFriendRemove = () => {
+    info("[FriendButton] Removing friend")
     setFriendStatus('no');
     // notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
@@ -33,6 +35,7 @@ function FriendButton({ user, handleClose }) {
   }
 
   const handleFriendAccept = () => {
+    info("[FriendButton] Accepting friend request")
     // notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'add' })
       .catch(err => error(err));
@@ -42,6 +45,7 @@ function FriendButton({ user, handleClose }) {
   }
 
   const handleFriendReject = () => {
+    info("[FriendButton] Rejecting friend request")
     // notify api or whatever needs to be updated
     api.call("users/friend/request", "POST", { id: sessionStorage.getItem("id"), friendId: user.id, operation: 'remove' })
       .catch(err => error(err));
@@ -71,6 +75,7 @@ function FriendButton({ user, handleClose }) {
 
 function OnlineUsersMenuItems({ user, broadcastingVideo, handleClose }) {
   const startWatchingBroadcast = () => {
+    info("[OnlineUsersMenuItems] Starting to watch broadcast")
     ep.startReceivingVideo(user.id);
   }
 

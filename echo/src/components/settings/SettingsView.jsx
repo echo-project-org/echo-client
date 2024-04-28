@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect, useState } from 'react';
 import { Typography, Grid } from "@mui/material";
 import { ep } from "@root/index";
-
+import { info } from '@lib/logger';
 import UserSettings from "./UserSettings";
 import ThemeSettings from "./ThemeSettings";
 import InputDevicesSettings from './InputDevicesSettings';
@@ -32,11 +32,13 @@ function SettingsView() {
 
   useEffect(() => {
     ep.on("openUploader", "SettingsView.openUploader", (data) => {
+      info("[SettingsView] Opening image uploader")
       setOpenUploader(true);
       setUploaderData(data);
     });
 
     ep.on("closeUploader", "SettingsView.closeUploader", () => {
+      info("[SettingsView] Closing image uploader")
       setOpenUploader(false);
       setUploaderData(null);
     });

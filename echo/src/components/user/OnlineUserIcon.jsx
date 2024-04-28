@@ -2,7 +2,7 @@ import { Avatar, Divider, Menu, MenuItem, Stack, Slider, Grid } from '@mui/mater
 import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } from '@mui/icons-material';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
-
+import { info } from '@lib/logger'
 import { ep } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
@@ -61,13 +61,15 @@ function OnlineUserIcon({ user }) {
   }, [user]);
 
   const handleClick = (event) => {
+    info("[OnlineUserIcon] Opening menu")
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
+    info("[OnlineUserIcon] Closing menu")
     setAnchorEl(null);
   };
   const handleVolumeChange = (event, newValue) => {
-    //set user volume
+    info("[OnlineUserIcon] Volume changed:" + newValue)
     setUserVolulme(newValue);
     ep.setUserVolume(newValue / 100, user.id)
   };

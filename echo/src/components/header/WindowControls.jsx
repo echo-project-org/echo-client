@@ -11,7 +11,7 @@ const { error, info } = require('@lib/logger');
 
 function WindowControls({ }) {
   const closeApp = async () => {
-    info("Closing application");
+    info("[WindowControls] Closing app");
     api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
       .then(() => {
         ep.requestAppClose();
@@ -22,12 +22,12 @@ function WindowControls({ }) {
       });
   }
   const toggleFullscreen = async () => {
-    info("Toggling fullscreen");
+    info("[WindowControls] Toggling fullscreen");
     ipcRenderer.send("toggleFullscreen", true);
   }
   const minimize = async () => {
     // remote.BrowserWindow.getFocusedWindow().minimize();
-    info("Minimizing window");
+    info("[WindowControls] Minimizing window");
     ipcRenderer.send("minimize", true);
   }
 

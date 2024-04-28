@@ -1,15 +1,20 @@
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
 import { useEffect, useState } from 'react';
-
+import { info } from '@lib/logger';
 import { ep } from "@root/index";
 import SettingsView from './SettingsView';
 import StyledComponents from '@root/StylingComponents';
 
 function SettingsButton() {
   const [modalOpen, setModalOpen] = useState(false);
-  const handleModalOpen = () => setModalOpen(true);
+  const handleModalOpen = () => {
+    info("[SettingsButton] Opening settings modal")
+    setModalOpen(true);
+  }
+
   const handleModalClose = () => {
+    info("[SettingsButton] Closing settings modal")
     setModalOpen(false);
     ep.setMicrophoneTest(false);
   }

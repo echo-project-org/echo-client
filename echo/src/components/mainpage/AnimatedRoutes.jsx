@@ -24,7 +24,7 @@ function AnimatedRoutes() {
   useEffect(() => {
     info("[AnimatedRoutes] path: " + location.pathname)
     const appCloseRequested = () => {
-      info("App close requested");
+      info("[AnimatedRoutes] App close requested");
       //exit from room and close connection
       api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
         .then(res => {
