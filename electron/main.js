@@ -25,6 +25,7 @@ const muteThumbBtn = {
   tooltip: 'Mute microphone',
   icon: path.join(__dirname, 'images', 'unmute.png'),
   click() {
+    info("[Thumbar] Muting microphone");
     mainWindow.webContents.send("toggleMute", true);
   }
 }
@@ -33,6 +34,7 @@ const unmuteThumbBtn = {
   tooltip: 'Unmute microphone',
   icon: path.join(__dirname, 'images', 'mute.png'),
   click() {
+    info("[Thumbar] Unmuting microphone");
     mainWindow.webContents.send("toggleMute", false);
   }
 }
@@ -41,6 +43,7 @@ const deafenThumbBtn = {
   tooltip: 'Deafen audio',
   icon: path.join(__dirname, 'images', 'undeafen.png'),
   click() {
+    info("[Thumbar] Deafening audio");
     mainWindow.webContents.send("toggleDeaf", true);
   }
 }
@@ -49,6 +52,7 @@ const undeafenThumbBtn = {
   tooltip: 'Undeafen audio',
   icon: path.join(__dirname, 'images', 'deafen.png'),
   click() {
+    info("[Thumbar] Undeafening audio");
     mainWindow.webContents.send("toggleDeaf", false);
   }
 }
@@ -59,6 +63,7 @@ var thumbBtns = [
 ]
 
 const createRtcInternalsWindow = () => {
+  info("[createRtcInternalsWindow] Creating rtc-internals window");
   var rtcInternals = new BrowserWindow({
     width: 1000,
     height: 700,
@@ -76,6 +81,7 @@ const createRtcInternalsWindow = () => {
 }
 
 const createMainWindow = () => {
+  info("[createMainWindow] Creating main window");
   var win = new BrowserWindow({
     width: 1000,
     height: 700,
@@ -104,15 +110,16 @@ const createMainWindow = () => {
 }
 
 autoUpdater.on('update-available', (info) => {
+  info("Update available: ", info.version);
   if (mainWindow) {
     //hide the main window
     mainWindow.webContents.send("updateAvailable", { "version": info.version, "releaseNotes": info.releaseNotes });
     mainWindow.setProgressBar(0);
   }
-  console.info("Update available: ", info.version);
 });
 
 autoUpdater.on('download-progress', (e) => {
+  info("Download progress: ", e.percent + "%" + " - " + e.bytesPerSecond + " bps");
   if (mainWindow) {
     //hide the main window
     mainWindow.webContents.send("downloadProgress", {
@@ -124,10 +131,10 @@ autoUpdater.on('download-progress', (e) => {
     });
     mainWindow.setProgressBar(e.percent / 100);
   }
-  console.info("Download progress: ", e.percent+ "%" + " - " + e.bytesPerSecond + " bps");
 });
 
 autoUpdater.on('update-downloaded', () => {
+  info("[update-downloaded] Update downloaded")
   dialog.showMessageBoxSync({
     type: 'info',
     title: 'Echo',
@@ -139,17 +146,19 @@ autoUpdater.on('update-downloaded', () => {
 });
 
 autoUpdater.on('error', (err) => {
+  console.error("[autoUpdater] Error downloading update: ", err == null ? "unknown" : (err.stack || err).toString());
   dialog.showErrorBox('Error downloading update: ', err == null ? "unknown" : (err.stack || err).toString());
-  console.error(err);
 });
 
 app.on('activate', () => {
+  info("[activate] App activated");
   if (BrowserWindow.getAllWindows().length === 0) {
     createMainWindow()
   }
 })
 
 ipcMain.on("exitApplication", async (event, arg) => {
+  info("[exitApplication] Frontend requested to exit the app");
   if (!app.isPackaged) {
     if (rtcInternals && !rtcInternals.isDestroyed()) {
       rtcInternals.close();
@@ -168,19 +177,25 @@ ipcMain.on("exitApplication", async (event, arg) => {
 })
 
 ipcMain.on("minimize", (event, arg) => {
+  info("[minimize] Frontend requested to minimize the app");
   return mainWindow.minimize();
 })
 
 ipcMain.on("toggleFullscreen", (event, arg) => {
+  info("[toggleFullscreen] Frontend requested to toggle fullscreen");
   if (mainWindow.isMaximized()) {
+    info("[toggleFullscreen] Unmaximizing window");
     mainWindow.unmaximize();
+    mainWindow.setBackgroundMaterial('acrylic');
   } else {
+    info("[toggleFullscreen] Maximizing window");
     mainWindow.maximize();
   }
 })
 
 //called with ipcRenderer.send("showThumbarButtons", true);
 ipcMain.on("showThumbarButtons", (event, arg) => {
+  info("[showThumbarButtons] Frontend requested to show thumbar buttons");
   if (mainWindow) {
     if (arg === true) {
       mainWindow.setThumbarButtons(thumbBtns);
@@ -191,6 +206,7 @@ ipcMain.on("showThumbarButtons", (event, arg) => {
 })
 
 ipcMain.on("updateThumbarButtons", (event, arg) => {
+  info("[updateThumbarButtons] Frontend requested to update thumbar buttons");
   if (arg.muted) {
     thumbBtns[0] = unmuteThumbBtn;
   } else {
@@ -211,6 +227,7 @@ ipcMain.on("updateThumbarButtons", (event, arg) => {
 //register keyboard shortcuts
 //example: arg = [{combination: "Ctrl+Shift+M", action: "toggleMute"}, {combination: "Ctrl+Shift+D", action: "toggleDeaf"}]
 ipcMain.on("addKeyboardShortcut", (event, arg) => {
+  info("[addKeyboardShortcut] Frontend requested to add keyboard shortcuts");
   foreach(arg, (shortcut) => {
     globalShortcut.register(shortcut.combination, () => {
       mainWindow.webContents.send(shortcut.action);
@@ -219,11 +236,13 @@ ipcMain.on("addKeyboardShortcut", (event, arg) => {
 })
 
 ipcMain.handle("getVideoSources", async () => {
+  info("[getVideoSources] Frontend requested to get video sources");
   this.videoSources = await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 1280, height: 720 }, fetchWindowIcons: true });
   return this.videoSources
 })
 
 ipcMain.on("grantDisplayMedia", (event, arg) => {
+  info("[grantDisplayMedia] Frontend requested to grant display media");
   session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
     const selectedSource = this.videoSources.find(source => source.id === arg.id);
 
@@ -253,9 +272,14 @@ const _logger = (arg) => {
   }
 }
 
+const info = (arg) => {
+  _logger({ message: arg, type: "info" });
+}
+
 ipcMain.on("log", (event, arg) => _logger(arg));
 
 const makeSysTray = () => {
+  info("[makeSysTray] Creating system tray");
   if (app.isPackaged) {
     tray = new Tray(path.join(process.cwd(), "resources", 'images', 'icon.png'))
   } else {
@@ -376,10 +400,12 @@ const makeSysTray = () => {
 }
 
 app.whenReady().then(async () => {
+  info("[app.whenReady] App is ready");
   autoUpdater.checkForUpdatesAndNotify();
   mainWindow = createMainWindow()
 
   mainWindow.on('close', (e) => {
+    info("[mainWindow.on('close')] Main window is closing");
     if (mainWindow.isVisible()) {
       e.preventDefault();
       mainWindow.webContents.send("appClose");
