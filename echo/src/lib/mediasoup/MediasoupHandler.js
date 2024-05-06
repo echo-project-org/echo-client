@@ -70,7 +70,7 @@ class MediasoupHandler {
                 reject('Invalid transport type');
             }
 
-            if(type === 'audioOut') {
+            if (type === 'audioOut') {
                 // use audio out transport to check connection state
                 transport.on('connectionstatechange', (state) => {
                     // TODO Handle the connection state change
@@ -84,6 +84,68 @@ class MediasoupHandler {
             this.transports.set(type, transport);
             resolve(transport);
         });
+    }
+
+
+    /**
+     * @function getAudioDevices - Gets the audio devices
+     * @returns {Promise} - The promise that resolves when the audio devices are found
+     */
+    static async getInputAudioDevices() {
+        //Gets the audio devices
+        return new Promise((resolve, reject) => {
+            var out = [];
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+                devices.forEach((device, id) => {
+                    if (device.kind === "audioinput" && device.deviceId !== "communications" && device.deviceId !== "default") {
+                        out.push({
+                            "name": device.label,
+                            "id": device.deviceId
+                        })
+                    }
+                })
+
+                resolve(out);
+            })
+        })
+    }
+
+    /**
+     * @function getAudioDevices - Gets the audio devices
+     * @returns {Promise} - The promise that resolves when the audio devices are found
+     */
+    static async getOutputAudioDevices() {
+        return new Promise((resolve, reject) => {
+            var out = [];
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+                devices.forEach((device, id) => {
+                    if (device.kind === "audiooutput" && device.deviceId !== "communications" && device.deviceId !== "default") {
+                        out.push({
+                            "name": device.label,
+                            "id": device.deviceId
+                        })
+                    }
+                })
+
+                resolve(out);
+            })
+        })
+    }
+
+
+    /**
+     * Retrieves the available video sources and filters out those with invalid thumbnail sizes.
+     * @returns {Promise<Array<Object>>} An array of video sources with valid thumbnail sizes.
+     */
+    static async getVideoSources() {
+        try {
+            const srcs = await ipcRenderer.invoke("getVideoSources");
+            return srcs.filter((src) => {
+                return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
+            });
+        } catch (err) {
+            return [];
+        }
     }
 }
 
