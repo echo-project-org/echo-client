@@ -54,7 +54,7 @@ class MicrophoneCapturer {
 
                 this.analyser = new AudioAnalyser(this.audioContext, this.channelSplitter, this.channelCount, this.talkingThreshold);
                 this.analyser.start((v) => {
-                    if(v) {
+                    if (v) {
                         this.vadNode.gain.value = 1.0;
                         //TODO emit talking event
                     } else {
@@ -83,7 +83,7 @@ class MicrophoneCapturer {
             });
             this.stream = null;
         }
-        
+
         this.audioContext.close();
         this.analyser.stop();
     }
@@ -122,6 +122,29 @@ class MicrophoneCapturer {
         } else {
             warn("Talking threshold must be between 0 and 1")
         }
+    }
+
+    /**
+     * @function getAudioDevices - Gets the audio devices
+     * @returns {Promise} - The promise that resolves when the audio devices are found
+    */
+    static async getInputAudioDevices() {
+        //Gets the audio devices
+        return new Promise((resolve, reject) => {
+            var out = [];
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+                devices.forEach((device, id) => {
+                    if (device.kind === "audioinput" && device.deviceId !== "communications" && device.deviceId !== "default") {
+                        out.push({
+                            "name": device.label,
+                            "id": device.deviceId
+                        })
+                    }
+                })
+
+                resolve(out);
+            })
+        })
     }
 }
 
