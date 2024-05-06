@@ -1,5 +1,4 @@
 const api = require('@lib/api');
-const { ipcRenderer } = require('electron');
 const mediasoup = require('mediasoup-client');
 const { warn, error, log } = require('@lib/logger');
 
@@ -76,21 +75,6 @@ class MediasoupHandler {
             this.transports.set(type, transport);
             resolve(transport);
         });
-    }
-
-    /**
-     * Retrieves the available video sources and filters out those with invalid thumbnail sizes.
-     * @returns {Promise<Array<Object>>} An array of video sources with valid thumbnail sizes.
-     */
-    static async getVideoSources() {
-        try {
-            const srcs = await ipcRenderer.invoke("getVideoSources");
-            return srcs.filter((src) => {
-                return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
-            });
-        } catch (err) {
-            return [];
-        }
     }
 }
 

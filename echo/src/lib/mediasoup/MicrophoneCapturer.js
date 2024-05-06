@@ -2,6 +2,9 @@ import { createAudioConstraints } from '@lib/mediasoup/constraints.js';
 import { AudioAnalyser } from '@lib/mediasoup/Audioanalyser.js';
 const { warn, error, info } = require("@lib/logger");
 
+/**
+ * @class MicrophoneCapturer - Class for capturing audio from the microphone
+ */
 class MicrophoneCapturer {
     constructor(inputDeviceId, volume, muted = false, talkingThreshold = 0.3, noiseSuppression = false, echoCancellation = false, autoGainControl = false) {
         this.muted = muted;
