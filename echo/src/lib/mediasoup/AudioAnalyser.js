@@ -1,9 +1,24 @@
 const { warn, error, info } = require("@lib/logger");
 
 const ANALYZE_INTERVAL = 20;
-const DEFAULT_TALKING_THRESHOLD = 0.1;
+const DEFAULT_TALKING_THRESHOLD = 0.3; // Default for remote users
 
+/**
+ * Class representing an audio analyser.
+ * @class
+ * @classdesc
+ * The AudioAnalyser class is used to analyse audio streams for talking status.
+ */
 class AudioAnalyser {
+    /**
+     * Creates a new AudioAnalyser instance.
+     * @param {MediaStream} stream - The media stream to analyse.
+     * @param {AudioContext} context - The audio context to use for analysis.
+     * @param {ChannelSplitterNode} splitter - The channel splitter node to use for analysis.
+     * @param {number} channelCount - The number of audio channels to analyse.
+     * @param {number} talkingThreshold - The talking threshold to use for analysis.
+     * @returns {AudioAnalyser} The new AudioAnalyser instance.
+    */ 
     constructor(stream, context, splitter, channelCount = 2, talkingThreshold = DEFAULT_TALKING_THRESHOLD) {
         this.analyser = {};
         this.freqs = {};
@@ -77,7 +92,6 @@ class AudioAnalyser {
 
     /**
      * Rounds a number to one decimal place.
-     *
      * @param {number} num - The number to round.
      * @returns {number} The rounded number.
     */
@@ -86,8 +100,8 @@ class AudioAnalyser {
     }
 
     /**
-     * Starts the stats interval to calculate audio levels for local and remote users.
-     * @param {Function} cb - The callback to call when the audio levels are calculated.
+     * Starts the stats interval to calculate audio levels for the stream.
+     * @param {Function} cb - The callback to call when talking status changes.
      * @returns {void}
     */
     start(cb) {
