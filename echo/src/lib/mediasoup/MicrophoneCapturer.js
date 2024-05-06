@@ -75,6 +75,10 @@ class MicrophoneCapturer {
         });
     }
 
+    /**
+     * Stops capturing audio from the microphone.
+     * @returns {void}
+    */
     stop() {
         if (this.stream) {
             this.stream.getTracks().forEach((track) => {
@@ -87,6 +91,11 @@ class MicrophoneCapturer {
         this.analyser.stop();
     }
 
+    /**
+     * Set the volume of the microphone
+     * @param {float} volume
+     * @returns {void}
+     */
     setVolume(volume) {
         if (volume >= 0 && volume <= 1) {
             this.volume = volume;
@@ -96,6 +105,10 @@ class MicrophoneCapturer {
         }
     }
 
+    /**
+     * Mute the microphone
+     * @returns {void}
+     */
     mute() {
         this.muted = true;
         if (this.stream) {
@@ -105,6 +118,10 @@ class MicrophoneCapturer {
         }
     }
 
+    /**
+     * Unmute the microphone
+     * @returns {void}
+     */
     unmute() {
         this.muted = false;
         if (this.stream) {
@@ -114,6 +131,11 @@ class MicrophoneCapturer {
         }
     }
 
+    /**
+     * Change the talking threshold
+     * @param {float} threshold
+     * @returns Promise that resolves when the talking threshold is set
+     */
     setTalkingThreshold(threshold) {
         if (threshold >= 0 && threshold <= 1) {
             this.talkingThreshold = threshold;
@@ -123,6 +145,11 @@ class MicrophoneCapturer {
         }
     }
 
+    /**
+     * Change the input device
+     * @param {string} deviceId
+     * @returns Promise that resolves when the input device is set
+     */
     setInputDevice(deviceId) {
         return new Promise(async (resolve, reject) => {
             if (deviceId === this.inputDeviceId || deviceId === 'default') {
@@ -140,11 +167,16 @@ class MicrophoneCapturer {
                 }
             } else {
                 //If stream is not started, resolve
-                resolve(null); 
+                resolve(null);
             }
         });
     }
 
+    /**
+     * Change the echo cancellation setting
+     * @param {boolean} echoCancellation
+     * @returns Promise that resolves when the echo cancellation is set
+     */
     setEchoCancellation(echoCancellation) {
         return new Promise(async (resolve, reject) => {
             if (echoCancellation === this.echoCancellation) {
@@ -167,6 +199,11 @@ class MicrophoneCapturer {
         });
     }
 
+    /**
+     * Change the noise suppression setting
+     * @param {boolean} noiseSuppression
+     * @returns Promise that resolves when the noise suppression is set
+     */
     setNoiseSuppression(noiseSuppression) {
         return new Promise(async (resolve, reject) => {
             if (noiseSuppression === this.noiseSuppression) {
@@ -189,6 +226,11 @@ class MicrophoneCapturer {
         });
     }
 
+    /**
+     * Change the auto gain control setting
+     * @param {boolean} autoGainControl 
+     * @returns Promise that resolves when the auto gain control is set
+     */
     setAutoGainControl(autoGainControl) {
         return new Promise(async (resolve, reject) => {
             if (autoGainControl === this.autoGainControl) {
