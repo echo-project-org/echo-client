@@ -1,10 +1,17 @@
+const { warn, error, log } = require("@lib/logger");
+
 class AudioAnalyser {
-    constructor(context, splitter, channelCount = 2) {
+    constructor(stream, context, splitter, channelCount = 2, talkingThreshold = 0.1) {
         this.analyser = {};
         this.freqs = {};
+        this.stream = stream;
         this.context = context;
         this.splitter = splitter;
         this.channelCount = channelCount;
+        this.talkingThreshold = talkingThreshold;
+
+        this.interval = null;
+        this.hasSpoken = false;
 
         for (let i = 0; i < this.channelCount; i++) {
             this.analyser[i] = this.context.createAnalyser();
@@ -29,6 +36,27 @@ class AudioAnalyser {
         }
     }
 
+    /**
+     * Sets the talking threshold.
+     * @param {number} talkingThreshold - The talking threshold to set.
+     * @returns {void}
+     */
+    setTalkingThreshold(talkingThreshold) {
+        if (talkingThreshold >= 0 && talkingThreshold <= 1) {
+            this.talkingThreshold = talkingThreshold;
+        } else {
+            error('Talking threshold must be between 0 and 1');
+            this.talkingThreshold = 0.1;
+        }
+    }
+
+    /**
+     * Calculates the audio levels for the given analyser, frequency data and channel count.
+     * @param {AnalyserNode[]} analyser - The analyser nodes to use for calculating audio levels.
+     * @param {Uint8Array[]} freqs - The frequency data arrays to use for calculating audio levels.
+     * @param {number} channelCount - The number of audio channels to calculate levels for.
+     * @returns {number[]} An array of audio levels, one for each channel.
+    */
     _calculateAudioLevels() {
         const audioLevels = [];
         for (let i = 0; i < this.channelCount; i++) {
@@ -42,6 +70,49 @@ class AudioAnalyser {
         }
 
         return audioLevels;
+    }
+
+    /**
+     * Rounds a number to one decimal place.
+     *
+     * @param {number} num - The number to round.
+     * @returns {number} The rounded number.
+    */
+    _round(num) {
+        return Math.round((num + Number.EPSILON) * 10) / 10;
+    }
+
+    /**
+     * Starts the stats interval to calculate audio levels for local and remote users.
+     * @param {Function} cb - The callback to call when the audio levels are calculated.
+     * @returns {void}
+    */
+    start(cb) {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+
+        this.interval = setInterval(() => {
+            if (!this.stream.active) {
+                warn('Stream is not active');
+            }
+            if (!cb) {
+                error('No callback provided, stopping audio analyser interval');
+                clearInterval(this.interval);
+                this.interval = null;
+                return;
+            }
+
+            let audioLevel = this._calculateAudioLevels();
+            if (!this.hasSpoken && this._round(audioLevel.reduce((a, b) => a + b, 0) / 2) >= this.talkingThreshold) {
+                this.hasSpoken = true;
+                cb(true);
+            } else if (this.hasSpoken && this._round(audioLevel.reduce((a, b) => a + b, 0) / 2) < this.talkingThreshold) {
+                this.hasSpoken = false;
+                cb(false);
+            }
+        }, 20);
     }
 }
 
