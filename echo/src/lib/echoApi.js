@@ -437,6 +437,7 @@ class EchoAPI extends EchoWSApi {
       muted: audioState.isMuted
     });
 
+    // event to signal other components that i joined the room
     this.joinedRoom();
   }
 

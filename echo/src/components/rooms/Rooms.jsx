@@ -73,7 +73,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       // send roomid to chatcontent to fetch messages
       updateCurrentRoom(joiningId);
       // add a field to the joining room, saying that i'm joining
-      api.call("rooms/join", "POST", { userId: sessionStorage.getItem("id"), roomId: joiningId, serverId: storage.get("serverId") })
+      api.call("rooms/join", "POST", {
+        userId: sessionStorage.getItem("id"),
+        roomId: joiningId, serverId:
+        storage.get("serverId"),
+        deaf: userAudioState.isDeaf,
+        muted: userAudioState.isMuted
+      })
         .then((res) => {
           if (res.ok) {
             ap.playJoinSound();
