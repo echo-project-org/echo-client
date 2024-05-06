@@ -1,7 +1,10 @@
-const { warn, error, log } = require("@lib/logger");
+const { warn, error, info } = require("@lib/logger");
+
+const ANALYZE_INTERVAL = 20;
+const DEFAULT_TALKING_THRESHOLD = 0.1;
 
 class AudioAnalyser {
-    constructor(stream, context, splitter, channelCount = 2, talkingThreshold = 0.1) {
+    constructor(stream, context, splitter, channelCount = 2, talkingThreshold = DEFAULT_TALKING_THRESHOLD) {
         this.analyser = {};
         this.freqs = {};
         this.stream = stream;
@@ -45,8 +48,8 @@ class AudioAnalyser {
         if (talkingThreshold >= 0 && talkingThreshold <= 1) {
             this.talkingThreshold = talkingThreshold;
         } else {
-            error('Talking threshold must be between 0 and 1');
-            this.talkingThreshold = 0.1;
+            error('Talking threshold must be between 0 and 1, setting to default');
+            this.talkingThreshold = DEFAULT_TALKING_THRESHOLD;
         }
     }
 
@@ -89,8 +92,8 @@ class AudioAnalyser {
     */
     start(cb) {
         if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
+            warn('Audio analyser interval already running, restarting...')
+            this.stop();
         }
 
         this.interval = setInterval(() => {
@@ -99,8 +102,7 @@ class AudioAnalyser {
             }
             if (!cb) {
                 error('No callback provided, stopping audio analyser interval');
-                clearInterval(this.interval);
-                this.interval = null;
+                this.stop();
                 return;
             }
 
@@ -112,7 +114,18 @@ class AudioAnalyser {
                 this.hasSpoken = false;
                 cb(false);
             }
-        }, 20);
+        }, ANALYZE_INTERVAL);
+    }
+
+    /**
+     * Stops the stats interval.
+     * @returns {void}
+    */
+    stop() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
     }
 }
 
