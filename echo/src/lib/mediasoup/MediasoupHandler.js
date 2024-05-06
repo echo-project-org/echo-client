@@ -6,8 +6,7 @@ const { warn, error, log } = require('@lib/logger');
 const MicrophoneCapturer = require('@lib/mediasoup/MicrophoneCapturer');
 
 class MediasoupHandler {
-    constructor(id, inputDeviceId = 'default', outputDeviceId = 'default',) {
-        this.id = id;
+    constructor(inputDeviceId = 'default', outputDeviceId = 'default',) {
         this.mic = new MicrophoneCapturer(inputDeviceId);
 
         this.mediasoupDevice = new mediasoup.Device();
@@ -33,17 +32,14 @@ class MediasoupHandler {
         return new Promise(async (resolve, reject) => {
             if (!this.mediasoupDevice) {
                 reject('mediasoupDevice not initialized');
-                return;
             }
 
             if (!type) {
                 reject('type is required');
-                return;
             }
 
             if (!data) {
                 reject('data is required');
-                return;
             }
 
             if (!this.mediasoupDevice.loaded) {
