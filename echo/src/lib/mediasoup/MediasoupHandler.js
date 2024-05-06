@@ -61,15 +61,14 @@ class MediasoupHandler {
             let transport;
             if (type === 'audioOut' || type === 'videoOut') {
                 transport = await this.mediasoupDevice.createSendTransport(data);
+                transport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
+                    // TODO Send the producer data to the server
+                });
             } else if (type === 'audioIn' || type === 'videoIn') {
                 transport = await this.mediasoupDevice.createRecvTransport(data);
             } else {
                 reject('Invalid transport type');
             }
-            
-            transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
-                // TODO Send the DTLS parameters to the server
-            });
 
             if(type === 'audioOut') {
                 // use audio out transport to check connection state
@@ -78,11 +77,10 @@ class MediasoupHandler {
                 });
             }
 
-            if(type === 'audioOut' || type === 'videoOut') {
-                transport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-                    // TODO Send the producer data to the server
-                });
-            }
+            transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+                // TODO Send the DTLS parameters to the server
+            });
+
             this.transports.set(type, transport);
             resolve(transport);
         });
