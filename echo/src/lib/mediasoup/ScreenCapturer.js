@@ -17,7 +17,7 @@ class ScreenCapturer {
         return new Promise(async (resolve, reject) => {
             try {
                 this.stream = await navigator.mediaDevices.getUserMedia(
-                    createVideoConstraints(this.videoSourceId, this.frameRate, this.width, this.height, this.cursor)
+                    createVideoConstraints(this.videoSourceId, {w: this.width, h: this.height}, this.frameRate, this.cursor)
                 );
 
                 resolve({

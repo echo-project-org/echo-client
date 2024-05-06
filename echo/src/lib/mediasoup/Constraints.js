@@ -15,7 +15,7 @@ const createAudioConstraints = (echoCancellation = false, noiseSuppression = fal
     }
 }
 
-const createVideoConstraints = (deviceId = 'default', resolution = { w: 1920, h: 1080 }, fps = 60) => {
+const createVideoConstraints = (deviceId = 'default', resolution = { w: 1920, h: 1080 }, fps = 60, cursor = true) => {
     return {
         audio: {
             sampleRate: 48000,
@@ -32,7 +32,7 @@ const createVideoConstraints = (deviceId = 'default', resolution = { w: 1920, h:
             width: { ideal: resolution.w, max: resolution.w },
             height: { ideal: resolution.h, max: resolution.h },
             frameRate: { ideal: fps, max: fps },
-            cursor: 'never',
+            cursor: cursor ? 'always' : 'never',
         },
         systemAudio: "include"
     }
