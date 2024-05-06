@@ -1,3 +1,5 @@
+import { ep } from "@root/index";
+
 const api = require('@lib/api');
 const mediasoup = require('mediasoup-client');
 const { warn, error, log } = require('@lib/logger');
@@ -64,7 +66,9 @@ class MediasoupHandler {
             if (type === 'audioOut') {
                 // use audio out transport to check connection state
                 transport.on('connectionstatechange', (state) => {
-                    // TODO Handle the connection state change
+                    ep.rtcConnectionStateChange({
+                        state: this.sendTransport.connectionState,
+                    })
                 });
             }
 
@@ -83,6 +87,21 @@ class MediasoupHandler {
         }
 
         return null;
+    }
+
+    /**
+     * Checks if the send transport is fully connected.
+     * @returns {boolean} Whether the send transport is fully connected or not.
+    */
+    isFullyConnected() {
+        const audioTransport = this.transports.get('audioOut');
+        if (audioTransport) {
+            return (
+                audioTransport.connectionState === "connected"
+            )
+        } else {
+            return true;
+        }
     }
 
     startAudioBroadcast() {
@@ -109,13 +128,13 @@ class MediasoupHandler {
 
     stopAudioBroadcast() {
         return new Promise(async (resolve, reject) => {
-            try{
+            try {
                 this.mic.stop();
                 if (this.audioProducer) {
                     this.audioProducer.close();
                     this.audioProducer = null;
                 }
-                
+
                 resolve();
             } catch (e) {
                 reject(e);
