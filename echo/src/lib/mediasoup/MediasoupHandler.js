@@ -110,28 +110,6 @@ class MediasoupHandler {
         })
     }
 
-    /**
-     * @function getAudioDevices - Gets the audio devices
-     * @returns {Promise} - The promise that resolves when the audio devices are found
-     */
-    static async getOutputAudioDevices() {
-        return new Promise((resolve, reject) => {
-            var out = [];
-            navigator.mediaDevices.enumerateDevices().then((devices) => {
-                devices.forEach((device, id) => {
-                    if (device.kind === "audiooutput" && device.deviceId !== "communications" && device.deviceId !== "default") {
-                        out.push({
-                            "name": device.label,
-                            "id": device.deviceId
-                        })
-                    }
-                })
-
-                resolve(out);
-            })
-        })
-    }
-
 
     /**
      * Retrieves the available video sources and filters out those with invalid thumbnail sizes.

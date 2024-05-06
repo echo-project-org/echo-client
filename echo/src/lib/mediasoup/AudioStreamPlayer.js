@@ -15,7 +15,7 @@ class AudioStreamPlayer {
         this.personalVolume = personalVolume;
         this.deaf = deaf;
         this.outputDeviceId = outputDeviceId;
-        
+
         this.track = track;
         this.stream = new MediaStream([this.track]);
         this.audioContext = new AudioContext();
@@ -118,6 +118,28 @@ class AudioStreamPlayer {
             // Default is not a valid device, it errors out and then sets the default device.
             this.audioContext.outputDeviceId('default');
         }
+    }
+
+    /**
+     * @function getAudioDevices - Gets the audio devices
+     * @returns {Promise} - The promise that resolves when the audio devices are found
+    */
+    static async getOutputAudioDevices() {
+        return new Promise((resolve, reject) => {
+            var out = [];
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+                devices.forEach((device, id) => {
+                    if (device.kind === "audiooutput" && device.deviceId !== "communications" && device.deviceId !== "default") {
+                        out.push({
+                            "name": device.label,
+                            "id": device.deviceId
+                        })
+                    }
+                })
+
+                resolve(out);
+            })
+        })
     }
 }
 
