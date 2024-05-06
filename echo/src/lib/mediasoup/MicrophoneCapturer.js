@@ -6,7 +6,7 @@ const { warn, error, info } = require("@lib/logger");
  * @class MicrophoneCapturer - Class for capturing audio from the microphone
  */
 class MicrophoneCapturer {
-    constructor(inputDeviceId, volume, muted = false, talkingThreshold = 0.3, noiseSuppression = false, echoCancellation = false, autoGainControl = false) {
+    constructor(inputDeviceId = 'default', volume = 1.0, muted = false, talkingThreshold = 0.3, noiseSuppression = false, echoCancellation = false, autoGainControl = false) {
         this.muted = muted;
         this.volume = volume;
 
@@ -30,7 +30,7 @@ class MicrophoneCapturer {
      * @param {string} inputDeviceId 
      * @returns {Promise<MediaStreamTrack>} Audio track for the microphone.
      */
-    async start(inputDeviceId = 'default') {
+    async start() {
         return new Promise(async (resolve, reject) => {
             try {
                 this.stream = await navigator.mediaDevices.getUserMedia(
@@ -38,7 +38,7 @@ class MicrophoneCapturer {
                         this.echoCancellation,
                         this.noiseSuppression,
                         this.autoGainControl,
-                        inputDeviceId
+                        this.inputDeviceId
                     ));
 
                 this.audioContext = new AudioContext();
@@ -164,7 +164,7 @@ class MicrophoneCapturer {
                 this.stop();
                 try {
                     //If stream is started, send new stream
-                    resolve(this.start(this.inputDeviceId));
+                    resolve(this.start());
                 } catch (err) {
                     reject(err);
                 }
@@ -191,7 +191,7 @@ class MicrophoneCapturer {
                 this.stop();
                 try {
                     //If stream is started, send new stream
-                    resolve(this.start(this.inputDeviceId));
+                    resolve(this.start());
                 } catch (err) {
                     reject(err);
                 }
@@ -218,7 +218,7 @@ class MicrophoneCapturer {
                 this.stop();
                 try {
                     //If stream is started, send new stream
-                    resolve(this.start(this.inputDeviceId));
+                    resolve(this.start());
                 } catch (err) {
                     reject(err);
                 }
@@ -245,7 +245,7 @@ class MicrophoneCapturer {
                 this.stop();
                 try {
                     //If stream is started, send new stream
-                    resolve(this.start(this.inputDeviceId));
+                    resolve(this.start());
                 } catch (err) {
                     reject(err);
                 }

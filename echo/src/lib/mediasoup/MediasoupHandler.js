@@ -1,16 +1,16 @@
 const api = require('@lib/api');
 const mediasoup = require('mediasoup-client');
 const { warn, error, log } = require('@lib/logger');
+const MicrophoneCapturer = require('@lib/mediasoup/MicrophoneCapturer');
 
 class MediasoupHandler {
     constructor(id, inputDeviceId = 'default', outputDeviceId = 'default',) {
         this.id = id;
+        this.mic = new MicrophoneCapturer(inputDeviceId);
 
-        this.inputDeviceId = inputDeviceId;
-        this.outputDeviceId = outputDeviceId;
-
-        this.mediasoupDevice = null;
+        this.mediasoupDevice = new mediasoup.Device();
         this.transports = new Map();
+        this.audioProducer = null;
     }
 
     /**
@@ -74,6 +74,52 @@ class MediasoupHandler {
 
             this.transports.set(type, transport);
             resolve(transport);
+        });
+    }
+
+    getRtpCapabilities() {
+        if (this.mediasoupDevice) {
+            return this.mediasoupDevice.rtpCapabilities;
+        }
+
+        return null;
+    }
+
+    startAudioBroadcast() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.mic.start(this.inputDeviceId).then(async (track) => {
+                    const audioTransport = this.transports.get('audioOut');
+                    const audioProducer = await audioTransport.produce({
+                        track: track,
+                        codecOptions: {
+                            opusStereo: true,
+                            opusDtx: true
+                        }
+                    });
+
+                    this.audioProducer = audioProducer;
+                    resolve(audioProducer);
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    stopAudioBroadcast() {
+        return new Promise(async (resolve, reject) => {
+            try{
+                this.mic.stop();
+                if (this.audioProducer) {
+                    this.audioProducer.close();
+                    this.audioProducer = null;
+                }
+                
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
         });
     }
 }
