@@ -67,7 +67,7 @@ class MediasoupHandler {
                 // use audio out transport to check connection state
                 transport.on('connectionstatechange', (state) => {
                     ep.rtcConnectionStateChange({
-                        state: this.sendTransport.connectionState,
+                        state: state,
                     })
                 });
             }
