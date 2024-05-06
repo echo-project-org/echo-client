@@ -63,7 +63,6 @@ class MicrophoneCapturer {
                     }
                 })
 
-
                 this.setVolume(this.volume);
                 if (this.muted) {
                     this.mute();
@@ -122,6 +121,94 @@ class MicrophoneCapturer {
         } else {
             warn("Talking threshold must be between 0 and 1")
         }
+    }
+
+    setInputDevice(deviceId) {
+        return new Promise(async (resolve, reject) => {
+            if (deviceId === this.inputDeviceId || deviceId === 'default') {
+                reject("Device is already set to " + deviceId);
+            }
+
+            this.inputDeviceId = deviceId;
+            if (this.stream) {
+                this.stop();
+                try {
+                    //If stream is started, send new stream
+                    resolve(this.start(this.inputDeviceId));
+                } catch (err) {
+                    reject(err);
+                }
+            } else {
+                //If stream is not started, resolve
+                resolve(null); 
+            }
+        });
+    }
+
+    setEchoCancellation(echoCancellation) {
+        return new Promise(async (resolve, reject) => {
+            if (echoCancellation === this.echoCancellation) {
+                reject("Echo cancellation is already set to " + echoCancellation);
+            }
+
+            this.echoCancellation = echoCancellation;
+            if (this.stream) {
+                this.stop();
+                try {
+                    //If stream is started, send new stream
+                    resolve(this.start(this.inputDeviceId));
+                } catch (err) {
+                    reject(err);
+                }
+            } else {
+                //If stream is not started, resolve
+                resolve(null);
+            }
+        });
+    }
+
+    setNoiseSuppression(noiseSuppression) {
+        return new Promise(async (resolve, reject) => {
+            if (noiseSuppression === this.noiseSuppression) {
+                reject("Noise suppression is already set to " + noiseSuppression);
+            }
+
+            this.noiseSuppression = noiseSuppression;
+            if (this.stream) {
+                this.stop();
+                try {
+                    //If stream is started, send new stream
+                    resolve(this.start(this.inputDeviceId));
+                } catch (err) {
+                    reject(err);
+                }
+            } else {
+                //If stream is not started, resolve
+                resolve(null);
+            }
+        });
+    }
+
+    setAutoGainControl(autoGainControl) {
+        return new Promise(async (resolve, reject) => {
+            if (autoGainControl === this.autoGainControl) {
+                reject("Auto gain control is already set to " + autoGainControl);
+            }
+
+            this.autoGainControl = autoGainControl;
+            if (this.stream) {
+                this.stop();
+                try {
+                    //If stream is started, send new stream
+                    resolve(this.start(this.inputDeviceId));
+                } catch (err) {
+                    reject(err);
+                }
+            } else {
+                //If stream is not started, resolve
+                resolve(null);
+            }
+        });
     }
 
     /**
