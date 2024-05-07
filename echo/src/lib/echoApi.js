@@ -57,7 +57,7 @@ class EchoFriendsAPI {
     }
   }
 
-  handleFriendAction(data) {
+  wsFriendAction(data) {
     log("wsFriendAction", data)
 
     if (data.operation === "add") {

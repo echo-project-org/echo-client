@@ -46,8 +46,8 @@ export function getFriend(id) {
 }
 
 //TODO change this to work with new api events
-export function wsFriendAction(data) {
-    log("wsFriendAction", data)
+export function handleFriendAction(data) {
+    log("handleFriendAction", data)
 
     if (data.operation === "add") {
         addFriend(data);
