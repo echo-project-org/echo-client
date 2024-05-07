@@ -108,4 +108,4 @@ EchoEvents.prototype.requestAppClose = function () {
     this.emit("requestAppClose");
 }
 
-module.exports = EchoEvents;
+export default EchoEvents;
