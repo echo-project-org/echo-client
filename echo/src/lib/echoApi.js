@@ -1,4 +1,4 @@
-import mediasoupHandler from "./mediasoupHandler";
+import mediasoupHandler from "@lib/mediasoup/MediasoupHandler";
 
 import Users from "@cache/user";
 import Room from "@cache/room";
