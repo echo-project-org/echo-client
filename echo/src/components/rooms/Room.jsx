@@ -15,7 +15,7 @@ function Room({ active, data: _data }) {
     });
 
     ee.on("userLeftChannel", "Room.userLeftChannel", (data) => {
-      //TODO ep.updateUser({ id: data.id, field: "currentRoom", value: "0" });
+      ep.updateUser({ id: data.id, field: "currentRoom", value: "0" });
       updateUsersInRoom();
     });
 
@@ -36,8 +36,8 @@ function Room({ active, data: _data }) {
    */
   const updateUsersInRoom = () => {
     // TODO get online users in room using data.id
-    // const users = ep.getUsersInRoom(_data.id);
-    // setOnlineUsers(users);
+    const users = ep.getUsersInRoom(_data.id);
+    setOnlineUsers(users);
   }
 
   useEffect(() => { if (!active) updateUsersInRoom(); }, [active])

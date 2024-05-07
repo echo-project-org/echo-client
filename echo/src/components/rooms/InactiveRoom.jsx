@@ -14,7 +14,7 @@ const StyledAvatarGroup = styled(AvatarGroup)({
 function InactiveRoom({ users, data }) {
   const handleClick = () => {
     info("[InactiveRoom] Room clicked");
-    //TODO ep.checkRoomClicked({ roomId: data.id });
+    ep.checkRoomClicked({ roomId: data.id });
   }
 
   return (

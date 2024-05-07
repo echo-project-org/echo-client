@@ -38,17 +38,17 @@ function MainPageServers({ }) {
     info("[MainPageServers] Entering server");
     api.call('users/status', "POST", { id: sessionStorage.getItem('id'), status: "1" })
       .then((res) => {
-        //TODO ep.openConnection(sessionStorage.getItem('id'));
+        ep.openConnection(sessionStorage.getItem('id'));
         navigate("/main");
 
-        /*TODO ep.addUser({
+        ep.addUser({
           id: sessionStorage.getItem('id'),
           name: sessionStorage.getItem('name'),
           userImage: sessionStorage.getItem('userImage'),
           status: storage.get('status'),
           online: storage.get('online'),
           roomId: 0
-        }, true);*/
+        }, true);
       })
       .catch((err) => {
         error(err.message);

@@ -41,7 +41,7 @@ function AnimatedRoutes() {
     }
 
     ipcRenderer.on("updateAvailable", (e, msg) => {
-      //TODO ep.closeConnection();
+      ep.closeConnection();
       log("update available", msg.version)
       setNewVersion(msg.version);
       if (msg.releaseNotes) setReleaseNotes(msg.releaseNotes);

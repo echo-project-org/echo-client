@@ -27,13 +27,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         if (result.json.length > 0) {
           setRemoteRooms(result.json);
           result.json.forEach((room) => {
-            //TODO ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
+            ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
 
             api.call("rooms/" + room.id + "/" + serverId + "/users")
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
                   res.json.forEach((user) => {
-                    //TODO ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
+                    ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
                   });
                 }
               })
@@ -52,8 +52,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     updateRooms();
 
     ee.on("roomClicked", "Rooms.roomClicked", (data) => {
-      //TODO
-      if (/*!ep.isAudioFullyConnected()*/ false) {
+      if (!ep.isAudioFullyConnected()) {
         error("Audio is not fully connected yet. Please wait a few seconds and try again.");
         return;
       }
@@ -77,7 +76,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       api.call("rooms/join", "POST", {
         userId: sessionStorage.getItem("id"),
         roomId: joiningId, serverId:
-        storage.get("serverId"),
+          storage.get("serverId"),
         deaf: userAudioState.isDeaf,
         muted: userAudioState.isMuted
       })

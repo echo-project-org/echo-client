@@ -31,8 +31,8 @@ function RoomControl({ state, setState, screenSharing }) {
       muteMic();
     });
 
-    //TODO ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
-    //TODO ep.toggleMute(muted);
+    ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
+    ep.toggleMute(muted);
     ipcRenderer.send("updateThumbarButtons", { muted: muted, deaf: deaf });
 
     return () => {
@@ -45,8 +45,8 @@ function RoomControl({ state, setState, screenSharing }) {
       deafHeadphones();
     });
 
-    //TODO ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
-    //TODO ep.toggleDeaf(deaf);
+    ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
+    ep.toggleDeaf(deaf);
     ipcRenderer.send("updateThumbarButtons", { muted: muted, deaf: deaf });
 
     return () => {
@@ -86,17 +86,17 @@ function RoomControl({ state, setState, screenSharing }) {
     });
 
     ee.on("localUserCrashed", "RoomControl.localUserCrashed", (data) => {
-      //TODOep.exitFromRoom(sessionStorage.getItem('id'));
+      ep.exitFromRoom(sessionStorage.getItem('id'));
       ap.playLeaveSound();
-      //TODO ep.closeConnection();
+      ep.closeConnection();
       navigate("/");
     });
 
     ee.on("appClosing", "RoomControl.appClosing", () => {
       log("app closing")
-      //TODO ep.exitFromRoom(sessionStorage.getItem('id'));
+      ep.exitFromRoom(sessionStorage.getItem('id'));
       ap.playLeaveSound();
-      //TODO ep.closeConnection();
+      ep.closeConnection();
       ee.canSafelyCloseApp();
     });
 
@@ -113,7 +113,7 @@ function RoomControl({ state, setState, screenSharing }) {
   var interval = null;
   const updatePing = () => {
     interval = setInterval(() => {
-      //TODO ep.getPing().then(ping => setPing(ping));
+      ep.getPing().then(ping => setPing(ping));
     }, 500);
   }
   const stopUpdatePing = () => {
@@ -127,7 +127,7 @@ function RoomControl({ state, setState, screenSharing }) {
     if (!state) {
       api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
         .then(res => {
-          //TODO ep.closeConnection();
+          ep.closeConnection();
           // TODO: check if user is connected in room, if so change icon and action when clicked
           navigate("/");
         })
@@ -140,8 +140,8 @@ function RoomControl({ state, setState, screenSharing }) {
     } else {
       api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
         .then(res => {
-          //TODO ep.exitFromRoom(sessionStorage.getItem('id'));
-          //TODO ep.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
+          ep.exitFromRoom(sessionStorage.getItem('id'));
+          ep.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
           ap.playLeaveSound();
         })
         .catch(err => {

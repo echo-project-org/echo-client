@@ -24,7 +24,7 @@ function MainPageFriends({ }) {
             user.type = i;
             user.targetId = user.id;
             setFriends((prev) => { return [...prev, user]; });
-            if (user) ;//TODO ep.addFriend(user);
+            if (user) ep.addFriend(user);
           }
         }
       })
