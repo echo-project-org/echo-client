@@ -2,7 +2,7 @@ import { ee, cm } from "@root";
 const { error, warn, log } = require("@lib/logger");
 
 export function addFriend(friend) {
-    log("ep.addFriend", friend);
+    log("[FriendsManager] addFriend", friend);
     // if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
     // populate info with cached user data
     if (!friend.name && !friend.img) {
@@ -29,7 +29,7 @@ export function updateFriends({ id, field, value }) {
 }
 
 export function removeFriend(data) {
-    log("ep.removeFriend", data);
+    log("[FriendsManager] removeFriend", data);
     cm.cachedFriends.remove(data.targetId);
     ee.friendCacheUpdated(cm.cachedFriends.getAll());
 }
@@ -50,8 +50,8 @@ export function wsFriendAction(data) {
     log("wsFriendAction", data)
 
     if (data.operation === "add") {
-        this.addFriend(data);
+        addFriend(data);
     } else if (data.operation === "remove") {
-        this.removeFriend(data);
+        removeFriend(data);
     }
 }

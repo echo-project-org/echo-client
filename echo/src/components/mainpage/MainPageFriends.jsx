@@ -8,6 +8,7 @@ import StylingComponents from '@root/StylingComponents';
 import CurrentStatus from "@components/user/CurrentStatus";
 
 const api = require('@lib/api');
+const fm = require('@lib/FriendsManager');
 const { error, info } = require('@lib/logger');
 
 function MainPageFriends({ }) {
@@ -24,7 +25,7 @@ function MainPageFriends({ }) {
             user.type = i;
             user.targetId = user.id;
             setFriends((prev) => { return [...prev, user]; });
-            if (user) ep.addFriend(user);
+            if (user) fm.addFriend(user);
           }
         }
       })

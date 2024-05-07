@@ -14,7 +14,7 @@ class EchoFriendsAPI {
   }
 
   addFriend(friend) {
-    log("ep.addFriend", friend);
+    log("[FriendsManager] addFriend", friend);
     // if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
     // populate info with cached user data
     if (!friend.name && !friend.img) {

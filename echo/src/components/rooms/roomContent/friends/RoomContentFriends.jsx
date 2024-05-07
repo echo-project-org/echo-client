@@ -7,6 +7,7 @@ import StyledComponents from '@root/StylingComponents';
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
 
 const api = require('@lib/api');
+const fm = require('@lib/FriendsManager');
 const { error, log, info } = require('@lib/logger');
 
 function RoomContentFriends({ }) {
@@ -23,7 +24,7 @@ function RoomContentFriends({ }) {
             user.type = i;
             user.targetId = user.id;
             setFriends((prev) => { return [...prev, user]; });
-            if (user) ep.addFriend(user);
+            if (user) fm.addFriend(user);
           }
         }
       })
