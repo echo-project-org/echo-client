@@ -5,7 +5,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { Divider, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
-import { storage } from "@root/index";
+import { ep, storage } from "@root/index";
 import MainPageServersComponent from './MainPageServersComponent';
 
 import StylingComponents from '@root/StylingComponents';

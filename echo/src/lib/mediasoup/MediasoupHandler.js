@@ -28,33 +28,37 @@ class MediasoupHandler {
  * @param {string} data.iceTransportPolicy - The ICE transport policy for the transport.
  * @param {Object} data.additionalSettings - Additional settings for the transport.
  */
-    async createTransport(type, data) {
+    async createTransport(type, routerCapabilities, tranportData) {
         return new Promise(async (resolve, reject) => {
             if (!this.mediasoupDevice) {
                 reject('mediasoupDevice not initialized');
             }
 
             if (!type) {
-                reject('type is required');
+                reject('Type is required');
             }
 
-            if (!data) {
-                reject('data is required');
+            if (!routerCapabilities) {
+                reject('Router capabilities are required');
+            }
+
+            if (!tranportData) {
+                reject('Transport data is required');
             }
 
             if (!this.mediasoupDevice.loaded) {
                 // Load the device with the given rtpCapabilities
-                await this.mediasoupDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+                await this.mediasoupDevice.load({ routerRtpCapabilities: routerCapabilities });
             }
 
             let transport;
             if (type === 'audioOut' || type === 'videoOut') {
-                transport = await this.mediasoupDevice.createSendTransport(data);
+                transport = await this.mediasoupDevice.createSendTransport(tranportData);
                 transport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
                     // TODO Send the producer data to the server
                 });
             } else if (type === 'audioIn' || type === 'videoIn') {
-                transport = await this.mediasoupDevice.createRecvTransport(data);
+                transport = await this.mediasoupDevice.createRecvTransport(tranportData);
             } else {
                 reject('Invalid transport type');
             }

@@ -7,6 +7,7 @@ import Storage from '@cache/storage';
 import AudioPlayer from '@lib/audioPlayer';
 import EchoEvents from '@lib/EchoEvents';
 import CacheManager from '@cache/CacheManager';
+import EchoProtocol from '@lib/EchoProtocol';
 
 // const sessionStorage = new Storage('session');
 
@@ -24,8 +25,9 @@ const storage = new Storage();
 const ee = new EchoEvents();
 const cm = new CacheManager();
 const ap = new AudioPlayer(storage.get('soundQueuesVolume') || 0.6);
+const ep = new EchoProtocol();
 
-export { cm, ee, storage, ap };
+export { ep, cm, ee, storage, ap };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
