@@ -1,5 +1,5 @@
-import { createAudioConstraints } from '@lib/mediasoup/constraints.js';
-import { AudioAnalyser } from '@lib/mediasoup/Audioanalyser.js';
+import { createAudioConstraints } from '@lib/mediasoup/Constraints';
+import AudioAnalyser from '@lib/mediasoup/AudioAnalyser';
 const { warn, error, info } = require("@lib/logger");
 
 /**
