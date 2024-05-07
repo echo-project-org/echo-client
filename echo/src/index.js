@@ -6,8 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import EchoProtocol from './echoProtocol';
 import Storage from '@cache/storage';
 import AudioPlayer from '@lib/audioPlayer';
+import EchoEvents from '@lib/EchoEvents';
 
-const storage = new Storage();
 // const sessionStorage = new Storage('session');
 
 // const { ipcRenderer } = window.require('electron');
@@ -20,10 +20,12 @@ const storage = new Storage();
 // console.info = (args) => _logger('info', args);
 // console.debug = (args) => _logger('debug', args);
 
+const storage = new Storage();
 let ep = new EchoProtocol();
-
+let ee = new EchoEvents();
 const ap = new AudioPlayer(storage.get('soundQueuesVolume') || 0.6);
-export { ep, storage, ap };
+
+export { ep, ee, storage, ap };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
