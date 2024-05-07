@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import Storage from '@cache/storage';
 import AudioPlayer from '@lib/audioPlayer';
 import EchoEvents from '@lib/EchoEvents';
+import CacheManager from '@cache/CacheManager';
 
 // const sessionStorage = new Storage('session');
 
@@ -20,10 +21,11 @@ import EchoEvents from '@lib/EchoEvents';
 // console.debug = (args) => _logger('debug', args);
 
 const storage = new Storage();
-let ee = new EchoEvents();
+const ee = new EchoEvents();
+const cm = new CacheManager();
 const ap = new AudioPlayer(storage.get('soundQueuesVolume') || 0.6);
 
-export { ee, storage, ap };
+export { cm, ee, storage, ap };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

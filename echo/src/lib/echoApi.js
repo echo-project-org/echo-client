@@ -13,7 +13,7 @@ class EchoFriendsAPI {
     this.cachedFriends = new Friends();
   }
 
-  addFriend(friend) {w
+  addFriend(friend) {
     log("ep.addFriend", friend);
     // if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
     // populate info with cached user data
