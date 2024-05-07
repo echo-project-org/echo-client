@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import EchoProtocol from './echoProtocol';
 import Storage from '@cache/storage';
 import AudioPlayer from '@lib/audioPlayer';
 import EchoEvents from '@lib/EchoEvents';
@@ -21,11 +20,10 @@ import EchoEvents from '@lib/EchoEvents';
 // console.debug = (args) => _logger('debug', args);
 
 const storage = new Storage();
-let ep = new EchoProtocol();
 let ee = new EchoEvents();
 const ap = new AudioPlayer(storage.get('soundQueuesVolume') || 0.6);
 
-export { ep, ee, storage, ap };
+export { ee, storage, ap };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

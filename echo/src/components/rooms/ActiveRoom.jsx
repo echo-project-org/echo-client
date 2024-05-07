@@ -1,8 +1,6 @@
 import { Typography } from '@mui/material';
 
 import OnlineUserIcon from '@components/user/OnlineUserIcon';
-
-import { ep } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 function ActiveRoom({ users, data }) {

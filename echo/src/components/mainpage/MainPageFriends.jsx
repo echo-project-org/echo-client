@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Grid, Slide } from '@mui/material';
 import { TransitionGroup } from 'react-transition-group';
 
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 import CurrentStatus from "@components/user/CurrentStatus";
@@ -24,7 +24,7 @@ function MainPageFriends({ }) {
             user.type = i;
             user.targetId = user.id;
             setFriends((prev) => { return [...prev, user]; });
-            if (user) ep.addFriend(user);
+            if (user) ;//TODO ep.addFriend(user);
           }
         }
       })

@@ -3,7 +3,7 @@ import "@css/chat.css";
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
 import { info } from '@lib/logger';
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 import RoomContentSelector from "./RoomContentSelector.jsx";
@@ -46,22 +46,22 @@ function RoomContent({ roomId }) {
   }
 
   useEffect(() => {
-    ep.on("gotVideoStream", "RoomContent.gotVideoStream", (data) => {
+    ee.on("gotVideoStream", "RoomContent.gotVideoStream", (data) => {
       setContentSelected("screen");
     });
 
-    ep.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
+    ErrorEvent.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
       setContentSelected("friends");
     });
 
-    ep.on("joinedRoom", "RoomContent.joinedRoom", (data) => {
+    ee.on("joinedRoom", "RoomContent.joinedRoom", (data) => {
       setContentSelectedWrap(storage.get("lastContentSelected") || "chat");
     });
 
     return () => {
-      ep.releaseGroup("RoomContent.gotVideoStream");
-      ep.releaseGroup("RoomContent.exitedFromRoom");
-      ep.releaseGroup("RoomContent.joinedRoom");
+      ee.releaseGroup("RoomContent.gotVideoStream");
+      ee.releaseGroup("RoomContent.exitedFromRoom");
+      ee.releaseGroup("RoomContent.joinedRoom");
     }
   }, [contentSelected]);
 

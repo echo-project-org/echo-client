@@ -6,7 +6,7 @@ import Chat from './Chat'
 import ChatControls from './ChatControls'
 import EmojiPicker from "./EmojiPicker";
 
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 import { info } from "@lib/logger";
 
 function RoomContentChat({ roomId }) {
@@ -22,12 +22,12 @@ function RoomContentChat({ roomId }) {
   };
 
   useEffect(() => {
-    ep.on("selectedEmoji", "RoomContentChat.selectedEmoji", (data) => {
+    ee.on("selectedEmoji", "RoomContentChat.selectedEmoji", (data) => {
       closeEmojiPicker()
     });
 
     return () => {
-      ep.releaseGroup("RoomContentChat.selectedEmoji");
+      ee.releaseGroup("RoomContentChat.selectedEmoji");
     }
   }, []);
 

@@ -5,7 +5,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { Divider, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
-import { ep, storage } from "@root/index";
+import { storage } from "@root/index";
 import MainPageServersComponent from './MainPageServersComponent';
 
 import StylingComponents from '@root/StylingComponents';
@@ -38,17 +38,17 @@ function MainPageServers({ }) {
     info("[MainPageServers] Entering server");
     api.call('users/status', "POST", { id: sessionStorage.getItem('id'), status: "1" })
       .then((res) => {
-        ep.openConnection(sessionStorage.getItem('id'));
+        //TODO ep.openConnection(sessionStorage.getItem('id'));
         navigate("/main");
 
-        ep.addUser({
+        /*TODO ep.addUser({
           id: sessionStorage.getItem('id'),
           name: sessionStorage.getItem('name'),
           userImage: sessionStorage.getItem('userImage'),
           status: storage.get('status'),
           online: storage.get('online'),
           roomId: 0
-        }, true);
+        }, true);*/
       })
       .catch((err) => {
         error(err.message);

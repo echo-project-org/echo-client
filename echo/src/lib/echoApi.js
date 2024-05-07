@@ -3,7 +3,6 @@ import mediasoupHandler from "@lib/mediasoup/MediasoupHandler";
 import Users from "@cache/user";
 import Room from "@cache/room";
 import Friends from "@cache/friends";
-import wsConnection from "./wsConnection";
 
 import { storage } from "@root/index";
 
@@ -14,7 +13,7 @@ class EchoFriendsAPI {
     this.cachedFriends = new Friends();
   }
 
-  addFriend(friend) {
+  addFriend(friend) {w
     log("ep.addFriend", friend);
     // if (typeof friend.targetId !== "string") friend.targetId = Number(friend.targetId);
     // populate info with cached user data
@@ -69,7 +68,7 @@ class EchoFriendsAPI {
   }
 }
 
-class EchoWSApi extends EchoFriendsAPI {
+/* class EchoWSApi extends EchoFriendsAPI {
   constructor() {
     super();
     this.wsConnection = new wsConnection();
@@ -286,9 +285,9 @@ class EchoWSApi extends EchoFriendsAPI {
       this.wsConnection = null;
     }
   }
-}
+}*/
 
-class EchoAPI extends EchoWSApi {
+class EchoAPI extends EchoFriendsAPI {
   constructor() {
     super();
 

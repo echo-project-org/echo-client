@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container } from "@mui/material";
 
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 import RoomContentFriendContainer from "./RoomContentFriendContainer";
@@ -31,7 +31,7 @@ function RoomContentFriends({ }) {
         error(err.message);
       });
 
-    ep.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (data) => {
+    ee.on("friendCacheUpdated", "RoomContentFriends.usersCacheUpdated", (data) => {
       log("RoomContentFriends.usersCacheUpdated: ", data);
       setFriends((prev) => {
         const newV = [];
@@ -43,7 +43,7 @@ function RoomContentFriends({ }) {
     });
 
     return () => {
-      ep.releaseGroup("RoomContentFriends.usersCacheUpdated");
+      ee.releaseGroup("RoomContentFriends.usersCacheUpdated");
     }
   }, []);
 

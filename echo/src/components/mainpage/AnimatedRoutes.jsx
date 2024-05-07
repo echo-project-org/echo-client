@@ -8,7 +8,7 @@ import MainPageServer from '@views/MainPageServer'
 import Login from '@views/Login';
 import Register from '@views/Register'
 import Updating from '@views/Updating';
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');
 const api = require('@lib/api');
@@ -29,19 +29,19 @@ function AnimatedRoutes() {
       api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
         .then(res => {
           if (location.pathname === "/main") {
-            ep.appClosing();
+            ee.appClosing();
           } else {
-            ep.canSafelyCloseApp();
+            ee.canSafelyCloseApp();
           }
         })
         .catch(err => {
           error("Failed setting user to offline", err);
-          ep.canSafelyCloseApp();
+          ee.canSafelyCloseApp();
         });
     }
 
     ipcRenderer.on("updateAvailable", (e, msg) => {
-      ep.closeConnection();
+      //TODO ep.closeConnection();
       log("update available", msg.version)
       setNewVersion(msg.version);
       if (msg.releaseNotes) setReleaseNotes(msg.releaseNotes);
@@ -56,11 +56,11 @@ function AnimatedRoutes() {
       appCloseRequested();
     });
 
-    ep.on("requestAppClose", "AnimatedRoutes.requestAppClose", () => {
+    ee.on("requestAppClose", "AnimatedRoutes.requestAppClose", () => {
       appCloseRequested();
     });
 
-    ep.on("canSafelyCloseApp", "AnimatedRouter.canSafelyCloseApp", () => {
+    ee.on("canSafelyCloseApp", "AnimatedRouter.canSafelyCloseApp", () => {
       ipcRenderer.send("exitApplication", true);
     });
 
@@ -68,8 +68,8 @@ function AnimatedRoutes() {
       ipcRenderer.removeAllListeners("updateAvailable");
       ipcRenderer.removeAllListeners("goToMainPage");
       ipcRenderer.removeAllListeners("appClose");
-      ep.releaseGroup("AnimatedRoutes.requestAppClose");
-      ep.releaseGroup("AnimatedRouter.canSafelyCloseApp");
+      ee.releaseGroup("AnimatedRoutes.requestAppClose");
+      ee.releaseGroup("AnimatedRouter.canSafelyCloseApp");
     }
   }, [navigate, location])
 

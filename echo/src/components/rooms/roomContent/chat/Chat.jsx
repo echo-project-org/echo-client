@@ -6,7 +6,7 @@ import MessageRight from './MessageRight'
 import MessageLeft from './MessageLeft'
 import LoadingAnimation from '@components/mainpage/LoadingAnimation'
 
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 
 const api = require('@lib/api');
 const { error, info } = require('@lib/logger');
@@ -62,17 +62,17 @@ function Chat({ currentRoomId, onMouseDown }) {
   }, [currentRoomId]);
 
   useEffect(() => {
-    ep.on("receiveChatMessage", "Chat.receiveChatMessage", (newMessage) => {
+    ee.on("receiveChatMessage", "Chat.receiveChatMessage", (newMessage) => {
       // check if message contains <br>, if so replace with \n
       setMessages((routeMessages) => [newMessage, ...routeMessages]);
     });
-    ep.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
+    ee.on("messagesCacheUpdated", "Chat.messagesCacheUpdated", (messages) => {
       setMessages([...messages]);
       setLoadingVisibility(false);
     });
     return () => {
-      ep.releaseGroup("Chat.receiveChatMessage");
-      ep.releaseGroup("Chat.messagesCacheUpdated");
+      ee.releaseGroup("Chat.receiveChatMessage");
+      ee.releaseGroup("Chat.messagesCacheUpdated");
     }
   }, []);
 

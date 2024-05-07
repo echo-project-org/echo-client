@@ -1,7 +1,7 @@
 import { Avatar, Grid, Container, Button } from "@mui/material";
 import { ChatBubble, Call, PersonAdd, PersonRemove } from "@mui/icons-material";
 
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 import { info } from "@lib/logger";
 import CurrentStatus from "@components/user/CurrentStatus";

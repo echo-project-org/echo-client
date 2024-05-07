@@ -2,7 +2,6 @@ import React from 'react'
 import { Avatar, AvatarGroup, Typography } from '@mui/material'
 import { styled } from "@mui/material/styles";
 
-import { ep } from "@root/index";
 import { info } from "@lib/logger";
 import StylingComponents from '@root/StylingComponents';
 
@@ -15,7 +14,7 @@ const StyledAvatarGroup = styled(AvatarGroup)({
 function InactiveRoom({ users, data }) {
   const handleClick = () => {
     info("[InactiveRoom] Room clicked");
-    ep.checkRoomClicked({ roomId: data.id });
+    //TODO ep.checkRoomClicked({ roomId: data.id });
   }
 
   return (

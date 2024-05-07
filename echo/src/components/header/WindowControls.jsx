@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { ButtonGroup, Button } from '@mui/material'
 import { Close, Fullscreen, Minimize } from '@mui/icons-material';
 
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
@@ -14,7 +14,7 @@ function WindowControls({ }) {
     info("[WindowControls] Closing app");
     api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
       .then(() => {
-        ep.requestAppClose();
+        ee.requestAppClose();
       })
       .catch((err) => {
         error("Error setting user offline", err);

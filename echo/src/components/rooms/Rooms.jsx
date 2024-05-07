@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { ep, storage, ap } from "@root/index";
+import { ee, storage, ap } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 import Room from './Room';
@@ -27,13 +27,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         if (result.json.length > 0) {
           setRemoteRooms(result.json);
           result.json.forEach((room) => {
-            ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
+            //TODO ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
 
             api.call("rooms/" + room.id + "/" + serverId + "/users")
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
                   res.json.forEach((user) => {
-                    ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
+                    //TODO ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
                   });
                 }
               })
@@ -51,8 +51,9 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   useEffect(() => {
     updateRooms();
 
-    ep.on("roomClicked", "Rooms.roomClicked", (data) => {
-      if (!ep.isAudioFullyConnected()) {
+    ee.on("roomClicked", "Rooms.roomClicked", (data) => {
+      //TODO
+      if (/*!ep.isAudioFullyConnected()*/ false) {
         error("Audio is not fully connected yet. Please wait a few seconds and try again.");
         return;
       }
@@ -91,7 +92,7 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         });
     });
 
-    ep.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (data) => {
+    ee.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (data) => {
       const id = data.id;
       const func = data.call;
 
@@ -110,8 +111,8 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
     });
 
     return () => {
-      ep.releaseGroup("Rooms.roomClicked");
-      ep.releaseGroup("Rooms.needUserCacheUpdate");
+      ee.releaseGroup("Rooms.roomClicked");
+      ee.releaseGroup("Rooms.needUserCacheUpdate");
     }
   }, []);
 

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import MessageBoxButtons from './MessageBoxButtons';
 import UploadBoxButtons from './UploadBoxButtons';
 
-import { ep, storage, ap } from "@root/index";
+import { ee, storage, ap } from "@root/index";
 import StylingComponents from "@root/StylingComponents";
 
 const api = require("@lib/api");
@@ -29,7 +29,7 @@ function ChatControls({ onEmojiOn, roomId }) {
   }
 
   useEffect(() => {
-    ep.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
+    ee.on("receiveChatMessage", "ChatControls.receiveChatMessage", (data) => {
       if (String(data.userId) === sessionStorage.getItem("id")) {
         ap.playNewSelfMessageSound();
         data.userId = Number(data.id);
@@ -46,7 +46,7 @@ function ChatControls({ onEmojiOn, roomId }) {
       };
     });
 
-    ep.on("selectedEmoji", "ChatControls.selectedEmoji", (data) => {
+    ee.on("selectedEmoji", "ChatControls.selectedEmoji", (data) => {
       setMessage((prev) => {
         return prev + " " + data.emoji + " ";
       });
