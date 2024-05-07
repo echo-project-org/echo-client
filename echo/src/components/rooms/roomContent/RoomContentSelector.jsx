@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ToggleButtonGroup, ToggleButton, Badge } from '@mui/material';
 import { ChatBubble, PeopleAlt, Window } from '@mui/icons-material';
 import { info } from '@lib/logger';
-import { ep } from '@root';
+import { ee } from '@root';
 
 function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
   const [nNewMessages, setNNewMessages] = useState(0);
@@ -32,17 +32,17 @@ function RoomContentSelector({ roomId, contentSelected, setContentSelected }) {
   }
 
   useEffect(() => {
-    ep.on("receiveChatMessage", "RoomContentSelector.receiveChatMessage", (message) => {
+    ee.on("receiveChatMessage", "RoomContentSelector.receiveChatMessage", (message) => {
       addMessage(message);
     });
 
-    ep.on("exitedFromRoom", "RoomContentSelector.exitedFromRoom", (data) => {
+    ee.on("exitedFromRoom", "RoomContentSelector.exitedFromRoom", (data) => {
       setNNewMessages(0);
     });
 
     return () => {
-      ep.releaseGroup("RoomContentSelector.receiveChatMessage");
-      ep.releaseGroup("RoomContentSelector.exitedFromRoom");
+      ee.releaseGroup("RoomContentSelector.receiveChatMessage");
+      ee.releaseGroup("RoomContentSelector.exitedFromRoom");
     }
   });
 

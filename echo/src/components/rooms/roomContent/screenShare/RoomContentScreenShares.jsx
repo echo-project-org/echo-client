@@ -6,7 +6,7 @@ import { Container, Grid, styled } from '@mui/material'
 import ScreenShareControlIcons from './ScreenShareControlIcons';
 import ScreenShareUserContainer from "./ScreenShareUserContainer";
 import { info } from '@lib/logger';
-import { ep } from '@root';
+import { ee } from '@root';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -41,14 +41,14 @@ function RoomContentScreenShares({ roomId }) {
   }, [roomId])
 
   useEffect(() => {
-    ep.on("gotVideoStream", "RoomContentScreenShares.gotVideoStream", (data) => {
+    ee.on("gotVideoStream", "RoomContentScreenShares.gotVideoStream", (data) => {
       info("[RoomContentScreenShares] Got video stream")
       setFocusedUser(data.user.id);
       var myDiv = document.getElementById('screenShareContainer');
       if (myDiv) myDiv.scrollTop = (99999999999999 * -1);
     });
 
-    ep.on("videoBroadcastStop", "RoomContentScreenShares.videoBroadcastStop", (data) => {
+    ee.on("videoBroadcastStop", "RoomContentScreenShares.videoBroadcastStop", (data) => {
       info("[RoomContentScreenShares] Video broadcast stopped")
       if (data.id === focusedUser) {
         setFocusedUser('undefined');
@@ -56,32 +56,32 @@ function RoomContentScreenShares({ roomId }) {
     });
 
     return () => {
-      ep.releaseGroup("RoomContentScreenShares.gotVideoStream");
-      ep.releaseGroup("RoomContentScreenShares.videoBroadcastStop");
+      ee.releaseGroup("RoomContentScreenShares.gotVideoStream");
+      ee.releaseGroup("RoomContentScreenShares.videoBroadcastStop");
     }
   }, [focusedUser])
 
   useEffect(() => {
-    ep.on("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel", (data) => {
+    ee.on("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel", (data) => {
       if (data.roomId === roomId) {
         updateUsers();
       }
     });
 
-    ep.on("userLeftChannel", "RoomContentScreenShares.userLeftChannel", (data) => {
+    ee.on("userLeftChannel", "RoomContentScreenShares.userLeftChannel", (data) => {
       if (data.roomId === roomId) {
         updateUsers();
       }
     });
 
-    ep.on("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated", (_) => {
+    ee.on("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated", (_) => {
       updateUsers();
     });
 
     return () => {
-      ep.releaseGroup("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel");
-      ep.releaseGroup("userLeftChannel", "RoomContentScreenShares.userLeftChannel");
-      ep.releaseGroup("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated");
+      ee.releaseGroup("userJoinedChannel", "RoomContentScreenShares.userJoinedChannel");
+      ee.releaseGroup("userLeftChannel", "RoomContentScreenShares.userLeftChannel");
+      ee.releaseGroup("usersCacheUpdated", "RoomContentScreenShares.usersCacheUpdated");
     }
   }, [users]);
 

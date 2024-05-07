@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Container, Grid } from '@mui/material'
 import { Visibility } from '@mui/icons-material';
 import { info } from '@lib/logger';
-import { ep, ap } from '@root';
+import { ee, ap } from '@root';
 
 import StylingComponents from '@root/StylingComponents';
 
@@ -11,7 +11,7 @@ function ScreenShareUserContainer({ user, selectUser }) {
   const [talking, setTalking] = useState(user.talking);
 
   useEffect(() => {
-    ep.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
+    ee.on("videoBroadcastStarted", "ScreenShareUserContainer.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true);
         if (!data.silent) {
@@ -20,23 +20,23 @@ function ScreenShareUserContainer({ user, selectUser }) {
       }
     });
 
-    ep.on("videoBroadcastStop", "ScreenShareUserContainer.videoBroadcastStop", (data) => {
+    ee.on("videoBroadcastStop", "ScreenShareUserContainer.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(false);
         ap.playEndStreamSound();
       }
     });
 
-    ep.on("audioStatsUpdate", "ScreenShareUserContainer.audioStatsUpdate", (audioData) => {
+    ee.on("audioStatsUpdate", "ScreenShareUserContainer.audioStatsUpdate", (audioData) => {
       if (audioData.id === user.id) {
         setTalking(audioData.talking);
       }
     });
 
     return () => {
-      ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStarted");
-      ep.releaseGroup("ScreenShareUserContainer.videoBroadcastStop");
-      ep.releaseGroup("ScreenShareUserContainer.audioStatsUpdate");
+      ee.releaseGroup("ScreenShareUserContainer.videoBroadcastStarted");
+      ee.releaseGroup("ScreenShareUserContainer.videoBroadcastStop");
+      ee.releaseGroup("ScreenShareUserContainer.audioStatsUpdate");
     }
   }, [user]);
 

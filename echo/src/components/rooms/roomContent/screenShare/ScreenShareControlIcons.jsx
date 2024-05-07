@@ -4,7 +4,7 @@ import { ButtonGroup, Button, Tooltip, Container, ClickAwayListener, Grid, Slide
 import { CancelPresentation, VolumeUp, VolumeOff, PictureInPictureAlt } from '@mui/icons-material';
 import ReactPlayer from 'react-player';
 import { info } from '@lib/logger';
-import { ep } from '@root';
+import { ee } from '@root';
 
 const VolumeSlider = ({ showVolumeSlider, hideVolumeSlider, volume, setVolume }) => {
   if (!showVolumeSlider) return (<></>)
@@ -75,7 +75,7 @@ const ScreenShareControlIcons = ({ stopPlayback }) => {
   }
 
   useEffect(() => {
-    ep.on("gotVideoStream", (data) => {
+    ee.on("gotVideoStream", (data) => {
       info("[ScreenShareControlIcons] Got video stream")
       if (data.active) {
         setScreenShareStream(ep.getVideo());

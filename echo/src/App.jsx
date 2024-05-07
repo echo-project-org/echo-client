@@ -13,7 +13,7 @@ import { HashRouter } from "react-router-dom";
 import AnimatedRoutes from './components/mainpage/AnimatedRoutes';
 import WindowControls from './components/header/WindowControls';
 
-import { storage, ep } from "./index";
+import { storage, ee } from "./index";
 import StylingComponents from './StylingComponents';
 
 import {
@@ -32,7 +32,7 @@ function App() {
   const [background, setBackground] = useState(storage.get("background") || "#331b36");
 
   useEffect(() => {
-    ep.on("themeChanged", (theme) => {
+    ee.on("themeChanged", (theme) => {
       setPrimary(() => theme.primary);
       setSecondary(() => theme.secondary);
       setText(() => theme.text);
@@ -40,7 +40,7 @@ function App() {
     });
 
     return () => {
-      ep.off("themeChanged");
+      ee.off("themeChanged");
     }
   }, []);
 
