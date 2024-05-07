@@ -2,7 +2,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { info } from '@lib/logger';
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 import SettingsView from './SettingsView';
 import StyledComponents from '@root/StylingComponents';
 
@@ -24,12 +24,12 @@ function SettingsButton() {
   };
 
   useEffect(() => {
-    ep.on("logout", "SettingsButton.logout", () => {
+    ee.on("logout", "SettingsButton.logout", () => {
       handleModalClose();
     });
 
     return () => {
-      ep.releaseGroup("SettingsButton.logout");
+      ee.releaseGroup("SettingsButton.logout");
     };
   }, []);
 

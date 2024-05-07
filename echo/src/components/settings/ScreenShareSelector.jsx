@@ -2,7 +2,7 @@ import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid, Snackbar, Alert } 
 import { useEffect, useState } from 'react';
 import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 import ScreenShareOption from './ScreenShareOption';
 
 const { error, warn, info } = require('@lib/logger');
@@ -84,17 +84,17 @@ function ScreenShareSelector() {
   }
 
   useEffect(() => {
-    ep.on("exitedFromRoom", "ScreenShareSelector.exitedFromRoom", () => {
+    ee.on("exitedFromRoom", "ScreenShareSelector.exitedFromRoom", () => {
       setScreenSharing(false);
     });
 
-    ep.on("screenShareStopped", "ScreenShareSelector.screenShareStopped", () => {
+    ee.on("screenShareStopped", "ScreenShareSelector.screenShareStopped", () => {
       setScreenSharing(false);
     });
 
     return () => {
-      ep.off("exitedFromRoom", "ScreenShareSelector.exitedFromRoom");
-      ep.off("screenShareStopped", "ScreenShareSelector.screenShareStopped");
+      ee.off("exitedFromRoom", "ScreenShareSelector.exitedFromRoom");
+      ee.off("screenShareStopped", "ScreenShareSelector.screenShareStopped");
     }
   }, [])
 

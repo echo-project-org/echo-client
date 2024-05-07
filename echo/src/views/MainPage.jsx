@@ -7,7 +7,7 @@ import MainPageFriends from '../components/mainpage/MainPageFriends';
 import MainPageServers from '../components/mainpage/MainPageServers';
 import SettingsView from '@components/settings/SettingsView';
 
-import { storage, ep } from "@root/index";
+import { storage, ee } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const api = require('@lib/api');
@@ -59,7 +59,7 @@ function MainPage() {
   }
 
   useEffect(() => {
-    ep.on("tokenExpired", "MainPage.tokenExpired", (data) => {
+    ee.on("tokenExpired", "MainPage.tokenExpired", (data) => {
       ep.closeConnection();
       sessionStorage.clear();
       storage.remove("token");
@@ -90,7 +90,7 @@ function MainPage() {
     }
 
     return () => {
-      ep.releaseGroup("MainPage.tokenExpired");
+      ee.releaseGroup("MainPage.tokenExpired");
     }
   }, [navigate]);
 

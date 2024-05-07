@@ -3,7 +3,7 @@ import "@css/settings.css";
 import { useState, useEffect } from 'react'
 import { Grid, Button, Typography, hexToRgb } from "@mui/material";
 
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 import { info } from '@lib/logger';
 import { useTheme } from "@emotion/react";
@@ -50,7 +50,7 @@ function ThemeSettings() {
     setSecondary("#d794e0");
     setText("#ffffff");
 
-    ep.emit("themeChanged", {
+    ee.emit("themeChanged", {
       background: "#331b36",
       primary: "#8f4e9d",
       secondary: "#d794e0",
@@ -71,7 +71,7 @@ function ThemeSettings() {
     theme.palette.secondary.main = secondary;
     theme.palette.text.main = text;
 
-    ep.emit("themeChanged", {
+    ee.emit("themeChanged", {
       background: background,
       primary: primary,
       secondary: secondary,

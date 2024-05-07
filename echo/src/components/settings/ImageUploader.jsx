@@ -3,7 +3,7 @@ import AvatarEditor from 'react-avatar-editor'
 import { Button, Grid, Typography, Zoom, Slider, Stack } from "@mui/material";
 import { Search } from '@mui/icons-material';
 
-import { storage, ep } from "@root/index";
+import { storage, ee } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const api = require("@lib/api");
@@ -57,7 +57,7 @@ const ImageUploader = ({ open, data }) => {
 
                         api.call("users/image", "POST", { id: sessionStorage.getItem("id"), image: canvas })
                           .then((res) => {
-                            ep.emit("closeUploader");
+                            ee.emit("closeUploader");
                             ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "userImage", value: canvas });
                             sessionStorage.setItem("userImage", canvas);
                           })
@@ -78,7 +78,7 @@ const ImageUploader = ({ open, data }) => {
                       variant="contained"
                       color="primary"
                       onClick={() => {
-                        ep.emit("closeUploader");
+                        ee.emit("closeUploader");
                       }}
                       sx={{
                         margin: "2rem",

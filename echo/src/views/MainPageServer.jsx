@@ -2,7 +2,7 @@ import Sidebar from '@components/sidebar/Sidebar';
 import RoomContent from '@components/rooms/roomContent/RoomContent';
 import { useState, useEffect } from 'react';
 
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 import { motion } from 'framer-motion';
 
@@ -17,7 +17,7 @@ function MainPageServer() {
   }
 
   useEffect(() => {
-    ep.on("exitedFromRoom", (data) => {
+    ee.on("exitedFromRoom", (data) => {
       setRoomId(0);
       ipcRenderer.send("showThumbarButtons", false);
     })

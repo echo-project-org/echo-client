@@ -3,7 +3,7 @@ import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } 
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 import { info } from '@lib/logger'
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';
@@ -20,27 +20,27 @@ function OnlineUserIcon({ user }) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    ep.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
+    ee.on("updatedAudioState", "OnlineUserIcon.updatedAudioState", (data) => {
       if (data.id === user.id) {
         setDeaf(data.deaf);
         setMuted(data.muted);
       }
     });
 
-    ep.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
+    ee.on("audioStatsUpdate", "OnlineUserIcon.audioStatsUpdate", (audioData) => {
       if (audioData.id === user.id) {
         setTalking(audioData.talking);
       }
     });
 
-    ep.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
+    ee.on("videoBroadcastStarted", "OnlineUserIcon.videoBroadcastStarted", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(true)
         user.broadcastingVideo = true;
       }
     });
 
-    ep.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
+    ee.on("videoBroadcastStop", "OnlineUserIcon.videoBroadcastStop", (data) => {
       if (data.id === user.id) {
         setBroadcastingVideo(false)
         user.broadcastingVideo = false;
@@ -53,10 +53,10 @@ function OnlineUserIcon({ user }) {
     setMuted(user.muted);
 
     return () => {
-      ep.releaseGroup("OnlineUserIcon.updatedAudioState");
-      ep.releaseGroup("OnlineUserIcon.audioStatsUpdate");
-      ep.releaseGroup("OnlineUserIcon.videoBroadcastStarted");
-      ep.releaseGroup("OnlineUserIcon.videoBroadcastStop");
+      ee.releaseGroup("OnlineUserIcon.updatedAudioState");
+      ee.releaseGroup("OnlineUserIcon.audioStatsUpdate");
+      ee.releaseGroup("OnlineUserIcon.videoBroadcastStarted");
+      ee.releaseGroup("OnlineUserIcon.videoBroadcastStop");
     };
   }, [user]);
 

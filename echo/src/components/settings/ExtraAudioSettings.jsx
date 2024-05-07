@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Stack, Slider, Tooltip, FormControlLabel, Switch, Typography } from '@mui/material';
 import { RecordVoiceOver, Headphones } from '@mui/icons-material';
 import { info } from '@lib/logger';
-import { storage, ep, ap } from "@root/index";
+import { storage, ee, ap } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 function ExtraAudioSettings() {

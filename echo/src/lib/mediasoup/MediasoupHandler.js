@@ -1,4 +1,4 @@
-import { ep } from "@root/index";
+import { ee } from "@root/index";
 import MicrophoneCapturer from "@lib/mediasoup/MicrophoneCapturer";
 
 const api = require('@lib/api');
@@ -62,7 +62,7 @@ class MediasoupHandler {
             if (type === 'audioOut') {
                 // use audio out transport to check connection state
                 transport.on('connectionstatechange', (state) => {
-                    ep.rtcConnectionStateChange({
+                    ee.rtcConnectionStateChange({
                         state: state,
                     })
                 });

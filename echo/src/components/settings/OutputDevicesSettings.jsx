@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip } from '@mui/material';
 import { VolumeUp, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 import { info } from '@lib/logger';
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const CurrentDevice = ({ outputDevices, outputDevice, showList }) => {

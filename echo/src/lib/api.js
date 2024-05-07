@@ -1,4 +1,4 @@
-import { storage, ep } from '@root/index';
+import { storage, ee } from '@root/index';
 
 const { warn } = require('@lib/logger');
 

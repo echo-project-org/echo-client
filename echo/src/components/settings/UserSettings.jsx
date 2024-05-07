@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Typography } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { ep, storage } from "@root/index";
+import { ee, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 import CurrentStatus from '@components/user/CurrentStatus';
@@ -161,7 +161,7 @@ function UserSettings() {
           const base64 = ctx.canvas.toDataURL();
 
           setLoading(true);
-          ep.emit("openUploader", { image: base64 });
+          ee.emit("openUploader", { image: base64 });
           setLoading(false);
         }
       };
@@ -212,7 +212,7 @@ function UserSettings() {
     info("[UserSettings] Logging out")
     api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
       .then(res => {
-        ep.logout();
+        ee.logout();
         ep.exitFromRoom(sessionStorage.getItem('id'));
         ep.closeConnection();
         sessionStorage.clear();

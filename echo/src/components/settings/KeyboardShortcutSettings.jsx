@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { Grid, ClickAwayListener, Typography } from "@mui/material";
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 
-import { ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 import { useTheme } from "@emotion/react";
