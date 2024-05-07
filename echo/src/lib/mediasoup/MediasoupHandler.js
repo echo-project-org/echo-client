@@ -1,9 +1,9 @@
 import { ep } from "@root/index";
+import MicrophoneCapturer from "@lib/mediasoup/MicrophoneCapturer";
 
 const api = require('@lib/api');
 const mediasoup = require('mediasoup-client');
 const { warn, error, log } = require('@lib/logger');
-const MicrophoneCapturer = require('@lib/mediasoup/MicrophoneCapturer');
 
 class MediasoupHandler {
     constructor(inputDeviceId = 'default', outputDeviceId = 'default',) {
@@ -69,7 +69,14 @@ class MediasoupHandler {
             }
 
             transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
-                // TODO Send the DTLS parameters to the server
+                api.call(
+                    "media/transport/connect",
+                    "POST",
+                    {
+                        type: type,
+                        data: dtlsParameters
+                    }
+                )
             });
 
             this.transports.set(type, transport);
