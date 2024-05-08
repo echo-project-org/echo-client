@@ -1,6 +1,6 @@
-import { createAudioConstraints } from '@lib/mediasoup/Constraints';
 import AudioAnalyser from '@lib/mediasoup/AudioAnalyser';
 const { warn, error, info } = require("@lib/logger");
+const { createAudioConstraints } = require("@lib/mediasoup/Constraints");
 
 /**
  * @class MicrophoneCapturer - Class for capturing audio from the microphone

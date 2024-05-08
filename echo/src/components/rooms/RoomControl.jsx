@@ -8,7 +8,7 @@ import { MicOffRounded, SignalCellularAlt, Mic, VolumeUp, VolumeOff, PhoneDisabl
 import SettingsButton from '@components/settings/SettingsButton';
 import ScreenShareSelector from '@components/settings/ScreenShareSelector';
 
-import { ee, ep, ap } from "@root/index";
+import { ee, ep, ap, cm } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 const { ipcRenderer } = window.require('electron');
@@ -141,6 +141,7 @@ function RoomControl({ state, setState, screenSharing }) {
       ep.exitRoom();
       cm.updateUser({ id: sessionStorage.getItem('id'), field: "currentRoom", value: 0 });
       ap.playLeaveSound();
+    }
   }
 
   const computeAudio = (isDeaf) => {

@@ -1,4 +1,4 @@
-const createAudioConstraints = (echoCancellation = false, noiseSuppression = false, autoGainControl = false, deviceId = 'default') => {
+export function createAudioConstraints(echoCancellation = false, noiseSuppression = false, autoGainControl = false, deviceId = 'default') {
     return {
         audio: {
             channelCount: 2,
@@ -15,7 +15,7 @@ const createAudioConstraints = (echoCancellation = false, noiseSuppression = fal
     }
 }
 
-const createVideoConstraints = (deviceId = 'default', resolution = { w: 1920, h: 1080 }, fps = 60, cursor = true) => {
+export function createVideoConstraints(deviceId = 'default', resolution = { w: 1920, h: 1080 }, fps = 60, cursor = true) {
     return {
         audio: {
             sampleRate: 48000,
@@ -37,5 +37,3 @@ const createVideoConstraints = (deviceId = 'default', resolution = { w: 1920, h:
         systemAudio: "include"
     }
 }
-
-export { createAudioConstraints, createVideoConstraints };

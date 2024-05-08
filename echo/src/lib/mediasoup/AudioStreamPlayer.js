@@ -1,4 +1,4 @@
-import { AudioAnalyser } from "@lib/mediasoup/AudioAnalyser";
+import AudioAnalyser from "@lib/mediasoup/AudioAnalyser";
 const { warn, error, info } = require("@lib/logger");
 
 class AudioStreamPlayer {

@@ -11,7 +11,7 @@ import ImageUploader from './ImageUploader';
 import ExtraAudioSettings from './ExtraAudioSettings';
 import StyledComponents from '@root/StylingComponents';
 import KeyboardShortcutSettings from './KeyboardShortcutSettings';
-import AudiosStreamPlayer from '@lib/mediasoup/AudiosStreamPlayer';
+import AudioStreamPlayer from '@lib/mediasoup/AudioStreamPlayer';
 import MicrophoneCapturer from '@lib/mediasoup/MicrophoneCapturer';
 
 function SettingsView() {
@@ -27,7 +27,7 @@ function SettingsView() {
   }
 
   if (outputDevices.length === 0) {
-    AudiosStreamPlayer.getOutputAudioDevices().then((devices) => {
+    AudioStreamPlayer.getOutputAudioDevices().then((devices) => {
       setOutputDevices(devices)
     })
   }

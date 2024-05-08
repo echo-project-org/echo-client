@@ -1,6 +1,6 @@
-import { createVideoConstraints } from '@lib/mediasoup/constraints.js';
+const { createVideoConstraints } = require('@lib/mediasoup/Constraints');
 const { warn, error, info } = require("@lib/logger");
-const { ipcRenderer } = require('electron');
+const { ipcRenderer } = window.require('electron');
 
 class ScreenCapturer {
     constructor(videoSourceId, frameRate = 60, width = 1920, height = 1080, cursor = true) {
@@ -17,7 +17,7 @@ class ScreenCapturer {
         return new Promise(async (resolve, reject) => {
             try {
                 this.stream = await navigator.mediaDevices.getUserMedia(
-                    createVideoConstraints(this.videoSourceId, {w: this.width, h: this.height}, this.frameRate, this.cursor)
+                    createVideoConstraints(this.videoSourceId, { w: this.width, h: this.height }, this.frameRate, this.cursor)
                 );
 
                 resolve({
@@ -46,7 +46,7 @@ class ScreenCapturer {
         return new Promise(async (resolve, reject) => {
             try {
                 const srcs = await ipcRenderer.invoke("getVideoSources");
-                resolve( srcs.filter((src) => {
+                resolve(srcs.filter((src) => {
                     return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
                 }));
             } catch (err) {
