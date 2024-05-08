@@ -4,6 +4,7 @@ import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
 import { ee } from "@root/index";
 import ScreenShareOption from './ScreenShareOption';
+import ScreenCapturer from "@lib/mediasoup/ScreenCapturer";
 
 const { error, warn, info } = require('@lib/logger');
 
@@ -56,7 +57,7 @@ function ScreenShareSelector() {
   const startGetDevicesInterval = () => {
     setDeviceInterval(setInterval(() => {
       info("[ScreenShareSelector] Getting devices")
-      ep.getVideoDevices().then((devices) => {
+      ScreenCapturer.getVideoSources().then((devices) => {
         if (devices.length === 0) {
           showError("No devices found");
           stopGetDevicesInterval();
@@ -73,6 +74,9 @@ function ScreenShareSelector() {
         });
         setWindowsDevices(windows);
         setScreenDevices(screens);
+      }).catch((err) => {
+        showError("Error getting devices: " + err);
+        stopGetDevicesInterval();
       });
     }, 2000));
   }
@@ -111,7 +115,7 @@ function ScreenShareSelector() {
         ep.stopScreenSharing();
         setScreenSharing(false);
       } else {
-        ep.getVideoDevices().then((devices) => {
+        ScreenCapturer.getVideoSources().then((devices) => {
           if (devices.length === 0) {
             showError("No devices found");
             return;

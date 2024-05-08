@@ -11,6 +11,8 @@ import ImageUploader from './ImageUploader';
 import ExtraAudioSettings from './ExtraAudioSettings';
 import StyledComponents from '@root/StylingComponents';
 import KeyboardShortcutSettings from './KeyboardShortcutSettings';
+import AudiosStreamPlayer from '@lib/mediasoup/AudiosStreamPlayer';
+import MicrophoneCapturer from '@lib/mediasoup/MicrophoneCapturer';
 
 function SettingsView() {
   const [inputDevices, setInputDevices] = useState([]);
@@ -19,13 +21,13 @@ function SettingsView() {
   const [uploaderData, setUploaderData] = useState(null);
 
   if (inputDevices.length === 0) {
-    ep.getMicrophoneDevices().then((devices) => {
+    MicrophoneCapturer.getInputAudioDevices().then((devices) => {
       setInputDevices(devices)
     })
   }
 
   if (outputDevices.length === 0) {
-    ep.getSpeakerDevices().then((devices) => {
+    AudiosStreamPlayer.getOutputAudioDevices().then((devices) => {
       setOutputDevices(devices)
     })
   }
