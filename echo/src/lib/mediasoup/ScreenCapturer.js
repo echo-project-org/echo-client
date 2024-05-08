@@ -43,14 +43,16 @@ class ScreenCapturer {
      * @returns {Promise<Array<Object>>} An array of video sources with valid thumbnail sizes.
      */
     static async getVideoSources() {
-        try {
-            const srcs = await ipcRenderer.invoke("getVideoSources");
-            return srcs.filter((src) => {
-                return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
-            });
-        } catch (err) {
-            return [];
-        }
+        return new Promise(async (resolve, reject) => {
+            try {
+                const srcs = await ipcRenderer.invoke("getVideoSources");
+                resolve( srcs.filter((src) => {
+                    return (src.thumbnail.getSize().width > 0 && src.thumbnail.getSize().height > 0);
+                }));
+            } catch (err) {
+                reject(err);
+            }
+        });
     }
 }
 
