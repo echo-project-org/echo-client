@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Avatar, Button, Grid, TextField, styled, Badge, Fade, Typography } from '@mui/material'
 import { CameraAlt, Circle, DoNotDisturbOn, Loop, DarkMode } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { ee, storage } from "@root/index";
+import { ep, ee, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 import CurrentStatus from '@components/user/CurrentStatus';
@@ -200,7 +200,7 @@ function UserSettings() {
     }
     statusId = String(statusId);
     storage.set("status", statusId);
-    ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "status", value: statusId });
+    //ep.updatePersonalSettings({ id: sessionStorage.getItem("id"), field: "status", value: statusId });
     api.call("users/customStatus", "POST", { id: sessionStorage.getItem("id"), status: statusId })
       .then((res) => { })
       .catch((err) => { error(err); });
@@ -213,7 +213,7 @@ function UserSettings() {
     api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
       .then(res => {
         ee.logout();
-        ep.exitFromRoom(sessionStorage.getItem('id'));
+        ep.exitRoom();
         ep.closeConnection();
         sessionStorage.clear();
         storage.remove("token");

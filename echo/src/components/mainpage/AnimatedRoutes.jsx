@@ -8,7 +8,7 @@ import MainPageServer from '@views/MainPageServer'
 import Login from '@views/Login';
 import Register from '@views/Register'
 import Updating from '@views/Updating';
-import { ee } from "@root/index";
+import { ee, ep } from "@root/index";
 
 const { ipcRenderer } = window.require('electron');
 const api = require('@lib/api');

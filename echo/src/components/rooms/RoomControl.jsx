@@ -86,7 +86,7 @@ function RoomControl({ state, setState, screenSharing }) {
     });
 
     ee.on("localUserCrashed", "RoomControl.localUserCrashed", (data) => {
-      ep.exitFromRoom(sessionStorage.getItem('id'));
+      ep.exitRoom();
       ap.playLeaveSound();
       ep.closeConnection();
       navigate("/");
@@ -94,7 +94,7 @@ function RoomControl({ state, setState, screenSharing }) {
 
     ee.on("appClosing", "RoomControl.appClosing", () => {
       log("app closing")
-      ep.exitFromRoom(sessionStorage.getItem('id'));
+      ep.exitRoom();
       ap.playLeaveSound();
       ep.closeConnection();
       ee.canSafelyCloseApp();
