@@ -88,6 +88,14 @@ class MediasoupHandler {
         });
     }
 
+    closeConnection() {
+        this.transports.forEach((transport) => {
+            transport.close();
+        });
+
+        this.transports.clear();
+    }
+
     getRtpCapabilities() {
         if (this.mediasoupDevice) {
             return this.mediasoupDevice.rtpCapabilities;

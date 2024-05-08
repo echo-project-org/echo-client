@@ -1,6 +1,7 @@
 import MediasoupHandler from '@lib/mediasoup/MediasoupHandler';
-import { storage } from "@root/index";
+import { storage, ee } from "@root/index";
 const { info, error, log } = require('@lib/logger');
+const api = require('@lib/api');
 
 class EchoProtocol {
     constructor() {
@@ -10,8 +11,15 @@ class EchoProtocol {
         );
     }
 
-    joinRoom() {
-        
+    joinRoom(roomId) {
+        api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: roomId, serverId: storage.get("serverId") })
+        .then((res) => {
+            log("Joined room", res);
+            this.joinedRoom(res);
+            this.produceAudio();
+        }).catch((err) => {
+            error("Error joining room", err);
+        });
     }
 
     joinedRoom(data) {
@@ -39,6 +47,21 @@ class EchoProtocol {
             }).catch((err) => {
                 error("Error starting audio broadcast", err);
             });
+    }
+
+    exitRoom() {
+        api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: "0", serverId: storage.get("serverId") })
+        .then((res) => {
+            log("Left room", res);
+            ee.exitedFromRoom();
+        }).catch((err) => {
+            error("Error leaving room", err);
+        });
+    }
+
+    closeConnection() {
+        this.exitRoom();
+        this.msh.closeConnection();
     }
 }
 
