@@ -5,8 +5,12 @@ import Friends from "@cache/friends";
 class CacheManager {
     constructor() {
         this.cachedFriends = new Friends();
-        this.cachedRooms = new Room();
         this.cachedUsers = new Users();
+        this.cachedRooms = null;
+    }
+
+    cacheRoom(roomId) {
+        this.cachedRooms = new Room(roomId);
     }
 }
 
