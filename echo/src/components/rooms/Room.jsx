@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import ActiveRoom from './ActiveRoom';
 import InactiveRoom from './InactiveRoom';
 
-import { ee, ap } from "@root/index";
+import { ee, cm, ap } from "@root/index";
 import { info } from "@lib/logger";
 
 function Room({ active, data: _data }) {
@@ -15,7 +15,7 @@ function Room({ active, data: _data }) {
     });
 
     ee.on("userLeftChannel", "Room.userLeftChannel", (data) => {
-      ep.updateUser({ id: data.id, field: "currentRoom", value: "0" });
+      cm.cachedUsers.updateUser({ id: data.id, field: "currentRoom", value: "0" });
       updateUsersInRoom();
     });
 
@@ -36,8 +36,8 @@ function Room({ active, data: _data }) {
    */
   const updateUsersInRoom = () => {
     // TODO get online users in room using data.id
-    const users = ep.getUsersInRoom(_data.id);
-    setOnlineUsers(users);
+    //const users = ep.getUsersInRoom(_data.id);
+    //setOnlineUsers(users);
   }
 
   useEffect(() => { if (!active) updateUsersInRoom(); }, [active])

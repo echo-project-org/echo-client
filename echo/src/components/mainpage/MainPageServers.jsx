@@ -5,7 +5,7 @@ import { TransitionGroup } from 'react-transition-group';
 import { Divider, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
-import { ep, storage } from "@root/index";
+import { ep, cm, storage } from "@root/index";
 import MainPageServersComponent from './MainPageServersComponent';
 
 import StylingComponents from '@root/StylingComponents';
@@ -38,10 +38,10 @@ function MainPageServers({ }) {
     info("[MainPageServers] Entering server");
     api.call('users/status', "POST", { id: sessionStorage.getItem('id'), status: "1" })
       .then((res) => {
-        ep.openConnection(sessionStorage.getItem('id'));
+        //ep.openConnection(sessionStorage.getItem('id'));
         navigate("/main");
 
-        ep.addUser({
+        cm.cachedUsers.addUser({
           id: sessionStorage.getItem('id'),
           name: sessionStorage.getItem('name'),
           userImage: sessionStorage.getItem('userImage'),
