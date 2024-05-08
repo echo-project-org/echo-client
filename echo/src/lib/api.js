@@ -53,7 +53,7 @@ const handleErrors = (status, response) => {
         break;
       case 401:
         // Unauthorized
-        ep.apiUnauthorized();
+        ee.tokenExpired();
         warn(status + ": Unauthorized");
         break;
       case 403:
