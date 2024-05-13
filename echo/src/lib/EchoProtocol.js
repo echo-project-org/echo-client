@@ -11,8 +11,13 @@ class EchoProtocol {
         );
     }
 
+    isAudioFullyConnected() {
+        return this.msh.isFullyConnected();
+    }
+
     joinRoom(roomId) {
-        api.call("rooms/join", "POST", { userId: storage.get("id"), roomId: roomId, serverId: storage.get("serverId") })
+        console.log(roomId)
+        api.call("rooms/join", "POST", { id: sessionStorage.getItem("id"), roomId: roomId, serverId: storage.get("serverId") })
         .then((res) => {
             log("Joined room", res);
             this.joinedRoom(res);

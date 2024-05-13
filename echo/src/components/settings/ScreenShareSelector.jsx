@@ -2,7 +2,7 @@ import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid, Snackbar, Alert } 
 import { useEffect, useState } from 'react';
 import { StopScreenShare, ScreenShare } from '@mui/icons-material';
 
-import { ee } from "@root/index";
+import { ee, cm, ep } from "@root/index";
 import ScreenShareOption from './ScreenShareOption';
 import ScreenCapturer from "@lib/mediasoup/ScreenCapturer";
 
@@ -109,10 +109,10 @@ function ScreenShareSelector() {
       return;
     }
 
-    let user = ep.getUser();
+    let user = cm.getUser();
     if (user && user.currentRoom !== "0") {
       if (screenSharing) {
-        ep.stopScreenSharing();
+        //ep.stopScreenSharing();
         setScreenSharing(false);
       } else {
         ScreenCapturer.getVideoSources().then((devices) => {
@@ -142,7 +142,7 @@ function ScreenShareSelector() {
   };
   const deviceSelected = (deviceId) => {
     info("[ScreenShareSelector] Device selected: " + deviceId)
-    ep.startScreenSharing(deviceId);
+    //ep.startScreenSharing(deviceId);
     setScreenSharing(true);
     handleModalClose();
   }

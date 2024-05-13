@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { ee, storage, ap } from "@root/index";
+import { ee, storage, ap, cm, ep } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 import Room from './Room';
@@ -27,13 +27,13 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         if (result.json.length > 0) {
           setRemoteRooms(result.json);
           result.json.forEach((room) => {
-            ep.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
+            cm.addRoom({ id: room.id, name: room.name, description: room.description, maxUsers: room.maxUsers });
 
             api.call("rooms/" + room.id + "/" + serverId + "/users")
               .then((res) => {
                 if (res.ok && res.json.length > 0) {
                   res.json.forEach((user) => {
-                    ep.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
+                    cm.addUser({ id: user.id, name: user.name, img: user.img, online: user.online, roomId: room.id, status: user.status });
                   });
                 }
               })
@@ -58,16 +58,16 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
       }
 
       const joiningId = data.roomId;
-      const currentRoom = ep.getUser(sessionStorage.getItem("id")).currentRoom;
+      const currentRoom = cm.getUser(sessionStorage.getItem("id")).currentRoom;
       if (String(joiningId) === currentRoom) return;
-      if (currentRoom !== 0) ep.exitFromRoom(sessionStorage.getItem("id"));
+      if (currentRoom !== 0) ep.exitRoom(sessionStorage.getItem("id"));
       // update audio state of the user
       const userAudioState = ep.getAudioState();
-      ep.updateUser({ id: sessionStorage.getItem("id"), field: "muted", value: userAudioState.isMuted });
-      ep.updateUser({ id: sessionStorage.getItem("id"), field: "deaf", value: userAudioState.isDeaf });
+      cm.updateUser({ id: sessionStorage.getItem("id"), field: "muted", value: userAudioState.isMuted });
+      cm.updateUser({ id: sessionStorage.getItem("id"), field: "deaf", value: userAudioState.isDeaf });
       // join room
       ep.joinRoom(sessionStorage.getItem("id"), joiningId);
-      ep.updateUser({ id: sessionStorage.getItem("id"), field: "currentRoom", value: String(joiningId) });
+      cm.updateUser({ id: sessionStorage.getItem("id"), field: "currentRoom", value: String(joiningId) });
       // update active room id
       setActiveRoomId(joiningId);
       // send roomid to chatcontent to fetch messages
@@ -99,9 +99,9 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         .then((res) => {
           if (res.ok) {
             const data = res.json;
-            ep.addUser({ id: data.id, name: data.name, img: data.img, online: data.online, roomId: data.roomId });
+            cm.addUser({ id: data.id, name: data.name, img: data.img, online: data.online, roomId: data.roomId });
 
-            if (func) ep[func.function](func.args);
+            if (func) cm[func.function](func.args);
           }
         })
         .catch((err) => {
