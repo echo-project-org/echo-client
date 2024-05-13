@@ -102,7 +102,9 @@ class MicrophoneCapturer {
     setVolume(volume) {
         if (volume >= 0 && volume <= 1) {
             this.volume = volume;
-            this.outGainNode.gain.value = this.volume;
+            if(this.outGainNode) {
+                this.outGainNode.gain.value = this.volume;
+            }
         } else {
             warn("Volume must be between 0 and 1")
         }
@@ -142,7 +144,9 @@ class MicrophoneCapturer {
     setTalkingThreshold(threshold) {
         if (threshold >= 0 && threshold <= 1) {
             this.talkingThreshold = threshold;
-            this.analyser.setTalkingThreshold(this.talkingThreshold);
+            if(this.analyser){
+                this.analyser.setTalkingThreshold(this.talkingThreshold);
+            }
         } else {
             warn("Talking threshold must be between 0 and 1")
         }
@@ -183,7 +187,7 @@ class MicrophoneCapturer {
     setEchoCancellation(echoCancellation) {
         return new Promise(async (resolve, reject) => {
             if (echoCancellation === this.echoCancellation) {
-                reject("Echo cancellation is already set to " + echoCancellation);
+                resolve("Echo cancellation is already set to " + echoCancellation);
             }
 
             this.echoCancellation = echoCancellation;
@@ -210,7 +214,7 @@ class MicrophoneCapturer {
     setNoiseSuppression(noiseSuppression) {
         return new Promise(async (resolve, reject) => {
             if (noiseSuppression === this.noiseSuppression) {
-                reject("Noise suppression is already set to " + noiseSuppression);
+                resolve("Noise suppression is already set to " + noiseSuppression);
             }
 
             this.noiseSuppression = noiseSuppression;
@@ -237,7 +241,7 @@ class MicrophoneCapturer {
     setAutoGainControl(autoGainControl) {
         return new Promise(async (resolve, reject) => {
             if (autoGainControl === this.autoGainControl) {
-                reject("Auto gain control is already set to " + autoGainControl);
+                resolve("Auto gain control is already set to " + autoGainControl);
             }
 
             this.autoGainControl = autoGainControl;

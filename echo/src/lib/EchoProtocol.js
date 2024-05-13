@@ -63,6 +63,38 @@ class EchoProtocol {
         this.exitRoom();
         this.msh.closeConnection();
     }
+
+    setMicrophoneVolume(volume) {
+        this.msh.setMicrophoneVolume(volume);
+    }
+
+    setMicrophoneDevice(deviceId) {
+        this.msh.setMicrophoneDevice(deviceId);
+    }
+
+    setVadTreshold(treshold) {
+        this.msh.setVadTreshold(treshold);
+    }
+
+    setEchoCancellation(echoCancellation) {
+        this.msh.setEchoCancellation(echoCancellation);
+    }
+
+    setNoiseSuppression(noiseSuppression) {
+        this.msh.setNoiseSuppression(noiseSuppression);
+    }
+
+    setAutoGainControl(autoGainControl) {
+        this.msh.setAutoGainControl(autoGainControl);
+    }
+
+    setSpeakerVolume(volume) {
+        this.msh.setSpeakerVolume(volume);
+    }
+
+    setSpeakerDevice(deviceId) {
+        this.msh.setSpeakerDevice(deviceId);
+    }
 }
 
 export default EchoProtocol;

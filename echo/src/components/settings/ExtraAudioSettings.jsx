@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Stack, Slider, Tooltip, FormControlLabel, Switch, Typography } from '@mui/material';
 import { RecordVoiceOver, Headphones } from '@mui/icons-material';
 import { info } from '@lib/logger';
-import { storage, ee, ap } from "@root/index";
+import { storage, ee, ep, ap } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 function ExtraAudioSettings() {
@@ -15,7 +15,7 @@ function ExtraAudioSettings() {
 
   useEffect(() => {
     ep.setVadTreshold(storage.get('vadTreshold') || 1);
-    ep.setMicrophoneTest(false);
+    //ep.setMicrophoneTest(false);
     ep.setEchoCancellation(storage.get('echoCancellation') === 'true' || false);
     ep.setNoiseSuppression(storage.get('noiseSuppression') === 'true' || false);
     ep.setAutoGainControl(storage.get('autoGainControl') === 'true' || false);
@@ -28,7 +28,7 @@ function ExtraAudioSettings() {
     ap.setVolume(storage.get('soundQueuesVolume') || 0.6);
 
     return () => {
-      ep.setMicrophoneTest(false);
+      //ep.setMicrophoneTest(false);
     }
   }, [])
 

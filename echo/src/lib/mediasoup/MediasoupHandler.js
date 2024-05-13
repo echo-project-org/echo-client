@@ -156,6 +156,55 @@ class MediasoupHandler {
             }
         });
     }
+
+    setMicrophoneVolume(volume) {
+        this.mic.setVolume(volume);
+    }
+
+    setMicrophoneDevice(deviceId) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                //instantiate new microphone capturer with new device id
+                let newMic = new MicrophoneCapturer(deviceId);
+                
+                if(this.audioProducer) {
+                    //replace the outgoin stream with the new one
+                    this.audioProducer.replaceTrack(newMic.stream.getAudioTracks()[0]);
+                }
+    
+                this.mic = newMic;
+    
+                resolve();
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    setVadTreshold(treshold) {
+        this.mic.setTalkingThreshold(treshold);
+    }
+
+    setEchoCancellation(enabled) {
+        this.mic.setEchoCancellation(enabled);
+    }
+
+    setNoiseSuppression(enabled) {
+        this.mic.setNoiseSuppression(enabled);
+    }
+
+    setAutoGainControl(enabled) {
+        this.mic.setAutoGainControl(enabled);
+    }
+
+
+    setSpeakerVolume(volume) {
+
+    }
+
+    setSpeakerDevice(deviceId) {
+
+    }
 }
 
 export default MediasoupHandler;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Stack, Slider, Typography, Grid, ClickAwayListener, Tooltip, FormControlLabel, Switch } from '@mui/material';
 import { Mic, ArrowDropDown, ArrowDropUp, CheckCircle } from '@mui/icons-material';
 import { info } from '@lib/logger';
-import { ee, storage } from "@root/index";
+import { ee, ep, storage } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const CurrentDevice = ({ inputDevices, inputDevice, showList }) => {
