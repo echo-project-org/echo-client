@@ -76,7 +76,8 @@ class MediasoupHandler {
                 api.call(
                     "media/transport/connect",
                     "POST",
-                    {
+                    {   
+                        id: sessionStorage.getItem('id'),
                         type: type,
                         data: dtlsParameters
                     }
