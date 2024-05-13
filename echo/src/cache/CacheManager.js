@@ -24,6 +24,14 @@ class CacheManager {
     updateUser(user) {
         this.cachedUsers.set(user.id, user);
     }
+
+    getUser(userId) {
+        if(userId === null) {
+            return this.cachedUsers.get(sessionStorage.getItem("id"));
+        } else {
+            return this.cachedUsers.get(userId);
+        }
+    }
 }
 
 export default CacheManager;
