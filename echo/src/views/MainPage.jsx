@@ -60,7 +60,6 @@ function MainPage() {
 
   useEffect(() => {
     ee.on("tokenExpired", "MainPage.tokenExpired", (data) => {
-      ep.closeConnection();
       sessionStorage.clear();
       storage.remove("token");
       navigate("/login");
