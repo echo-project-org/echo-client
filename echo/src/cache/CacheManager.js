@@ -9,8 +9,8 @@ class CacheManager {
         this.cachedRooms = new Map();
     }
 
-    cacheRoom(roomId) {
-        this.cachedRooms.set(roomId, new Room(roomId));
+    cacheRoom(room) {
+        this.cachedRooms.set(room.id, new Room(room));
     }
 
     getRoom(roomId) {
