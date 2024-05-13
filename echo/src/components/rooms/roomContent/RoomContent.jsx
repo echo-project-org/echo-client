@@ -50,7 +50,7 @@ function RoomContent({ roomId }) {
       setContentSelected("screen");
     });
 
-    ErrorEvent.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
+    ee.on("exitedFromRoom", "RoomContent.exitedFromRoom", (data) => {
       setContentSelected("friends");
     });
 
