@@ -55,7 +55,7 @@ class MicrophoneCapturer {
                 this.outGainNode.connect(this.vadNode);
                 this.vadNode.connect(dst);
 
-                this.analyser = new AudioAnalyser(this.audioContext, this.channelSplitter, this.channelCount, this.talkingThreshold);
+                this.analyser = new AudioAnalyser(dst.stream, this.audioContext, this.channelSplitter, this.channelCount, this.talkingThreshold);
                 this.analyser.start((v) => {
                     if (v) {
                         this.vadNode.gain.value = 1.0;
