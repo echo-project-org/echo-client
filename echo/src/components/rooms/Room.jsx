@@ -15,7 +15,7 @@ function Room({ active, data: _data }) {
     });
 
     ee.on("userLeftChannel", "Room.userLeftChannel", (data) => {
-      cm.cachedUsers.updateUser({ id: data.id, field: "currentRoom", value: "0" });
+      cm.updateUser({ id: data.id, field: "currentRoom", value: "0" });
       updateUsersInRoom();
     });
 

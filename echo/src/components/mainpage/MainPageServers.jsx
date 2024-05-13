@@ -41,7 +41,7 @@ function MainPageServers({ }) {
         //ep.openConnection(sessionStorage.getItem('id'));
         navigate("/main");
 
-        cm.cachedUsers.addUser({
+        cm.addUser({
           id: sessionStorage.getItem('id'),
           name: sessionStorage.getItem('name'),
           userImage: sessionStorage.getItem('userImage'),
