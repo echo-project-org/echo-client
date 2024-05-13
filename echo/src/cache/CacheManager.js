@@ -6,11 +6,15 @@ class CacheManager {
     constructor() {
         this.cachedFriends = new Friends();
         this.cachedUsers = new Users();
-        this.cachedRooms = null;
+        this.cachedRooms = new Map();
     }
 
     cacheRoom(roomId) {
-        this.cachedRooms = new Room(roomId);
+        this.cachedRooms.set(roomId, new Room(roomId));
+    }
+
+    getRoom(roomId) {
+        return this.cachedRooms.get(roomId);
     }
 }
 
