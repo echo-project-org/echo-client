@@ -19,8 +19,9 @@ class EchoProtocol {
         console.log(roomId)
         api.call("rooms/join", "POST", { id: sessionStorage.getItem("id"), roomId: roomId, serverId: storage.get("serverId") })
         .then((res) => {
-            log("Joined room", res);
-            this.joinedRoom(res);
+            let r = res.json;
+            log("Joined room", r);
+            this.joinedRoom(r.data);
             this.produceAudio();
         }).catch((err) => {
             error("Error joining room", err);
