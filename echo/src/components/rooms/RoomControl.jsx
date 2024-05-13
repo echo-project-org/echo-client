@@ -31,7 +31,7 @@ function RoomControl({ state, setState, screenSharing }) {
       muteMic();
     });
 
-    ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
+    //ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
     ep.toggleMute(muted);
     ipcRenderer.send("updateThumbarButtons", { muted: muted, deaf: deaf });
 
@@ -45,7 +45,7 @@ function RoomControl({ state, setState, screenSharing }) {
       deafHeadphones();
     });
 
-    ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
+    //ep.sendAudioState(sessionStorage.getItem("id"), { deaf, muted });
     ep.toggleDeaf(deaf);
     ipcRenderer.send("updateThumbarButtons", { muted: muted, deaf: deaf });
 

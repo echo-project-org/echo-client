@@ -181,6 +181,16 @@ class MediasoupHandler {
         });
     }
 
+    toggleMute(mute) {
+        if (mute) {
+            this.mic.mute();
+        } else {
+            this.mic.unmute();
+        }
+
+        //TODO send audio state to server
+    } 
+
     setVadTreshold(treshold) {
         this.mic.setTalkingThreshold(treshold);
     }
@@ -204,6 +214,16 @@ class MediasoupHandler {
 
     setSpeakerDevice(deviceId) {
 
+    }
+
+    toggleDeaf(deaf) {
+        if(deaf) {
+
+        } else {
+
+        } 
+        
+        //TODO send audio state to server
     }
 }
 

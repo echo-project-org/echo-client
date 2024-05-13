@@ -3,7 +3,7 @@ import "@css/chat.css";
 import { useState, useEffect, useLayoutEffect } from 'react'
 import { Grid, Container, styled, Divider } from '@mui/material';
 import { info } from '@lib/logger';
-import { ee, storage } from "@root/index";
+import { ee, cm, storage } from "@root/index";
 import StylingComponents from '@root/StylingComponents';
 
 import RoomContentSelector from "./RoomContentSelector.jsx";
@@ -32,7 +32,7 @@ function RoomContent({ roomId }) {
   const [width, height] = useWindowSize();
 
   useEffect(() => {
-    const roomData = ep.getRoom(roomId);
+    const roomData = cm.getRoom(roomId);
     if (roomData) {
       setRoomName(roomData.name);
       setRoomDescription(roomData.description);
@@ -76,7 +76,7 @@ function RoomContent({ roomId }) {
       });
     } else if (width >= 960 && tempChange) {
       setTempChange(false);
-      const roomData = ep.getRoom(roomId);
+      const roomData = cm.getRoom(roomId);
       if (roomData) {
         setRoomDescription(roomData.description);
       }

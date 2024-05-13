@@ -72,6 +72,10 @@ class EchoProtocol {
         this.msh.setMicrophoneDevice(deviceId);
     }
 
+    toggleMute(mute) {
+        this.msh.toggleMute(mute);
+    }
+
     setVadTreshold(treshold) {
         this.msh.setVadTreshold(treshold);
     }
@@ -94,6 +98,10 @@ class EchoProtocol {
 
     setSpeakerDevice(deviceId) {
         this.msh.setSpeakerDevice(deviceId);
+    }
+
+    toggleDeaf(deaf) {
+        this.msh.toggleDeaf(deaf);
     }
 }
 
