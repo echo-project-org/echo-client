@@ -3,7 +3,7 @@ import MicrophoneCapturer from "@lib/mediasoup/MicrophoneCapturer";
 
 const api = require('@lib/api');
 const mediasoup = require('mediasoup-client');
-const { warn, error, log } = require('@lib/logger');
+const { warn, error, log, info } = require('@lib/logger');
 
 class MediasoupHandler {
     constructor(inputDeviceId = 'default', outputDeviceId = 'default',) {
@@ -55,7 +55,25 @@ class MediasoupHandler {
             if (type === 'audioOut' || type === 'videoOut') {
                 transport = await this.mediasoupDevice.createSendTransport(tranportData);
                 transport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
-                    // TODO Send the producer data to the server
+                    info("[MediasoupHandler] Produce event", kind, rtpParameters, appData);
+                    api.call(
+                        type==='audioOut' ? "media/audio/produce": "media/video/produce",
+                        "POST",
+                        {   
+                            data: {
+                                id: sessionStorage.getItem('id') + "-" + kind,
+                                kind: kind,
+                                rtpParameters: rtpParameters,
+                                appData: appData
+                            }
+                        }
+                    ).then((res) => {
+                        info("[MediasoupHandler] Produce event success", res);
+                        callback({ id: res.producerId});
+                    }).catch((err) => {
+                        error("[MediasoupHandler] Produce event error", err);
+                        errback();
+                    });
                 });
             } else if (type === 'audioIn' || type === 'videoIn') {
                 transport = await this.mediasoupDevice.createRecvTransport(tranportData);
@@ -73,6 +91,7 @@ class MediasoupHandler {
             }
 
             transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
+                info("[MediasoupHandler] Connecting transport")
                 api.call(
                     "media/transport/connect",
                     "POST",
@@ -81,7 +100,13 @@ class MediasoupHandler {
                         type: type,
                         data: dtlsParameters
                     }
-                )
+                ).then((res) => {
+                    info("[MediasoupHandler] Transport connected", res);
+                    callback();
+                }).catch((err) => {
+                    error("[MediasoupHandler] Error connecting transport", err);
+                    errback();
+                });
             });
 
             this.transports.set(type, transport);
@@ -124,6 +149,7 @@ class MediasoupHandler {
         return new Promise(async (resolve, reject) => {
             try {
                 this.mic.start(this.inputDeviceId).then(async (track) => {
+                    log('Microphone started', track);
                     const audioTransport = this.transports.get('audioOut');
                     const audioProducer = await audioTransport.produce({
                         track: track,
@@ -133,10 +159,12 @@ class MediasoupHandler {
                         }
                     });
 
+                    log('Audio producer created', audioProducer);
                     this.audioProducer = audioProducer;
                     resolve(audioProducer);
                 });
             } catch (e) {
+                error('Error starting audio broadcast', e);
                 reject(e);
             }
         });
