@@ -112,7 +112,7 @@ class AudioAnalyser {
 
         this.interval = setInterval(() => {
             if (!this.stream.active) {
-                warn('Stream is not active');
+                return;
             }
             if (!cb) {
                 error('No callback provided, stopping audio analyser interval');
