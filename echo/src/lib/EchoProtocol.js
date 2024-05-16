@@ -23,6 +23,7 @@ class EchoProtocol {
             log("Joined room", r);
             this.joinedRoom(r.data);
             this.produceAudio();
+            ee.joinedRoom();
         }).catch((err) => {
             error("Error joining room", err);
         });
