@@ -23,7 +23,7 @@ class EchoProtocol {
             log("Joined room", r);
             this.joinedRoom(r.data);
             this.produceAudio();
-            //ee.joinedRoom();
+            ee.joinedRoom();
         }).catch((err) => {
             error("Error joining room", err);
         });
@@ -121,6 +121,14 @@ class EchoProtocol {
 
     toggleDeaf(deaf) {
         this.msh.toggleDeaf(deaf);
+    }
+
+    startReceivingVideo(userId) {
+
+    }
+
+    stopReceivingVideo(userId) {
+
     }
 }
 

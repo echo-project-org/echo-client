@@ -6,7 +6,7 @@ import { Container, Grid, styled } from '@mui/material'
 import ScreenShareControlIcons from './ScreenShareControlIcons';
 import ScreenShareUserContainer from "./ScreenShareUserContainer";
 import { info } from '@lib/logger';
-import { ee } from '@root';
+import { ee, cm, ep } from '@root';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
@@ -36,7 +36,7 @@ function RoomContentScreenShares({ roomId }) {
   // const [screenShareStream, setScreenShareStream] = useState("");
 
   useEffect(() => {
-    const users = ep.getUsersInRoom(roomId)
+    const users = cm.getUsersInRoom(roomId)
     setUsers(users)
   }, [roomId])
 
@@ -87,7 +87,7 @@ function RoomContentScreenShares({ roomId }) {
 
   const updateUsers = () => {
     info("[RoomContentScreenShares] Updating users")
-    setUsers(ep.getUsersInRoom(roomId));
+    setUsers(cm.getUsersInRoom(roomId));
   }
 
   const selectUser = (user) => {
