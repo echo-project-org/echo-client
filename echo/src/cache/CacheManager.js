@@ -32,6 +32,10 @@ class CacheManager {
             return this.cachedUsers.get(userId);
         }
     }
+
+    getUsersInRoom(roomId) {
+        return this.cachedUsers.getInRoom(roomId);
+    }
 }
 
 export default CacheManager;
