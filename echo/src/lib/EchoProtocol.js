@@ -23,7 +23,7 @@ class EchoProtocol {
             log("Joined room", r);
             this.joinedRoom(r.data);
             this.produceAudio();
-            ee.joinedRoom();
+            //ee.joinedRoom();
         }).catch((err) => {
             error("Error joining room", err);
         });
@@ -64,6 +64,18 @@ class EchoProtocol {
         }).catch((err) => {
             error("Error leaving room", err);
         });
+    }
+
+    getPing() {
+        return new Promise((resolve, reject) => {
+            this.msh.getConnectionStats().then((stats) => {
+                console.log(stats.ping)
+                resolve(stats.ping);
+            }).catch((err) => {
+                error("[EchoProtocol] Error getting ping", err)
+                reject(err);
+            });
+        })
     }
 
     closeConnection() {
