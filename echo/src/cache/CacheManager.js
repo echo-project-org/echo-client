@@ -26,7 +26,7 @@ class CacheManager {
     }
 
     getUser(userId) {
-        if(userId === null) {
+        if(!userId) {
             return this.cachedUsers.get(sessionStorage.getItem("id"));
         } else {
             return this.cachedUsers.get(userId);
