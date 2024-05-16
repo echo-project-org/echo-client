@@ -114,6 +114,53 @@ class MediasoupHandler {
         });
     }
 
+    getConnectionStats() {
+        return new Promise(async (resolve, reject) => {
+            let audioTransport = this.transports.get('audioOut');
+            if (!audioTransport) {
+                reject('Audio producer not initialized');
+            }
+
+            let stats = audioTransport.getStats();
+            stats.then((res) => {
+                let ping = 0;
+                let bytesSent = 0;
+                let bytesReceived = 0;
+                let packetsSent = 0;
+                let packetsReceived = 0;
+                let jitterIn = 0;
+                let packetLostIn = 0;
+                
+                res.forEach((report) => {
+                    if(report.type === "candidate-pair" && report.nominated) {
+                        ping = report.currentRoundTripTime * 1000;
+                        bytesSent = report.bytesSent;
+                        bytesReceived = report.bytesReceived;
+                        packetsSent = report.packetsSent;
+                        packetsReceived = report.packetsReceived;
+                    }
+    
+                    if(report.type === "remote-inbound.rtp" && report.kind === "audio") {
+                        jitterIn = report.jitter * 1000;
+                        packetLostIn = report.packetsLost;
+                    }
+                })
+
+                resolve({
+                    ping: ping,
+                    bytesSent: bytesSent,
+                    bytesReceived: bytesReceived,
+                    packetsSent: packetsSent,
+                    packetsReceived: packetsReceived,
+                    jitterIn: jitterIn,
+                    packetLostIn: packetLostIn
+                });
+            }).catch((err) => {
+                reject(err);
+            });
+        });
+    }
+
     closeConnection() {
         this.transports.forEach((transport) => {
             transport.close();
