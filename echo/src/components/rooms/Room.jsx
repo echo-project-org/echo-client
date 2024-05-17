@@ -35,9 +35,8 @@ function Room({ active, data: _data }) {
    * @param {Object} data object with informations about the user that joined the room (also called when me joins the room)
    */
   const updateUsersInRoom = () => {
-    // TODO get online users in room using data.id
-    //const users = ep.getUsersInRoom(_data.id);
-    //setOnlineUsers(users);
+    const users = cm.getUsersInRoom(_data.id);
+    setOnlineUsers(users);
   }
 
   useEffect(() => { if (!active) updateUsersInRoom(); }, [active])
