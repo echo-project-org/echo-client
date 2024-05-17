@@ -80,6 +80,10 @@ function RoomControl({ state, setState, screenSharing }) {
       }
     });
 
+    ee.on("joinedRoom", "RoomControl.joinedRoom", () => { 
+      setState(true);
+    });
+
     ee.on("exitedFromRoom", "RoomControl.exitedFromRoom", () => {
       setRtcConnectionState("Disconnected");
       setRtcConnectionStateColor(theme.palette.error.main);
@@ -105,6 +109,7 @@ function RoomControl({ state, setState, screenSharing }) {
       ipcRenderer.removeAllListeners("toggleMute");
       ipcRenderer.removeAllListeners("appClose");
       ee.releaseGroup("RoomControl.rtcConnectionStateChange");
+      ee.releaseGroup("RoomControl.joinedRoom");
       ee.releaseGroup("RoomControl.exitedFromRoom");
       ee.releaseGroup("localUserCrashed");
     }
