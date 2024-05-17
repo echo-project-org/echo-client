@@ -21,12 +21,12 @@ class CacheManager {
         this.cachedUsers.add(user);
     }
 
-    updateUser(user) {
-        this.cachedUsers.set(user.id, user);
+    updateUser({ id, field, value }) {
+        this.cachedUsers.update(id, field, value);
     }
 
     getUser(userId) {
-        if(!userId) {
+        if (!userId) {
             return this.cachedUsers.get(sessionStorage.getItem("id"));
         } else {
             return this.cachedUsers.get(userId);
