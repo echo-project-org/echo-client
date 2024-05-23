@@ -57,9 +57,9 @@ class MediasoupHandler {
                 transport.on("produce", async ({ kind, rtpParameters, appData }, callback, errback) => {
                     info("[MediasoupHandler] Produce event", kind, rtpParameters, appData);
                     api.call(
-                        type==='audioOut' ? "media/audio/produce": "media/video/produce",
+                        type === 'audioOut' ? "media/audio/produce" : "media/video/produce",
                         "POST",
-                        {   
+                        {
                             data: {
                                 id: sessionStorage.getItem('id') + "-" + kind,
                                 kind: kind,
@@ -69,10 +69,10 @@ class MediasoupHandler {
                         }
                     ).then((res) => {
                         info("[MediasoupHandler] Produce event success", res);
-                        callback({ id: res.producerId});
+                        callback({ id: res.producerId });
                     }).catch((err) => {
                         error("[MediasoupHandler] Produce event error", err);
-                        errback();
+                        errback("[MediasoupHandler] Produce event error");
                     });
                 });
             } else if (type === 'audioIn' || type === 'videoIn') {
@@ -95,7 +95,7 @@ class MediasoupHandler {
                 api.call(
                     "media/transport/connect",
                     "POST",
-                    {   
+                    {
                         id: sessionStorage.getItem('id'),
                         type: type,
                         data: dtlsParameters
@@ -130,17 +130,17 @@ class MediasoupHandler {
                 let packetsReceived = 0;
                 let jitterIn = 0;
                 let packetLostIn = 0;
-                
+
                 res.forEach((report) => {
-                    if(report.type === "candidate-pair" && report.nominated) {
+                    if (report.type === "candidate-pair" && report.nominated) {
                         ping = report.currentRoundTripTime * 1000;
                         bytesSent = report.bytesSent;
                         bytesReceived = report.bytesReceived;
                         packetsSent = report.packetsSent;
                         packetsReceived = report.packetsReceived;
                     }
-    
-                    if(report.type === "remote-inbound.rtp" && report.kind === "audio") {
+
+                    if (report.type === "remote-inbound.rtp" && report.kind === "audio") {
                         jitterIn = report.jitter * 1000;
                         packetLostIn = report.packetsLost;
                     }
@@ -198,17 +198,19 @@ class MediasoupHandler {
                 this.mic.start(this.inputDeviceId).then(async (track) => {
                     log('Microphone started', track);
                     const audioTransport = this.transports.get('audioOut');
-                    const audioProducer = await audioTransport.produce({
+                    const audioProducer = audioTransport.produce({
                         track: track,
                         codecOptions: {
                             opusStereo: true,
                             opusDtx: true
                         }
+                    }).then((producer) => {
+                        log('Audio producer created', audioProducer);
+                        this.audioProducer = audioProducer;
+                        resolve(audioProducer);
+                    }).catch((e) => {
+                        reject(e);
                     });
-
-                    log('Audio producer created', audioProducer);
-                    this.audioProducer = audioProducer;
-                    resolve(audioProducer);
                 });
             } catch (e) {
                 error('Error starting audio broadcast', e);
@@ -242,14 +244,14 @@ class MediasoupHandler {
             try {
                 //instantiate new microphone capturer with new device id
                 let newMic = new MicrophoneCapturer(deviceId);
-                
-                if(this.audioProducer) {
+
+                if (this.audioProducer) {
                     //replace the outgoin stream with the new one
                     this.audioProducer.replaceTrack(newMic.stream.getAudioTracks()[0]);
                 }
-    
+
                 this.mic = newMic;
-    
+
                 resolve();
             } catch (e) {
                 reject(e);
@@ -265,7 +267,7 @@ class MediasoupHandler {
         }
 
         //TODO send audio state to server
-    } 
+    }
 
     setVadTreshold(treshold) {
         this.mic.setTalkingThreshold(treshold);
@@ -293,12 +295,12 @@ class MediasoupHandler {
     }
 
     toggleDeaf(deaf) {
-        if(deaf) {
+        if (deaf) {
 
         } else {
 
-        } 
-        
+        }
+
         //TODO send audio state to server
     }
 }
