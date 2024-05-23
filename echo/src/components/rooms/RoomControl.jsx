@@ -25,6 +25,7 @@ function RoomControl({ state, setState, screenSharing }) {
   const [ping, setPing] = useState(0);
   const [rtcConnectionState, setRtcConnectionState] = useState("Disconnected");
   const [rtcConnectionStateColor, setRtcConnectionStateColor] = useState(theme.palette.error.main);
+  const [pingInterval, setPingInterval] = useState(null);
 
   useEffect(() => {
     ipcRenderer.on("toggleMute", (event, arg) => {
@@ -80,7 +81,7 @@ function RoomControl({ state, setState, screenSharing }) {
       }
     });
 
-    ee.on("joinedRoom", "RoomControl.joinedRoom", () => { 
+    ee.on("joinedRoom", "RoomControl.joinedRoom", () => {
       setState(true);
     });
 
@@ -115,20 +116,22 @@ function RoomControl({ state, setState, screenSharing }) {
     }
   }, []);
 
-  var interval = null;
   const updatePing = () => {
-    interval = setInterval(() => {
+    if (pingInterval) stopUpdatePing();
+
+    setPingInterval(setInterval(() => {
       ep.getPing().then(ping => setPing(ping));
-    }, 500);
+    }, 500));
   }
   const stopUpdatePing = () => {
-    clearInterval(interval);
-    interval = null;
+    clearInterval(pingInterval);
+    setPingInterval(null);
   }
 
   const closeConnection = () => {
     // Notify api
     setState(false);
+    stopUpdatePing();
     if (!state) {
       api.call("users/status", "POST", { id: sessionStorage.getItem('id'), status: "0" })
         .then(res => {
