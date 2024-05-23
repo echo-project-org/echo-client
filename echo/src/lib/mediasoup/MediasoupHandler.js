@@ -72,6 +72,7 @@ class MediasoupHandler {
                         callback({ id: res.producerId });
                     }).catch((err) => {
                         error("[MediasoupHandler] Produce event error", err);
+                        ee.mediasoupConnectionFailed();
                         errback("[MediasoupHandler] Produce event error");
                     });
                 });
@@ -105,6 +106,7 @@ class MediasoupHandler {
                     callback();
                 }).catch((err) => {
                     error("[MediasoupHandler] Error connecting transport", err);
+                    ee.mediasoupConnectionFailed();
                     errback();
                 });
             });

@@ -76,6 +76,10 @@ EchoEvents.prototype.joinedRoom = function (data) {
     this.emit("joinedRoom", data);
 }
 
+EchoEvents.prototype.mediasoupConnectionFailed = function (data) {
+    this.emit("mediasoupConnectionFailed", data);
+}
+
 EchoEvents.prototype.gotVideoStream = function (data) {
     this.emit("gotVideoStream", data);
 }
