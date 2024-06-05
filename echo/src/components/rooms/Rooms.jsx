@@ -51,46 +51,6 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
   useEffect(() => {
     updateRooms();
 
-    ee.on("roomClicked", "Rooms.roomClicked", (data) => {
-      if (!ep.isAudioFullyConnected()) {
-        error("Audio is not fully connected yet. Please wait a few seconds and try again.");
-        return;
-      }
-
-      const joiningId = data.roomId;
-      const currentRoom = cm.getUser(sessionStorage.getItem("id")).currentRoom;
-      if (String(joiningId) === currentRoom) return;
-      if (currentRoom !== 0) ep.exitRoom(sessionStorage.getItem("id"));
-      // update audio state of the user
-      const userAudioState = ep.getAudioState();
-      cm.updateUser({ id: sessionStorage.getItem("id"), field: "muted", value: userAudioState.isMuted });
-      cm.updateUser({ id: sessionStorage.getItem("id"), field: "deaf", value: userAudioState.isDeaf });
-      // join room
-      ep.joinRoom(sessionStorage.getItem("id"), joiningId);
-      cm.updateUser({ id: sessionStorage.getItem("id"), field: "currentRoom", value: String(joiningId) });
-      // update active room id
-      setActiveRoomId(joiningId);
-      // send roomid to chatcontent to fetch messages
-      updateCurrentRoom(joiningId);
-      // add a field to the joining room, saying that i'm joining
-      api.call("rooms/join", "POST", {
-        userId: sessionStorage.getItem("id"),
-        roomId: joiningId, serverId:
-          storage.get("serverId"),
-        deaf: userAudioState.isDeaf,
-        muted: userAudioState.isMuted
-      })
-        .then((res) => {
-          if (res.ok) {
-            ap.playJoinSound();
-            setState(true);
-          }
-        })
-        .catch((err) => {
-          error(err);
-        });
-    });
-
     ee.on("needUserCacheUpdate", "Rooms.needUserCacheUpdate", (data) => {
       const id = data.id;
       const func = data.call;
@@ -109,9 +69,15 @@ function Rooms({ setState, connected, updateCurrentRoom }) {
         });
     });
 
+    ee.on("joinedRoom", "Rooms.joinedRoom", (data) => {
+      info("[Rooms] Joined room", data);
+      cm.updateUser({ id: sessionStorage.getItem("id"), field: "currentRoom", value: data });
+      setActiveRoomId(data);
+    });
+
     return () => {
-      ee.releaseGroup("Rooms.roomClicked");
       ee.releaseGroup("Rooms.needUserCacheUpdate");
+      ee.releaseGroup("Rooms.joinedRoom");
     }
   }, []);
 
