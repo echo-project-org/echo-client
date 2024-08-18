@@ -3,7 +3,7 @@ import { VolumeUp, Circle, DarkMode, DoNotDisturbOn, MicOffRounded, VolumeOff } 
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import { useState, useEffect } from 'react'
 import { info } from '@lib/logger'
-import { ee } from "@root/index";
+import { ee, ep } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 import OnlineUsersMenuItems from './OnlineUsersMenuItems';

@@ -2,7 +2,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Button, Typography, Modal, Box, Zoom, Grid } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { info } from '@lib/logger';
-import { ee } from "@root/index";
+import { ee, ep } from "@root/index";
 import SettingsView from './SettingsView';
 import StyledComponents from '@root/StylingComponents';
 

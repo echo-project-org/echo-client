@@ -6,7 +6,7 @@ import MessageRight from './MessageRight'
 import MessageLeft from './MessageLeft'
 import LoadingAnimation from '@components/mainpage/LoadingAnimation'
 
-import { ee, storage } from "@root/index";
+import { ee, ep, storage } from "@root/index";
 
 const api = require('@lib/api');
 const { error, info } = require('@lib/logger');

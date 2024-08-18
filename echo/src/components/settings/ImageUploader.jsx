@@ -3,7 +3,7 @@ import AvatarEditor from 'react-avatar-editor'
 import { Button, Grid, Typography, Zoom, Slider, Stack } from "@mui/material";
 import { Search } from '@mui/icons-material';
 
-import { storage, ee } from "@root/index";
+import { storage, ee, ep } from "@root/index";
 import StyledComponents from '@root/StylingComponents';
 
 const api = require("@lib/api");

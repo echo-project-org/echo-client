@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import MessageBoxButtons from './MessageBoxButtons';
 import UploadBoxButtons from './UploadBoxButtons';
 
-import { ee, storage, ap } from "@root/index";
+import { ee, storage, ap, ep } from "@root/index";
 import StylingComponents from "@root/StylingComponents";
 
 const api = require("@lib/api");

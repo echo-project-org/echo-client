@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { MenuItem } from '@mui/material'
 import { Message, DoDisturb, Gavel, Settings, PersonAdd, PersonRemove, ScreenShare } from '@mui/icons-material'
 
-import { ee, storage } from "@root/index";
+import { ee, ep, storage } from "@root/index";
 
 const api = require('@lib/api');
 const { error, log, info } = require('@lib/logger');
