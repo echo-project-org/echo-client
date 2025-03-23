@@ -19,13 +19,6 @@ function MainPageServers({ }) {
 
   const updateServers = () => {
     info("[MainPageServers] Updating servers")
-    api.call('servers/')
-      .then((res) => {
-        setServers(res.json);
-      })
-      .catch((err) => {
-        error(err.message);
-      });
   }
 
   useEffect(() => {
@@ -57,12 +50,10 @@ function MainPageServers({ }) {
 
   return (
     <StylingComponents.MainPageServer.MainServersListContainer>
-      <StylingComponents.MainPageServer.StyledMainPageServersComponent>
         <StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
           <Add style={{ color: "#f5e8da" }} fontSize="large" />
-          <Typography style={{ color: "#f5e8da", fontSize: "1.6rem" }}>CREATE SERVER</Typography>
+          <Typography style={{ color: "#f5e8da", fontSize: "1.6rem" }}>Add server</Typography>
         </StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
-      </StylingComponents.MainPageServer.StyledMainPageServersComponent>
       <Divider style={{ background: '#f5e8da' }} variant="middle" />
       <StylingComponents.MainPageServer.StyledMainPageServersComponentServersList>
         <TransitionGroup>

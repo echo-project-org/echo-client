@@ -89,6 +89,7 @@ const createMainWindow = () => {
     frame: false,
     icon: 'images/icon',
     vibrancy: 'fullscreen-ui',
+    focusable: true,
     backgroundMaterial: 'acrylic',
     webPreferences: {
       nodeIntegration: true,

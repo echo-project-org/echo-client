@@ -1,10 +1,13 @@
 import MediasoupHandler from '@lib/mediasoup/MediasoupHandler';
 import { storage, ee } from "@root/index";
+const io = require("socket.io-client");
 const { info, error, log } = require('@lib/logger');
 const api = require('@lib/api');
 
 class EchoProtocol {
-    constructor() {
+    constructor(serverAddress) {
+        this.serverAddress = serverAddress;
+        this.socket = null;
         this.msh = new MediasoupHandler(
             storage.get("inputAudioDeviceId"),
             storage.get("outputAudioDeviceId"),
@@ -17,16 +20,7 @@ class EchoProtocol {
 
     joinRoom(roomId) {
         console.log(roomId)
-        api.call("rooms/join", "POST", { id: sessionStorage.getItem("id"), roomId: roomId, serverId: storage.get("serverId") })
-        .then((res) => {
-            let r = res.json;
-            log("Joined room", r);
-            this.joinedRoom(r.data);
-            this.produceAudio();
-            ee.joinedRoom(roomId);
-        }).catch((err) => {
-            error("Error joining room", err);
-        });
+        
     }
 
     joinedRoom(data) {
