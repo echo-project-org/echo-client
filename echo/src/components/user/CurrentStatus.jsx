@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { storage } from "@root/index";
 import StylingComponents from "@root/StylingComponents";
 
-function CurrentStatus({ icon, align, height, status }) {
+function CurrentStatus({ icon = true, align = "right", height = "100%", status = "none" }) {
   if (status === "none") status = storage.get("status");
 
   switch (status) {
@@ -60,13 +60,6 @@ CurrentStatus.propTypes = {
   align: PropTypes.string,
   height: PropTypes.string,
   status: PropTypes.string
-}
-
-CurrentStatus.defaultProps = {
-  icon: true,
-  align: "right",
-  height: "100%",
-  status: "none"
 }
 
 export default CurrentStatus;
