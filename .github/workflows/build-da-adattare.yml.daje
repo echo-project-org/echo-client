@@ -1,0 +1,159 @@
+name: Build and Release for Windows
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release-windows:
+    runs-on: windows-latest
+
+    if: contains(github.event.head_commit.message, 'Create new release')
+
+    env:
+      CI: false
+      GITHUB_TOKEN: ${{ secrets.SECRET }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Extract version from package.json
+        id: extract_react_version
+        shell: pwsh
+        run: |
+          $pkg_version = (Get-Content -Path .\package.json | ConvertFrom-Json).version
+          echo "Version: $pkg_version"
+          echo "release_version=$pkg_version" >> $ENV:GITHUB_OUTPUT
+
+      - name: Check if version is a pre-release
+        id: check_pre_release
+        shell: pwsh
+        run: |
+          $version = "${{ steps.extract_react_version.outputs.release_version }}"
+          echo "Version: $version"
+          $first_digit = $version.Split('.')[0]
+          $override = $true
+          if ($override -eq $true) {
+            echo "is_prerelease=false" >> $ENV:GITHUB_OUTPUT
+          } else {
+            if ($first_digit -ne '0') {
+              echo "is_prerelease=false" >> $ENV:GITHUB_OUTPUT
+            } else {
+              echo "is_prerelease=true" >> $ENV:GITHUB_OUTPUT
+            }
+          }
+
+      - name: Extract changelogs
+        id: extract_changelogs
+        shell: pwsh
+        run: |
+          $version = "${{ steps.extract_react_version.outputs.release_version }}"
+          $changelogFile = "changelogs.md"
+          $changelogContent = Get-Content -Path $changelogFile -Raw
+          $versionHeader = "## $version"
+          $nextVersionHeader = "## "
+          $changelog = $changelogContent -split $versionHeader, 2 | Select-Object -Last 1
+          $changelog = $changelog -split $nextVersionHeader, 2 | Select-Object -First 1
+          echo "Changelog extracted"
+          echo $changelog
+          # write to temporary file
+          $outputFile = "changelog.tmp.md"
+          $changelog | Out-File -FilePath $outputFile
+          # output to github action
+          echo "outputFile=$outputFile" >> $ENV:GITHUB_OUTPUT 
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ steps.extract_react_version.outputs.release_version }}
+          release_name: Release v${{ steps.extract_react_version.outputs.release_version }}
+          draft: false
+          prerelease: ${{ steps.check_pre_release.outputs.is_prerelease }}
+          body_path: ${{ steps.extract_changelogs.outputs.outputFile }}
+
+      - name: Zip Resource Folder
+        run: Compress-Archive -Path ./resource/zth_garages/ -DestinationPath ./resource/zth_garages.zip
+
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./resource/zth_garages.zip
+          asset_name: zth_garages.zip
+          asset_content_type: application/zip
+
+  update-readme:
+    runs-on: ubuntu-latest
+    needs: build-and-release-windows
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # get version from package.json
+      - name: Get Version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.SECRET }}
+          script: |
+            const fs = require('fs');
+            const packageJSON = JSON.parse(fs.readFileSync('package.json'));
+            console.log(`::set-output name=version::${packageJSON.version}`);
+
+      # update readme changing the <a href="https://github.com/zThundy/zth_garages/releases/latest">![Version](https://img.shields.io/badge/latest%20version-0.1.1-green.svg "Current Version of Script")</a>
+      - name: Update README
+        run: |
+          sed -i 's/latest%20version-[0-9].[0-9].[0-9]/latest%20version-${{ steps.get_version.outputs.version }}/g' README.md
+
+      - name: Commit changes
+        run: |
+          git config --global user.name 'Automatic update of README'
+          git config --global user.email 'actions@github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.SECRET }}@github.com/${{ github.repository }}
+          git pull
+          git commit -am "Updated version of readme"
+          git push
