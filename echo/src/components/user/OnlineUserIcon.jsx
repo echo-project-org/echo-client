@@ -134,9 +134,4 @@ function OnlineUserIcon({ user }) {
   )
 }
 
-OnlineUserIcon.defaultProps = {
-  name: "None",
-  talking: false,
-}
-
 export default OnlineUserIcon

@@ -53,9 +53,4 @@ function WindowControls({ }) {
   )
 }
 
-WindowControls.defaultProps = {
-  muted: false,
-  audioMuted: false
-}
-
 export default WindowControls

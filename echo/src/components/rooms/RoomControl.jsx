@@ -223,9 +223,4 @@ function RoomControl({ state, setState, screenSharing }) {
   )
 }
 
-RoomControl.defaultProps = {
-  muted: false,
-  deaf: false
-}
-
 export default RoomControl

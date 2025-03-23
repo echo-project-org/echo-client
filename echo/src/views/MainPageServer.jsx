@@ -37,7 +37,4 @@ function MainPageServer() {
   )
 }
 
-MainPageServer.defaultProps = {
-}
-
 export default MainPageServer

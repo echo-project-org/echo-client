@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const { ipcRenderer } = window.require('electron');
 const { log } = require('@lib/logger');
 
-function Updating({ version, releaseNotes }) {
+function Updating({ version = "0.0.0", releaseNotes = "No release notes available" }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -65,13 +65,6 @@ function Updating({ version, releaseNotes }) {
     </StyledComponents.Settings.StyledSettingsView>
 
   )
-}
-
-Updating.defaultProps = {
-  version: "0.0.0",
-  releaseNotes: "No release notes available",
-  downloadPercentage: 0,
-  bps: 0
 }
 
 export default Updating

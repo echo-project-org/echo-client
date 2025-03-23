@@ -1,6 +1,6 @@
 import React from 'react'
 
-function LoadingAnimation({ visibility, style }) {
+function LoadingAnimation({ visibility = false, style = {} }) {
   if (!visibility) return null;
   return (
     <div className={visibility ? 'loadingAnimation notHidden' : 'loadingAnimation hidden'} style={style}>
@@ -16,11 +16,6 @@ function LoadingAnimation({ visibility, style }) {
       <div className="wave"></div>
     </div>
   )
-}
-
-LoadingAnimation.defaultProps = {
-  visibility: false,
-  style: {}
 }
 
 export default LoadingAnimation

@@ -149,7 +149,4 @@ const Register = () => {
   )
 }
 
-Register.defaultProps = {
-}
-
 export default Register;
