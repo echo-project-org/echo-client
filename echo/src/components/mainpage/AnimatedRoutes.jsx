@@ -5,8 +5,6 @@ import { AnimatePresence } from 'framer-motion'
 // import MainLogo from './MainLogo'
 import MainPage from '@views/MainPage';
 import MainPageServer from '@views/MainPageServer'
-import Login from '@views/Login';
-import Register from '@views/Register'
 import Updating from '@views/Updating';
 import { ee, ep } from "@root/index";
 
@@ -77,8 +75,6 @@ function AnimatedRoutes() {
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
         <Route path="/" exact element={<MainPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/main" element={<MainPageServer />} />
         <Route path="/updating" element={<Updating version={newVersion} releaseNotes={releaseNotes} />} />
       </Routes>

@@ -2,7 +2,9 @@ import Emitter from "wildemitter";
 const { log } = require('@lib/logger');
 
 class EchoEvents {
-
+    constructor() {
+        log("[EchoEvents] Initializing EchoEvents");
+    }
 }
 
 Emitter.mixin(EchoEvents);

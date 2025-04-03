@@ -207,22 +207,22 @@ function UserSettings() {
     setStatusHover(false);
   }
 
-  let navigate = useNavigate();
-  const logout = () => {
-    info("[UserSettings] Logging out")
-    api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
-      .then(res => {
-        ee.logout();
-        ep.exitRoom();
-        ep.closeConnection();
-        sessionStorage.clear();
-        storage.remove("token");
-        navigate("/login");
-      })
-      .catch(err => {
-        error(err);
-      });
-  }
+  // let navigate = useNavigate();
+  // const logout = () => {
+  //   info("[UserSettings] Logging out")
+  //   api.call("rooms/join", "POST", { userId: sessionStorage.getItem('id'), roomId: "0", serverId: storage.get('serverId') })
+  //     .then(res => {
+  //       ee.logout();
+  //       ep.exitRoom();
+  //       ep.closeConnection();
+  //       sessionStorage.clear();
+  //       storage.remove("token");
+  //       navigate("/login");
+  //     })
+  //     .catch(err => {
+  //       error(err);
+  //     });
+  // }
 
   return (
     <StyledComponents.Settings.StyledSettingsModalSubdiv>
@@ -296,15 +296,6 @@ function UserSettings() {
               margin: "3rem 0 1rem 0"
             }}
           >Update</Button>
-          <Button
-            onClick={logout}
-            variant="contained"
-            sx={{
-              fontSize: "1.2rem",
-              width: "25%",
-              margin: "3rem 0 1rem 2rem"
-            }}
-          >Logout</Button>
         </Grid>
       </StyledGridContainer>
     </StyledComponents.Settings.StyledSettingsModalSubdiv>

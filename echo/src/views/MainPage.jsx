@@ -62,13 +62,13 @@ function MainPage() {
     ee.on("tokenExpired", "MainPage.tokenExpired", (data) => {
       sessionStorage.clear();
       storage.remove("token");
-      navigate("/login");
+      // navigate("/login");
     });
 
     // if id is not set, try to get it from the token
     if (!sessionStorage.getItem("id")) {
       if (storage.get("token") === undefined || storage.get("token") === null) {
-        navigate("/login");
+        // navigate("/login");
       } else {
         api.call("auth/verify", "GET")
           .then((data) => {
@@ -83,7 +83,7 @@ function MainPage() {
           })
           .catch((err) => {
             error(err);
-            navigate("/login");
+            // navigate("/login");
           });
       }
     }
