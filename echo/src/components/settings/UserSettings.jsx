@@ -238,7 +238,7 @@ function UserSettings() {
             invisible
           >
             <ComputeUserImage hover={hover} uploadPicture={uploadPicture} onAvatarHover={onAvatarHover} loading={loading} />
-            <StyledAvatar src={sessionStorage.getItem("userImage")} onMouseEnter={onAvatarHover} />
+            <StyledAvatar src={sessionStorage.getItem("userImage") || "none.png"} onMouseEnter={onAvatarHover} />
           </Badge>
           <div className="statusSelector-root" onMouseEnter={statusSelectOn} onMouseLeave={statusSelectOff}>
             <div className="statusContainer">

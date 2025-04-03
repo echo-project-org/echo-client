@@ -1,4 +1,5 @@
 import mediasoupHandler from "@lib/mediasoup/MediasoupHandler";
+import { initCommunication, verifyCommunication } from "@lib/auth";
 
 import Users from "@cache/user";
 import Room from "@cache/room";
@@ -307,6 +308,24 @@ class EchoAPI extends EchoFriendsAPI {
     );
 
     this.mh.init();
+
+    log("[EchoAPI] Initializing EchoAPI");
+    
+    initCommunication()
+      .then(result => {
+        if (result && result.publicKey && result.encrypted) {
+          verifyCommunication(result)
+            .then(data => {
+              log("[EchoFriendsAPI] Communication verified", data);
+            })
+            .catch(error => {
+              error("Error verifying communication", error);
+            });
+        }
+      })
+      .catch(error => {
+        error("Error initializing communication", error);
+      });
   }
 
   async startTransmitting(id) {
@@ -689,11 +708,6 @@ class EchoAPI extends EchoFriendsAPI {
       }
       else reject("Room not found in cache");
     });
-  }
-
-  apiUnauthorized() {
-    //prompt user to login again
-    this.tokenExpired();
   }
 
   checkRoomClicked(data) {
