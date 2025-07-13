@@ -50,11 +50,6 @@ function MainPageServers({ }) {
 
   return (
     <StylingComponents.MainPageServer.MainServersListContainer>
-        <StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
-          <Add style={{ color: "#f5e8da" }} fontSize="large" />
-          <Typography style={{ color: "#f5e8da", fontSize: "1.6rem" }}>Add server</Typography>
-        </StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
-      <Divider style={{ background: '#f5e8da' }} variant="middle" />
       <StylingComponents.MainPageServer.StyledMainPageServersComponentServersList>
         <TransitionGroup>
           {servers.map((server, id) => {
@@ -64,6 +59,11 @@ function MainPageServers({ }) {
           })}
         </TransitionGroup>
       </StylingComponents.MainPageServer.StyledMainPageServersComponentServersList>
+      <Divider style={{ background: '#f5e8da' }} variant="middle" />
+      <StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
+        <Add style={{ color: "#f5e8da" }} fontSize="large" />
+        <Typography style={{ color: "#f5e8da", fontSize: "1.6rem" }}>Add server</Typography>
+      </StylingComponents.MainPageServer.StyledMainPageServersComponentIcon>
     </StylingComponents.MainPageServer.MainServersListContainer>
   )
 }

@@ -192,9 +192,9 @@ const StyledMainPageServersComponent = styled(Container)(({ theme }) => ({
 
 const StyledMainPageServersComponentIcon = styled(Container)(({ theme }) => ({
   [theme.breakpoints.up('xs')]: {
-    width: "20rem",
-    height: "5rem",
-    borderRadius: "5rem",
+    width: "fit-content",
+    height: "2rem",
+    borderRadius: ".5rem",
     gap: "1rem",
     backgroundColor: theme.palette.background.light,
     display: "flex",
@@ -202,9 +202,9 @@ const StyledMainPageServersComponentIcon = styled(Container)(({ theme }) => ({
     alignItems: "center",
     transition: "all .1s ease-in-out",
     fontSize: "3rem",
-    margin: "1rem 0 0 1rem",
     position: "relative",
     overflow: "hidden",
+    padding: "1rem",
     ":hover": {
       backgroundColor: theme.palette.background.light,
       // add brightness to the icon
